@@ -1,0 +1,51 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="600"
+		xmlns:vm="using:Ameko.ViewModels"
+        x:Class="Ameko.Views.ScriptPropertiesWindow"
+        x:DataType="vm:ScriptPropertiesWindowViewModel"
+        Width="400"
+		Height="600"
+		Topmost="True"
+        Icon="/Assets/Ameko-Simplified-BG-64.ico"
+        Title="Script Properties">
+	<Grid ColumnDefinitions="*, auto, auto"
+		  RowDefinitions="*, auto">
+		<DataGrid Name="propertiesGrid"
+				  Grid.Column="0"
+				  Grid.Row="0"
+				  Grid.ColumnSpan="3"
+				  IsReadOnly="False"
+				  Margin="2"
+				  VerticalScrollBarVisibility="Auto"
+				  CanUserResizeColumns="True"
+				  ItemsSource="{Binding Properties}">
+			<DataGrid.Columns>
+				<DataGridTextColumn Header="Property" IsReadOnly="True" Binding="{Binding Key}" Width="*" />
+				<DataGridTextColumn Header="Value" IsReadOnly="False" Binding="{Binding Value}" Width="*" />
+			</DataGrid.Columns>
+			<DataGrid.Styles>
+				<Style Selector="DataGridRow">
+					<Setter Property="Background" Value="Transparent" />
+				</Style>
+				<Style Selector="ScrollBar">
+					<Setter Property="Background" Value="Gray" />
+				</Style>
+			</DataGrid.Styles>
+		</DataGrid>
+		<Button Grid.Column="0"
+				Grid.Row="1"
+				Margin="2"
+				IsEnabled="False">
+			Add Property
+		</Button>
+		<Button Grid.Column="1"
+				Grid.Row="1"
+				Margin="2"
+				IsEnabled="False">
+			Remove property
+		</Button>
+	</Grid>
+</Window>

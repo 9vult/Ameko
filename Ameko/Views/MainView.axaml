@@ -80,6 +80,12 @@
 						<Svg Path="avares://Ameko/Assets/B5/brush.svg" />
 					</MenuItem.Icon>
 				</MenuItem>
+				<Separator />
+				<MenuItem Header="Script _Properties..." Command="{Binding ShowScriptPropertiesDialogCommand}">
+					<MenuItem.Icon>
+						<Svg Path="avares://Ameko/Assets/B5/info-lg.svg" />
+					</MenuItem.Icon>
+				</MenuItem>
 			</MenuItem>
 			<MenuItem Header="_Timing">
 				<MenuItem Header="S_hift Times" Command="{Binding ShowShiftTimesDialogCommand}">

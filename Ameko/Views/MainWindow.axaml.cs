@@ -54,6 +54,14 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
         interaction.SetOutput(Unit.Default);
     }
 
+    private async Task DoShowScriptPropertiesDialog(InteractionContext<ScriptPropertiesWindowViewModel, Unit> interaction)
+    {
+        var dialog = new ScriptPropertiesWindow();
+        dialog.DataContext = interaction.Input;
+        await dialog.ShowDialog(this);
+        interaction.SetOutput(Unit.Default);
+    }
+
     private async Task DoShowAboutDialogAsync(InteractionContext<AboutWindowViewModel, AboutWindowViewModel?> interaction)
     {
         var dialog = new AboutWindow();
@@ -295,6 +303,7 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
                 ViewModel.ShowStylesManager.RegisterHandler(DoShowStylesManager);
                 ViewModel.ShowSearchDialog.RegisterHandler(DoShowSearchWindow);
                 ViewModel.ShowShiftTimesDialog.RegisterHandler(DoShowShiftTimesDialog);
+                ViewModel.ShowScriptPropertiesDialog.RegisterHandler(DoShowScriptPropertiesDialog);
                 ViewModel.ShowDependencyControlWindow.RegisterHandler(DoShowDependencyControlWindow);
                 ViewModel.ShowConfigWindow.RegisterHandler(DoShowConfigWindowAsync);
                 ViewModel.ShowKeybindsWindow.RegisterHandler(DoShowKeybindsWindowAsync);

@@ -39,6 +39,7 @@ public class MainViewModel : ViewModelBase
     public Interaction<Workspace, Uri?> ShowSaveAsWorkspaceDialog { get; }
     public Interaction<SearchWindowViewModel, string?> ShowSearchDialog { get; }
     public Interaction<ShiftTimesWindowViewModel, Unit> ShowShiftTimesDialog { get; }
+    public Interaction<ScriptPropertiesWindowViewModel, Unit> ShowScriptPropertiesDialog { get; }
     public Interaction<DependencyControlWindowViewModel, Unit> ShowDependencyControlWindow { get; }
     public Interaction<ConfigWindowViewModel, Unit> ShowConfigWindow { get; }
     public Interaction<KeybindsWindowViewModel, Unit> ShowKeybindsWindow { get; }
@@ -62,6 +63,7 @@ public class MainViewModel : ViewModelBase
     public ICommand RedoCommand { get; }
     public ICommand ShowSearchDialogCommand { get; }
     public ICommand ShowShiftTimesDialogCommand { get; }
+    public ICommand ShowScriptPropertiesDialogCommand { get; }
     public ICommand ShowDependencyControlWindowCommand { get; }
     public ICommand ShowConfigWindowCommand { get; }
     public ICommand ShowKeybindsWindowCommand { get; }
@@ -153,6 +155,7 @@ public class MainViewModel : ViewModelBase
         ShowSaveAsWorkspaceDialog = new Interaction<Workspace, Uri?>();
         ShowSearchDialog = new Interaction<SearchWindowViewModel, string?>();
         ShowShiftTimesDialog = new Interaction<ShiftTimesWindowViewModel, Unit>();
+        ShowScriptPropertiesDialog = new Interaction<ScriptPropertiesWindowViewModel, Unit>();
         ShowDependencyControlWindow = new Interaction<DependencyControlWindowViewModel, Unit>();
         ShowConfigWindow = new Interaction<ConfigWindowViewModel, Unit>();
         ShowKeybindsWindow = new Interaction<KeybindsWindowViewModel, Unit>();
@@ -202,6 +205,12 @@ public class MainViewModel : ViewModelBase
         {
             var vm = new ShiftTimesWindowViewModel();
             await ShowShiftTimesDialog.Handle(vm);
+        });
+
+        ShowScriptPropertiesDialogCommand = ReactiveCommand.Create(async () =>
+        {
+            var vm = new ScriptPropertiesWindowViewModel(HoloContext.Instance.Workspace.WorkingFile.File);
+            await ShowScriptPropertiesDialog.Handle(vm);
         });
 
         ShowDependencyControlWindowCommand = ReactiveCommand.Create(async () =>
