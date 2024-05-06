@@ -54,14 +54,31 @@ namespace Ameko.Services
         {
             // Try running as a script
             if (scripts.TryGetValue(qname, out HoloScript? script))
-                return await script.Execute();
+            {
+                var result = await script.Execute();
+                if (script.Logger.LoggedError)
+                {
+                    var box = MessageBoxManager.GetMessageBoxStandard("Ameko Script Service", script.Logger.Dump(), ButtonEnum.Ok);
+                    await box.ShowAsync();
+                }
+                script.Logger.Reset();
+                return result;
+            }
 
             // Try running as a method
             var scriptName = qname[..qname.LastIndexOf('.')];
             if (scripts.TryGetValue(scriptName, out HoloScript? methodScript))
-                return await methodScript.Execute(qname);
+            {
+                var result = await methodScript.Execute(qname);
+
+                if (methodScript.Logger.LoggedError)
+                    Debug.WriteLine(methodScript.Logger.Dump());
+                methodScript.Logger.Reset();
+                return result;
+            }
 
             // Neither of these worked, fail
+            HoloContext.Logger.Error($"The script or function {qname} could not be found.", "ScriptService");
             return new ExecutionResult { Status = ExecutionStatus.Failure, Message = $"The script or function {qname} could not be found." };
         }
 
@@ -79,6 +96,7 @@ namespace Ameko.Services
             }
             catch (Exception ex)
             {
+                HoloContext.Logger.Error(ex.Message, "Playground");
                 return ex.Message;
             }
         }
@@ -124,7 +142,6 @@ namespace Ameko.Services
             }
             if (manual)
             {
-                HoloContext.Logger.Debug("Displaying Dialog Box", "ScriptService");
                 var box = MessageBoxManager.GetMessageBoxStandard("Ameko Script Service", "Scripts have been reloaded.", ButtonEnum.Ok);
                 await box.ShowAsync();
             }
