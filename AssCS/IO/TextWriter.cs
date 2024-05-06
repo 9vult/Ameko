@@ -24,9 +24,11 @@ namespace AssCS.IO
                 var actor = line.Actor.Trim().Equals(string.Empty) ? "" : $"{line.Actor.Trim()}: ";
                 writer.WriteLine($"{actor}{line.GetStrippedText().Replace("\\N", " ").Replace("\\n", " ")}");
             }
+
+            writer.Flush();
+            ioFile.SetLength(ioFile.Position);
             writer.Close();
             ioFile.Close();
-
         }
 
         public TextWriter(File file, string filepath, ConsumerInfo consumer) : this(file, filepath, consumer, Encoding.UTF8) { }

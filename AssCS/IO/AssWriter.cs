@@ -31,6 +31,8 @@ namespace AssCS.IO
             WriteEvents(writer);
             if (!export) WriteExtradata(writer);
 
+            writer.Flush();
+            ioFile.SetLength(ioFile.Position);
             writer.Close();
             ioFile.Close();
         }
