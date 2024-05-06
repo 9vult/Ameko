@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34408.163
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ameko.Desktop", "Ameko.Desktop\Ameko.Desktop.csproj", "{1BE5E782-1F5A-4C38-BEF2-97945EAE0212}"
+EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AssCS", "AssCS\AssCS.csproj", "{B01C58B5-B9D4-4EDD-8CFD-10C092DB8F57}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Holo", "Holo\Holo.csproj", "{DE7CC95E-B27D-43FE-A801-876BD80D0861}"
@@ -11,8 +13,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ameko", "Ameko\Ameko.csproj
 	ProjectSection(ProjectDependencies) = postProject
 		{B01C58B5-B9D4-4EDD-8CFD-10C092DB8F57} = {B01C58B5-B9D4-4EDD-8CFD-10C092DB8F57}
 	EndProjectSection
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ameko.Desktop", "Ameko.Desktop\Ameko.Desktop.csproj", "{1BE5E782-1F5A-4C38-BEF2-97945EAE0212}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
