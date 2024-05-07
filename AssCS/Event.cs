@@ -310,17 +310,48 @@ namespace AssCS
             Text = string.Join("", blocks.Select(b => b.Text));
         }
 
-
         public string AsAss()
         {
             string extradatas = LinkedExtradatas.Count > 0 ? $"{{{string.Join("=", LinkedExtradatas)}}}" : "";
 
+            var textContent = Effect.Contains("code") ? TransformCodeToAss() : Text;
+
             return $"{(Comment ? "Comment" : "Dialogue")}: {Layer},{Start.AsAss()},{End.AsAss()},{Style},{Actor}," +
                 $"{Margins.Left},{Margins.Right},{Margins.Vertical},{Effect},{extradatas}" +
-                $"{Text.Replace("\n", "").Replace("\r", "")}";
+                $"{textContent}";
         }
 
         public string? AsOverride() => null;
+
+        /// <summary>
+        /// Make Lua code snippets ass-compliant by
+        /// transforming newlines to comments
+        /// </summary>
+        /// <returns>Ass-compliant text content</returns>
+        public string TransformCodeToAss()
+        {
+            var pattern = @"(\r\n|\r|\n)([\ |\t]*)";
+            return Regex.Replace(Text, pattern, m =>
+            {
+                int spacesCount = m.Groups[2].Value.Length;
+                return $"--[[{spacesCount}]]";
+            });
+        }
+
+        /// <summary>
+        /// Convert ass-compliant Lua code snippets
+        /// back to Lua with newlines
+        /// </summary>
+        /// <returns>Normal-looking Lua text content</returns>
+        public string TransformAssToCode()
+        {
+            var pattern = @"--\[\[([0-9]+)\]\]";
+            return Regex.Replace(Text, pattern, m =>
+            {
+                int spacesCount = int.Parse(m.Groups[1].Value);
+                return Environment.NewLine + new string(' ', spacesCount);
+            });
+        }
 
         /// <summary>
         /// Clone an event

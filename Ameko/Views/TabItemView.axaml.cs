@@ -18,7 +18,10 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using static System.Net.Mime.MediaTypeNames;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Ameko.Views
 {
@@ -170,6 +173,28 @@ namespace Ameko.Views
 
         private void EventsGrid_SelectionChanged(object? sender, SelectionChangedEventArgs e)
         {
+            // Cleanup old events
+            foreach (Event evnt in e.RemovedItems)
+            {
+                if (evnt.Text.IndexOf(Environment.NewLine) == -1) continue;
+
+                if (evnt.Effect.Contains("code"))
+                {
+                    evnt.Text = evnt.TransformCodeToAss();
+                }
+                else
+                {
+                    evnt.Text = evnt.Text.Replace(Environment.NewLine, (UseSoftLinebreaks ? "\\n" : "\\N"));
+                }
+            }
+
+            // Prepare incoming code events
+            foreach (Event evnt in e.AddedItems)
+            {
+                if (!evnt.Effect.Contains("code")) continue;
+                evnt.Text = evnt.TransformAssToCode();
+            }
+
             List<Event> list = eventsGrid.SelectedItems.Cast<Event>().ToList();
             Event recent = (Event)eventsGrid.SelectedItem;
             if (ViewModel?.Events?.Count > 0)
@@ -200,9 +225,18 @@ namespace Ameko.Views
                 if (e.KeyModifiers.HasFlag(Avalonia.Input.KeyModifiers.Shift))
                 {
                     int idx = editBox.CaretIndex;
-                    editBox.Text = editBox.Text?.Insert(idx, UseSoftLinebreaks ? "\\n" : "\\N");
-                    editBox.CaretIndex += 2;
-                } else
+                    if (((Event)eventsGrid.SelectedItem).Effect.Contains("code"))
+                    {
+                        editBox.Text = editBox.Text?.Insert(idx, Environment.NewLine);
+                        editBox.CaretIndex += Environment.NewLine.Length;
+                    }
+                    else
+                    {
+                        editBox.Text = editBox.Text?.Insert(idx, UseSoftLinebreaks ? "\\n" : "\\N");
+                        editBox.CaretIndex += 2;
+                    }
+                }
+                else
                 {
                     ViewModel?.NextOrAddEventCommand.Execute(Unit.Default);
                     editBox.Focus();
