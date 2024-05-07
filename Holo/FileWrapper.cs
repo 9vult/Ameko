@@ -104,6 +104,12 @@ namespace Holo
             {
                 // Change happened, commit the Previously Selected lines
                 logger.Debug("SELECT→ Committing changes", "FileWrapper");
+                if (previouslySelectedEvents.Count > 1 && previouslySelectedEvent != null)
+                {
+                    var curPreviouslySelectedEvents = previouslySelectedEvents.Select(e => file.EventManager.Get(e.Id)).ToList();
+                    var curPreviouslySelectedEvent = file.EventManager.Get(previouslySelectedEvent.Id);
+                    PropagateChanges(curPreviouslySelectedEvents, previouslySelectedEvent, curPreviouslySelectedEvent);
+                }
                 var snapshot = new Snapshot<Event>(
                     previouslySelectedEvents.Select(e => 
                         new SnapPosition<Event>(
@@ -395,7 +401,7 @@ namespace Holo
             else
             {
                 next = new Event(File.EventManager.NextId)
-                {
+            {
                     Style = SelectedEvent.Style,
                     Start = new Time(SelectedEvent.End),
                     End = new Time(SelectedEvent.End + Time.FromSeconds(5))
@@ -404,6 +410,27 @@ namespace Holo
                 var list = new List<Event>() { next };
                 Add(list, next, true);
             }
+        }
+
+        /// <summary>
+        /// Propagate changes made to the selected event to all selected events
+        /// </summary>
+        /// <param name="selectionGroup">List of selected events</param>
+        /// <param name="progenitor">Old version of the selected event</param>
+        /// <param name="child">New version of the selected event</param>
+        public void PropagateChanges(List<Event> selectionGroup, Event progenitor, Event child)
+        {
+            if (progenitor.Comment != child.Comment) selectionGroup.ForEach(e => e.Comment = child.Comment);
+            if (progenitor.Layer != child.Layer) selectionGroup.ForEach(e => e.Layer = child.Layer);
+            if (progenitor.Start != child.Start) selectionGroup.ForEach(e => e.Start = new Time(child.Start));
+            if (progenitor.End != child.End) selectionGroup.ForEach(e => e.End = new Time(child.End));
+            if (progenitor.Style != child.Style) selectionGroup.ForEach(e => e.Style = child.Style);
+            if (progenitor.Actor != child.Actor) selectionGroup.ForEach(e => e.Actor = child.Actor);
+            if (progenitor.Effect != child.Effect) selectionGroup.ForEach(e => e.Effect = child.Effect);
+            if (progenitor.Text != child.Text) selectionGroup.ForEach(e => e.Text = child.Text);
+            if (progenitor.Margins.Left != child.Margins.Left) selectionGroup.ForEach(e => e.Margins.Left = child.Margins.Left);
+            if (progenitor.Margins.Right != child.Margins.Right) selectionGroup.ForEach(e => e.Margins.Right = child.Margins.Right);
+            if (progenitor.Margins.Vertical != child.Margins.Vertical) selectionGroup.ForEach(e => e.Margins.Vertical = child.Margins.Vertical);
         }
 
         public (int, int) ToggleTag(string tag, int start, int end)

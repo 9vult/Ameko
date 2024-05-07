@@ -201,7 +201,6 @@ namespace Ameko.Views
             {
                 ViewModel?.UpdateEventSelection(list, recent);
                 eventsGrid.ScrollIntoView(eventsGrid.SelectedItem, null);
-                editBox.Focus();
             }
         }
 
