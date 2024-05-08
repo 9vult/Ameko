@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AssCS;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -91,6 +92,35 @@ namespace Holo
             ExportedMethods = exportedMethods;
             SubmenuName = submenuName;
             Logger = new ScriptLogger(name);
+        }
+
+        protected void Commit(System.Action action)
+        {
+            EventManager em = HoloContext.Instance.Workspace.WorkingFile.File.EventManager;
+            HistoryManager hm = HoloContext.Instance.Workspace.WorkingFile.File.HistoryManager;
+
+            List<Event> initial = em.Ordered.Select(e => e.Clone()).ToList();
+            var preMap = new Dictionary<int, (int?, Event)>(initial.Select(i => new KeyValuePair<int, (int?, Event)>(i.Id, (em.GetBefore(i.Id)?.Id, i))));
+            action.Invoke();
+            List<Event> final = em.Ordered;
+            var finalMap = new Dictionary<int, Event>(final.Select(f => new KeyValuePair<int, Event>(f.Id, f)));
+
+            var insertions = finalMap.Where(kv => !preMap.ContainsKey(kv.Key))
+                                    .Select(kv => new SnapPosition<Event>(kv.Value, em.GetBefore(kv.Key)?.Id)).ToList();
+            var deletions = preMap.Where(kv => !finalMap.ContainsKey(kv.Key))
+                                    .Select(kv => new SnapPosition<Event>(kv.Value.Item2, kv.Value.Item1)).ToList();
+            var edits = preMap.Where(kv => finalMap.ContainsKey(kv.Key))
+                                    .Where(kv => !kv.Value.Item2.Equals(finalMap[kv.Key]))
+                                    .Select(kv => new SnapPosition<Event>(kv.Value.Item2, em.GetBefore(kv.Key)?.Id))
+                                    .ToList();
+
+            var commit = new Commit<Event>(new List<Snapshot<Event>>()
+            {
+                new Snapshot<Event>(insertions, AssCS.Action.INSERT),
+                new Snapshot<Event>(deletions, AssCS.Action.DELETE),
+                new Snapshot<Event>(edits, AssCS.Action.EDIT)
+            });
+            hm.Commit(commit);
         }
     }
 

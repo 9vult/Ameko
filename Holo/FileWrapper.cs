@@ -129,6 +129,9 @@ namespace Holo
 
         public Snapshot<Event> Remove(List<Event> selectedEvents, Event selectedEvent, bool commit = true)
         {
+            // Save the parents
+            var parents = selectedEvents.ToDictionary(e => e.Id, e => file.EventManager.GetBefore(e.Id)?.Id);
+
             if (selectedEvents.Count > 1)
             {
                 // Remove all but the "currently selected" one
@@ -141,7 +144,7 @@ namespace Holo
             var want = SelectAdjOrDefault(selectedEvent);
             var snapshot = new Snapshot<Event>(
                 selectedEvents.Select(e =>
-                    new SnapPosition<Event>(e.Clone(), file.EventManager.GetBefore(e.Id)?.Id)).ToList(),
+                    new SnapPosition<Event>(e.Clone(), parents[e.Id])).ToList(),
                 AssCS.Action.DELETE);
             if (commit) file.HistoryManager.Commit(new Commit<Event>(snapshot));
             file.EventManager.Remove(selectedEvent.Id);
