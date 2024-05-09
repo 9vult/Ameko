@@ -31,8 +31,7 @@ namespace Ameko.ViewModels
 
         public LogWindowViewModel()
         {
-            _logs = new ObservableCollection<Log>(HoloContext.Logger.Logs);
-            _logs.Reverse();
+            _logs = new ObservableCollection<Log>(HoloContext.Logger.Logs.Reverse());
 
             CopySelectedLogs = new Interaction<LogWindowViewModel, string?>();
             CopySelectedLogsCommand = ReactiveCommand.Create(async () => {

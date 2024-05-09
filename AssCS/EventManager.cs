@@ -12,7 +12,7 @@ namespace AssCS
     public class EventManager
     {
         private readonly LinkedList<int> chain;
-        private readonly ObservableCollection<int> current;
+        private readonly RangeObservableCollection<int> current;
         private readonly Dictionary<int, EventLink> events;
         private int _id = 0;
 
@@ -35,7 +35,7 @@ namespace AssCS
         /// <summary>
         /// Observable collection of the current event IDs
         /// </summary>
-        public ObservableCollection<int> CurrentEvents => current;
+        public RangeObservableCollection<int> CurrentEvents => current;
         /// <summary>
         /// Set containing currently-used actors
         /// </summary>
@@ -64,6 +64,31 @@ namespace AssCS
         }
 
         /// <summary>
+        /// Add multiple events after an event.
+        /// Events will be added in the order dictated by the list.
+        /// </summary>
+        /// <param name="id">ID of the event to add after</param>
+        /// <param name="list">Events to add</param>
+        /// <returns>ID of the last event added</returns>
+        /// <exception cref="ArgumentException">If the ID is not found</exception>
+        public int AddAfter(int id, IEnumerable<Event> list)
+        {
+            if (!events.ContainsKey(id)) throw new ArgumentException($"Cannot add event after id={id} because that id cannot be found.");
+
+            var previous = id;
+            foreach (var e in list)
+            {
+                var pre = events[previous].Link;
+                var link = chain.AddAfter(pre, e.Id);
+                events[e.Id] = new EventLink(link, e);
+                previous = e.Id;
+            }
+
+            current.AddRange(list.Select(el => el.Id));
+            return list.Last().Id;
+        }
+
+        /// <summary>
         /// Add an event before another event
         /// </summary>
         /// <param name="id">ID of the event to add before</param>
@@ -82,6 +107,52 @@ namespace AssCS
         }
 
         /// <summary>
+        /// Add multiple events before another event
+        /// </summary>
+        /// <param name="id">ID of the event to add before</param>
+        /// <param name="list">Events to add</param>
+        /// <param name="ascending">True if the events should be added `C←B←A←Origin`, False if `A→B→C→Origin`</param>
+        /// <returns>ID of the last event added</returns>
+        /// <exception cref="ArgumentException">If the ID is not found</exception>
+        public int AddBefore(int id, IEnumerable<Event> list, bool ascending)
+        {
+            if (!events.ContainsKey(id)) throw new ArgumentException($"Cannot add event before id={id} because that id cannot be found.");
+
+            // Add in ascending order
+            // C←B←A←Origin
+            if (ascending)
+            {
+                var previous = id;
+                foreach (var e in list)
+                {
+                    var post = events[previous].Link;
+                    var link = chain.AddBefore(post, e.Id);
+                    events[e.Id] = new EventLink(link, e);
+                    previous = e.Id;
+                }
+            }
+            // Add in descending order
+            // A→B→C→Origin
+            else
+            {
+                // Add first event
+                int first = AddBefore(id, list.First());
+                var previous = first;
+                // Continue to add the remaining events after the first event
+                foreach (var e in list.Skip(1))
+                {
+                    var pre = events[previous].Link;
+                    var link = chain.AddAfter(pre, e.Id);
+                    events[e.Id] = new EventLink(link, e);
+                    previous = e.Id;
+                }
+            }
+
+            current.AddRange(list.Select(el => el.Id));
+            return list.Last().Id;
+        }
+
+        /// <summary>
         /// Add an event to the end
         /// </summary>
         /// <param name="e">Event to add</param>
@@ -95,6 +166,23 @@ namespace AssCS
         }
 
         /// <summary>
+        /// Add multiple events to the end
+        /// </summary>
+        /// <param name="list">Events to add</param>
+        /// <returns>ID of the last event added</returns>
+        public int AddLast(IEnumerable<Event> list)
+        {
+            foreach (var e in list)
+            {
+                var link = chain.AddLast(e.Id);
+                events[e.Id] = new EventLink(link, e);
+            }
+
+            current.AddRange(list.Select(el => el.Id));
+            return list.Last().Id;
+        }
+
+        /// <summary>
         /// Add an event to the beginning
         /// </summary>
         /// <param name="e">Event to add</param>
@@ -105,6 +193,36 @@ namespace AssCS
             events[e.Id] = new EventLink(link, e);
             current.Add(e.Id);
             return e.Id;
+        }
+
+        /// <summary>
+        /// Add multiple events to the beginning
+        /// </summary>
+        /// <param name="list">Events to add</param>
+        /// <param name="ascending">True if the events should be added `C←B←A`, False if `A→B→C`</param>
+        /// <returns>ID of the last event added</returns>
+        public int AddFirst(IEnumerable<Event> list, bool ascending)
+        {
+            // Add in ascending order
+            // C←B←A
+            if (ascending)
+            {
+                foreach (var e in list)
+                {
+                    var link = chain.AddFirst(e.Id);
+                    events[e.Id] = new EventLink(link, e);
+                }
+            }
+            // Add in descending order
+            // A→B→C
+            else
+            {
+                int first = AddFirst(list.First());
+                AddAfter(first, list.Skip(1));
+            }
+
+            current.AddRange(list.Select(el => el.Id));
+            return list.Last().Id;
         }
 
         /// <summary>
@@ -145,6 +263,30 @@ namespace AssCS
                 return current.Remove(id);
             }
             throw new ArgumentException($"Cannot remove event id={id} because that id cannot be found.");
+        }
+
+        /// <summary>
+        /// Remove multiple events
+        /// </summary>
+        /// <param name="ids">IDs of the events to remove</param>
+        /// <returns>True if all the events were removed</returns>
+        public bool Remove(IEnumerable<int> ids)
+        {
+            if (ids.Count() == 0) return false;
+            bool result = true;
+
+            foreach (var id in ids)
+            {
+                if (events.ContainsKey(id))
+                {
+                    var tup = events[id];
+                    events.Remove(id);
+                    chain.Remove(tup.Link);
+                } 
+                else result = false;
+            }
+            current.RemoveRange(ids);
+            return result;
         }
 
         /// <summary>
@@ -284,21 +426,21 @@ namespace AssCS
         public EventManager(EventManager source)
         {
             chain = new LinkedList<int>(source.chain);
-            current = new ObservableCollection<int>(source.current);
+            current = new RangeObservableCollection<int>(source.current);
             events = new Dictionary<int, EventLink>(source.events);
         }
 
         public EventManager(File source)
         {
             chain = new LinkedList<int>(source.EventManager.chain);
-            current = new ObservableCollection<int>(source.EventManager.current);
+            current = new RangeObservableCollection<int>(source.EventManager.current);
             events = new Dictionary<int, EventLink>(source.EventManager.events);
         }
 
         public EventManager()
         {
             chain = new LinkedList<int>();
-            current = new ObservableCollection<int>();
+            current = new RangeObservableCollection<int>();
             events = new Dictionary<int, EventLink>();
         }
 
