@@ -1,4 +1,5 @@
-﻿using Holo.DC;
+﻿using AssCS;
+using Holo.DC;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -22,6 +23,8 @@ namespace Holo
         private HoloContext()
         {
             Directories.Create();
+            LoggerHelper.Initialize();
+
             ConfigurationManager = new ConfigurationManager(Directories.HoloConfigHome);
             GlobalsManager = new GlobalsManager(Directories.HoloDataHome);
             PluginHandler = new PluginHandler(Directories.HoloDataHome);

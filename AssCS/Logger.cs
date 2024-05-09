@@ -1,79 +1,51 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 
-namespace Holo
+namespace AssCS
 {
     /// <summary>
     /// Logger
     /// </summary>
-    public class Logger : INotifyPropertyChanged
+    public class Logger
     {
-        internal static readonly Logger Instance = new Logger();
-        private readonly List<Log> _logs = new List<Log>();
-        private readonly string logsRoot;
+        public static Logger Instance = new Logger();
+        private readonly ObservableCollection<Log> _logs = new ObservableCollection<Log>();
 
         /// <summary>
         /// List of logs
         /// </summary>
-        public List<Log> Logs => _logs;
+        public ObservableCollection<Log> Logs => _logs;
 
         public void Info(string message, string source = "")
         {
             Log log = new Log(message, source, LogLevel.INFO);
             _logs.Add(log);
-            WriteLogToFile(log);
-            OnPropertyChanged(nameof(Logs));
         }
 
         public void Debug(string message, string source = "")
         {
             Log log = new Log(message, source, LogLevel.DEBUG);
             _logs.Add(log);
-            WriteLogToFile(log);
-            OnPropertyChanged(nameof(Logs));
         }
 
         public void Warn(string message, string source = "")
         {
             Log log = new Log(message, source, LogLevel.WARN);
             _logs.Add(log);
-            WriteLogToFile(log);
-            OnPropertyChanged(nameof(Logs));
         }
 
         public void Error(string message, string source = "")
         {
             Log log = new Log(message, source, LogLevel.ERROR);
             _logs.Add(log);
-            WriteLogToFile(log);
-            OnPropertyChanged(nameof(Logs));
         }
 
-        public event PropertyChangedEventHandler? PropertyChanged;
-        protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
-        private void WriteLogToFile(Log log)
-        {
-            var filename = Path.Combine(logsRoot, $"log_{log.Timestamp:yyyy-MM-dd}.txt");
-            using (StreamWriter writer = File.AppendText(filename))
-            {
-                writer.WriteLine(log);
-            }
-        }
-
-        private Logger()
-        {
-            logsRoot = Path.Combine(HoloContext.Directories.HoloStateHome, "logs");
-            if (!Directory.Exists(logsRoot))
-                Directory.CreateDirectory(logsRoot);
-        }
     }
 
     public class Log
