@@ -55,11 +55,12 @@ namespace Ameko.Services
             // Try running as a script
             if (scripts.TryGetValue(qname, out HoloScript? script))
             {
+                var logDisplay = script.LogDisplay;
                 var result = await script.Execute();
-                if (script.Logger.LoggedError)
+                if ((logDisplay == LogDisplay.OnError) && script.Logger.LoggedError)
                 {
-                    var box = MessageBoxManager.GetMessageBoxStandard("Ameko Script Service", script.Logger.Dump(), ButtonEnum.Ok);
-                    await box.ShowAsync();
+                    // var box = MessageBoxManager.GetMessageBoxStandard("Ameko Script Service", script.Logger.Dump(), ButtonEnum.Ok);
+                    // await box.ShowAsync();
                 }
                 script.Logger.Reset();
                 return result;
@@ -69,6 +70,7 @@ namespace Ameko.Services
             var scriptName = qname[..qname.LastIndexOf('.')];
             if (scripts.TryGetValue(scriptName, out HoloScript? methodScript))
             {
+                var logDisplay = methodScript.LogDisplay;
                 var result = await methodScript.Execute(qname);
 
                 if (methodScript.Logger.LoggedError)

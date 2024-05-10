@@ -1,0 +1,39 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="350" d:DesignHeight="225"
+		xmlns:vm="using:Ameko.ViewModels"
+        x:Class="Ameko.Views.ScriptLogWindow"
+		x:DataType="vm:ScriptLogWindowViewModel"
+        Width="350"
+		Height="225"
+		Topmost="True"
+		WindowStartupLocation="CenterOwner"
+		SystemDecorations="None"
+		ShowInTaskbar="False"
+        Icon="/Assets/Ameko-Simplified-BG-64.ico"
+        Title="Ameko Logs">
+        <Grid ColumnDefinitions="*, auto, *"
+			  RowDefinitions="auto, *, auto, auto">
+			<TextBlock Grid.Column="1"
+					   Grid.Row="0"
+					   Margin="2"
+					   TextAlignment="Center"
+				       Text="{Binding ScriptName}" />
+			<TextBox Grid.Column="0"
+					 Grid.Row="1"
+					 Grid.ColumnSpan="3"
+					 Margin="2"
+					 IsReadOnly="True" />
+			<ProgressBar Grid.Column="0"
+						 Grid.Row="2"
+						 Grid.ColumnSpan="3"
+						 Margin="4" />
+						 
+			<Button Grid.Column="1"
+					Grid.Row="3"
+					Margin="2"
+					Content="Close" />
+		</Grid>
+</Window>
