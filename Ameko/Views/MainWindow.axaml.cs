@@ -19,6 +19,7 @@ namespace Ameko.Views;
 public partial class MainWindow : ReactiveWindow<MainViewModel>
 {
     private SearchWindow _searchWindow;
+    private ScriptLogWindow? _scriptLogWindow;
     private bool _isSearching = false;
     private static string[] DragDropExtensions = { ".ass" };
 
@@ -193,6 +194,20 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
         await manager.ShowDialog(this);
     }
 
+    private async Task DoShowScriptLogDialogAsync(InteractionContext<ScriptLogWindowViewModel, Unit> interaction)
+    {
+        _scriptLogWindow = new ScriptLogWindow();
+        _scriptLogWindow.DataContext = interaction.Input;
+        await _scriptLogWindow.ShowDialog(this);
+        interaction.SetOutput(Unit.Default);
+    }
+
+    private void DoCloseScriptLogDialog(InteractionContext<Unit, Unit> interaction)
+    {
+        _scriptLogWindow?.Close();
+        interaction.SetOutput(Unit.Default);
+    }
+
     private void DoShowLogsWindow(InteractionContext<LogWindowViewModel, Unit> interaction)
     {
         interaction.SetOutput(Unit.Default);
@@ -308,6 +323,8 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
                 ViewModel.ShowConfigWindow.RegisterHandler(DoShowConfigWindowAsync);
                 ViewModel.ShowKeybindsWindow.RegisterHandler(DoShowKeybindsWindowAsync);
                 ViewModel.ShowLogsWindow.RegisterHandler(DoShowLogsWindow);
+                ViewModel.ShowScriptLogsDialog.RegisterHandler(DoShowScriptLogDialogAsync);
+                ViewModel.CloseScriptLogsDialog.RegisterHandler(DoCloseScriptLogDialog);
                 ViewModel.ShowFreeformPlayground.RegisterHandler(DoShowFreeformPlayground);
             }
 

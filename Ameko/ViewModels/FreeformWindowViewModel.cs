@@ -33,6 +33,7 @@ namespace Ameko.ViewModels
             ExecuteCommand = ReactiveCommand.Create(() =>
             {
                 HoloContext.Instance.GlobalsManager.FreeformDocument = Document.Text;
+                Status = "Running...";
                 var result = ScriptService.Instance.ExecuteFreeform(Document.Text);
                 Status = result;
             });

@@ -74,6 +74,12 @@ namespace AssCS
         {
             return $"{_timestamp:yyyy-MM-ddTHH:mm:ss} [{_logLevel}] {(_source != string.Empty ? $"({_source}) " : "")}→ {_message}";
         }
+
+        public string ToString(bool includeSource)
+        {
+            if (includeSource) return ToString();
+            return $"{_timestamp:yyyy-MM-ddTHH:mm:ss} [{_logLevel}] → {_message}";
+        }
     }
 
     public enum LogLevel

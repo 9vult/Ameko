@@ -217,7 +217,7 @@ namespace Holo
         /// <returns>Newline-delimited list of logs</returns>
         public string Dump()
         {
-            return string.Join(Environment.NewLine, _logs);
+            return string.Join(Environment.NewLine, _logs.Select(l => l.ToString(false)));
         }
 
         /// <summary>

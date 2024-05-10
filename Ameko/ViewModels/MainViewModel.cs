@@ -44,6 +44,8 @@ public class MainViewModel : ViewModelBase
     public Interaction<ConfigWindowViewModel, Unit> ShowConfigWindow { get; }
     public Interaction<KeybindsWindowViewModel, Unit> ShowKeybindsWindow { get; }
     public Interaction<LogWindowViewModel, Unit> ShowLogsWindow { get; }
+    public Interaction<ScriptLogWindowViewModel, Unit> ShowScriptLogsDialog { get; }
+    public Interaction<Unit, Unit> CloseScriptLogsDialog { get; }
     public Interaction<FreeformWindowViewModel, Unit> ShowFreeformPlayground { get; }
     public ICommand ShowAboutDialogCommand { get; }
     public ICommand ShowStylesManagerCommand { get; }
@@ -68,6 +70,8 @@ public class MainViewModel : ViewModelBase
     public ICommand ShowConfigWindowCommand { get; }
     public ICommand ShowKeybindsWindowCommand { get; }
     public ICommand ShowLogsWindowCommand { get; }
+    public ICommand ShowScriptLogsDialogCommand { get; }
+    public ICommand CloseScriptLogsDialogCommand { get; }
     public ICommand ShowFreeformPlaygroundCommand { get; }
 
     public ObservableCollection<TabItemViewModel> Tabs { get; set; }
@@ -160,6 +164,8 @@ public class MainViewModel : ViewModelBase
         ShowConfigWindow = new Interaction<ConfigWindowViewModel, Unit>();
         ShowKeybindsWindow = new Interaction<KeybindsWindowViewModel, Unit>();
         ShowLogsWindow = new Interaction<LogWindowViewModel, Unit>();
+        ShowScriptLogsDialog = new Interaction<ScriptLogWindowViewModel, Unit>();
+        CloseScriptLogsDialog = new Interaction<Unit, Unit>();
         ShowFreeformPlayground = new Interaction<FreeformWindowViewModel, Unit>();
 
         ShowAboutDialogCommand = ReactiveCommand.Create(() => IOCommandService.DisplayAboutBox(ShowAboutDialog));
@@ -237,6 +243,16 @@ public class MainViewModel : ViewModelBase
             await ShowLogsWindow.Handle(vm);
         });
 
+        ShowScriptLogsDialogCommand = ReactiveCommand.Create(async (ScriptLogWindowViewModel lvm) =>
+        {
+            await ShowScriptLogsDialog.Handle(lvm);
+        });
+
+        CloseScriptLogsDialogCommand = ReactiveCommand.Create(async () =>
+        {
+            await CloseScriptLogsDialog.Handle(Unit.Default);
+        });
+
         ActivateScriptCommand = ReactiveCommand.Create<string>(async (string scriptName) =>
         {
             await ScriptService.Instance.Execute(scriptName);
@@ -259,6 +275,7 @@ public class MainViewModel : ViewModelBase
         GenerateScriptsMenu();
 
         HoloContext.Instance.Workspace.Files.CollectionChanged += UpdateLoadedTabsCallback;
+        ScriptService.Instance.MainViewModel = this;
         ScriptService.Instance.LoadedScripts.CollectionChanged += (o, e) =>
         {
             GenerateScriptsMenu();
