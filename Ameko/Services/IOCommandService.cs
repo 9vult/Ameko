@@ -153,6 +153,8 @@ namespace Ameko.Services
             var selectedId = vm.Wrapper.SelectedEvent?.Id ?? -1;
             if (selectedId == -1) return;
 
+            var events = new List<Event>();
+
             foreach (var linedata in lines)
             {
                 if (linedata.Trim().Equals(string.Empty)) continue;
@@ -169,9 +171,11 @@ namespace Ameko.Services
                         Text = linedata
                     };
                 }
-
+                events.Add(line);
                 selectedId = file.EventManager.AddAfter(selectedId, line);
             }
+            if (events.Count > 0)
+                vm.Wrapper.Add(events, events.First(), false, true);
         }
 
         public static async void PasteOverLines(Interaction<TabItemViewModel, string[]?> pasteInteraction,
@@ -186,6 +190,9 @@ namespace Ameko.Services
             var selectedId = vm.Wrapper.SelectedEvent?.Id ?? -1;
             if (selectedId == -1) return;
 
+            var editedEvents = new List<Event>();
+            var newEvents = new List<Event>();
+
             Event? oldLine = file.EventManager.Get(selectedId);
 
             foreach (var linedata in lines)
@@ -194,12 +201,18 @@ namespace Ameko.Services
                 if (!linedata.StartsWith("Comment:") && !linedata.StartsWith("Dialogue:")) return;
                 var newLine = new Event(-1, linedata.Trim());
 
-                if (file.EventManager.Has(selectedId)) oldLine = file.EventManager.Get(selectedId);
+                var shin = false;
+                if (file.EventManager.Has(selectedId))
+                {
+                    oldLine = file.EventManager.Get(selectedId);
+                    editedEvents.Add(oldLine.Clone());
+                }
                 else
                 {
                     var cleanEvent = new Event(file.EventManager.NextId);
                     file.EventManager.AddAfter(oldLine.Id, cleanEvent);
                     oldLine = cleanEvent;
+                    shin = true;
                 }
 
                 foreach (PasteOverField field in Helpers.GetFlags(fields))
@@ -244,10 +257,19 @@ namespace Ameko.Services
                     }
                 }
 
+                if (shin)
+                {
+                    newEvents.Add(oldLine.Clone());
+                }
+
                 var next = file.EventManager.GetAfter(oldLine.Id);
                 if (next != null) selectedId = next.Id;
                 else selectedId = -1;
             }
+
+            var editedSnap = new Snapshot<Event>(editedEvents.Select(e => new SnapPosition<Event>(e, file.EventManager.GetBefore(e.Id)?.Id)).ToList(), AssCS.Action.EDIT);
+            var newSnap = new Snapshot<Event>(newEvents.Select(e => new SnapPosition<Event>(e, file.EventManager.GetBefore(e.Id)?.Id)).ToList(), AssCS.Action.INSERT);
+            file.HistoryManager.Commit(new Commit<Event>( new List<Snapshot<Event>> { editedSnap, newSnap }));
         }
 
         /// <summary>

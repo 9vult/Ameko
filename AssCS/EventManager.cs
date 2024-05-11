@@ -264,22 +264,11 @@ namespace AssCS
         {
             if (!events.ContainsKey(e.Id)) throw new ArgumentException($"Cannot replace event id={e.Id} because that id cannot be found.");
 
-            //var original = events[e.Id];
-            //var originalEvent = original.Event;
+            var original = events[e.Id];
 
-            //original.Link.Value = e.Id;                     // Set the LinkedList value to the new ID
-            //events[e.Id] = new EventLink(original.Link, e); // Add the new ID
-            var before = GetBefore(e.Id);
-            if (before != null)
-            {
-                Remove(e.Id);
-                AddAfter(before.Id, e);
-            }
-            else
-            {
-                Remove(e.Id);
-                AddFirst(e);
-            }
+            original.Link.Value = e.Id;                     // Set the LinkedList value to the new ID
+            events[e.Id] = new EventLink(original.Link, e); // Add the new ID
+            
             UpdateEvents();
         }
 
@@ -289,30 +278,14 @@ namespace AssCS
         /// <param name="list">Events to replace</param>
         public void ReplaceInplace(IEnumerable<Event> list)
         {
-            //foreach (var e in list)
-            //{
-            //    if (!events.ContainsKey(e.Id)) throw new ArgumentException($"Cannot replace event id={e.Id} because that id cannot be found.");
-
-            //    var original = events[e.Id];
-
-            //    original.Link.Value = e.Id;                     // Set the LinkedList value to the new ID
-            //    events[e.Id] = new EventLink(original.Link, e); // Add the new ID
-            //}
             foreach (var e in list)
             {
                 if (!events.ContainsKey(e.Id)) throw new ArgumentException($"Cannot replace event id={e.Id} because that id cannot be found.");
 
-                var before = GetBefore(e.Id);
-                if (before != null)
-                {
-                    Remove(e.Id);
-                    AddAfter(before.Id, e);
-                }
-                else
-                {
-                    Remove(e.Id);
-                    AddFirst(e);
-                }
+                var original = events[e.Id];
+
+                original.Link.Value = e.Id;                     // Set the LinkedList value to the new ID
+                events[e.Id] = new EventLink(original.Link, e); // Add the new ID
             }
             UpdateEvents();
         }

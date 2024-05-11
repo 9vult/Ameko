@@ -29,6 +29,9 @@ namespace Ameko.ViewModels
             if (ShiftTimesFilter == ShiftTimesFilter.ALL_ROWS) events = HoloContext.Instance.Workspace.WorkingFile.File.EventManager.Ordered;
             else events = HoloContext.Instance.Workspace.WorkingFile.SelectedEventCollection ?? new List<Event>();
 
+            var sps = events.Select(e => new SnapPosition<Event>(e.Clone(), HoloContext.Instance.Workspace.WorkingFile.File.EventManager.GetBefore(e.Id)?.Id)).ToList();
+            HoloContext.Instance.Workspace.WorkingFile.File.HistoryManager.Commit(new Commit<Event>(new Snapshot<Event>(sps, AssCS.Action.EDIT)));
+
             switch (ShiftTimesType)
             {
                 case ShiftTimesType.TIME:
