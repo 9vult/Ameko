@@ -167,16 +167,19 @@
 				  Grid.Column="0"
 				  Grid.ColumnSpan="3"
 				  IsReadOnly="True"
+				  CanUserResizeColumns="True"
+				  CanUserReorderColumns="False"
 				  SelectionMode="Extended"
 				  SelectedItem="{Binding SelectedEvent}"
 				  VerticalScrollBarVisibility="Auto"
 				  ItemsSource="{Binding Events}">
 			<DataGrid.Columns>
-				<DataGridTextColumn IsVisible="False" Header="ID" Binding="{Binding Id}" />
-				<DataGridTextColumn Header="Start" Binding="{Binding Start.UpdatableText}" />
-				<DataGridTextColumn Header="End" Binding="{Binding End.UpdatableText}" />
+				<DataGridTextColumn IsVisible="False" Header="ID" Binding="{Binding Id}" CanUserResize="False" />
+				<DataGridTextColumn Header="#" Binding="{Binding Index}" CanUserResize="False" />
+				<DataGridTextColumn Header="Start" Binding="{Binding Start.UpdatableText}" CanUserResize="False" />
+				<DataGridTextColumn Header="End" Binding="{Binding End.UpdatableText}" CanUserResize="False" />
 
-				<DataGridTemplateColumn Header="CPS">
+				<DataGridTemplateColumn Header="CPS" CanUserResize="False">
 					<DataGridTemplateColumn.CellTemplate>
 						<DataTemplate x:DataType="asscs:Event">
 							<TextBlock Text="{Binding Cps}"
