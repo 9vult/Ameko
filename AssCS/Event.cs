@@ -23,6 +23,7 @@ namespace AssCS
         private Margins _margins;
         private string _effect;
         private string _text;
+        private int _index;
 
         public int Id { get => _id; }
         public bool Comment
@@ -76,6 +77,16 @@ namespace AssCS
                 OnPropertyChanged(nameof(MaxLineWidth));
             }
         }
+
+        /// <summary>
+        /// Row number in the file
+        /// </summary>
+        public int Index
+        {
+            get => _index;
+            set => _index = value;
+        }
+
         public List<int> LinkedExtradatas { get; set; }
 
         /// <summary>

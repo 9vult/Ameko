@@ -29,9 +29,9 @@ namespace AssCS
         /// </summary>
         public Event Tail => events[chain.Last.Value].Event;
         /// <summary>
-        /// List of all events in order
+        /// List of all events in order (also sets the Index property of events)
         /// </summary>
-        public List<Event> Ordered => chain.Select(id => events[id].Event).ToList();
+        public List<Event> Ordered => chain.Select((id, i) => { var e = events[id].Event; e.Index = i+1; return e; }).ToList();
         /// <summary>
         /// Observable collection of the current event IDs
         /// </summary>

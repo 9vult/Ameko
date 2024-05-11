@@ -1,4 +1,5 @@
-﻿using Avalonia.Controls;
+﻿using Ameko.ViewModels;
+using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Controls.Shapes;
 using CSScriptLib;
@@ -11,6 +12,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reactive;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -23,6 +25,9 @@ namespace Ameko.Services
         private readonly string scriptRoot;
         private readonly Dictionary<string, HoloScript> scripts;
         private readonly Dictionary<string, string[]> functions;
+        
+        private MainViewModel? mainViewModel;
+        public MainViewModel MainViewModel { set { mainViewModel = value; } }
         
         public static ScriptService Instance => _instance.Value;
         public ObservableCollection<Tuple<string, string>> LoadedScripts { get; private set; }
@@ -55,13 +60,10 @@ namespace Ameko.Services
             // Try running as a script
             if (scripts.TryGetValue(qname, out HoloScript? script))
             {
-                var result = await script.Execute();
-                if (script.Logger.LoggedError)
-                {
-                    var box = MessageBoxManager.GetMessageBoxStandard("Ameko Script Service", script.Logger.Dump(), ButtonEnum.Ok);
-                    await box.ShowAsync();
-                }
                 script.Logger.Reset();
+                LogDisplayPreExecution(script);
+                var result = await script.Execute();
+                LogDisplayPostExecution(script);                
                 return result;
             }
 
@@ -69,11 +71,10 @@ namespace Ameko.Services
             var scriptName = qname[..qname.LastIndexOf('.')];
             if (scripts.TryGetValue(scriptName, out HoloScript? methodScript))
             {
-                var result = await methodScript.Execute(qname);
-
-                if (methodScript.Logger.LoggedError)
-                    Debug.WriteLine(methodScript.Logger.Dump());
                 methodScript.Logger.Reset();
+                LogDisplayPreExecution(methodScript);
+                var result = await methodScript.Execute(qname);
+                LogDisplayPostExecution(methodScript);
                 return result;
             }
 
@@ -97,7 +98,8 @@ namespace Ameko.Services
             catch (Exception ex)
             {
                 HoloContext.Logger.Error(ex.Message, "Playground");
-                return ex.Message;
+                DisplayMessageBox(ex.ToString());
+                return "Error";
             }
         }
 
@@ -146,6 +148,34 @@ namespace Ameko.Services
                 await box.ShowAsync();
             }
             HoloContext.Logger.Info($"Reloading scripts complete", "ScriptService");
+        }
+
+        private async void DisplayMessageBox(string message)
+        {
+            var box = MessageBoxManager.GetMessageBoxStandard("Ameko Script Service", message, ButtonEnum.Ok);
+            await box.ShowAsync();
+        }
+
+        private void LogDisplayPreExecution(HoloScript script)
+        {
+            if (script.LogDisplay is LogDisplay.Ephemeral or LogDisplay.Forced)
+            {
+                var dialogvm = new ScriptLogWindowViewModel(script.Name, script.Logger);
+                mainViewModel?.ShowScriptLogsDialogCommand.Execute(dialogvm);
+            }
+        }
+
+        private void LogDisplayPostExecution(HoloScript script)
+        {
+            if (script.LogDisplay == LogDisplay.OnError && script.Logger.LoggedError)
+            {
+                var dialogvm = new ScriptLogWindowViewModel(script.Name, script.Logger);
+                mainViewModel?.ShowScriptLogsDialogCommand.Execute(dialogvm);
+            }
+            else if (script.LogDisplay == LogDisplay.Ephemeral)
+            {
+                mainViewModel?.CloseScriptLogsDialogCommand.Execute(Unit.Default);
+            }
         }
 
         private ScriptService()

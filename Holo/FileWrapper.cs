@@ -122,6 +122,7 @@ namespace Holo
                 previouslySelectedEvents = newSelectedEvents.Select(e => e.Clone()).ToList();
                 SelectedEvent = newSelectedEvent;
                 SelectedEventCollection = new List<Event>(newSelectedEvents);
+                UpToDate = false;
                 selecting = false;
                 return snapshot;
             }
@@ -150,6 +151,7 @@ namespace Holo
             file.EventManager.Remove(selectedEvent.Id);
             SelectedEventCollection = new List<Event> { want };
             SelectedEvent = want;
+            UpToDate = false;
             return snapshot;
         }
 
@@ -175,6 +177,7 @@ namespace Holo
                 SelectedEvent = selectedEvent;
                 SelectedEventCollection = selectedEvents;
             }
+            UpToDate = false;
             return snapshot;
         }
 
@@ -209,6 +212,7 @@ namespace Holo
                         break;
                 }
             }
+            UpToDate = false;
         }
 
         public void Redo()
@@ -242,6 +246,7 @@ namespace Holo
                         break;
                 }
             }
+            UpToDate = false;
         }
 
         /// <summary>
