@@ -31,7 +31,7 @@ namespace AssCS
         /// <summary>
         /// List of all events in order (also sets the Index property of events)
         /// </summary>
-        public List<Event> Ordered => chain.Select((id, i) => { var e = events[id].Event; e.Index = i; return e; }).ToList();
+        public List<Event> Ordered => chain.Select((id, i) => { var e = events[id].Event; e.Index = i+1; return e; }).ToList();
         /// <summary>
         /// Observable collection of the current event IDs
         /// </summary>
