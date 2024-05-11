@@ -31,6 +31,6 @@
 					Grid.Row="2"
 					Margin="2"
 					Content="Close"
-					IsEnabled="{Binding CloseButtonEnabled}"/>
+					Command="{Binding CloseWindowCommand}"/>
 		</Grid>
 </Window>

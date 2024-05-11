@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
+using System.Reactive;
 using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,6 +23,9 @@ namespace Ameko.ViewModels
         private string _scriptName;
         private ScriptLogger _logger;
         private string _logs = string.Empty;
+
+        public Interaction<Unit, Unit> CloseWindow;
+        public ICommand CloseWindowCommand { get; }
 
         public string ScriptName => _scriptName;
 
@@ -37,6 +41,11 @@ namespace Ameko.ViewModels
             _logger = logger;
             _logs = _logger.Dump();
             _logger.Logs.CollectionChanged += Logs_CollectionChanged;
+
+            CloseWindow = new Interaction<Unit, Unit>();
+            CloseWindowCommand = ReactiveCommand.Create(() => 
+            CloseWindow.Handle(Unit.Default).Subscribe()
+            );
         }
 
         private void Logs_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
