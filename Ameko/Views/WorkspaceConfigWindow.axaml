@@ -1,0 +1,43 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:vm="using:Ameko.ViewModels"
+        mc:Ignorable="d" d:DesignWidth="325" d:DesignHeight="300"
+        x:Class="Ameko.Views.WorkspaceConfigWindow"
+		x:DataType="vm:WorkspaceConfigWindowViewModel"
+		Icon="/Assets/Ameko-Simplified-BG-64.ico"
+		Width="325"
+		Height="300"
+		Topmost="True"
+		CanResize="False"
+        Title="Workspace Configuration">
+	<Grid ColumnDefinitions="*" RowDefinitions="*, *, *">
+		<StackPanel Grid.Column="0" Grid.Row="0" >
+			<TextBlock HorizontalAlignment="Center" Text="Workspace Configuration Options" Margin="4" />
+
+			<Grid ColumnDefinitions="auto, auto" RowDefinitions="auto, auto, auto, auto">
+				<Label Grid.Row="0" Grid.Column="0" VerticalAlignment="Center">CPS warn limit</Label>
+				<NumericUpDown Grid.Row="0"
+							   Grid.Column="1"
+							   Margin="2 0 2 2"
+							   ShowButtonSpinner="False"
+							   Minimum="0"
+							   Maximum="50"
+							   AllowSpin="True"
+							   Value="{Binding Cps}" />
+				<Label Grid.Row="1" Grid.Column="0" VerticalAlignment="Center">Use soft linebreaks</Label>
+				<CheckBox Grid.Row="1"
+						  Grid.Column="1"
+						  Margin="2 0 2 2"
+						  IsThreeState="True"
+						  IsChecked="{Binding UseSoftLinebreaks}" />
+			</Grid>
+			<Button Grid.Row="2"
+					Grid.Column="3"
+					Margin="2 4"
+					Command="{Binding SaveConfigCommand}"
+					Content="Set (Will not write to file!)" />
+		</StackPanel>
+	</Grid>
+</Window>

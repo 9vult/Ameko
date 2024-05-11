@@ -42,6 +42,7 @@ public class MainViewModel : ViewModelBase
     public Interaction<ScriptPropertiesWindowViewModel, Unit> ShowScriptPropertiesDialog { get; }
     public Interaction<DependencyControlWindowViewModel, Unit> ShowDependencyControlWindow { get; }
     public Interaction<ConfigWindowViewModel, Unit> ShowConfigWindow { get; }
+    public Interaction<WorkspaceConfigWindowViewModel, Unit> ShowWorkspaceConfigWindow { get; }
     public Interaction<KeybindsWindowViewModel, Unit> ShowKeybindsWindow { get; }
     public Interaction<LogWindowViewModel, Unit> ShowLogsWindow { get; }
     public Interaction<ScriptLogWindowViewModel, Unit> ShowScriptLogsDialog { get; }
@@ -68,6 +69,7 @@ public class MainViewModel : ViewModelBase
     public ICommand ShowScriptPropertiesDialogCommand { get; }
     public ICommand ShowDependencyControlWindowCommand { get; }
     public ICommand ShowConfigWindowCommand { get; }
+    public ICommand ShowWorkspaceConfigWindowCommand { get; }
     public ICommand ShowKeybindsWindowCommand { get; }
     public ICommand ShowLogsWindowCommand { get; }
     public ICommand ShowScriptLogsDialogCommand { get; }
@@ -162,6 +164,7 @@ public class MainViewModel : ViewModelBase
         ShowScriptPropertiesDialog = new Interaction<ScriptPropertiesWindowViewModel, Unit>();
         ShowDependencyControlWindow = new Interaction<DependencyControlWindowViewModel, Unit>();
         ShowConfigWindow = new Interaction<ConfigWindowViewModel, Unit>();
+        ShowWorkspaceConfigWindow = new Interaction<WorkspaceConfigWindowViewModel, Unit>();
         ShowKeybindsWindow = new Interaction<KeybindsWindowViewModel, Unit>();
         ShowLogsWindow = new Interaction<LogWindowViewModel, Unit>();
         ShowScriptLogsDialog = new Interaction<ScriptLogWindowViewModel, Unit>();
@@ -229,6 +232,12 @@ public class MainViewModel : ViewModelBase
         {
             var vm = new ConfigWindowViewModel();
             await ShowConfigWindow.Handle(vm);
+        });
+
+        ShowWorkspaceConfigWindowCommand = ReactiveCommand.Create(async () =>
+        {
+            var vm = new WorkspaceConfigWindowViewModel();
+            await ShowWorkspaceConfigWindow.Handle(vm);
         });
 
         ShowKeybindsWindowCommand = ReactiveCommand.Create(async () =>

@@ -99,6 +99,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Views\WorkspaceConfigWindow.axaml.cs">
+      <DependentUpon>WorkspaceConfigWindow.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Views\ConfigWindow.axaml.cs">
       <DependentUpon>ConfigWindow.axaml</DependentUpon>
     </Compile>

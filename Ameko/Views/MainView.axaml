@@ -86,6 +86,17 @@
 						<Svg Path="avares://Ameko/Assets/B5/info-lg.svg" />
 					</MenuItem.Icon>
 				</MenuItem>
+				<Separator />
+				<MenuItem Header="_Workspace">
+					<MenuItem.Icon>
+						<Svg Path="avares://Ameko/Assets/B5/collection.svg" />
+					</MenuItem.Icon>
+					<MenuItem Header="_Configuration" Command="{Binding ShowWorkspaceConfigWindowCommand}">
+						<MenuItem.Icon>
+							<Svg Path="avares://Ameko/Assets/B5/gear.svg" />
+						</MenuItem.Icon>
+					</MenuItem>
+				</MenuItem>
 			</MenuItem>
 			<MenuItem Header="_Timing">
 				<MenuItem Header="S_hift Times" Command="{Binding ShowShiftTimesDialogCommand}">

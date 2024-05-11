@@ -186,6 +186,14 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
         await manager.ShowDialog(this);
     }
 
+    private async void DoShowWorkspaceConfigWindowAsync(InteractionContext<WorkspaceConfigWindowViewModel, Unit> interaction)
+    {
+        interaction.SetOutput(Unit.Default);
+        var manager = new WorkspaceConfigWindow();
+        manager.DataContext = interaction.Input;
+        await manager.ShowDialog(this);
+    }
+
     private async void DoShowKeybindsWindowAsync(InteractionContext<KeybindsWindowViewModel, Unit> interaction)
     {
         interaction.SetOutput(Unit.Default);
@@ -321,6 +329,7 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
                 ViewModel.ShowScriptPropertiesDialog.RegisterHandler(DoShowScriptPropertiesDialog);
                 ViewModel.ShowDependencyControlWindow.RegisterHandler(DoShowDependencyControlWindow);
                 ViewModel.ShowConfigWindow.RegisterHandler(DoShowConfigWindowAsync);
+                ViewModel.ShowWorkspaceConfigWindow.RegisterHandler(DoShowWorkspaceConfigWindowAsync);
                 ViewModel.ShowKeybindsWindow.RegisterHandler(DoShowKeybindsWindowAsync);
                 ViewModel.ShowLogsWindow.RegisterHandler(DoShowLogsWindow);
                 ViewModel.ShowScriptLogsDialog.RegisterHandler(DoShowScriptLogDialogAsync);
