@@ -87,8 +87,8 @@ namespace Holo
                 return null;
             }
 
-            if (previouslySelectedEvent != null && 
-                ((file.EventManager.Has(previouslySelectedEvent.Id) && previouslySelectedEvent.Equals(file.EventManager.Get(previouslySelectedEvent.Id))) 
+            if (previouslySelectedEvent != null &&
+                ((file.EventManager.Has(previouslySelectedEvent.Id) && previouslySelectedEvent.Equals(file.EventManager.Get(previouslySelectedEvent.Id)))
                 || !file.EventManager.Has(previouslySelectedEvent.Id)))
             {
                 // No change, continue
@@ -111,9 +111,9 @@ namespace Holo
                     PropagateChanges(curPreviouslySelectedEvents, previouslySelectedEvent, curPreviouslySelectedEvent);
                 }
                 var snapshot = new Snapshot<Event>(
-                    previouslySelectedEvents.Select(e => 
+                    previouslySelectedEvents.Select(e =>
                         new SnapPosition<Event>(
-                            file.EventManager.Get(e.Id).Clone(), 
+                            e.Clone(),
                             file.EventManager.GetBefore(e.Id)?.Id)
                         ).ToList(),
                     AssCS.Action.EDIT);
@@ -183,69 +183,107 @@ namespace Holo
 
         public void Undo()
         {
-            // TODO: Save current state?
             if (!file.HistoryManager.EventCanGoBack) return;
-            var commit = file.HistoryManager.EventGoBack();
-            if (commit == null) return;
-            foreach (var snap in commit.Snapshots)
+            var historyCommit = file.HistoryManager.EventGoBack();
+            if (historyCommit == null) return;
+
+            var futureSnapshots = new List<Snapshot<Event>>();
+
+            foreach (var hsnap in historyCommit.Snapshots)
             {
-                switch (snap.action)
+                switch (hsnap.action)
                 {
                     case AssCS.Action.EDIT:
-                        foreach (var pos in snap.snapshot)
                         {
-                            file.EventManager.Replace(pos.Target.Id, pos.Target);
+                            var fsnap = new List<SnapPosition<Event>>();
+
+                            fsnap.AddRange(hsnap.snapshot.Select(sp => new SnapPosition<Event>(file.EventManager.Get(sp.Target.Id).Clone(), sp.Parent)));
+                            file.EventManager.ReplaceInplace(hsnap.snapshot.Select(sp => sp.Target));
+
+                            futureSnapshots.Add(new Snapshot<Event>(fsnap, AssCS.Action.EDIT));
+                            break;
                         }
-                        break;
+
                     case AssCS.Action.DELETE:
-                        foreach (var pos in snap.snapshot)
                         {
-                            if (pos.Parent == null) file.EventManager.AddFirst(pos.Target);
-                            else file.EventManager.AddAfter((int)pos.Parent, pos.Target);
+                            var fsnap = new List<SnapPosition<Event>>();
+                            foreach (var hpos in hsnap.snapshot)
+                            {
+                                fsnap.Add(new SnapPosition<Event>(hpos.Target.Clone(), hpos.Parent));
+                                if (hpos.Parent == null) file.EventManager.AddFirst(hpos.Target);
+                                else file.EventManager.AddAfter((int)hpos.Parent, hpos.Target);
+                            }
+                            futureSnapshots.Add(new Snapshot<Event>(fsnap, AssCS.Action.DELETE));
+                            break;
                         }
-                        break;
+
                     case AssCS.Action.INSERT:
-                        foreach (var pos in snap.snapshot)
                         {
-                            file.EventManager.Remove(pos.Target.Id);
+                            var fsnap = new List<SnapPosition<Event>>();
+                            foreach (var hpos in hsnap.snapshot)
+                            {
+                                fsnap.Add(new SnapPosition<Event>(hpos.Target.Clone(), hpos.Parent));
+                                file.EventManager.Remove(hpos.Target.Id);
+                            }
+                            futureSnapshots.Add(new Snapshot<Event>(fsnap, AssCS.Action.INSERT));
+                            break;
                         }
-                        break;
                 }
             }
+            file.HistoryManager.PushFuture(new Commit<Event>(futureSnapshots));
             UpToDate = false;
         }
 
         public void Redo()
         {
-            // TODO: Save current state?
             if (!file.HistoryManager.EventCanGoForward) return;
-            var commit = file.HistoryManager.EventGoForward();
-            if (commit == null) return;
-            foreach (var snap in commit.Snapshots)
+            var futurecommit = file.HistoryManager.EventGoForward();
+            if (futurecommit == null) return;
+
+            var historySnapshots = new List<Snapshot<Event>>();
+
+            foreach (var fsnap in futurecommit.Snapshots)
             {
-                switch (snap.action)
+                switch (fsnap.action)
                 {
                     case AssCS.Action.EDIT:
-                        foreach (var pos in snap.snapshot)
                         {
-                            file.EventManager.Replace(pos.Target.Id, pos.Target);
+                            var hsnap = new List<SnapPosition<Event>>();
+
+                            hsnap.AddRange(fsnap.snapshot.Select(sp => new SnapPosition<Event>(file.EventManager.Get(sp.Target.Id).Clone(), sp.Parent)));
+                            file.EventManager.ReplaceInplace(fsnap.snapshot.Select(sp => sp.Target));
+
+                            historySnapshots.Add(new Snapshot<Event>(hsnap, AssCS.Action.EDIT));
+                            break;
                         }
-                        break;
+
                     case AssCS.Action.INSERT:
-                        foreach (var pos in snap.snapshot)
                         {
-                            if (pos.Parent == null) file.EventManager.AddFirst(pos.Target);
-                            else file.EventManager.AddAfter((int)pos.Parent, pos.Target);
+                            var hpos = new List<SnapPosition<Event>>();
+                            foreach (var fpos in fsnap.snapshot)
+                            {
+                                hpos.Add(new SnapPosition<Event>(fpos.Target.Clone(), fpos.Parent));
+                                if (fpos.Parent == null) file.EventManager.AddFirst(fpos.Target);
+                                else file.EventManager.AddAfter((int)fpos.Parent, fpos.Target);
+                            }
+                            historySnapshots.Add(new Snapshot<Event>(hpos, AssCS.Action.INSERT));
+                            break;
                         }
-                        break;
+
                     case AssCS.Action.DELETE:
-                        foreach (var pos in snap.snapshot)
                         {
-                            file.EventManager.Remove(pos.Target.Id);
+                            var hpos = new List<SnapPosition<Event>>();
+                            foreach (var fpos in fsnap.snapshot)
+                            {
+                                hpos.Add(new SnapPosition<Event>(fpos.Target.Clone(), fpos.Parent));
+                                file.EventManager.Remove(fpos.Target.Id);
+                            }
+                            historySnapshots.Add(new Snapshot<Event>(hpos, AssCS.Action.DELETE));
+                            break;
                         }
-                        break;
                 }
             }
+            file.HistoryManager.PushHistory(new Commit<Event>(historySnapshots));
             UpToDate = false;
         }
 
@@ -409,7 +447,7 @@ namespace Holo
             else
             {
                 next = new Event(File.EventManager.NextId)
-            {
+                {
                     Style = SelectedEvent.Style,
                     Start = new Time(SelectedEvent.End),
                     End = new Time(SelectedEvent.End + Time.FromSeconds(5))

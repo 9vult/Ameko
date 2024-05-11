@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -60,6 +61,7 @@ namespace AssCS
             var link = chain.AddAfter(pre, e.Id);
             events[e.Id] = new EventLink(link, e);
             current.Add(e.Id);
+            UpdateEvents();
             return e.Id;
         }
 
@@ -85,6 +87,7 @@ namespace AssCS
             }
 
             current.AddRange(list.Select(el => el.Id));
+            UpdateEvents();
             return list.Last().Id;
         }
 
@@ -103,6 +106,7 @@ namespace AssCS
             var link = chain.AddBefore(post, e.Id);
             events[e.Id] = new EventLink(link, e);
             current.Add(e.Id);
+            UpdateEvents();
             return e.Id;
         }
 
@@ -149,6 +153,7 @@ namespace AssCS
             }
 
             current.AddRange(list.Select(el => el.Id));
+            UpdateEvents();
             return list.Last().Id;
         }
 
@@ -162,6 +167,7 @@ namespace AssCS
             var link = chain.AddLast(e.Id);
             events[e.Id] = new EventLink(link, e);
             current.Add(e.Id);
+            UpdateEvents();
             return e.Id;
         }
 
@@ -179,6 +185,7 @@ namespace AssCS
             }
 
             current.AddRange(list.Select(el => el.Id));
+            UpdateEvents();
             return list.Last().Id;
         }
 
@@ -192,6 +199,7 @@ namespace AssCS
             var link = chain.AddFirst(e.Id);
             events[e.Id] = new EventLink(link, e);
             current.Add(e.Id);
+            UpdateEvents();
             return e.Id;
         }
 
@@ -222,6 +230,7 @@ namespace AssCS
             }
 
             current.AddRange(list.Select(el => el.Id));
+            UpdateEvents();
             return list.Last().Id;
         }
 
@@ -243,8 +252,69 @@ namespace AssCS
             original.Link.Value = e.Id;                     // Set the LinkedList value to the new ID
             events[e.Id] = new EventLink(original.Link, e); // Add the new ID
             current[current.IndexOf(id)] = e.Id;            // Replace the ID in the current list
-
+            UpdateEvents();
             return originalEvent;
+        }
+
+        /// <summary>
+        /// Replace ]events with events of the same ID
+        /// </summary>
+        /// <param name="e">Event to replace</param>
+        public void ReplaceInplace(Event e)
+        {
+            if (!events.ContainsKey(e.Id)) throw new ArgumentException($"Cannot replace event id={e.Id} because that id cannot be found.");
+
+            //var original = events[e.Id];
+            //var originalEvent = original.Event;
+
+            //original.Link.Value = e.Id;                     // Set the LinkedList value to the new ID
+            //events[e.Id] = new EventLink(original.Link, e); // Add the new ID
+            var before = GetBefore(e.Id);
+            if (before != null)
+            {
+                Remove(e.Id);
+                AddAfter(before.Id, e);
+            }
+            else
+            {
+                Remove(e.Id);
+                AddFirst(e);
+            }
+            UpdateEvents();
+        }
+
+        /// <summary>
+        /// Replace events with events of the same ID
+        /// </summary>
+        /// <param name="list">Events to replace</param>
+        public void ReplaceInplace(IEnumerable<Event> list)
+        {
+            //foreach (var e in list)
+            //{
+            //    if (!events.ContainsKey(e.Id)) throw new ArgumentException($"Cannot replace event id={e.Id} because that id cannot be found.");
+
+            //    var original = events[e.Id];
+
+            //    original.Link.Value = e.Id;                     // Set the LinkedList value to the new ID
+            //    events[e.Id] = new EventLink(original.Link, e); // Add the new ID
+            //}
+            foreach (var e in list)
+            {
+                if (!events.ContainsKey(e.Id)) throw new ArgumentException($"Cannot replace event id={e.Id} because that id cannot be found.");
+
+                var before = GetBefore(e.Id);
+                if (before != null)
+                {
+                    Remove(e.Id);
+                    AddAfter(before.Id, e);
+                }
+                else
+                {
+                    Remove(e.Id);
+                    AddFirst(e);
+                }
+            }
+            UpdateEvents();
         }
 
         /// <summary>
@@ -260,6 +330,7 @@ namespace AssCS
                 var tup = events[id];
                 events.Remove(id);
                 chain.Remove(tup.Link);
+                UpdateEvents();
                 return current.Remove(id);
             }
             throw new ArgumentException($"Cannot remove event id={id} because that id cannot be found.");
@@ -286,6 +357,7 @@ namespace AssCS
                 else result = false;
             }
             current.RemoveRange(ids);
+            UpdateEvents();
             return result;
         }
 
@@ -352,6 +424,7 @@ namespace AssCS
             events.Clear();
             chain.Clear();
             current.Clear();
+            UpdateEvents();
             _id = 0;
         }
 
@@ -360,6 +433,7 @@ namespace AssCS
             Clear();
             _id = 0;
             AddFirst(new Event(NextId));
+            UpdateEvents();
         }
 
         #region Commands
@@ -422,6 +496,15 @@ namespace AssCS
         }
 
         #endregion Commands
+
+        public delegate void EventsUpdatedHandler(object sender, EventArgs e);
+        public event EventsUpdatedHandler? EventsUpdated;
+
+        private void UpdateEvents()
+        {
+            if (EventsUpdated == null) return;
+            EventsUpdated(this, EventArgs.Empty);
+        }
 
         public EventManager(EventManager source)
         {

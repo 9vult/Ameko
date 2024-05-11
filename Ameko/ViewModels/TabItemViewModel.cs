@@ -97,7 +97,7 @@ namespace Ameko.ViewModels
         }
 
         public int ID => _id;
-        public ObservableCollection<Event> Events { get; private set; }
+        public RangeObservableCollection<Event> Events { get; private set; }
         public int SelectedIndex { get; set; }
 
         public Event? SelectedEvent
@@ -123,8 +123,9 @@ namespace Ameko.ViewModels
 
         private void UpdateEventsCallback(object? sender, EventArgs e)
         {
-            Events.Clear();
-            Events.AddRange(Wrapper.File.EventManager.Ordered);
+            // Events.Clear();
+            // Events.AddRange(Wrapper.File.EventManager.Ordered);
+            Events.ReplaceRange(Wrapper.File.EventManager.Ordered);
         }
 
         public void UpdateSelectionsOutsideCallback()
@@ -142,8 +143,8 @@ namespace Ameko.ViewModels
             _wrapper = wrapper;
             _id = wrapper.ID;
 
-            Events = new ObservableCollection<Event>(Wrapper.File.EventManager.Ordered);
-            Wrapper.File.EventManager.CurrentEvents.CollectionChanged += UpdateEventsCallback;
+            Events = new RangeObservableCollection<Event>(Wrapper.File.EventManager.Ordered);
+            Wrapper.File.EventManager.EventsUpdated += UpdateEventsCallback;
             Wrapper.PropertyChanged += UpdateSelectionsCallback;
 
             Actors = new ObservableCollection<string>(Wrapper.File.EventManager.Actors);

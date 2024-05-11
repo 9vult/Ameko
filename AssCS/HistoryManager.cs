@@ -17,24 +17,38 @@ namespace AssCS
         public bool EventCanGoBack => _eventHistory.Count > 0;
         public bool EventCanGoForward => _eventFuture.Count > 0;
 
+        /// <summary>
+        /// Get the commit at the top of the history stack.
+        /// Pushing to the future stack is up to the consumer.
+        /// </summary>
+        /// <returns>Commit</returns>
         public Commit<Event>? EventGoBack()
         {
             if (_eventHistory.Count == 0) return null;
             var result = _eventHistory.Pop();
-            _eventFuture.Push(result);
+            // _eventFuture.Push(result);
             Notify();
             return result;
         }
 
+        /// <summary>
+        /// Get the commit at the top of the future stack
+        /// Pushing to the history stack is up to the consumer
+        /// </summary>
+        /// <returns>Commit</returns>
         public Commit<Event>? EventGoForward()
         {
             if (_eventFuture.Count == 0) return null;
             var result = _eventFuture.Pop();
-            _eventHistory.Push(result);
+            // _eventHistory.Push(result);
             Notify();
             return result;
         }
 
+        /// <summary>
+        /// Commit a change to history and clear the future stack.
+        /// </summary>
+        /// <param name="commit">Commit to commit</param>
         public void Commit(Commit<Event> commit)
         {
             _eventHistory.Push(commit);
@@ -42,6 +56,25 @@ namespace AssCS
             Notify();
         }
 
+        /// <summary>
+        /// Push a commit to the history stack
+        /// </summary>
+        /// <param name="commit">Commit to push</param>
+        public void PushHistory(Commit<Event> commit)
+        {
+            _eventHistory.Push(commit);
+            Notify();
+        }
+
+        /// <summary>
+        /// Push a commit to the future stack
+        /// </summary>
+        /// <param name="commit">Commit to push</param>
+        public void PushFuture(Commit<Event> commit)
+        {
+            _eventFuture.Push(commit);
+            Notify();
+        }
 
         public HistoryManager()
         {
