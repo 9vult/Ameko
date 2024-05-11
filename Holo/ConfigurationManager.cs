@@ -306,7 +306,7 @@ namespace Holo
                 using var configWriter = new StreamWriter(_configFilePath);
                 string m = TomletMain.TomlStringFrom(ToConfigurationModel(), TomlSerializerOptions.Default);
                 await configWriter.WriteAsync(m);
-            } catch { return; }
+            } catch { HoloContext.Logger.Error("Failed to write config!", "ConfigurationManager"); return; }
         }
 
         public async void WriteKeybinds()
@@ -317,7 +317,7 @@ namespace Holo
                 string kb = JsonSerializer.Serialize(_keybindsRegistry);
                 await keybindsWriter.WriteAsync(kb);
             }
-            catch { return; }
+            catch { HoloContext.Logger.Error("Failed to write keybinds!", "ConfigurationManager"); return; }
         }
 
         private ConfigurationModel ToConfigurationModel()
@@ -350,7 +350,7 @@ namespace Holo
         {
             this._audioProvider = model.AV?.AudioProvider ?? string.Empty;
             this._videoProvider = model.AV?.VideoProvider ?? string.Empty;
-            this.Cps = model.General?.Cps ?? 0;
+            this._cps = model.General?.Cps ?? 0;
             this._autosave = model.General?.Autosave ?? true;
             this._autosaveInterval = model.General?.AutosaveInterval ?? 300; // 5 minutes
             this._useSoftLinebreaks = model.General?.UseSoftLinebreaks ?? false;

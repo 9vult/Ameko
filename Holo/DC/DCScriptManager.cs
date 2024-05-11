@@ -43,7 +43,7 @@ namespace Holo.DC
                 }
                 catch
                 {
-                    Console.Error.WriteLine($"An error occured while installing {qualifiedName}.");
+                    HoloContext.Logger.Error($"An error occured while installing {qualifiedName}.", "DCScriptManager");
                     return false;
                 }
             }
@@ -66,7 +66,7 @@ namespace Holo.DC
                 }
                 catch
                 {
-                    Console.Error.WriteLine($"An error occured while deleting {qualifiedName}.");
+                    HoloContext.Logger.Error($"An error occured while deleting {qualifiedName}.", "DCScriptManager");
                     return false;
                 }
             return false;

@@ -29,17 +29,17 @@ namespace Holo.DC
                 }
                 catch (HttpRequestException)
                 {
-                    Console.Error.WriteLine($"Error fetching data from {url}");
+                    HoloContext.Logger.Error($"Error fetching data from {url}", "Repository");
                     return null;
                 }
                 catch (JsonException)
                 {
-                    Console.Error.WriteLine($"Error parsing JSON from {url}");
+                    HoloContext.Logger.Error($"Error parsing JSON from {url}", "Repository");
                     return null;
                 }
                 catch (Exception e)
                 {
-                    Console.Error.WriteLine($"Error at {url}: {e.Message}");
+                    HoloContext.Logger.Error($"Error at {url}: {e.Message}", "Repository");
                     return null;
                 }
             }

@@ -96,7 +96,7 @@ namespace Holo
                 string m = TomletMain.TomlStringFrom(file);
                 await writer.WriteAsync(m);
             }
-            catch { return; }
+            catch { HoloContext.Logger.Error("Failed to write globals!", "GlobalsManager"); return; }
         }
 
         /// <summary>

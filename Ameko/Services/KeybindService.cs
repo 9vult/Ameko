@@ -35,7 +35,7 @@ namespace Ameko.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                HoloContext.Logger.Error(ex.Message, "KeybindService");
             }
             
         }

@@ -234,7 +234,10 @@ namespace Ameko.ViewModels
                         }
                     }
                 }
-                catch { } // TODO
+                catch (Exception ex)
+                {
+                    HoloContext.Logger.Error(ex.Message, "DC ImportScripts");
+                }
                 finally
                 {
                     Repositories.Clear();

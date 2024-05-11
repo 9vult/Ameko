@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AssCS;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -47,7 +48,7 @@ namespace Holo
                     }
                 } catch (Exception ex)
                 {
-                    Console.WriteLine(ex.Message); // TOOD
+                    Logger.Instance.Error(ex.Message, "PluginHandler"); // TOOD
                 }
             }
             return true;
