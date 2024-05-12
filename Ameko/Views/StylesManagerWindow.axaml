@@ -4,6 +4,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="775" d:DesignHeight="525"
 		xmlns:vm="using:Ameko.ViewModels"
+		xmlns:asscs="using:AssCS"
 		x:DataType="vm:StylesManagerViewModel"
         x:Class="Ameko.Views.StylesManagerWindow"
 		Icon="/Assets/Ameko-Simplified-BG-64.ico"
@@ -23,10 +24,14 @@
 			  Grid.Row="1"
 			  RowDefinitions="*, auto">
 			<ListBox Grid.Row="0"
-					 ItemsSource="{Binding GlobalsManager.StyleNames}"
-					 SelectedItem="{Binding SelectedGlobalStyleName}"
+					 ItemsSource="{Binding GlobalsManager.Styles}"
+					 SelectedItem="{Binding SelectedGlobalStyle}"
 					 DoubleTapped="GlobalListBox_DoubleTapped">
-				
+				<ListBox.ItemTemplate>
+					<DataTemplate x:DataType="asscs:Style">
+						<TextBlock Text="{Binding Name}" />
+					</DataTemplate>
+				</ListBox.ItemTemplate>
 			</ListBox>
 			<Grid Grid.Row="1"
 				  ColumnDefinitions="*, *, *, *"
@@ -40,13 +45,13 @@
 						Command="{Binding CopyFromGlobalsToFileCommand}"
 						Margin="2">Copy to File</Button>
 				<Button Grid.Column="0" Grid.Row="1"
-						IsEnabled="False"
+						Command="{Binding NewGlobalsStyleCommand}"
 						Margin="2">New</Button>
 				<Button Grid.Column="1" Grid.Row="1"
 						Command="{Binding EditGlobalsStyleCommand}"
 						Margin="2">Edit</Button>
 				<Button Grid.Column="2" Grid.Row="1"
-						IsEnabled="False"
+						Command="{Binding DuplicateGlobalsStyleCommand}"
 						Margin="2">Copy</Button>
 				<Button Grid.Column="3" Grid.Row="1"
 						Command="{Binding DeleteGlobalsStyleCommand}"
@@ -62,10 +67,14 @@
 			  Grid.Row="1"
 			  RowDefinitions="*, auto">
 			<ListBox Grid.Row="0"
-					 ItemsSource="{Binding Workspace.StyleNames}"
-					 SelectedItem="{Binding SelectedWorkspaceStyleName}"
+					 ItemsSource="{Binding Workspace.Styles}"
+					 SelectedItem="{Binding SelectedWorkspaceStyle}"
 					 DoubleTapped="WorkspaceListBox_DoubleTapped">
-
+				<ListBox.ItemTemplate>
+					<DataTemplate x:DataType="asscs:Style">
+						<TextBlock Text="{Binding Name}" />
+					</DataTemplate>
+				</ListBox.ItemTemplate>
 			</ListBox>
 			<Grid Grid.Row="1"
 				  ColumnDefinitions="*, *, *, *"
@@ -79,13 +88,13 @@
 						Command="{Binding CopyFromWorkspaceToFileCommand}"
 						Margin="2">Copy to File</Button>
 				<Button Grid.Column="0" Grid.Row="1"
-						IsEnabled="False"
+						Command="{Binding NewWorkspaceStyleCommand}"
 						Margin="2">New</Button>
 				<Button Grid.Column="1" Grid.Row="1"
 						Command="{Binding EditWorkspaceStyleCommand}"
 						Margin="2">Edit</Button>
 				<Button Grid.Column="2" Grid.Row="1"
-						IsEnabled="False"
+						Command="{Binding DuplicateWorkspaceStyleCommand}"
 						Margin="2">Copy</Button>
 				<Button Grid.Column="3" Grid.Row="1"
 						Command="{Binding DeleteWorkspaceStyleCommand}"
@@ -101,9 +110,14 @@
 			  Grid.Row="1"
 			  RowDefinitions="*, auto">
 			<ListBox Grid.Row="0"
-					 ItemsSource="{Binding Workspace.WorkingFile.File.StyleManager.StyleNames}"
-					 SelectedItem="{Binding SelectedFileStyleName}"
+					 ItemsSource="{Binding Workspace.WorkingFile.File.StyleManager.Styles}"
+					 SelectedItem="{Binding SelectedFileStyle}"
 					 DoubleTapped="FileListBox_DoubleTapped">
+				<ListBox.ItemTemplate>
+					<DataTemplate x:DataType="asscs:Style">
+						<TextBlock Text="{Binding Name}" />
+					</DataTemplate>
+				</ListBox.ItemTemplate>
 			</ListBox>
 			<Grid Grid.Row="1"
 				  ColumnDefinitions="*, *, *, *"
@@ -117,13 +131,13 @@
 						Command="{Binding CopyFromFileToWorkspaceCommand}"
 						Margin="2">Copy to Workspace</Button>
 				<Button Grid.Column="0" Grid.Row="1"
-						IsEnabled="False"
+						Command="{Binding NewFileStyleCommand}"
 						Margin="2">New</Button>
 				<Button Grid.Column="1" Grid.Row="1"
 						Command="{Binding EditFileStyleCommand}"
 						Margin="2">Edit</Button>
 				<Button Grid.Column="2" Grid.Row="1"
-						IsEnabled="False"
+						Command="{Binding DuplicateFileStyleCommand}"
 						Margin="2">Copy</Button>
 				<Button Grid.Column="3" Grid.Row="1"
 						Command="{Binding DeleteFileStyleCommand}"

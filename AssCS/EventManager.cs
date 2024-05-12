@@ -390,6 +390,19 @@ namespace AssCS
         }
 
         /// <summary>
+        /// Change the style of all events with a style
+        /// </summary>
+        /// <param name="oldName">Name of the old style</param>
+        /// <param name="newName">Name of the new style</param>
+        public void ChangeStyle(string oldName, string newName)
+        {
+            foreach (var evnt in events.Values.Where(el => el.Event.Style == oldName))
+            {
+                evnt.Event.Style = newName;
+            }
+        }
+
+        /// <summary>
         /// Clean house
         /// </summary>
         public void Clear()

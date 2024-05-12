@@ -252,6 +252,11 @@ namespace AssCS
             FromAss(data);
         }
 
+        public Style Clone()
+        {
+            return new Style(this.Id, this);
+        }
+
         public event PropertyChangedEventHandler? PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {

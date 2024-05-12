@@ -40,7 +40,6 @@ namespace Holo
         public Uri? FilePath { get; private set; }
         public string Name { get; private set; }
         private ObservableCollection<Style> Styles { get; set; }
-        public ObservableCollection<string> StyleNames { get; private set; }
 
         /// <summary>
         /// Workspace CPS threshold
@@ -261,7 +260,6 @@ namespace Holo
                     ReferencedFiles.Add(rf);
                 }
                 Styles = new ObservableCollection<Style>(space.Styles.Select(s => new Style(NextStyleId, s)));
-                StyleNames = new ObservableCollection<string>(Styles.Select(s => s.Name));
                 Cps = space.Cps;
                 UseSoftLinebreaks = space.UseSoftLinebreaks;
                 loadedFiles = new Dictionary<int, FileWrapper>();
@@ -284,7 +282,6 @@ namespace Holo
                 Styles.Remove(conflicts.First());
             }
             Styles.Add(s);
-            StyleNames.Add(s.Name);
         }
 
         /// <summary>
@@ -297,17 +294,14 @@ namespace Holo
             var results = Styles.Where(s => s.Name.Equals(name)).ToList();
             if (results.Any())
             {
-                Styles.Remove(Styles.First());
-                return StyleNames.Remove(results.First().Name);
+                return Styles.Remove(results.First());
             }
             return false;
         }
 
         public Style? GetStyle(string name)
         {
-            if (StyleNames.Contains(name))
-                return Styles.Where(s => s.Name.Equals(name)).First();
-            return null;
+            return Styles.FirstOrDefault(s => s.Name.Equals(name));
         }
 
         /// <summary>
@@ -319,7 +313,6 @@ namespace Holo
             loadedFiles = new Dictionary<int, FileWrapper>();
             Files = new ObservableCollection<FileWrapper>();
             Styles = new ObservableCollection<Style>();
-            StyleNames = new ObservableCollection<string>();
             Cps = 0;
             UseSoftLinebreaks = null; // Yield to user preferences
             AddFileToWorkspace();

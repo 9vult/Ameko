@@ -57,7 +57,7 @@ namespace AssCS.IO
             if (file.Version != FileVersion.V400P) return;
 
             if (!line.StartsWith("Style:")) return;
-            file.StyleManager.Set(
+            file.StyleManager.Add(
                 new Style(file.StyleManager.NextId, line)
             );
         }

@@ -1,4 +1,7 @@
-﻿using AssCS;
+﻿using Ameko.DataModels;
+using AssCS;
+using Holo;
+using Newtonsoft.Json.Linq;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
@@ -12,7 +15,35 @@ namespace Ameko.ViewModels
 {
     public class StyleEditorViewModel : ViewModelBase
     {
+        private StyleLocation _loc;
+        private string _name;
+        private string _originName;
+        private bool _invalidName;
+        
         public Style Style { get; set; }
+
+        public bool InvalidName
+        {
+            get => _invalidName;
+            set => this.RaiseAndSetIfChanged(ref _invalidName, value);
+        }
+
+        public string Name
+        {
+            get => _name;
+            set
+            {
+                if (_originName != value)
+                {
+                    InvalidName = IsNameInUse(value);
+                }
+                else
+                {
+                    InvalidName = value.Trim() == string.Empty;
+                }
+                this.RaiseAndSetIfChanged(ref _name, value);
+            }
+        }
 
         public Interaction<ColorWindowViewModel, Color?> ShowDialog { get; }
 
@@ -21,9 +52,48 @@ namespace Ameko.ViewModels
         public ICommand EditOutlineCommand { get; }
         public ICommand EditShadowCommand { get; }
 
-        public StyleEditorViewModel(Style style)
+        public bool CommitNameChange()
+        {
+            if (_originName == _name) return true;
+            if (IsNameInUse(Name)) return false;
+
+            Style.Name = _name;
+            if (_loc == StyleLocation.File)
+            {
+                HoloContext.Instance.Workspace.WorkingFile.File.EventManager.ChangeStyle(_originName, _name);
+            }
+            return true;
+        }
+
+        private bool IsNameInUse(string name)
+        {
+            if (string.IsNullOrEmpty(name)) return true;
+            switch (_loc)
+            {
+                case StyleLocation.File:
+                    if (HoloContext.Instance.Workspace.WorkingFile.File.StyleManager.Get(name) != null)
+                        return true;
+                    return false;
+                case StyleLocation.Workspace:
+                    if (HoloContext.Instance.Workspace.GetStyle(name) != null)
+                        return true;
+                    return false;
+                case StyleLocation.Global:
+                    if (HoloContext.Instance.GlobalsManager.GetStyle(name) != null)
+                        return true;
+                    return false;
+                default:
+                    return true;
+            }
+        }
+
+        public StyleEditorViewModel(Style style, StyleLocation loc)
         {
             this.Style = style;
+            this._loc = loc;
+            this._name = style.Name;
+            this._originName = style.Name;
+            InvalidName = _name.Trim() == string.Empty;
 
             ShowDialog = new Interaction<ColorWindowViewModel, Color?>();
 

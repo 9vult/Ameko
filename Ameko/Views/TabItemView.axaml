@@ -12,6 +12,7 @@
 	<UserControl.Resources>
 		<converters:EventsGridCpsConverter x:Key="CpsConverter" />
 		<converters:EventEditEnabledConverter x:Key="EnabledConverter" />
+		<converters:EditorStyleNamesConverter x:Key="StyleNamesConverter" />
 	</UserControl.Resources>
 	<Grid ColumnDefinitions="*, 2, 1.25*"
 		  RowDefinitions="0.8*, 2, 1.2*, 2, 3*">
@@ -33,9 +34,15 @@
 					Comment
 				</CheckBox>
 				<ComboBox Grid.Column="1"
-						  ItemsSource="{Binding Wrapper.File.StyleManager.StyleNames}"
-						  SelectedItem="{Binding SelectedEvent.Style}"
-						  Margin="2"/>
+						  ItemsSource="{Binding Wrapper.File.StyleManager.Styles}"
+						  SelectedItem="{Binding SelectedEvent.Style, Converter={StaticResource StyleNamesConverter}}"
+						  Margin="2">
+					<ComboBox.ItemTemplate>
+						<DataTemplate x:DataType="asscs:Style">
+							<TextBlock Text="{Binding Name}" />
+						</DataTemplate>
+					</ComboBox.ItemTemplate>
+				</ComboBox>
 				<Button Grid.Column="2"
 						Margin="2"
 						Command="{Binding EditFileStyleCommand}"

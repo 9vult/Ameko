@@ -191,7 +191,7 @@ namespace Ameko.ViewModels
                 if (SelectedEvent == null) return;
                 var style = wrapper.File.StyleManager.Get(SelectedEvent.Style);
                 if (style == null) return;
-                var editor = new StyleEditorViewModel(style);
+                var editor = new StyleEditorViewModel(style, StyleLocation.File);
                 await ShowStyleEditor.Handle(editor);
             });
 

@@ -2,6 +2,7 @@ using Ameko.ViewModels;
 using AssCS;
 using Avalonia.Controls;
 using Avalonia.ReactiveUI;
+using MsBox.Avalonia;
 using ReactiveUI;
 using System.Reactive.Disposables;
 using System.Threading.Tasks;
@@ -26,6 +27,15 @@ namespace Ameko.Views
                 if (ViewModel != null)
                 {
                     ViewModel.ShowDialog.RegisterHandler(DoShowDialogAsync);
+
+                    this.Closing += (o, e) => {
+                        if (o == null) return;
+                        var commitResult = ViewModel.CommitNameChange();
+                        if (!commitResult)
+                        {
+                            e.Cancel = true;
+                        }
+                    };
                 }
 
                 Disposable.Create(() => { }).DisposeWith(disposables);

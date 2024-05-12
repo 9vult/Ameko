@@ -21,7 +21,6 @@ namespace Holo
 
         private ObservableCollection<Style> Styles { get; set; }
         private ObservableCollection<Color> Colors { get; set; }
-        public ObservableCollection<string> StyleNames { get; private set; }
         
         public string FreeformDocument
         {
@@ -42,7 +41,6 @@ namespace Holo
                 Styles.Remove(conflicts.First());
             }
             Styles.Add(s);
-            StyleNames.Add(s.Name);
             Write();
         }
 
@@ -56,8 +54,7 @@ namespace Holo
             var results = Styles.Where(s => s.Name.Equals(name)).ToList();
             if (results.Any())
             {
-                Styles.Remove(Styles.First());
-                var removed = StyleNames.Remove(results.First().Name);
+                var removed = Styles.Remove(results.First());
                 if (removed) Write();
                 return removed;
             }
@@ -71,9 +68,7 @@ namespace Holo
         /// <returns>The style</returns>
         public Style? GetStyle(string name)
         {
-            if (StyleNames.Contains(name))
-                return Styles.Where(s => s.Name.Equals(name)).First();
-            return null;
+            return Styles.FirstOrDefault(s => s.Name.Equals(name));
         }
 
         /// <summary>
@@ -119,12 +114,10 @@ namespace Holo
 
                 _styleId = 0;
                 Styles.Clear();
-                StyleNames.Clear();
                 Colors.Clear();
 
                 Styles = new ObservableCollection<Style>(input.Styles.Select(s => new Style(NextStyleId, s)));
                 Colors = new ObservableCollection<Color>(input.Colors.Select(c => new Color(c)));
-                StyleNames = new ObservableCollection<string>(Styles.Select(s => s.Name));
                 if (input.FreeformDocument != null)
                     _freeformDocument = AssCS.Utilities.Base64Decode(input.FreeformDocument);
                 else _freeformDocument = FreeformDocumentTemplate;
@@ -137,7 +130,6 @@ namespace Holo
             _globalsFilePath = Path.Join(baseDirectory, "globals.toml");
             Styles = new ObservableCollection<Style>();
             Colors = new ObservableCollection<Color>();
-            StyleNames = new ObservableCollection<string>();
             _freeformDocument = FreeformDocumentTemplate;
             _styleId = 0;
             Read();
