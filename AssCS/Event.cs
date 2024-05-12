@@ -49,7 +49,7 @@ namespace AssCS
         public string Style
         {
             get => _style;
-            set { _style = value; OnPropertyChanged(nameof(Style)); }
+            set { if (value == null) return; _style = value; OnPropertyChanged(nameof(Style)); }
         }
         public string Actor
         {
