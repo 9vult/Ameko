@@ -64,7 +64,7 @@ namespace Holo.DC
 
         private async void SetUpBaseRepository()
         {
-            BaseRepository = await Repository.Build("https://gist.githubusercontent.com/9vult/f48f3d03f6b0b913299f27eb0b3a122c/raw/fed2f42e33822212d93d8757e653cba38e9656a4/ameko-base-depctl.json");
+            BaseRepository = await Repository.Build("https://dc.ameko.moe/base.json");
             if (BaseRepository == null) return;
             GatherRepositories(BaseRepository);
             GatherRepoScripts();

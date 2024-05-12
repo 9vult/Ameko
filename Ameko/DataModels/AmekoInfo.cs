@@ -16,7 +16,7 @@ namespace Ameko.DataModels
         public static AmekoInfo Instance { get; } = new AmekoInfo(
             "Ameko",
             AmekoService.VERSION_BUG,
-            "[website soon]" // TODO
+            "https://ameko.moe"
         );
 
         
