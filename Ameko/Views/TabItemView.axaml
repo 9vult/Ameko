@@ -37,7 +37,9 @@
 						  SelectedItem="{Binding SelectedEvent.Style}"
 						  Margin="2"/>
 				<Button Grid.Column="2"
-						Margin="2">
+						Margin="2"
+						Command="{Binding EditFileStyleCommand}"
+						ToolTip.Tip="Edit the current style">
 					<Svg Path="avares://Ameko/Assets/B5/pencil-square.svg" />
 				</Button>
 				<AutoCompleteBox Grid.Column="3"

@@ -44,6 +44,7 @@ namespace Ameko.ViewModels
         public Interaction<TabItemViewModel, string?> CutSelectedEvents { get; }
         public Interaction<TabItemViewModel, string[]?> Paste { get; }
         public Interaction<Event, Unit> ScrollIntoViewInteraction { get; }
+        public Interaction<StyleEditorViewModel, StyleEditorViewModel?> ShowStyleEditor { get; }
 
         public Interaction<PasteOverWindowViewModel, PasteOverField> ShowPasteOverFieldDialog { get; }
 
@@ -60,6 +61,7 @@ namespace Ameko.ViewModels
         public ICommand MergeEventsCommand { get; }
         public ICommand ActivateScriptCommand { get; }
         public ICommand ToggleTagCommand { get; }
+        public ICommand EditFileStyleCommand { get; }
 
         public string Title
         {
@@ -155,6 +157,7 @@ namespace Ameko.ViewModels
             Paste = new Interaction<TabItemViewModel, string[]?>();
             ScrollIntoViewInteraction = new Interaction<Event, Unit>();
             ShowPasteOverFieldDialog = new Interaction<PasteOverWindowViewModel, PasteOverField>();
+            ShowStyleEditor = new Interaction<StyleEditorViewModel, StyleEditorViewModel?>();
 
             DeleteSelectedCommand = ReactiveCommand.Create(() =>
             {
@@ -182,6 +185,15 @@ namespace Ameko.ViewModels
                     FocusLostSelectionEnd = SelectionEnd;
                 }
             );
+
+            EditFileStyleCommand = ReactiveCommand.Create(async () =>
+            {
+                if (SelectedEvent == null) return;
+                var style = wrapper.File.StyleManager.Get(SelectedEvent.Style);
+                if (style == null) return;
+                var editor = new StyleEditorViewModel(style);
+                await ShowStyleEditor.Handle(editor);
+            });
 
             ActivateScriptCommand = ReactiveCommand.Create<string>(async (string scriptName) =>
             {

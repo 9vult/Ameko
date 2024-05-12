@@ -92,6 +92,20 @@ namespace Ameko.Views
             interaction.SetOutput(interaction.Input.Fields);
         }
 
+        private void DoShowStyleEditor(InteractionContext<StyleEditorViewModel, StyleEditorViewModel?> interaction)
+        {
+            var window = TopLevel.GetTopLevel(this);
+            if (window == null)
+            {
+                interaction.SetOutput(null);
+                return;
+            }
+            var editor = new StyleEditorWindow();
+            editor.DataContext = interaction.Input;
+            editor.ShowDialog((Window)window);
+            interaction.SetOutput(null);
+        }
+
         private void DoScrollIntoView(InteractionContext<Event, Unit> interaction)
         {
             if (interaction == null) return;
@@ -149,6 +163,7 @@ namespace Ameko.Views
                     vm.Paste.RegisterHandler(DoPasteAsync);
                     vm.ScrollIntoViewInteraction.RegisterHandler(DoScrollIntoView);
                     vm.ShowPasteOverFieldDialog.RegisterHandler(DoShowPasteOverDialogAsync);
+                    vm.ShowStyleEditor.RegisterHandler(DoShowStyleEditor);
 
                     startBox.AddHandler(InputElement.KeyDownEvent, Helpers.TimeBox_PreKeyDown, Avalonia.Interactivity.RoutingStrategies.Tunnel);
                     endBox.AddHandler(InputElement.KeyDownEvent, Helpers.TimeBox_PreKeyDown, Avalonia.Interactivity.RoutingStrategies.Tunnel);
