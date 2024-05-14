@@ -9,8 +9,16 @@ namespace Ffms2CS
     public class Ffms2
     {
         private static bool _initialized;
+
+        /// <summary>
+        /// If the library is initialized
+        /// </summary>
         public static bool Initialized => _initialized;
 
+        /// <summary>
+        /// Initialize the library
+        /// </summary>
+        /// <exception cref="Exception"></exception>
         public static void StartUp()
         {
             if (_initialized) return;
@@ -27,6 +35,10 @@ namespace Ffms2CS
             _initialized = true;
         }
 
+        /// <summary>
+        /// Deinitialize the library
+        /// </summary>
+        /// <exception cref="Exception">An error occured during deinitialization</exception>
         public static void Shutdown()
         {
             if (!_initialized) return;
@@ -41,6 +53,12 @@ namespace Ffms2CS
             }
         }
         
+        /// <summary>
+        /// Get the integer representing a pixel format from its name
+        /// </summary>
+        /// <param name="name">Name of the format</param>
+        /// <returns></returns>
+        /// <exception cref="Exception">The pixel format was invalid</exception>
         public static int GetPixelFormat(string name)
         {
             try
@@ -52,12 +70,20 @@ namespace Ffms2CS
             }
         }
 
+        /// <summary>
+        /// Get the FFMS2 version
+        /// </summary>
+        /// <returns></returns>
         public static int GetVersion()
         {
             if (!Initialized) return -1;
             return External.GetVersion();
         }
 
+        /// <summary>
+        /// Create a new ErrorInfo structure
+        /// </summary>
+        /// <returns></returns>
         internal static ErrorInfo NewErrorInfo()
         {
             return new ErrorInfo
