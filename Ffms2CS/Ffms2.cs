@@ -58,6 +58,4 @@ namespace Ffms2CS
             return External.GetVersion();
         }
     }
-
-    public delegate int TIndexCallback(long current, CatalogLocation total, IntPtr icPrivate);
 }

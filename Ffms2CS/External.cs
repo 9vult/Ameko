@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Runtime.InteropServices;
 using System.Text;
 using static Ffms2CS.Ffms2;
@@ -487,5 +488,14 @@ namespace Ffms2CS
         /// <returns>Integer representing the Pixel Format</returns>
         [DllImport("ffms2", EntryPoint = "FFMS_GetPixFmt")]
         public static extern int GetPixFmt([MarshalAs(UnmanagedType.LPStr)] string name);
+
+        /// <summary>
+        /// Indexing progress callback
+        /// </summary>
+        /// <param name="current">Current progress</param>
+        /// <param name="total">Definition of 100%</param>
+        /// <param name="icPrivate">Pointer to a progress object</param>
+        /// <returns>0 to continue indexing, nonzero to cancel indexing</returns>
+        public delegate int TIndexCallback(long current, long total, IntPtr icPrivate);
     }
 }

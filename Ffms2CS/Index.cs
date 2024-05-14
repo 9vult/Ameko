@@ -31,5 +31,9 @@ namespace Ffms2CS
     public class Index
     {
 
+        public Index(IndexPtr ptr)
+        {
+
+        }
     }
 }
