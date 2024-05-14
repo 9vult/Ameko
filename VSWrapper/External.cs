@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
-using static Ffms2CS.Ffms2CS;
+using static Ffms2CS.Ffms2;
 
 namespace Ffms2CS
 {

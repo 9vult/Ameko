@@ -1,4 +1,5 @@
 ﻿using AssCS;
+using Ffms2CS;
 using Holo.DC;
 using System;
 using System.Diagnostics;
@@ -33,6 +34,19 @@ namespace Holo
             RepositoryManager.LoadUrlList(ConfigurationManager.GetRepositories());
 
             Workspace = new Workspace();
+
+            Logger.Info("Attempting to load ffms2", "Holo");
+            try
+            {
+                Ffms2.StartUp();
+                var ffver = Ffms2.GetVersion();
+                Logger.Info($"Successfully loaded Ffms2 version: {ffver}", "Holo");
+                Ffms2.Shutdown();
+            }
+            catch (Exception e)
+            {
+                Logger.Error($"Failed to load Ffsm2: {e.Message}", "Holo");
+            }
         }
 
         public class Directories
