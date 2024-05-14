@@ -18,7 +18,7 @@ namespace Ameko.Views
         private async Task DoCopySelectedLogsAsync(InteractionContext<LogWindowViewModel, string?> interaction)
         {
             var window = GetTopLevel(this);
-            var selectedLogs = logGrid.SelectedItems.Cast<Log>().Reverse().ToList();
+            var selectedLogs = logGrid.SelectedItems.Cast<Log>().ToList();
             if (window == null || selectedLogs == null)
             {
                 interaction.SetOutput("");
