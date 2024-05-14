@@ -8,9 +8,9 @@ namespace Ffms2CS
     /// <summary>
     /// FFMpeg Index
     /// </summary>
-    public class Indexer : SafeHandle
+    public class IndexerPtr : SafeHandle
     {
-        private Indexer() : base(IntPtr.Zero, true) { }
+        private IndexerPtr() : base(IntPtr.Zero, true) { }
 
         /// <summary>
         /// Returns true if the handle is null (IntPtr.Zero)
@@ -26,5 +26,10 @@ namespace Ffms2CS
             External.CancelIndexing(handle);
             return true;
         }
+    }
+
+    public class Indexer
+    {
+
     }
 }
