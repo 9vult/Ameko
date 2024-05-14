@@ -154,11 +154,7 @@ namespace Ffms2CS
         {
             if (_ptr.IsInvalid) throw new ObjectDisposedException(nameof(_ptr));
 
-            var errorInfo = new ErrorInfo
-            {
-                BufferSize = 1024,
-                Buffer = new string((char)0, 1024)
-            };
+            var errorInfo = Ffms2.NewErrorInfo();
 
             IndexPtr indexPtr;
             IsIndexing = true;
@@ -205,11 +201,7 @@ namespace Ffms2CS
         {
             if (string.IsNullOrEmpty(sourceFilename)) throw new ArgumentNullException(nameof(sourceFilename));
 
-            var errorInfo = new ErrorInfo
-            {
-                BufferSize = 1024,
-                Buffer = new string((char)0, 1024),
-            };
+            var errorInfo = Ffms2.NewErrorInfo();
 
             var bytes = Encoding.UTF8.GetBytes(sourceFilename);
             _ptr = External.CreateIndexer(bytes, ref errorInfo);

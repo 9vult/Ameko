@@ -57,5 +57,14 @@ namespace Ffms2CS
             if (!Initialized) return -1;
             return External.GetVersion();
         }
+
+        internal static ErrorInfo NewErrorInfo()
+        {
+            return new ErrorInfo
+            {
+                BufferSize = 1024,
+                Buffer = new string((char)0, 1024),
+            };
+        }
     }
 }

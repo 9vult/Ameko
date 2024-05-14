@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace Ffms2CS
@@ -264,5 +265,132 @@ namespace Ffms2CS
         Verbose = 40,
         Debug = 48,
         Trace = 56
+    }
+
+    /// <summary>
+    /// Information about a video
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential)]
+    public struct VideoProperties
+    {
+        public int FPSDenominator;
+        public int FPSNumerator;
+        public int RFFDenominator;
+        public int RFFNumerator;
+        public int NumFrames;
+        public int SARNum;
+        public int SARDen;
+        public int CropTop;
+        public int CropBottom;
+        public int CropLeft;
+        public int CropRight;
+        public int TopFieldFirst;
+        public int ColorSpace;
+        public int ColorRange;
+        public double FirstTime;
+        public double LastTime;
+    }
+
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct FrameStruct
+    {
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
+        public IntPtr[] Data;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
+        public int[] LineSize;
+        public int EncodedWidth;
+        public int EncodedHeight;
+        public int EncodedPixelFormat;
+        public int ScaledWidth;
+        public int ScaledHeight;
+        public int ConvertedPixelFormat;
+        public int Keyframe;
+        public int RepeatPict;
+        public int InterlacedFrame;
+        public int TopFieldFirst;
+        public char PictType;
+        public int ColorSpace;
+        public int ColorRange;
+        public int ColorPrimaries;
+        public int TransferCharacteristics;
+        public int ChromaLocation;
+        public int HasMasteringDisplayPrimaries;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 3)]
+        public double[] MasteringDisplayPrimariesX;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 3)]
+        public double[] MasteringDisplayPrimariesY;
+        public double MasteringDisplayWhitePointX;
+        public double MasteringDisplayWhitePointY;
+        public int HasMasteringDisplayLuminance;
+        public double MasteringDisplayMinLuminance;
+        public double MasteringDisplayMaxLuminance;
+        public int HasContentLightLevel;
+        public uint ContentLightLevelMax;
+        public uint ContentLightLevelAverage;
+        public byte[] DolbyVisionRPU;
+        public int DolbyVisionRPUSize;
+        public byte[] HDR10Plus;
+        public int HDR10PlusSize;
+    }
+
+    /// <summary>
+    /// Track time base
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential)]
+    public struct TrackTimeBase
+    {
+        public long Num;
+        public long Den;
+    }
+
+    /// <summary>
+    /// Information about a frame
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential)]
+    public struct FrameInfoStruct
+    {
+        public long PTS;
+        public int RepeatPict;
+        public int KeyFrame;
+        public long OriginalPTS;
+    }
+
+    /// <summary>
+    /// A rectangle representing how much to crop in on a frame
+    /// </summary>
+    public class Crop
+    {
+        /// <summary>
+        /// How much to crop in from the top
+        /// </summary>
+        public int Top { get; private set; }
+        /// <summary>
+        /// How much to crop in from the left
+        /// </summary>
+        public int Left { get; private set; }
+        /// <summary>
+        /// How much to crop in from the right
+        /// </summary>
+        public int Right { get; private set; }
+        /// <summary>
+        /// How much to crop in from the bottom
+        /// </summary>
+        public int Bottom { get; private set;}
+
+        /// <summary>
+        /// Create a crop
+        /// </summary>
+        /// <param name="top">How much to crop in from the top</param>
+        /// <param name="left">How much to crop in from the left</param>
+        /// <param name="right">How much to crop in from the right</param>
+        /// <param name="bottom">How much to crop in from the bottom</param>
+        internal Crop(int top, int left, int right, int bottom)
+        {
+            Top = top;
+            Left = left;
+            Right = right;
+            Bottom = bottom;
+        }
     }
 }
