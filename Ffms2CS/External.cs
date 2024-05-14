@@ -7,7 +7,10 @@ using static Ffms2CS.Ffms2;
 
 namespace Ffms2CS
 {
-    public static class External
+    /// <summary>
+    /// External methods for FFMS2
+    /// </summary>
+    internal static class External
     {
         /// <summary>
         /// Initialize FFMS2

@@ -141,7 +141,68 @@ namespace Ffms2CS
             throw new Exception($"Exception opening video source: {(Error)errorInfo.ErrorType}: {(Error)errorInfo.SubType}");
         }
 
-        // TODO: Audio source
+        /// <summary>
+        /// Create an audio source
+        /// </summary>
+        /// <seealso cref="External.CreateAudioSource(byte[], int, IndexPtr, int, ref ErrorInfo)"/>
+        /// <param name="filepath">Filepath to read from</param>
+        /// <param name="track">Track to open</param>
+        /// <param name="delayMode">Delay mode to use</param>
+        /// <returns>AudioSource object</returns>
+        /// <exception cref="ArgumentNullException">The filepath was null or empty</exception>
+        /// <exception cref="Exception">An error occured while opening the source</exception>
+        public AudioSource AudioSource(string filepath, int track, AudioDelayMode delayMode = AudioDelayMode.DelayFirstVideoTrack)
+        {
+            if (string.IsNullOrEmpty(filepath)) throw new ArgumentNullException(nameof(filepath));
+
+            var errorInfo = Ffms2.NewErrorInfo();
+
+            var bytes = Encoding.UTF8.GetBytes(filepath);
+            var source = External.CreateAudioSource(bytes, track, _ptr, (int)delayMode, ref errorInfo);
+
+            if (source != IntPtr.Zero)
+                return new AudioSource(source);
+            throw new Exception($"Exception opening audio source: {(Error)errorInfo.ErrorType}: {(Error)errorInfo.SubType}");
+        }
+
+        /// <summary>
+        /// Create an audio source
+        /// </summary>
+        /// <seealso cref="External.CreateAudioSource2(byte[], int, IndexPtr, int, int, double, ref ErrorInfo)"/>
+        /// <param name="filepath">Filepath to read from</param>
+        /// <param name="track">Track to open</param>
+        /// <param name="fillGaps">Whether or not to fill gaps</param>
+        /// <param name="drcScale">DRC scale</param>
+        /// <param name="delayMode">Delay mode to use</param>
+        /// <returns>AudioSource object</returns>
+        /// <exception cref="ArgumentNullException">The filepath was null or empty</exception>
+        /// <exception cref="Exception">An error occured while opening the source</exception>
+        public AudioSource AudioSource(string filepath, int track, bool fillGaps, double drcScale, AudioDelayMode delayMode = AudioDelayMode.DelayFirstVideoTrack)
+        {
+            if (string.IsNullOrEmpty(filepath)) throw new ArgumentNullException(nameof(filepath));
+
+            var errorInfo = Ffms2.NewErrorInfo();
+
+            var bytes = Encoding.UTF8.GetBytes(filepath);
+            var source = External.CreateAudioSource2(bytes, track, _ptr, (int)delayMode, fillGaps ? 1 : 0, drcScale, ref errorInfo);
+
+            if (source != IntPtr.Zero)
+                return new AudioSource(source);
+            throw new Exception($"Exception opening audio source: {(Error)errorInfo.ErrorType}: {(Error)errorInfo.SubType}");
+        } 
+
+        /// <summary>
+        /// Get a track object
+        /// </summary>
+        /// <param name="track">Track number to get</param>
+        /// <returns>The track object</returns>
+        /// <exception cref="ArgumentOutOfRangeException">The track number is out of range</exception>
+        public Track GetTrack(int track)
+        {
+            if (track < 0 || track > External.GetNumTracks(_ptr)) throw new ArgumentOutOfRangeException(nameof(track));
+
+            return new Track(External.GetTrackFromIndex(_ptr, track));
+        }
 
         /// <summary>
         /// Read an index from an index file

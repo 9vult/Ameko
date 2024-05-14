@@ -268,7 +268,7 @@ namespace Ffms2CS
     }
 
     /// <summary>
-    /// Information about a video
+    /// Information about a video track
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     public struct VideoProperties
@@ -287,6 +287,22 @@ namespace Ffms2CS
         public int TopFieldFirst;
         public int ColorSpace;
         public int ColorRange;
+        public double FirstTime;
+        public double LastTime;
+    }
+
+    /// <summary>
+    /// Information about an audio track
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential)]
+    public struct AudioProperties
+    {
+        public int SampleFormat;
+        public int SampleRate;
+        public int BitsPerSample;
+        public int Channels;
+        public long ChannelLayout;
+        public long NumSamples;
         public double FirstTime;
         public double LastTime;
     }
