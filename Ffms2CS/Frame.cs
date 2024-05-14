@@ -132,6 +132,8 @@ namespace Ffms2CS
         /// </summary>
         public uint ContentLightLevelAverage => (!Invalid) ? _struct.ContentLightLevelAverage : throw new ObjectDisposedException(nameof(Frame));
 
+        /*
+
         /// <summary>
         /// Dolby Vision RPU
         /// </summary>
@@ -151,6 +153,8 @@ namespace Ffms2CS
         /// Size of the HDR10+
         /// </summary>
         public int HDR10PlusSize => (!Invalid) ? _struct.HDR10PlusSize : throw new ObjectDisposedException(nameof(Frame));
+
+        */
 
         /// <summary>
         /// Get the pixel data as a bitmap. Required PixelFormat to be BGRA.

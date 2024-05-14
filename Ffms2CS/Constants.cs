@@ -344,10 +344,10 @@ namespace Ffms2CS
         public int HasContentLightLevel;
         public uint ContentLightLevelMax;
         public uint ContentLightLevelAverage;
-        public byte[] DolbyVisionRPU;
-        public int DolbyVisionRPUSize;
-        public byte[] HDR10Plus;
-        public int HDR10PlusSize;
+        //public byte[] DolbyVisionRPU;
+        //public int DolbyVisionRPUSize;
+        //public byte[] HDR10Plus;
+        //public int HDR10PlusSize;
     }
 
     /// <summary>
