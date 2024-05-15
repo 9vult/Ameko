@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SkiaSharp;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Drawing;
@@ -174,6 +175,25 @@ namespace Ffms2CS
                     System.Drawing.Imaging.PixelFormat.Format32bppArgb,
                     _struct.Data[0]
                 );
+            }
+        }
+        
+        public SKBitmap SKBitmap
+        {
+            get
+            {
+                if (Invalid) throw new ObjectDisposedException(nameof(Frame));
+
+                if (_struct.ConvertedPixelFormat != Ffms2.GetPixelFormat("bgra")) throw new InvalidOperationException("Invalid pixel format");
+
+                var bitmap = new SKBitmap(
+                    _struct.ScaledWidth,
+                    _struct.ScaledHeight,
+                    false
+                );
+                bitmap.SetPixels(_struct.Data[0]);
+                bitmap.SetImmutable();
+                return bitmap;
             }
         }
 
