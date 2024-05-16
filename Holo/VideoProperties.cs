@@ -1,4 +1,5 @@
-﻿using Holo.Utilities;
+﻿using AssCS;
+using Holo.Utilities;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -21,12 +22,27 @@ namespace Holo
             {
                 _currentFrame = value;
                 OnPropertyChanged(nameof(CurrentFrame));
+                OnPropertyChanged(nameof(CurrentTimeEstimated));
             }
         }
 
+        public Time CurrentTimeEstimated
+        {
+            get
+            {
+                long milliseconds = (long)((_currentFrame / _frameRate.Ratio) * 1000);
+                return Time.FromMillis(milliseconds);
+            }
+        }
+
+        // Primaries
         public int FrameCount => _frameCount;
         public Rational SAR => _sar;
         public Rational FrameRate => _frameRate;
+
+        // Extras for GUI support
+        public int __FrameCountZeroIndex => _frameCount - 1;
+        public int __FrameRateCeiling => (int)Math.Ceiling(_frameRate.Ratio);
 
         public VideoProperties(int frameCount, Rational sar, Rational frameRate)
         {

@@ -1,3 +1,4 @@
+using Ameko.Controls;
 using Ameko.DataModels;
 using Ameko.Services;
 using Ameko.ViewModels;
@@ -171,6 +172,23 @@ namespace Ameko.Views
                     eventsGrid.SelectionChanged += EventsGrid_SelectionChanged;
 
                     HoloContext.Instance.ConfigurationManager.PropertyChanged += ConfigurationManager_PropertyChanged;
+
+                    // TODO: TEMPORARY
+                    if (vm.Wrapper.AVManager != null && vm.Wrapper.AVManager.IsVideoLoaded)
+                    {
+                        var skb = new SKBitmapRenderer(vm.Wrapper.AVManager);
+                        videoTarget.Children.Add(skb);
+                        videoSlider.LargeChange = Math.Ceiling(vm.Wrapper.AVManager.Video.FrameRate.Ratio);
+                        videoSlider.ValueChanged += (object? sender, Avalonia.Controls.Primitives.RangeBaseValueChangedEventArgs e) =>
+                        {
+                            if (!videoSlider.IsDragging)
+                                vm.Wrapper.AVManager.Video.CurrentFrame = (int)e.NewValue;
+                        };
+                        videoSlider.DragEnded += (object sender, EventArgs e) =>
+                        {
+                            vm.Wrapper.AVManager.Video.CurrentFrame = (int)videoSlider.Value;
+                        };
+                    }
                 })
                 .DisposeWith(disposables);
             });

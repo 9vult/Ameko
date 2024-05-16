@@ -13,166 +13,219 @@
 		<converters:EventsGridCpsConverter x:Key="CpsConverter" />
 		<converters:EventEditEnabledConverter x:Key="EnabledConverter" />
 		<converters:EditorStyleNamesConverter x:Key="StyleNamesConverter" />
+		<converters:GridSizeConverter x:Key="GridSizeConverter" />
 	</UserControl.Resources>
-	<Grid ColumnDefinitions="*, 2, 1.25*"
-		  RowDefinitions="0.8*, 2, 1.2*, 2, 3*">
+	<Grid>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="{Binding VideoPaneWidth, Converter={StaticResource GridSizeConverter}, Mode=TwoWay}" />
+			<ColumnDefinition Width="2" />
+			<ColumnDefinition Width="1.25*" />
+		</Grid.ColumnDefinitions>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="{Binding VideoPaneHeight, Converter={StaticResource GridSizeConverter}, Mode=TwoWay}" />
+			<RowDefinition Height="2" />
+			<RowDefinition Height="3*" />
+		</Grid.RowDefinitions>
 		<!-- Video -->
-		<Panel Grid.Row="0" Grid.Column="0" Grid.RowSpan="3">
-			<Label HorizontalAlignment="Center" VerticalAlignment="Center" Content="Video Area" />
+		<Panel Grid.Row="0" Grid.Column="0"
+			   Name="videoContainer"
+			   IsEnabled="{Binding Wrapper.AVManager.IsVideoLoaded}">
+			<!-- <Label HorizontalAlignment="Center" VerticalAlignment="Center" Content="Video Area" /> -->
+			<DockPanel>
+				<Grid DockPanel.Dock="Bottom"
+					  RowDefinitions="auto, auto"
+					  ColumnDefinitions="auto, auto, auto, *"
+					  Height="45">
+					<TextBlock Grid.Column="0"
+							   Grid.Row="1"
+							   Margin="2"
+							   FontFamily="{StaticResource MonoidRegular}"
+							   Text="{Binding Wrapper.AVManager.Video.CurrentTimeEstimated.UpdatableText, FallbackValue='1:23:45.67'}" />
+					<TextBlock Grid.Column="1"
+							   Grid.Row="1"
+							   Margin="1 2"
+							   FontFamily="{StaticResource MonoidRegular}"
+							   Text="-" />
+					<TextBlock Grid.Column="2" Grid.Row="1"
+							   Margin="2"
+							   FontFamily="{StaticResource MonoidRegular}"
+							   Text="{Binding Wrapper.AVManager.Video.CurrentFrame, FallbackValue='123456'}" />
+					<ac:SeekSlider Name="videoSlider"
+								   Grid.Column="0"
+								   Grid.Row="0"
+								   Grid.ColumnSpan="4"
+								   Margin="2"
+								   Minimum="0"
+								   Maximum="{Binding Wrapper.AVManager.Video.__FrameCountZeroIndex}"
+								   SmallChange="1"
+								   LargeChange="{Binding Wrapper.AVManager.Video.__FrameRateCeiling}"
+								   TickFrequency="1"
+								   TickPlacement="None" />
+				</Grid>
+				<Panel Name="videoTarget" />
+			</DockPanel>
 		</Panel>
-		<!-- Audio -->
-		<Panel Grid.Row="0" Grid.Column="2">
-			<Label HorizontalAlignment="Center" VerticalAlignment="Center" Content="Audio Area" />
-		</Panel>
-		<!-- Editor -->
-		<Grid Grid.Row="2" Grid.Column="2" Name="editorPanel" IsEnabled="{Binding SelectedEvent.Id, Converter={StaticResource EnabledConverter}}" RowDefinitions="auto, auto, *">
-			<Grid Grid.Row="0" ColumnDefinitions="auto, *, auto, *, *, auto">
-				<CheckBox Grid.Column="0"
-						  Margin="2"
-						  IsChecked="{Binding SelectedEvent.Comment}"
-						  ToolTip.Tip="Mark this line as a comment">
-					Comment
-				</CheckBox>
-				<ComboBox Grid.Column="1"
-						  ItemsSource="{Binding Wrapper.File.StyleManager.Styles}"
-						  SelectedItem="{Binding SelectedEvent.Style, Converter={StaticResource StyleNamesConverter}}"
-						  Margin="2">
-					<ComboBox.ItemTemplate>
-						<DataTemplate x:DataType="asscs:Style">
-							<TextBlock Text="{Binding Name}" />
-						</DataTemplate>
-					</ComboBox.ItemTemplate>
-				</ComboBox>
-				<Button Grid.Column="2"
-						Margin="2"
-						Command="{Binding EditFileStyleCommand}"
-						ToolTip.Tip="Edit the current style">
-					<Svg Path="avares://Ameko/Assets/B5/pencil-square.svg" />
-				</Button>
-				<AutoCompleteBox Grid.Column="3"
-								 Text="{Binding SelectedEvent.Actor}"
-								 ItemsSource="{Binding Actors}"
-								 Watermark="Actor"
-								 FilterMode="Contains"
-								 Margin="2"
-								 Name="actorACBox"/>
-				<AutoCompleteBox Grid.Column="4"
-								 Text="{Binding SelectedEvent.Effect}"
-								 ItemsSource="{Binding Effects}"
-								 Watermark="Effect"
-								 FilterMode="Contains"
-								 Margin="2"
-								 Name="effectACBox"/>
+		<Grid Grid.Column="2" Grid.Row="0">
+			<Grid.RowDefinitions>
+				<RowDefinition Height=".8*" />
+				<RowDefinition Height="2" />
+				<RowDefinition Height="1.2*" />
+			</Grid.RowDefinitions>
+			<!-- Audio -->
+			<Panel Grid.Row="0" Grid.Column="0">
+				<Label HorizontalAlignment="Center" VerticalAlignment="Center" Content="Audio Area" />
+			</Panel>
+			<!-- Editor -->
+			<Grid Grid.Row="2" Grid.Column="0" Name="editorPanel" IsEnabled="{Binding SelectedEvent.Id, Converter={StaticResource EnabledConverter}}" RowDefinitions="auto, auto, *">
+				<Grid Grid.Row="0" ColumnDefinitions="auto, *, auto, *, *, auto">
+					<CheckBox Grid.Column="0"
+							  Margin="2"
+							  IsChecked="{Binding SelectedEvent.Comment}"
+							  ToolTip.Tip="Mark this line as a comment">
+						Comment
+					</CheckBox>
+					<ComboBox Grid.Column="1"
+							  ItemsSource="{Binding Wrapper.File.StyleManager.Styles}"
+							  SelectedItem="{Binding SelectedEvent.Style, Converter={StaticResource StyleNamesConverter}}"
+							  Margin="2">
+						<ComboBox.ItemTemplate>
+							<DataTemplate x:DataType="asscs:Style">
+								<TextBlock Text="{Binding Name}" />
+							</DataTemplate>
+						</ComboBox.ItemTemplate>
+					</ComboBox>
+					<Button Grid.Column="2"
+							Margin="2"
+							Command="{Binding EditFileStyleCommand}"
+							ToolTip.Tip="Edit the current style">
+						<Svg Path="avares://Ameko/Assets/B5/pencil-square.svg" />
+					</Button>
+					<AutoCompleteBox Grid.Column="3"
+									 Text="{Binding SelectedEvent.Actor}"
+									 ItemsSource="{Binding Actors}"
+									 Watermark="Actor"
+									 FilterMode="Contains"
+									 Margin="2"
+									 Name="actorACBox"/>
+					<AutoCompleteBox Grid.Column="4"
+									 Text="{Binding SelectedEvent.Effect}"
+									 ItemsSource="{Binding Effects}"
+									 Watermark="Effect"
+									 FilterMode="Contains"
+									 Margin="2"
+									 Name="effectACBox"/>
 
-				<TextBox Grid.Column="5"
-						 AcceptsReturn="False"
-						 IsEnabled="False"
-						 Text="{Binding SelectedEvent.MaxLineWidth}"
-						 Watermark="#"
-						 Margin="2"/>
+					<TextBox Grid.Column="5"
+							 AcceptsReturn="False"
+							 IsEnabled="False"
+							 Text="{Binding SelectedEvent.MaxLineWidth}"
+							 Watermark="#"
+							 Margin="2"/>
+				</Grid>
+				<Grid Grid.Row="1" ColumnDefinitions="auto, auto, auto, auto, auto, auto, auto, *">
+					<NumericUpDown Value="{Binding SelectedEvent.Layer}"
+								   Minimum="0"
+								   Increment="1"
+								   FormatString="0"
+								   ShowButtonSpinner="False"
+								   Grid.Column="0"
+								   Padding="0,0,0,0"
+								   Margin="2"/>
+					<TextBox AcceptsReturn="False"
+							 Grid.Column="1"
+							 Text="{Binding SelectedEvent.Start.UpdatableText}"
+							 Name="startBox"
+							 Margin="2"/>
+					<TextBox AcceptsReturn="False"
+							 Grid.Column="2"
+							 Text="{Binding SelectedEvent.End.UpdatableText}"
+							 Name="endBox"
+							 Margin="2"/>
+					<NumericUpDown Value="{Binding SelectedEvent.Margins.Left}"
+								   Minimum="0"
+								   Increment="1"
+								   FormatString="0"
+								   ShowButtonSpinner="False"
+								   Grid.Column="3"
+								   Padding="0,0,0,0"
+								   Margin="2"/>
+					<NumericUpDown Value="{Binding SelectedEvent.Margins.Right}"
+								   Minimum="0"
+								   Increment="1"
+								   FormatString="0"
+								   ShowButtonSpinner="False"
+								   Grid.Column="4"
+								   Padding="0,0,0,0"
+								   Margin="2"/>
+					<NumericUpDown Value="{Binding SelectedEvent.Margins.Vertical}"
+								   Minimum="0"
+								   Increment="1"
+								   FormatString="0"
+								   ShowButtonSpinner="False"
+								   Grid.Column="5"
+								   Padding="0,0,0,0"
+								   Margin="2"/>
+					<StackPanel Orientation="Horizontal"
+								Grid.Column="7">
+						<Button Margin="2"
+								ToolTip.Tip="Toggle Bold \b at cursor position"
+								Command="{Binding ToggleTagCommand}"
+								CommandParameter="\b">
+							<Svg Path="avares://Ameko/Assets/B5/type-bold.svg" />
+						</Button>
+						<Button Margin="2"
+								ToolTip.Tip="Toggle Italics \i at cursor position"
+								Command="{Binding ToggleTagCommand}"
+								CommandParameter="\i">
+							<Svg Path="avares://Ameko/Assets/B5/type-italic.svg" />
+						</Button>
+						<Button Margin="2"
+								ToolTip.Tip="Toggle Underline \u at cursor position"
+								Command="{Binding ToggleTagCommand}"
+								CommandParameter="\u">
+							<Svg Path="avares://Ameko/Assets/B5/type-underline.svg" />
+						</Button>
+						<Button Margin="2"
+								ToolTip.Tip="Toggle Strikethrough \s at cursor position"
+								Command="{Binding ToggleTagCommand}"
+								CommandParameter="\s">
+							<Svg Path="avares://Ameko/Assets/B5/type-strikethrough.svg" />
+						</Button>
+						<Button Margin="2"
+								IsEnabled="False"
+								ToolTip.Tip="Set Font \fn at cursor position">
+							<Svg Path="avares://Ameko/Assets/B5/fonts.svg" />
+						</Button>
+						<Button Margin="2"
+								ToolTip.Tip="Move to the next line, creating a new one if needed"
+								Command="{Binding NextOrAddEventCommand}">
+							<Svg Path="avares://Ameko/Assets/B5/arrow-return-left.svg" />
+						</Button>
+					</StackPanel>
+				</Grid>
+				<ac:AmekoTextBox Name="editBox"
+								 Grid.Row="2"
+								 Margin="2 1"
+								 TextWrapping="Wrap"
+								 KeyDown="TextBox_KeyDown"
+								 LostFocus="TextBox_LostFocus"
+								 FontSize="16"
+								 FontFamily="{StaticResource Migu2MRegular}"
+								 IsUndoEnabled="False"
+								 SelectionStart="{Binding SelectionStart, Mode=TwoWay}"
+								 SelectionEnd="{Binding SelectionEnd, Mode=TwoWay}"
+								 Text="{Binding SelectedEvent.Text, FallbackValue='No event selected'}">
+				</ac:AmekoTextBox>
 			</Grid>
-			<Grid Grid.Row="1" ColumnDefinitions="auto, auto, auto, auto, auto, auto, auto, *">
-				<NumericUpDown Value="{Binding SelectedEvent.Layer}"
-							   Minimum="0"
-							   Increment="1"
-							   FormatString="0"
-							   ShowButtonSpinner="False"
-							   Grid.Column="0"
-							   Padding="0,0,0,0"
-							   Margin="2"/>
-				<TextBox AcceptsReturn="False"
-						 Grid.Column="1"
-						 Text="{Binding SelectedEvent.Start.UpdatableText}"
-						 Name="startBox"
-						 Margin="2"/>
-				<TextBox AcceptsReturn="False"
-						 Grid.Column="2"
-						 Text="{Binding SelectedEvent.End.UpdatableText}"
-						 Name="endBox"
-						 Margin="2"/>
-				<NumericUpDown Value="{Binding SelectedEvent.Margins.Left}"
-							   Minimum="0"
-							   Increment="1"
-							   FormatString="0"
-							   ShowButtonSpinner="False"
-							   Grid.Column="3"
-							   Padding="0,0,0,0"
-							   Margin="2"/>
-				<NumericUpDown Value="{Binding SelectedEvent.Margins.Right}"
-							   Minimum="0"
-							   Increment="1"
-							   FormatString="0"
-							   ShowButtonSpinner="False"
-							   Grid.Column="4"
-							   Padding="0,0,0,0"
-							   Margin="2"/>
-				<NumericUpDown Value="{Binding SelectedEvent.Margins.Vertical}"
-							   Minimum="0"
-							   Increment="1"
-							   FormatString="0"
-							   ShowButtonSpinner="False"
-							   Grid.Column="5"
-							   Padding="0,0,0,0"
-							   Margin="2"/>
-				<StackPanel Orientation="Horizontal"
-							Grid.Column="7">
-					<Button Margin="2"
-							ToolTip.Tip="Toggle Bold \b at cursor position"
-							Command="{Binding ToggleTagCommand}"
-							CommandParameter="\b">
-						<Svg Path="avares://Ameko/Assets/B5/type-bold.svg" />
-					</Button>
-					<Button Margin="2"
-							ToolTip.Tip="Toggle Italics \i at cursor position"
-							Command="{Binding ToggleTagCommand}"
-							CommandParameter="\i">
-						<Svg Path="avares://Ameko/Assets/B5/type-italic.svg" />
-					</Button>
-					<Button Margin="2"
-							ToolTip.Tip="Toggle Underline \u at cursor position"
-							Command="{Binding ToggleTagCommand}"
-							CommandParameter="\u">
-						<Svg Path="avares://Ameko/Assets/B5/type-underline.svg" />
-					</Button>
-					<Button Margin="2"
-							ToolTip.Tip="Toggle Strikethrough \s at cursor position"
-							Command="{Binding ToggleTagCommand}"
-							CommandParameter="\s">
-						<Svg Path="avares://Ameko/Assets/B5/type-strikethrough.svg" />
-					</Button>
-					<Button Margin="2"
-							IsEnabled="False"
-							ToolTip.Tip="Set Font \fn at cursor position">
-						<Svg Path="avares://Ameko/Assets/B5/fonts.svg" />
-					</Button>
-					<Button Margin="2"
-							ToolTip.Tip="Move to the next line, creating a new one if needed"
-							Command="{Binding NextOrAddEventCommand}">
-						<Svg Path="avares://Ameko/Assets/B5/arrow-return-left.svg" />
-					</Button>
-				</StackPanel>
-			</Grid>
-			<ac:AmekoTextBox Name="editBox"
-							 Grid.Row="2"
-							 Margin="2 1"
-							 TextWrapping="Wrap"
-							 KeyDown="TextBox_KeyDown"
-							 LostFocus="TextBox_LostFocus"
-							 FontSize="16"
-							 FontFamily="{StaticResource Migu2MRegular}"
-							 IsUndoEnabled="False"
-							 SelectionStart="{Binding SelectionStart, Mode=TwoWay}"
-							 SelectionEnd="{Binding SelectionEnd, Mode=TwoWay}"
-							 Text="{Binding SelectedEvent.Text, FallbackValue='No event selected'}">
-			</ac:AmekoTextBox>
+			<!-- Splitters -->
+			<GridSplitter Grid.Row="1" Grid.Column="0" ResizeDirection="Rows" Background="Black" />
 		</Grid>
 		<!-- Splitters -->
-		<GridSplitter Grid.Row="1" Grid.Column="2" ResizeDirection="Rows" Background="Black" />
-		<GridSplitter Grid.Row="0" Grid.Column="1" ResizeDirection="Columns" Grid.RowSpan="3" Background="Black" />
-		<GridSplitter Grid.Row="3" Grid.Column="0" ResizeDirection="Rows" Grid.ColumnSpan="3" Background="Black" />
+		<GridSplitter Grid.Row="0" Grid.Column="1" Grid.RowSpan="1" ResizeDirection="Columns" Background="Black" />
+		<GridSplitter Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" ResizeDirection="Rows" Background="Black" />
 		<!-- Events -->
 		<DataGrid Name="eventsGrid"
-				  Grid.Row="4"
+				  Grid.Row="2"
 				  Grid.Column="0"
 				  Grid.ColumnSpan="3"
 				  IsReadOnly="True"

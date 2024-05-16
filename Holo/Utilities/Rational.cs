@@ -8,7 +8,7 @@ namespace Holo.Utilities
     {
         public int Numerator { get; }
         public int Denominator { get; }
-        public double Value => Numerator / (double)Denominator;
+        public double Ratio => Numerator / (double)Denominator;
 
         public Rational(int numerator, int denominator)
         {

@@ -27,6 +27,9 @@ namespace Ameko.ViewModels
         private int _selectionEnd;
         private int _focusLostSelectionEnd;
 
+        private double _videopaneWidth = 576;
+        private double _videopaneHeight = 324;
+
         private static readonly Event FALLBACK_EVENT = new Event(-1) { Text="<No Event Selected>" };
 
         public ObservableCollection<string> Actors { get; private set; }
@@ -38,6 +41,32 @@ namespace Ameko.ViewModels
         public bool DisplayEffectsColumn
         {
             get => Effects.Count > 0;
+        }
+
+        public double VideoPaneWidth
+        {
+            get => _videopaneWidth;
+            set
+            {
+                if (value == _videopaneWidth) return;
+                _videopaneWidth = value;
+                var ratio = Wrapper.AVManager!.Video.SAR.Ratio;
+                VideoPaneHeight = value / ratio;
+                // VideoPaneHeight = v;
+                this.RaisePropertyChanged(nameof(VideoPaneWidth));
+            }
+        }
+
+        public double VideoPaneHeight
+        {
+            get => _videopaneHeight;
+            set
+            {
+                if (value == _videopaneHeight) return;
+                _videopaneHeight = value;
+                VideoPaneWidth = value * Wrapper.AVManager!.Video.SAR.Ratio;
+                this.RaisePropertyChanged(nameof(VideoPaneHeight));
+            }
         }
 
         public Interaction<TabItemViewModel, string?> CopySelectedEvents { get; }

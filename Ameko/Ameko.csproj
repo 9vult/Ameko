@@ -12,6 +12,11 @@
 
   
   <ItemGroup>
+    <AvaloniaResource Remove="Assets\Styles\SeekSlider.axaml" />
+  </ItemGroup>
+
+  
+  <ItemGroup>
     <None Remove="Assets\Ameko-Logo-256.png" />
     <None Remove="Assets\Ameko-Logo-512.png" />
     <None Remove="Assets\Ameko-Simplified-BG-64.ico" />
@@ -111,5 +116,11 @@
     <Compile Update="Views\TabItemView.axaml.cs">
       <DependentUpon>TabItemView.axaml</DependentUpon>
     </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <AvaloniaXaml Update="Assets\Styles\SeekSlider.axaml">
+      <SubType>Designer</SubType>
+    </AvaloniaXaml>
   </ItemGroup>
 </Project>
