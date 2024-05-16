@@ -10,7 +10,7 @@ namespace Holo
 {
     public class LoggerHelper
     {
-        private static LoggerHelper instance;
+        private static LoggerHelper? instance;
         private readonly string logsRoot;
         private readonly Logger logger;
 

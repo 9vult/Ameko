@@ -1,9 +1,13 @@
 ﻿using AssCS;
 using Ffms2CS;
 using Holo.DC;
+using Holo.Plugins;
+using SkiaSharp;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.InteropServices;
 using Xdg.Directories;
 
 namespace Holo
@@ -19,6 +23,8 @@ namespace Holo
         public ConfigurationManager ConfigurationManager { get; }
         public GlobalsManager GlobalsManager { get; }
         public RepositoryManager RepositoryManager { get; }
+        public AVManager AVManager { get; }
+
         public Workspace Workspace { get; set; }
 
         private HoloContext()
@@ -33,20 +39,9 @@ namespace Holo
             RepositoryManager = new RepositoryManager();
             RepositoryManager.LoadUrlList(ConfigurationManager.GetRepositories());
 
-            Workspace = new Workspace();
+            AVManager = new AVManager();
 
-            Logger.Info("Attempting to load ffms2", "Holo");
-            try
-            {
-                Ffms2.StartUp();
-                var ffver = Ffms2.GetVersion();
-                Logger.Info($"Successfully loaded Ffms2 version: {ffver}", "Holo");
-                Ffms2.Shutdown();
-            }
-            catch (Exception e)
-            {
-                Logger.Error($"Failed to load Ffsm2: {e.Message}", "Holo");
-            }
+            Workspace = new Workspace();
         }
 
         public class Directories
