@@ -30,6 +30,7 @@ namespace Holo.Plugins
                 var frameData = _source.GetFrame(frame);
                 return new VideoFrame
                 {
+                    IsKeyframe = frameData.IsKeyframe,
                     Size = new VideoFrame.Dimension
                     {
                         X = frameData.OutputResolution.Width,

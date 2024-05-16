@@ -7,6 +7,7 @@ namespace Holo
 {
     public struct VideoFrame
     {
+        public bool IsKeyframe { get; set; }
         public Dimension Size { get; set; }
         public SKBitmap Bitmap { get; set; }
 
