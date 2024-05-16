@@ -1,4 +1,5 @@
 ﻿using Ffms2CS;
+using Holo.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -52,11 +53,11 @@ namespace Holo.Plugins
             return _source.FrameCount;
         }
 
-        public double GetFrameRate()
+        public Rational GetFrameRate()
         {
             if (!_initialized) throw new InvalidOperationException("Ffms2 is not initialized");
             if (_source == null) throw new InvalidOperationException("Video source is not initialized");
-            return _source.FPS;
+            return new Rational(_source.FPSNumerator, _source.FPSDenominator);
         }
 
         public int[] GetVideoTracks()

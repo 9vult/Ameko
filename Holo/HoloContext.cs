@@ -23,7 +23,6 @@ namespace Holo
         public ConfigurationManager ConfigurationManager { get; }
         public GlobalsManager GlobalsManager { get; }
         public RepositoryManager RepositoryManager { get; }
-        public AVManager AVManager { get; }
 
         public Workspace Workspace { get; set; }
 
@@ -38,8 +37,6 @@ namespace Holo
 
             RepositoryManager = new RepositoryManager();
             RepositoryManager.LoadUrlList(ConfigurationManager.GetRepositories());
-
-            AVManager = new AVManager();
 
             Workspace = new Workspace();
         }

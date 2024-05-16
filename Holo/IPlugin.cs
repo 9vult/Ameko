@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Holo.Utilities;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -71,7 +72,7 @@ namespace Holo
         public int[] GetVideoTracks();
         public bool LoadTrack(int track);
         public int GetFrameCount();
-        public double GetFrameRate();
+        public Rational GetFrameRate();
         public VideoFrame GetFrame(int frame);
     }
 
