@@ -27,9 +27,12 @@ namespace Ameko.ViewModels
         private int _selectionEnd;
         private int _focusLostSelectionEnd;
 
-        private double _videopaneWidth;
-        private double _videopaneHeight;
-        private ScalePercentage _scale = ScalePercentage.VS_50;
+        private double _videoWidth;
+        private double _videoHeight;
+        private double _videoContainerWidth;
+        private double _videoContainerHeight;
+        private ScalePercentage _videoScale = ScalePercentage.VS_50;
+        private ScalePercentage _videoContainerScale = ScalePercentage.VS_50;
 
         private static readonly Event FALLBACK_EVENT = new Event(-1) { Text="<No Event Selected>" };
 
@@ -45,29 +48,54 @@ namespace Ameko.ViewModels
         }
 
         public List<ScalePercentage> ScaleOptions => ScalePercentage.Scales;
-        public ScalePercentage Scale
+        public ScalePercentage VideoScale
         {
-            get => _scale;
+            get => _videoScale;
             set
             {
-                this.RaiseAndSetIfChanged(ref _scale, value);
+                this.RaiseAndSetIfChanged(ref _videoScale, value);
                 if (Wrapper.AVManager == null) return;
 
-                VideoPaneWidth = value.Multiplier * Wrapper.AVManager.Video.SAR.Numerator;
-                VideoPaneHeight = value.Multiplier * Wrapper.AVManager.Video.SAR.Denominator;
+                VideoWidth = value.Multiplier * Wrapper.AVManager.Video.SAR.Numerator;
+                VideoHeight = value.Multiplier * Wrapper.AVManager.Video.SAR.Denominator;
             }
         }
 
-        public double VideoPaneWidth
+        public ScalePercentage VideoContainerScale
         {
-            get => _videopaneWidth;
-            set => this.RaiseAndSetIfChanged(ref _videopaneWidth, value);
+            get => _videoContainerScale;
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _videoContainerScale, value);
+                if (Wrapper.AVManager == null) return;
+
+                VideoContainerWidth = value.Multiplier * Wrapper.AVManager.Video.SAR.Numerator;
+                VideoContainerHeight = value.Multiplier * Wrapper.AVManager.Video.SAR.Denominator;
+            }
         }
 
-        public double VideoPaneHeight
+        public double VideoWidth
         {
-            get => _videopaneHeight;
-            set => this.RaiseAndSetIfChanged(ref _videopaneHeight, value);
+            get => _videoWidth;
+            set => this.RaiseAndSetIfChanged(ref _videoWidth, value);
+        }
+
+        public double VideoHeight
+        {
+            get => _videoHeight;
+            set => this.RaiseAndSetIfChanged(ref _videoHeight, value);
+        }
+
+        public double VideoContainerWidth
+        {
+            get => _videoContainerWidth;
+            set => this.RaiseAndSetIfChanged(ref _videoContainerWidth, value);
+        }
+
+        public double VideoContainerHeight
+        {
+            get => _videoContainerHeight;
+            set => this.RaiseAndSetIfChanged(ref _videoContainerHeight, value);
         }
 
         public Interaction<TabItemViewModel, string?> CopySelectedEvents { get; }
@@ -228,11 +256,11 @@ namespace Ameko.ViewModels
 
             ScrollChangeScaleCommand = ReactiveCommand.Create((bool positive) =>
             {
-                var idx = ScalePercentage.Scales.IndexOf(Scale);
+                var idx = ScalePercentage.Scales.IndexOf(VideoScale);
                 if (idx == 0 && !positive) return;
                 if (idx == ScalePercentage.Scales.Count - 1 && positive) return;
 
-                Scale = ScalePercentage.Scales[positive ? idx+1 : idx-1];
+                VideoScale = ScalePercentage.Scales[positive ? idx+1 : idx-1];
             });
 
             ActivateScriptCommand = ReactiveCommand.Create<string>(async (string scriptName) =>
@@ -241,7 +269,8 @@ namespace Ameko.ViewModels
             });
 
             // TODO
-            Scale = ScalePercentage.VS_50;
+            VideoScale = ScalePercentage.VS_50;
+            VideoContainerScale = ScalePercentage.VS_50;
 
             // TODO: Maybe not do this this way
             Wrapper.PropertyChanged += (o, e) => { this.RaisePropertyChanged(nameof(Display)); };
