@@ -1,0 +1,160 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="650" d:DesignHeight="200"
+			 xmlns:converters="using:Ameko.Converters"
+			 xmlns:vm="using:Ameko.ViewModels"
+			 xmlns:dm="using:Ameko.DataModels"
+			 xmlns:ac="using:Ameko.Controls"
+			 xmlns:asscs="using:AssCS"
+             x:Class="Ameko.Views.TabItem_EditorView"
+			 x:DataType="vm:TabItemViewModel">
+	<UserControl.Resources>
+		<converters:EventEditEnabledConverter x:Key="EnabledConverter" />
+		<converters:EditorStyleNamesConverter x:Key="StyleNamesConverter" />
+	</UserControl.Resources>
+	<Grid Name="editorPanel"
+		  IsEnabled="{Binding SelectedEvent.Id, Converter={StaticResource EnabledConverter}}"
+		  RowDefinitions="auto, auto, *">
+		<Grid Grid.Row="0" ColumnDefinitions="auto, *, auto, *, *, auto">
+			<CheckBox Grid.Column="0"
+					  Margin="2"
+					  IsChecked="{Binding SelectedEvent.Comment}"
+					  ToolTip.Tip="Mark this line as a comment">
+				Comment
+			</CheckBox>
+			<ComboBox Grid.Column="1"
+					  ItemsSource="{Binding Wrapper.File.StyleManager.Styles}"
+					  SelectedItem="{Binding SelectedEvent.Style, Converter={StaticResource StyleNamesConverter}}"
+					  Margin="2">
+				<ComboBox.ItemTemplate>
+					<DataTemplate x:DataType="asscs:Style">
+						<TextBlock Text="{Binding Name}" />
+					</DataTemplate>
+				</ComboBox.ItemTemplate>
+			</ComboBox>
+			<Button Grid.Column="2"
+					Margin="2"
+					Command="{Binding EditFileStyleCommand}"
+					ToolTip.Tip="Edit the current style">
+				<Svg Path="avares://Ameko/Assets/B5/pencil-square.svg" />
+			</Button>
+			<AutoCompleteBox Grid.Column="3"
+							 Text="{Binding SelectedEvent.Actor}"
+							 ItemsSource="{Binding Actors}"
+							 Watermark="Actor"
+							 FilterMode="Contains"
+							 Margin="2"
+							 Name="actorACBox"/>
+			<AutoCompleteBox Grid.Column="4"
+							 Text="{Binding SelectedEvent.Effect}"
+							 ItemsSource="{Binding Effects}"
+							 Watermark="Effect"
+							 FilterMode="Contains"
+							 Margin="2"
+							 Name="effectACBox"/>
+
+			<TextBox Grid.Column="5"
+					 AcceptsReturn="False"
+					 IsEnabled="False"
+					 Text="{Binding SelectedEvent.MaxLineWidth}"
+					 Watermark="#"
+					 Margin="2"/>
+		</Grid>
+		<Grid Grid.Row="1" ColumnDefinitions="auto, auto, auto, auto, auto, auto, auto, *">
+			<NumericUpDown Value="{Binding SelectedEvent.Layer}"
+						   Minimum="0"
+						   Increment="1"
+						   FormatString="0"
+						   ShowButtonSpinner="False"
+						   Grid.Column="0"
+						   Padding="0,0,0,0"
+						   Margin="2"/>
+			<TextBox AcceptsReturn="False"
+					 Grid.Column="1"
+					 Text="{Binding SelectedEvent.Start.UpdatableText}"
+					 Name="startBox"
+					 Margin="2"/>
+			<TextBox AcceptsReturn="False"
+					 Grid.Column="2"
+					 Text="{Binding SelectedEvent.End.UpdatableText}"
+					 Name="endBox"
+					 Margin="2"/>
+			<NumericUpDown Value="{Binding SelectedEvent.Margins.Left}"
+						   Minimum="0"
+						   Increment="1"
+						   FormatString="0"
+						   ShowButtonSpinner="False"
+						   Grid.Column="3"
+						   Padding="0,0,0,0"
+						   Margin="2"/>
+			<NumericUpDown Value="{Binding SelectedEvent.Margins.Right}"
+						   Minimum="0"
+						   Increment="1"
+						   FormatString="0"
+						   ShowButtonSpinner="False"
+						   Grid.Column="4"
+						   Padding="0,0,0,0"
+						   Margin="2"/>
+			<NumericUpDown Value="{Binding SelectedEvent.Margins.Vertical}"
+						   Minimum="0"
+						   Increment="1"
+						   FormatString="0"
+						   ShowButtonSpinner="False"
+						   Grid.Column="5"
+						   Padding="0,0,0,0"
+						   Margin="2"/>
+			<StackPanel Orientation="Horizontal"
+						Grid.Column="7">
+				<Button Margin="2"
+						ToolTip.Tip="Toggle Bold \b at cursor position"
+						Command="{Binding ToggleTagCommand}"
+						CommandParameter="\b">
+					<Svg Path="avares://Ameko/Assets/B5/type-bold.svg" />
+				</Button>
+				<Button Margin="2"
+						ToolTip.Tip="Toggle Italics \i at cursor position"
+						Command="{Binding ToggleTagCommand}"
+						CommandParameter="\i">
+					<Svg Path="avares://Ameko/Assets/B5/type-italic.svg" />
+				</Button>
+				<Button Margin="2"
+						ToolTip.Tip="Toggle Underline \u at cursor position"
+						Command="{Binding ToggleTagCommand}"
+						CommandParameter="\u">
+					<Svg Path="avares://Ameko/Assets/B5/type-underline.svg" />
+				</Button>
+				<Button Margin="2"
+						ToolTip.Tip="Toggle Strikethrough \s at cursor position"
+						Command="{Binding ToggleTagCommand}"
+						CommandParameter="\s">
+					<Svg Path="avares://Ameko/Assets/B5/type-strikethrough.svg" />
+				</Button>
+				<Button Margin="2"
+						IsEnabled="False"
+						ToolTip.Tip="Set Font \fn at cursor position">
+					<Svg Path="avares://Ameko/Assets/B5/fonts.svg" />
+				</Button>
+				<Button Margin="2"
+						ToolTip.Tip="Move to the next line, creating a new one if needed"
+						Command="{Binding NextOrAddEventCommand}">
+					<Svg Path="avares://Ameko/Assets/B5/arrow-return-left.svg" />
+				</Button>
+			</StackPanel>
+		</Grid>
+		<ac:AmekoTextBox Name="editBox"
+						 Grid.Row="2"
+						 Margin="2 1"
+						 TextWrapping="Wrap"
+						 KeyDown="TextBox_KeyDown"
+						 LostFocus="TextBox_LostFocus"
+						 FontSize="16"
+						 FontFamily="{StaticResource Migu2MRegular}"
+						 IsUndoEnabled="False"
+						 SelectionStart="{Binding SelectionStart, Mode=TwoWay}"
+						 SelectionEnd="{Binding SelectionEnd, Mode=TwoWay}"
+						 Text="{Binding SelectedEvent.Text, FallbackValue='No event selected'}">
+		</ac:AmekoTextBox>
+	</Grid>
+</UserControl>
