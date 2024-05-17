@@ -27,8 +27,9 @@ namespace Ameko.ViewModels
         private int _selectionEnd;
         private int _focusLostSelectionEnd;
 
-        private double _videopaneWidth = 576;
-        private double _videopaneHeight = 324;
+        private double _videopaneWidth;
+        private double _videopaneHeight;
+        private ScalePercentage _scale = ScalePercentage.VS_50;
 
         private static readonly Event FALLBACK_EVENT = new Event(-1) { Text="<No Event Selected>" };
 
@@ -43,30 +44,30 @@ namespace Ameko.ViewModels
             get => Effects.Count > 0;
         }
 
+        public List<ScalePercentage> ScaleOptions => ScalePercentage.Scales;
+        public ScalePercentage Scale
+        {
+            get => _scale;
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _scale, value);
+                if (Wrapper.AVManager == null) return;
+
+                VideoPaneWidth = value.Multiplier * Wrapper.AVManager.Video.SAR.Numerator;
+                VideoPaneHeight = value.Multiplier * Wrapper.AVManager.Video.SAR.Denominator;
+            }
+        }
+
         public double VideoPaneWidth
         {
             get => _videopaneWidth;
-            set
-            {
-                if (value == _videopaneWidth) return;
-                _videopaneWidth = value;
-                var ratio = Wrapper.AVManager!.Video.SAR.Ratio;
-                VideoPaneHeight = value / ratio;
-                // VideoPaneHeight = v;
-                this.RaisePropertyChanged(nameof(VideoPaneWidth));
-            }
+            set => this.RaiseAndSetIfChanged(ref _videopaneWidth, value);
         }
 
         public double VideoPaneHeight
         {
             get => _videopaneHeight;
-            set
-            {
-                if (value == _videopaneHeight) return;
-                _videopaneHeight = value;
-                VideoPaneWidth = value * Wrapper.AVManager!.Video.SAR.Ratio;
-                this.RaisePropertyChanged(nameof(VideoPaneHeight));
-            }
+            set => this.RaiseAndSetIfChanged(ref _videopaneHeight, value);
         }
 
         public Interaction<TabItemViewModel, string?> CopySelectedEvents { get; }
@@ -91,6 +92,7 @@ namespace Ameko.ViewModels
         public ICommand ActivateScriptCommand { get; }
         public ICommand ToggleTagCommand { get; }
         public ICommand EditFileStyleCommand { get; }
+        public ICommand ScrollChangeScaleCommand { get; }
 
         public string Title
         {
@@ -224,10 +226,22 @@ namespace Ameko.ViewModels
                 await ShowStyleEditor.Handle(editor);
             });
 
+            ScrollChangeScaleCommand = ReactiveCommand.Create((bool positive) =>
+            {
+                var idx = ScalePercentage.Scales.IndexOf(Scale);
+                if (idx == 0 && !positive) return;
+                if (idx == ScalePercentage.Scales.Count - 1 && positive) return;
+
+                Scale = ScalePercentage.Scales[positive ? idx+1 : idx-1];
+            });
+
             ActivateScriptCommand = ReactiveCommand.Create<string>(async (string scriptName) =>
             {
                 await ScriptService.Instance.Execute(scriptName);
             });
+
+            // TODO
+            Scale = ScalePercentage.VS_50;
 
             // TODO: Maybe not do this this way
             Wrapper.PropertyChanged += (o, e) => { this.RaisePropertyChanged(nameof(Display)); };

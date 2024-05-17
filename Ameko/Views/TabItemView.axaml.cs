@@ -281,5 +281,11 @@ namespace Ameko.Views
             if (ViewModel == null) return;
             ViewModel.FocusLostSelectionEnd = editBox.FocusLostSelectionEnd;
         }
+
+        private void videoTarget_PointerWheelChanged(object? sender, Avalonia.Input.PointerWheelEventArgs e)
+        {
+            if (ViewModel == null) return;
+            ViewModel.ScrollChangeScaleCommand.Execute(e.Delta.Y > 0);
+        }
     }
 }
