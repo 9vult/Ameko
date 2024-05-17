@@ -14,10 +14,10 @@ namespace Holo
         // TODO: Extract to a class?
         private Ffms2Source _source;
         private bool _videoLoaded;
-        private VideoProperties _video;
+        private VideoWrapper _video;
         public bool IsVideoLoaded => _videoLoaded;
 
-        public VideoProperties Video => _video;
+        public VideoWrapper Video => _video;
 
         public VideoFrame GetFrame()
         {
@@ -42,7 +42,7 @@ namespace Holo
             var frame = _source.GetFrame(0);
             var sar = new Rational(frame.Size.X, frame.Size.Y);
             var rate = _source.GetFrameRate();
-            _video = new VideoProperties(fc, sar, rate);
+            _video = new VideoWrapper(fc, sar, rate);
         }
 
     }

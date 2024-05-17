@@ -121,6 +121,8 @@ namespace AssCS
             }
         }
 
+        public string MillisecondText => $"{Hours}:{Minutes:00}:{Seconds:00}.{Milliseconds:000}";
+
         public override bool Equals(object? obj)
         {
             return obj is Time time &&
