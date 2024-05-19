@@ -4,8 +4,10 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Timers;
 
 namespace Holo.Data
 {
@@ -15,10 +17,16 @@ namespace Holo.Data
         private readonly int _frameCount;
         private readonly Rational _sar;
         private readonly Rational _frameRate;
+        private readonly double _msPerFrame;
 
         private double _displayWidth;
         private double _displayHeight;
         private ScalePercentage _displayScale = ScalePercentage.VS_100;
+
+        private bool _isPlaying;
+        private bool _isPaused;
+        private Timer _playback;
+        private int _playbackDestination;
 
         /// <summary>
         /// The current frame in the video
@@ -80,6 +88,26 @@ namespace Holo.Data
             }
         }
 
+        public bool IsPlaying
+        {
+            get => _isPlaying;
+            set
+            {
+                _isPlaying = value;
+                OnPropertyChanged(nameof(IsPlaying));
+            }
+        }
+
+        public bool IsPaused
+        {
+            get => _isPaused;
+            set
+            {
+                _isPaused = value;
+                OnPropertyChanged(nameof(IsPaused));
+            }
+        }
+
         // Primaries
         public int FrameCount => _frameCount;
         public Rational SAR => _sar;
@@ -128,6 +156,74 @@ namespace Holo.Data
             return Time.FromMillis(FrameToMillis(frame));
         }
 
+        /// <summary>
+        /// Stop video playback
+        /// </summary>
+        public void StopPlaying()
+        {
+            if (!IsPlaying) return;
+            IsPlaying = false;
+            _playback.Stop();
+        }
+
+        /// <summary>
+        /// Start playing until the end of the file
+        /// </summary>
+        public void PlayToEnd()
+        {
+            StopPlaying();
+            _playbackDestination = FrameCount - 1;
+            _playback.Start();
+            IsPlaying = true;
+        }
+
+        /// <summary>
+        /// Begin playing at the start of the selection,
+        /// and play until the end of the selection
+        /// </summary>
+        /// <param name="selection">Events to play between</param>
+        public void PlaySelection(IEnumerable<Event> selection)
+        {
+            var start = selection.Select(e => e.Start).Min();
+            var end = selection.Select(e => e.End).Max();
+            SeekTo(TimeToFrame(start));
+            _playbackDestination = TimeToFrame(end);
+            _playback.Start();
+            IsPlaying = true;
+            IsPaused = false;
+        }
+
+        /// <summary>
+        /// Resume playing, without changing the end point
+        /// </summary>
+        public void ResumePlaying()
+        {
+            _playback.Start();
+            IsPlaying = true;
+            IsPaused = false;
+        }
+
+        /// <summary>
+        /// Set the current frame
+        /// </summary>
+        /// <param name="frame"></param>
+        public void SeekTo(int frame)
+        {
+            CurrentFrame = frame;
+        }
+
+        /// <summary>
+        /// Move forward one frame, or if the end point has been reached, stop playing
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Tick(object sender, ElapsedEventArgs e)
+        {
+            if (CurrentFrame < _playbackDestination) CurrentFrame++;
+            else StopPlaying();
+        }
+
+
         // Extras for GUI support
         public int __FrameCountZeroIndex => _frameCount - 1;
         public int __FrameRateCeiling => (int)Math.Ceiling(_frameRate.Ratio);
@@ -138,7 +234,11 @@ namespace Holo.Data
             _frameCount = frameCount;
             _sar = sar;
             _frameRate = frameRate;
+            _msPerFrame = 1 / _frameRate.Ratio * 1000;
             DisplayScale = ScalePercentage.VS_50;
+            _playback = new Timer(_msPerFrame);
+            _playback.Elapsed += Tick;
+            PlayToEnd();
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;

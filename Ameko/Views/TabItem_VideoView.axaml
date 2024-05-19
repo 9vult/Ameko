@@ -16,39 +16,79 @@
 			<Grid DockPanel.Dock="Bottom"
 				  RowDefinitions="auto, auto"
 				  Height="45">
-				<ac:SeekSlider Name="videoSlider"
-							   Grid.Row="0"
-							   Margin="2"
-							   Minimum="0"
-							   Maximum="{Binding Wrapper.AVManager.Video.__FrameCountZeroIndex, FallbackValue=0}"
-							   SmallChange="1"
-							   LargeChange="{Binding Wrapper.AVManager.Video.__FrameRateCeiling, FallbackValue=1}"
-							   TickFrequency="1"
-							   TickPlacement="None"
-							   ValueChanged="SeekSlider_ValueChanged"
-							   DragEnded="SeekSlider_DragEnded"
-							   Value="{Binding Wrapper.AVManager.Video.CurrentFrame, FallbackValue=0, Mode=OneWay}"/>
+				<StackPanel Grid.Row="0"
+							Orientation="Horizontal">
+					<Button Margin="1"
+							Width="20" Height="20"
+							Command=""
+							ToolTip.Tip="Play">
+						<Svg Path="avares://Ameko/Assets/B5/play.svg" />
+					</Button>
+					<Button Margin="1"
+							Width="20" Height="20"
+							Command=""
+							ToolTip.Tip="Play Selection">
+						<Svg Path="avares://Ameko/Assets/B5/skip-end.svg" />
+					</Button>
+					<Button Margin="1"
+							Width="20" Height="20"
+							Command=""
+							ToolTip.Tip="Pause">
+						<Svg Path="avares://Ameko/Assets/B5/pause.svg" />
+					</Button>
+					<Button Margin="1"
+							Width="20" Height="20"
+							Command=""
+							ToolTip.Tip="Enable auto seek to event start"
+							IsVisible="True"
+							IsEnabled="False">
+						<Svg Path="avares://Ameko/Assets/B5/skip-start-circle.svg" />
+					</Button>
+					<Button Margin="1"
+							Width="20" Height="20"
+							Command=""
+							ToolTip.Tip="Disable auto seek to event start"
+							IsVisible="False">
+						<Svg Path="avares://Ameko/Assets/B5/skip-start-circle-fill.svg" />
+					</Button>
+					<ac:SeekSlider Name="videoSlider"
+								   VerticalAlignment="Center"
+								   Maximum="{Binding Wrapper.AVManager.Video.__FrameCountZeroIndex, FallbackValue=0}"
+								   SmallChange="1"
+								   LargeChange="{Binding Wrapper.AVManager.Video.__FrameRateCeiling, FallbackValue=1}"
+								   TickFrequency="1"
+								   TickPlacement="None"
+								   ValueChanged="SeekSlider_ValueChanged"
+								   DragStarted="SeekSlider_DragStarted"
+								   DragEnded="SeekSlider_DragEnded"
+								   Value="{Binding Wrapper.AVManager.Video.CurrentFrame, FallbackValue=0, Mode=OneWay}"/>
+				</StackPanel>
 				<Grid Grid.Row="1"
 					  ColumnDefinitions="auto, auto, auto, *, auto, auto">
 					<TextBlock Grid.Column="0"
-						   Margin="2"
-						   FontFamily="{StaticResource MonoidRegular}"
-						   Text="{Binding Wrapper.AVManager.Video.CurrentTimeEstimated.MillisecondText, FallbackValue='1:23:45.678'}" />
+							   Margin="1"
+							   VerticalAlignment="Bottom"
+							   FontFamily="{StaticResource MonoidRegular}"
+							   Text="{Binding Wrapper.AVManager.Video.CurrentTimeEstimated.MillisecondText, FallbackValue='1:23:45.678'}" />
 					<TextBlock Grid.Column="1"
-							   Margin="1 2"
+							   Margin="1"
+							   VerticalAlignment="Bottom"
 							   FontFamily="{StaticResource MonoidRegular}"
 							   Text="-" />
 					<TextBlock Grid.Column="2"
-							   Margin="2"
+							   Margin="1"
+							   VerticalAlignment="Bottom"
 							   FontFamily="{StaticResource MonoidRegular}"
 							   Text="{Binding Wrapper.AVManager.Video.CurrentFrame, FallbackValue='123456'}" />
 					<CheckBox Grid.Column="4"
-							  Margin="2"
+							  Margin="1"
+							  VerticalAlignment="Center"
 							  IsChecked="{Binding LockASR}">
 						Lock
 					</CheckBox>
 					<ComboBox Grid.Column="5"
-							  Padding="2"
+							  Padding="1"
+							  VerticalAlignment="Center"
 							  ItemsSource="{Binding ScaleOptions}"
 							  SelectedItem="{Binding Wrapper.AVManager.Video.DisplayScale, FallbackValue=null}"
 							  Width="75"

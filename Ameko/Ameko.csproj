@@ -61,10 +61,15 @@
     <None Remove="Assets\B5\link.svg" />
     <None Remove="Assets\B5\list-columns-reverse.svg" />
     <None Remove="Assets\B5\palette.svg" />
+    <None Remove="Assets\B5\pause.svg" />
     <None Remove="Assets\B5\pencil-square.svg" />
+    <None Remove="Assets\B5\play.svg" />
     <None Remove="Assets\B5\save.svg" />
     <None Remove="Assets\B5\scissors.svg" />
     <None Remove="Assets\B5\search.svg" />
+    <None Remove="Assets\B5\skip-end.svg" />
+    <None Remove="Assets\B5\skip-start-circle-fill.svg" />
+    <None Remove="Assets\B5\skip-start-circle.svg" />
     <None Remove="Assets\B5\trash.svg" />
     <None Remove="Assets\B5\type-bold.svg" />
     <None Remove="Assets\B5\type-italic.svg" />

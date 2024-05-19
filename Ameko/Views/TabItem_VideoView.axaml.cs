@@ -21,7 +21,8 @@ namespace Ameko.Views
             if (ViewModel == null) return;
             if (e.KeyModifiers.HasFlag(Avalonia.Input.KeyModifiers.Control))
                 ViewModel.ScrollChangeScaleCommand.Execute(e.Delta.Y > 0);
-            else
+
+            else if (!ViewModel.Wrapper.AVManager.Video.IsPlaying) // Only seek if not playing
                 videoSlider.Value += e.Delta.Y; // 1 or -1
         }
 
@@ -54,10 +55,24 @@ namespace Ameko.Views
             if (!videoSlider.IsDragging) ViewModel.Wrapper.AVManager.Video.CurrentFrame = (int)e.NewValue;
         }
 
+        private void SeekSlider_DragStarted(object sender, EventArgs e)
+        {
+            if (ViewModel == null) return;
+            if (ViewModel.Wrapper.AVManager.Video.IsPlaying)
+            {
+                ViewModel.Wrapper.AVManager.Video.IsPaused = true;
+                ViewModel.Wrapper.AVManager.Video.StopPlaying();
+            }
+        }
+
         private void SeekSlider_DragEnded(object sender, EventArgs e)
         {
             if (ViewModel == null) return;
             ViewModel.Wrapper.AVManager.Video.CurrentFrame = (int)videoSlider.Value;
+            if (ViewModel.Wrapper.AVManager.Video.IsPaused)
+            {
+                ViewModel.Wrapper.AVManager.Video.ResumePlaying();
+            }
         }
 
         public TabItem_VideoView()
