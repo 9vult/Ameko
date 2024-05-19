@@ -21,7 +21,7 @@ namespace Ameko.Services
 {
     public class ScriptService
     {
-        private static readonly Lazy<ScriptService> _instance = new Lazy<ScriptService>(() => new ScriptService());
+        private static readonly Lazy<ScriptService> _instance = new(() => new ScriptService());
         private readonly string scriptRoot;
         private readonly Dictionary<string, HoloScript> scripts;
         private readonly Dictionary<string, string[]> functions;
@@ -107,7 +107,7 @@ namespace Ameko.Services
         /// Reload the scripts
         /// </summary>
         /// <param name="manual">Was the reload manually triggered</param>
-        public async void Reload(bool manual)
+        public void Reload(bool manual)
         {
             HoloContext.Logger.Info($"Reloading scripts", "ScriptService");
             if (!Directory.Exists(scriptRoot))
@@ -144,13 +144,12 @@ namespace Ameko.Services
             }
             if (manual)
             {
-                var box = MessageBoxManager.GetMessageBoxStandard("Ameko Script Service", "Scripts have been reloaded.", ButtonEnum.Ok);
-                await box.ShowAsync();
+                DisplayMessageBox("Scripts have been reloaded.");
             }
             HoloContext.Logger.Info($"Reloading scripts complete", "ScriptService");
         }
 
-        private async void DisplayMessageBox(string message)
+        private static async void DisplayMessageBox(string message)
         {
             var box = MessageBoxManager.GetMessageBoxStandard("Ameko Script Service", message, ButtonEnum.Ok);
             await box.ShowAsync();
@@ -181,9 +180,9 @@ namespace Ameko.Services
         private ScriptService()
         {
             scriptRoot = System.IO.Path.Combine(HoloContext.Directories.HoloDataHome, "scripts");
-            LoadedScripts = new ObservableCollection<Tuple<string, string>>();
-            scripts = new Dictionary<string, HoloScript>();
-            functions = new Dictionary<string, string[]>();
+            LoadedScripts = [];
+            scripts = [];
+            functions = [];
             Reload(false);
         }
     }

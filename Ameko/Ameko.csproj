@@ -42,6 +42,7 @@
     <None Remove="Assets\B5\clipboard.svg" />
     <None Remove="Assets\B5\code-slash.svg" />
     <None Remove="Assets\B5\collection.svg" />
+    <None Remove="Assets\B5\columns-gap.svg" />
     <None Remove="Assets\B5\cone-striped.svg" />
     <None Remove="Assets\B5\copy.svg" />
     <None Remove="Assets\B5\door-open.svg" />

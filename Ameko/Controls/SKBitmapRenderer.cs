@@ -53,7 +53,6 @@ namespace Ameko.Controls
             public Rect Bounds { get; }
             public bool HitTest(Point p) => false;
             public bool Equals(ICustomDrawOperation? other) => false;
-            static Stopwatch St = Stopwatch.StartNew();
             public void Render(ImmediateDrawingContext context)
             {
                 var leaseFeature = context.TryGetFeature<ISkiaSharpApiLeaseFeature>();

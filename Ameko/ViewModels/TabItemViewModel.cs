@@ -29,10 +29,7 @@ namespace Ameko.ViewModels
 
         private double _videoWidth;
         private double _videoHeight;
-        private double _videoContainerWidth;
-        private double _videoContainerHeight;
         private ScalePercentage _videoScale = ScalePercentage.VS_50;
-        private ScalePercentage _videoContainerScale = ScalePercentage.VS_50;
 
         private static readonly Event FALLBACK_EVENT = new Event(-1) { Text="<No Event Selected>" };
 
@@ -61,19 +58,6 @@ namespace Ameko.ViewModels
             }
         }
 
-        public ScalePercentage VideoContainerScale
-        {
-            get => _videoContainerScale;
-            set
-            {
-                this.RaiseAndSetIfChanged(ref _videoContainerScale, value);
-                if (Wrapper.AVManager == null) return;
-
-                VideoContainerWidth = value.Multiplier * Wrapper.AVManager.Video.SAR.Numerator;
-                VideoContainerHeight = value.Multiplier * Wrapper.AVManager.Video.SAR.Denominator;
-            }
-        }
-
         public double VideoWidth
         {
             get => _videoWidth;
@@ -84,18 +68,6 @@ namespace Ameko.ViewModels
         {
             get => _videoHeight;
             set => this.RaiseAndSetIfChanged(ref _videoHeight, value);
-        }
-
-        public double VideoContainerWidth
-        {
-            get => _videoContainerWidth;
-            set => this.RaiseAndSetIfChanged(ref _videoContainerWidth, value);
-        }
-
-        public double VideoContainerHeight
-        {
-            get => _videoContainerHeight;
-            set => this.RaiseAndSetIfChanged(ref _videoContainerHeight, value);
         }
 
         public Interaction<TabItemViewModel, string?> CopySelectedEvents { get; }
@@ -270,7 +242,6 @@ namespace Ameko.ViewModels
 
             // TODO
             VideoScale = ScalePercentage.VS_50;
-            VideoContainerScale = ScalePercentage.VS_50;
 
             // TODO: Maybe not do this this way
             Wrapper.PropertyChanged += (o, e) => { this.RaisePropertyChanged(nameof(Display)); };

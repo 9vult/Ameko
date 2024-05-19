@@ -26,7 +26,7 @@
 							   TickFrequency="1"
 							   TickPlacement="None" />
 				<Grid Grid.Row="1"
-					  ColumnDefinitions="auto, auto, auto, *, auto">
+					  ColumnDefinitions="auto, auto, auto, *, auto, auto">
 					<TextBlock Grid.Column="0"
 						   Margin="2"
 						   FontFamily="{StaticResource MonoidRegular}"
@@ -39,7 +39,12 @@
 							   Margin="2"
 							   FontFamily="{StaticResource MonoidRegular}"
 							   Text="{Binding Wrapper.AVManager.Video.CurrentFrame, FallbackValue='123456'}" />
-					<ComboBox Grid.Column="4"
+					<CheckBox Grid.Column="4"
+							  Margin="2">
+						A/R
+					</CheckBox>
+					<ComboBox Grid.Column="5"
+							  Padding="2"
 							  ItemsSource="{Binding ScaleOptions}"
 							  SelectedItem="{Binding VideoScale}"
 							  Width="75"
@@ -52,9 +57,7 @@
 					</ComboBox>
 				</Grid>
 			</Grid>
-			<ScrollViewer Width="{Binding VideoContainerWidth}"
-						  Height="{Binding VideoContainerHeight}"
-						  HorizontalScrollBarVisibility="Auto"
+			<ScrollViewer HorizontalScrollBarVisibility="Auto"
 						  VerticalScrollBarVisibility="Auto">
 				<Panel Name="videoTarget"
 				   Width="{Binding VideoWidth}"

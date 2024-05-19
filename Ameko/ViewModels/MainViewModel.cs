@@ -61,6 +61,8 @@ public class MainViewModel : ViewModelBase
     public ICommand RemoveFromWorkspaceCommand { get; }
     public ICommand ActivateScriptCommand { get; }
     public ICommand ReloadScriptsCommand { get; }
+    public ICommand ActivateLayoutCommand { get; }
+    public ICommand ReloadLayoutsCommand { get; }
     public ICommand QuitCommand { get; }
     public ICommand UndoCommand { get; }
     public ICommand RedoCommand { get; }
@@ -78,6 +80,7 @@ public class MainViewModel : ViewModelBase
 
     public ObservableCollection<TabItemViewModel> Tabs { get; set; }
     public ObservableCollection<TemplatedControl> ScriptMenuItems { get; }
+    public ObservableCollection<TemplatedControl> LayoutMenuItems { get; }
 
     public int SelectedTabIndex
     {
@@ -117,6 +120,22 @@ public class MainViewModel : ViewModelBase
             {
                 Tabs?.Remove(Tabs.Where(t => t.ID == oi.ID).Single());
             }
+    }
+
+    private void GenerateLayoutsMenu()
+    {
+        LayoutMenuItems.Clear();
+        var reloadSvg = new Avalonia.Svg.Skia.Svg(new Uri("avares://Ameko/Assets/B5/arrow-clockwise.svg")) { Path = new Uri("avares://Ameko/Assets/B5/arrow-clockwise.svg").LocalPath };
+
+        LayoutMenuItems.AddRange(LayoutMenuService.GenerateLayoutMenuItemSource(ActivateLayoutCommand));
+
+        LayoutMenuItems.Add(new Separator());
+        LayoutMenuItems.Add(new MenuItem
+        {
+            Header = "_Reload Layouts",
+            Command = ReloadLayoutsCommand,
+            Icon = reloadSvg
+        });
     }
 
     private void GenerateScriptsMenu()
@@ -272,6 +291,13 @@ public class MainViewModel : ViewModelBase
             ScriptService.Instance.Reload(true);
         });
 
+        ActivateLayoutCommand = ReactiveCommand.Create<string>(LayoutService.Instance.SelectLayout);
+
+        ReloadLayoutsCommand = ReactiveCommand.Create(() =>
+        {
+            LayoutService.Instance.Reload(true);
+        });
+
         ShowFreeformPlaygroundCommand = ReactiveCommand.Create(async () =>
         {
             var vm = new FreeformWindowViewModel();
@@ -280,14 +306,21 @@ public class MainViewModel : ViewModelBase
 
         Tabs = new ObservableCollection<TabItemViewModel>(HoloContext.Instance.Workspace.Files.Select(f => new TabItemViewModel(f.Title, f)));
 
-        ScriptMenuItems = new ObservableCollection<TemplatedControl>();
+        ScriptMenuItems = [];
         GenerateScriptsMenu();
+
+        LayoutMenuItems = [];
+        GenerateLayoutsMenu();
 
         HoloContext.Instance.Workspace.Files.CollectionChanged += UpdateLoadedTabsCallback;
         ScriptService.Instance.MainViewModel = this;
         ScriptService.Instance.LoadedScripts.CollectionChanged += (o, e) =>
         {
             GenerateScriptsMenu();
+        };
+        LayoutService.Instance.LoadedLayouts.CollectionChanged += (o, e) =>
+        {
+            GenerateLayoutsMenu();
         };
     }
 }

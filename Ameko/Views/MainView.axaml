@@ -106,6 +106,7 @@
 				</MenuItem>
 			</MenuItem>
 			<MenuItem Header="Scri_pts" ItemsSource="{Binding ScriptMenuItems}" />
+			<MenuItem Header="_Layouts" ItemsSource="{Binding LayoutMenuItems}" />
 			<MenuItem Header="_Help">
 				<MenuItem Header="_Configuration" Command="{Binding ShowConfigWindowCommand}">
 					<MenuItem.Icon>

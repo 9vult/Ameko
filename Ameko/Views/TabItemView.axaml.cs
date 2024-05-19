@@ -1,14 +1,10 @@
-using Ameko.Controls;
 using Ameko.DataModels;
 using Ameko.Services;
 using Ameko.ViewModels;
-using AssCS;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-using Avalonia.Media;
 using Avalonia.ReactiveUI;
-using DynamicData;
 using Holo;
 using ReactiveUI;
 using System;
@@ -103,50 +99,9 @@ namespace Ameko.Views
         public TabView()
         {
             InitializeComponent();
-            previousVMs = new List<TabItemViewModel>();
+            previousVMs = [];
 
-            // TODO: TEMP
-            var lt = TabLayout.Default;
-            ti_GRID.ColumnDefinitions = new ColumnDefinitions(lt.Columns);
-            ti_GRID.RowDefinitions = new RowDefinitions(lt.Rows);
-
-            ti_VIDEO.IsVisible = lt.Video;
-            ti_VIDEO.SetValue(Grid.ColumnProperty, lt.VideoColumn);
-            ti_VIDEO.SetValue(Grid.RowProperty, lt.VideoRow);
-            ti_VIDEO.SetValue(Grid.ColumnSpanProperty, lt.VideoColumnSpan);
-            ti_VIDEO.SetValue(Grid.RowSpanProperty, lt.VideoRowSpan);
-
-            ti_AUDIO.IsVisible = lt.Audio;
-            ti_AUDIO.SetValue(Grid.ColumnProperty, lt.AudioColumn);
-            ti_AUDIO.SetValue(Grid.RowProperty, lt.AudioRow);
-            ti_AUDIO.SetValue(Grid.ColumnSpanProperty, lt.AudioColumnSpan);
-            ti_AUDIO.SetValue(Grid.RowSpanProperty, lt.AudioRowSpan);
-
-            ti_EDITOR.IsVisible = lt.Editor;
-            ti_EDITOR.SetValue(Grid.ColumnProperty, lt.EditorColumn);
-            ti_EDITOR.SetValue(Grid.RowProperty, lt.EditorRow);
-            ti_EDITOR.SetValue(Grid.ColumnSpanProperty, lt.EditorColumnSpan);
-            ti_EDITOR.SetValue(Grid.RowSpanProperty, lt.EditorRowSpan);
-
-            ti_EVENTS.IsVisible = lt.Events;
-            ti_EVENTS.SetValue(Grid.ColumnProperty, lt.EventsColumn);
-            ti_EVENTS.SetValue(Grid.RowProperty, lt.EventsRow);
-            ti_EVENTS.SetValue(Grid.ColumnSpanProperty, lt.EventsColumnSpan);
-            ti_EVENTS.SetValue(Grid.RowSpanProperty, lt.EventsRowSpan);
-
-            foreach (var split in lt.Splitters)
-            {
-                GridSplitter splitter = new();
-                splitter.ResizeDirection = split.Columns ? GridResizeDirection.Columns : GridResizeDirection.Rows;
-                splitter.Background = Brush.Parse("Black");
-                splitter.SetValue(Grid.ColumnProperty, split.Column);
-                splitter.SetValue(Grid.RowProperty, split.Row);
-                splitter.SetValue(Grid.ColumnSpanProperty, split.ColumnSpan);
-                splitter.SetValue(Grid.RowSpanProperty, split.RowSpan);
-                ti_GRID.Children.Add(splitter);
-            }
-
-            // END TEMP
+            LayoutService.Instance.ApplyLayout(ref ti_GRID, ref ti_VIDEO, ref ti_AUDIO, ref ti_EDITOR, ref ti_EVENTS);
 
             this.WhenActivated((CompositeDisposable disposables) =>
             {
@@ -159,6 +114,11 @@ namespace Ameko.Views
                     // Skip the rest if already subscribed
                     if (previousVMs.Contains(vm)) return;
                     previousVMs.Add(vm);
+
+                    LayoutService.Instance.PropertyChanged += (object? sender, System.ComponentModel.PropertyChangedEventArgs e) =>
+                    {
+                        LayoutService.Instance.ApplyLayout(ref ti_GRID, ref ti_VIDEO, ref ti_AUDIO, ref ti_EDITOR, ref ti_EVENTS);
+                    };
 
                     vm.CopySelectedEvents.RegisterHandler(DoCopySelectedEventAsync);
                     vm.CutSelectedEvents.RegisterHandler(DoCutSelectedEventAsync);
