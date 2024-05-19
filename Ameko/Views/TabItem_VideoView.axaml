@@ -16,42 +16,45 @@
 			<Grid DockPanel.Dock="Bottom"
 				  RowDefinitions="auto, auto"
 				  Height="45">
-				<StackPanel Grid.Row="0"
+				<Grid Grid.Row="0" ColumnDefinitions="auto, *">
+					<StackPanel Grid.Column="0"
 							Orientation="Horizontal">
-					<Button Margin="1"
-							Width="20" Height="20"
-							Command=""
-							ToolTip.Tip="Play">
-						<Svg Path="avares://Ameko/Assets/B5/play.svg" />
-					</Button>
-					<Button Margin="1"
-							Width="20" Height="20"
-							Command=""
-							ToolTip.Tip="Play Selection">
-						<Svg Path="avares://Ameko/Assets/B5/skip-end.svg" />
-					</Button>
-					<Button Margin="1"
-							Width="20" Height="20"
-							Command=""
-							ToolTip.Tip="Pause">
-						<Svg Path="avares://Ameko/Assets/B5/pause.svg" />
-					</Button>
-					<Button Margin="1"
-							Width="20" Height="20"
-							Command=""
-							ToolTip.Tip="Enable auto seek to event start"
-							IsVisible="True"
-							IsEnabled="False">
-						<Svg Path="avares://Ameko/Assets/B5/skip-start-circle.svg" />
-					</Button>
-					<Button Margin="1"
-							Width="20" Height="20"
-							Command=""
-							ToolTip.Tip="Disable auto seek to event start"
-							IsVisible="False">
-						<Svg Path="avares://Ameko/Assets/B5/skip-start-circle-fill.svg" />
-					</Button>
+						<Button Margin="1"
+								Width="20" Height="20"
+								Command="{Binding StartPlayingCommand}"
+								ToolTip.Tip="Play">
+							<Svg Path="avares://Ameko/Assets/B5/play.svg" />
+						</Button>
+						<Button Margin="1"
+								Width="20" Height="20"
+								Command="{Binding PlaySelectionCommand}"
+								ToolTip.Tip="Play Selection">
+							<Svg Path="avares://Ameko/Assets/B5/skip-end.svg" />
+						</Button>
+						<Button Margin="1"
+								Width="20" Height="20"
+								Command="{Binding StopPlayingCommand}"
+								ToolTip.Tip="Pause">
+							<Svg Path="avares://Ameko/Assets/B5/pause.svg" />
+						</Button>
+						<Button Margin="1"
+								Width="20" Height="20"
+								Command=""
+								ToolTip.Tip="Enable auto seek to event start"
+								IsVisible="True"
+								IsEnabled="False">
+							<Svg Path="avares://Ameko/Assets/B5/skip-start-circle.svg" />
+						</Button>
+						<Button Margin="1"
+								Width="20" Height="20"
+								Command=""
+								ToolTip.Tip="Disable auto seek to event start"
+								IsVisible="False">
+							<Svg Path="avares://Ameko/Assets/B5/skip-start-circle-fill.svg" />
+						</Button>
+					</StackPanel>
 					<ac:SeekSlider Name="videoSlider"
+								   Grid.Column="1"
 								   VerticalAlignment="Center"
 								   Maximum="{Binding Wrapper.AVManager.Video.__FrameCountZeroIndex, FallbackValue=0}"
 								   SmallChange="1"
@@ -62,7 +65,7 @@
 								   DragStarted="SeekSlider_DragStarted"
 								   DragEnded="SeekSlider_DragEnded"
 								   Value="{Binding Wrapper.AVManager.Video.CurrentFrame, FallbackValue=0, Mode=OneWay}"/>
-				</StackPanel>
+				</Grid>
 				<Grid Grid.Row="1"
 					  ColumnDefinitions="auto, auto, auto, *, auto, auto">
 					<TextBlock Grid.Column="0"

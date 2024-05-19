@@ -175,6 +175,7 @@ namespace Holo.Data
             _playbackDestination = FrameCount - 1;
             _playback.Start();
             IsPlaying = true;
+            IsPaused = false;
         }
 
         /// <summary>
@@ -184,10 +185,13 @@ namespace Holo.Data
         /// <param name="selection">Events to play between</param>
         public void PlaySelection(IEnumerable<Event> selection)
         {
-            var start = selection.Select(e => e.Start).Min();
-            var end = selection.Select(e => e.End).Max();
-            SeekTo(TimeToFrame(start));
-            _playbackDestination = TimeToFrame(end);
+            var startTime = selection.Select(e => e.Start).Min();
+            var endTime = selection.Select(e => e.End).Max();
+            var startFrame = Math.Min(Math.Max(0, TimeToFrame(startTime)), FrameCount - 1);
+            var endFrame = Math.Min(Math.Max(0, TimeToFrame(endTime) - 1), FrameCount - 1);
+
+            CurrentFrame = startFrame;
+            _playbackDestination = endFrame;
             _playback.Start();
             IsPlaying = true;
             IsPaused = false;
@@ -204,12 +208,12 @@ namespace Holo.Data
         }
 
         /// <summary>
-        /// Set the current frame
+        /// Seek to the start of an event
         /// </summary>
-        /// <param name="frame"></param>
-        public void SeekTo(int frame)
+        /// <param name="e">Event to seek to</param>
+        public void SeekTo(Event e)
         {
-            CurrentFrame = frame;
+            CurrentFrame = Math.Min(Math.Max(0, TimeToFrame(e.Start)), FrameCount - 1);
         }
 
         /// <summary>
@@ -238,7 +242,6 @@ namespace Holo.Data
             DisplayScale = ScalePercentage.VS_50;
             _playback = new Timer(_msPerFrame);
             _playback.Elapsed += Tick;
-            PlayToEnd();
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;

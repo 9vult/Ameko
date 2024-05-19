@@ -64,6 +64,10 @@ namespace Ameko.ViewModels
         public ICommand EditFileStyleCommand { get; }
         public ICommand ScrollChangeScaleCommand { get; }
 
+        public ICommand StartPlayingCommand { get; }
+        public ICommand StopPlayingCommand { get; }
+        public ICommand PlaySelectionCommand { get; }
+
         public string Title
         {
             get => _title;
@@ -204,12 +208,30 @@ namespace Ameko.ViewModels
 
             ScrollChangeScaleCommand = ReactiveCommand.Create((bool positive) =>
             {
-                if (Wrapper.AVManager?.Video == null) return;
+                if (Wrapper.AVManager.Video == null) return;
                 var idx = ScalePercentage.Scales.IndexOf(Wrapper.AVManager.Video.DisplayScale);
                 if (idx == 0 && !positive) return;
                 if (idx == ScalePercentage.Scales.Count - 1 && positive) return;
 
                 Wrapper.AVManager.Video.DisplayScale = ScalePercentage.Scales[positive ? idx+1 : idx-1];
+            });
+
+            StartPlayingCommand = ReactiveCommand.Create(() =>
+            {
+                if (Wrapper.AVManager.Video == null) return;
+                Wrapper.AVManager.Video.PlayToEnd();
+            });
+
+            StopPlayingCommand = ReactiveCommand.Create(() =>
+            {
+                if (Wrapper.AVManager.Video == null) return;
+                Wrapper.AVManager.Video.StopPlaying();
+            });
+
+            PlaySelectionCommand = ReactiveCommand.Create(() =>
+            {
+                if (Wrapper.AVManager.Video == null || Wrapper.SelectedEventCollection == null) return;
+                Wrapper.AVManager.Video.PlaySelection(Wrapper.SelectedEventCollection);
             });
 
             ActivateScriptCommand = ReactiveCommand.Create<string>(async (string scriptName) =>
