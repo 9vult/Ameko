@@ -60,8 +60,7 @@ namespace Ameko.Views
             if (ViewModel == null) return;
             if (ViewModel.Wrapper.AVManager.Video.IsPlaying)
             {
-                ViewModel.Wrapper.AVManager.Video.IsPaused = true;
-                ViewModel.Wrapper.AVManager.Video.StopPlaying();
+                ViewModel.Wrapper.AVManager.Video.PausePlaying();
             }
         }
 

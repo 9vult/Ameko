@@ -67,7 +67,7 @@ namespace Holo.Plugins
 
             List<int> tracks = new List<int>();
             var totalTrackCount = _indexer.TrackCount;
-            for (int i = 0; i < totalTrackCount - 1; i++)
+            for (int i = 0; i < totalTrackCount; i++)
             {
                 if (_indexer.GetTrackType(i) == TrackType.Video)
                     tracks.Add(i);

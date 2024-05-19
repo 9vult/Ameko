@@ -2,47 +2,70 @@
 using Holo.Plugins;
 using Holo.Utilities;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Text;
 
 namespace Holo
 {
-    public class AVManager
+    public class AVManager : INotifyPropertyChanged
     {
-        // Video 
-        // TODO: Extract to a class?
+        // Video
         private IVideoSourcePlugin _source;
+        private readonly VideoWrapper _video;
         private bool _videoLoaded = false;
-        private VideoWrapper _video;
-        public bool IsVideoLoaded => _videoLoaded;
+
         public VideoWrapper Video => _video;
+        
+        public bool IsVideoLoaded
+        {
+            get => _videoLoaded;
+            private set
+            {
+                _videoLoaded = value;
+                OnPropertyChanged(nameof(IsVideoLoaded));
+            }
+        }
 
         public VideoFrame GetFrame()
         {
+            if (!IsVideoLoaded) throw new Exception("Cannot get frame when video is unloaded!");
             return _source.GetFrame(_video.CurrentFrame);
         }
 
-        // TODO
-        public AVManager()
+        public bool LoadVideo(string filepath)
         {
-            _source = new Ffms2Source();
-
-            _source.Initialize();
             if (!_source.IsInitialized) throw new Exception("Failed to load ffms2source");
-            _source.OpenFile("test.mkv");
+
+            if (IsVideoLoaded) _source.CloseFile();
+
+            _source.OpenFile(filepath);
             int[] videoTracks = _source.GetVideoTracks();
             if (videoTracks.Length == 0) throw new Exception("No video tracks in file!");
 
-            _videoLoaded = _source.LoadTrack(videoTracks[0]);
+            IsVideoLoaded = _source.LoadTrack(videoTracks[0]);
+            if (!IsVideoLoaded) throw new Exception("Failed to load track!");
 
             var fc = _source.GetFrameCount();
             if (fc <= 0) throw new Exception("No frames in this file!");
             var frame = _source.GetFrame(0);
             var sar = new Rational(frame.Size.X, frame.Size.Y);
             var rate = _source.GetFrameRate();
-            _video = new VideoWrapper(fc, sar, rate);
+            _video.Scaffold(fc, sar, rate);
+            return _videoLoaded;
+        }
+
+        public AVManager()
+        {
+            _source = new Ffms2Source();
+            _source.Initialize();
+            _videoLoaded = false;
+            _video = new VideoWrapper(25, new Rational(1280, 720), new Rational(24000, 1001));
+        }
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+        protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
     }

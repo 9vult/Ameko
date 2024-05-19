@@ -1,22 +1,13 @@
-﻿using Ameko.DataModels;
-using Ameko.Services;
-using Ameko.Views;
-using AssCS.IO;
+﻿using Ameko.Services;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Controls.Primitives;
-using Avalonia.Platform;
-using Avalonia.Svg.Skia;
 using DynamicData;
-using ExCSS;
 using Holo;
 using ReactiveUI;
-using Svg.Skia;
 using System;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
@@ -37,6 +28,7 @@ public class MainViewModel : ViewModelBase
     public Interaction<FileWrapper, Uri?> ShowExportFileDialog { get; }
     public Interaction<MainViewModel, Uri?> ShowOpenWorkspaceDialog { get; }
     public Interaction<Workspace, Uri?> ShowSaveAsWorkspaceDialog { get; }
+    public Interaction<MainViewModel, Uri?> ShowOpenVideoDialog { get; }
     public Interaction<SearchWindowViewModel, string?> ShowSearchDialog { get; }
     public Interaction<ShiftTimesWindowViewModel, Unit> ShowShiftTimesDialog { get; }
     public Interaction<ScriptPropertiesWindowViewModel, Unit> ShowScriptPropertiesDialog { get; }
@@ -57,6 +49,7 @@ public class MainViewModel : ViewModelBase
     public ICommand ShowExportFileDialogCommand { get; }
     public ICommand ShowOpenWorkspaceDialogCommand { get; }
     public ICommand ShowSaveWorkspaceDialogCommand { get; }
+    public ICommand ShowOpenVideoDialogCommand { get; }
     public ICommand CloseTabCommand { get; }
     public ICommand RemoveFromWorkspaceCommand { get; }
     public ICommand ActivateScriptCommand { get; }
@@ -178,6 +171,7 @@ public class MainViewModel : ViewModelBase
         ShowExportFileDialog = new Interaction<FileWrapper, Uri?>();
         ShowOpenWorkspaceDialog = new Interaction<MainViewModel, Uri?>();
         ShowSaveAsWorkspaceDialog = new Interaction<Workspace, Uri?>();
+        ShowOpenVideoDialog = new Interaction<MainViewModel, Uri?>();
         ShowSearchDialog = new Interaction<SearchWindowViewModel, string?>();
         ShowShiftTimesDialog = new Interaction<ShiftTimesWindowViewModel, Unit>();
         ShowScriptPropertiesDialog = new Interaction<ScriptPropertiesWindowViewModel, Unit>();
@@ -198,6 +192,7 @@ public class MainViewModel : ViewModelBase
         ShowExportFileDialogCommand = ReactiveCommand.Create(() => IOCommandService.DisplayExportDialog(ShowExportFileDialog));
         ShowSaveWorkspaceDialogCommand = ReactiveCommand.Create(() => IOCommandService.WorkspaceSaveOrDisplaySaveAsDialog(ShowSaveAsWorkspaceDialog));
         ShowOpenWorkspaceDialogCommand = ReactiveCommand.Create(() => IOCommandService.DisplayWorkspaceOpenDialog(ShowOpenWorkspaceDialog, this));
+        ShowOpenVideoDialogCommand = ReactiveCommand.Create(() => IOCommandService.DisplayVideoOpenDialog(ShowOpenVideoDialog, this));
 
         UndoCommand = ReactiveCommand.Create(HoloContext.Instance.Workspace.WorkingFile.Undo);
         RedoCommand = ReactiveCommand.Create(HoloContext.Instance.Workspace.WorkingFile.Redo);

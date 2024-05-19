@@ -170,6 +170,29 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
         interaction.SetOutput(null);
     }
 
+    private async Task DoShowOpenVideoDialogAsync(InteractionContext<MainViewModel, Uri?> interaction)
+    {
+        string[] extensions = [ "*.asf", "*.avi", "*.avs", "*.d2v",
+                                "*.h264", "*.hevc", "*.m2ts", "*.m4v",
+                                "*.mkv", "*.mov", "*.mp4", "*.mpeg",
+                                "*.ogm", "*.webm", "*.wmv", "*.ts", 
+                                "*.y4m", "*.yuv" ];
+        var files = await this.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+        {
+            Title = "Open Video File",
+            AllowMultiple = false,
+            FileTypeFilter = new[] {
+                new FilePickerFileType("Video Files") { Patterns = extensions }
+            }
+        });
+        if (files.Count > 0)
+        {
+            interaction.SetOutput(files[0].Path);
+            return;
+        }
+        interaction.SetOutput(null);
+    }
+
     private void DoShowStylesManager(InteractionContext<StylesManagerViewModel, StylesManagerViewModel?> interaction)
     {
         var manager = new StylesManagerWindow();
@@ -322,6 +345,7 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
                 ViewModel.ShowExportFileDialog.RegisterHandler(DoShowExportSaveAsFileDialogAsync);
                 ViewModel.ShowSaveAsWorkspaceDialog.RegisterHandler(DoShowSaveAsWorkspaceDialogAsync);
                 ViewModel.ShowOpenWorkspaceDialog.RegisterHandler(DoShowOpenWorkspaceDialogAsync);
+                ViewModel.ShowOpenVideoDialog.RegisterHandler(DoShowOpenVideoDialogAsync);
                 
                 ViewModel.ShowStylesManager.RegisterHandler(DoShowStylesManager);
                 ViewModel.ShowSearchDialog.RegisterHandler(DoShowSearchWindow);

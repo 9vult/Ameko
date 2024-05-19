@@ -72,7 +72,7 @@
 							   Margin="1"
 							   VerticalAlignment="Bottom"
 							   FontFamily="{StaticResource MonoidRegular}"
-							   Text="{Binding Wrapper.AVManager.Video.CurrentTimeEstimated.MillisecondText, FallbackValue='1:23:45.678'}" />
+							   Text="{Binding Wrapper.AVManager.Video.CurrentTimeEstimated.MillisecondText, FallbackValue='0:00:00.000'}" />
 					<TextBlock Grid.Column="1"
 							   Margin="1"
 							   VerticalAlignment="Bottom"
@@ -82,7 +82,7 @@
 							   Margin="1"
 							   VerticalAlignment="Bottom"
 							   FontFamily="{StaticResource MonoidRegular}"
-							   Text="{Binding Wrapper.AVManager.Video.CurrentFrame, FallbackValue='123456'}" />
+							   Text="{Binding Wrapper.AVManager.Video.CurrentFrame, FallbackValue='0'}" />
 					<CheckBox Grid.Column="4"
 							  Margin="1"
 							  VerticalAlignment="Center"

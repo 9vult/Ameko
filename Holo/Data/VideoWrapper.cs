@@ -14,10 +14,10 @@ namespace Holo.Data
     public class VideoWrapper : INotifyPropertyChanged
     {
         private int _currentFrame;
-        private readonly int _frameCount;
-        private readonly Rational _sar;
-        private readonly Rational _frameRate;
-        private readonly double _msPerFrame;
+        private int _frameCount;
+        private Rational _sar;
+        private Rational _frameRate;
+        private double _msPerFrame;
 
         private double _displayWidth;
         private double _displayHeight;
@@ -27,6 +27,38 @@ namespace Holo.Data
         private bool _isPaused;
         private Timer _playback;
         private int _playbackDestination;
+
+        public int FrameCount
+        {
+            get => _frameCount;
+            private set
+            {
+                _frameCount = value;
+                OnPropertyChanged(nameof(FrameCount));
+                OnPropertyChanged(nameof(__FrameCountZeroIndex));
+            }
+        }
+
+        public Rational SAR
+        {
+            get => _sar;
+            private set
+            {
+                _sar = value;
+                OnPropertyChanged(nameof(SAR));
+            }
+        }
+
+        public Rational FrameRate
+        {
+            get => _frameRate;
+            private set
+            {
+                _frameRate = value;
+                OnPropertyChanged(nameof(FrameRate));
+                OnPropertyChanged(nameof(__FrameRateCeiling));
+            }
+        }
 
         /// <summary>
         /// The current frame in the video
@@ -88,30 +120,32 @@ namespace Holo.Data
             }
         }
 
+        /// <summary>
+        /// If the video is currently playing
+        /// </summary>
         public bool IsPlaying
         {
             get => _isPlaying;
-            set
+            private set
             {
                 _isPlaying = value;
                 OnPropertyChanged(nameof(IsPlaying));
             }
         }
 
+        /// <summary>
+        /// If the video is paused, and will resume
+        /// playing to the current destination
+        /// </summary>
         public bool IsPaused
         {
             get => _isPaused;
-            set
+            private set
             {
                 _isPaused = value;
                 OnPropertyChanged(nameof(IsPaused));
             }
         }
-
-        // Primaries
-        public int FrameCount => _frameCount;
-        public Rational SAR => _sar;
-        public Rational FrameRate => _frameRate;
 
         // Methods
 
@@ -207,6 +241,12 @@ namespace Holo.Data
             IsPaused = false;
         }
 
+        public void PausePlaying()
+        {
+            IsPaused = true;
+            StopPlaying();
+        }
+
         /// <summary>
         /// Seek to the start of an event
         /// </summary>
@@ -227,7 +267,6 @@ namespace Holo.Data
             else StopPlaying();
         }
 
-
         // Extras for GUI support
         public int __FrameCountZeroIndex => _frameCount - 1;
         public int __FrameRateCeiling => (int)Math.Ceiling(_frameRate.Ratio);
@@ -242,6 +281,18 @@ namespace Holo.Data
             DisplayScale = ScalePercentage.VS_50;
             _playback = new Timer(_msPerFrame);
             _playback.Elapsed += Tick;
+        }
+
+        public void Scaffold(int frameCount, Rational sar, Rational frameRate)
+        {
+            StopPlaying();
+            IsPaused = false;
+
+            CurrentFrame = 0;
+            FrameCount = frameCount;
+            SAR = sar;
+            FrameRate = frameRate;
+            DisplayScale = ScalePercentage.VS_50;
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;

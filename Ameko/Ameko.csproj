@@ -48,6 +48,7 @@
     <None Remove="Assets\B5\door-open.svg" />
     <None Remove="Assets\B5\file-earmark.svg" />
     <None Remove="Assets\B5\files.svg" />
+    <None Remove="Assets\B5\film.svg" />
     <None Remove="Assets\B5\floppy.svg" />
     <None Remove="Assets\B5\floppy2.svg" />
     <None Remove="Assets\B5\folder-plus.svg" />
