@@ -6,11 +6,7 @@ using Avalonia.Threading;
 using Avalonia;
 using SkiaSharp;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Avalonia.Platform;
 using Holo;
 
@@ -19,12 +15,9 @@ namespace Ameko.Controls
     public class SKBitmapRenderer : Control
     {
         private readonly GlyphRun _noSkia;
-        private readonly AVManager _avmanager;
 
-        static SKPoint _origin = new SKPoint(0, 0);
-        public SKBitmapRenderer(AVManager avm)
+        public SKBitmapRenderer()
         {
-            _avmanager = avm;
             ClipToBounds = true;
             var text = "Current rendering API is not Skia";
             var glyphs = text.Select(ch => Typeface.Default.GlyphTypeface.GetGlyph(ch)).ToArray();
@@ -79,7 +72,9 @@ namespace Ameko.Controls
 
         public override void Render(DrawingContext context)
         {
-            context.Custom(new CustomDrawOp(new Rect(0, 0, Bounds.Width, Bounds.Height), _noSkia, _avmanager.GetFrame().Bitmap));
+            if (HoloContext.Instance.Workspace.WorkingFile.AVManager.IsVideoLoaded)
+            context.Custom(new CustomDrawOp(new Rect(0, 0, Bounds.Width, Bounds.Height), _noSkia, 
+                HoloContext.Instance.Workspace.WorkingFile.AVManager.GetFrame().Bitmap));
             Dispatcher.UIThread.InvokeAsync(InvalidateVisual, DispatcherPriority.Background);
         }
     }

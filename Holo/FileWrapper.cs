@@ -22,7 +22,7 @@ namespace Holo
         private Event? previouslySelectedEvent;
         private List<Event>? previouslySelectedEvents;
 
-        private AVManager? avManager;
+        private AVManager avManager;
 
         private Logger logger;
 
@@ -59,7 +59,7 @@ namespace Holo
             set { title = value; OnPropertyChanged(nameof(Title)); }
         }
 
-        public AVManager? AVManager => avManager;
+        public AVManager AVManager => avManager;
 
         private bool selecting = false; // TODO: There MUST be a better way to do this but I can't think of it right now
         public Snapshot<Event>? Select(List<Event> newSelectedEvents, Event newSelectedEvent, bool commit = true)

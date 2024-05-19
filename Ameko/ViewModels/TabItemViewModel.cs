@@ -1,17 +1,13 @@
 ﻿using Ameko.DataModels;
 using Ameko.Services;
 using AssCS;
-using AssCS.IO;
 using DynamicData;
 using Holo;
-using Newtonsoft.Json.Linq;
+using Holo.Data;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Windows.Input;
@@ -29,9 +25,6 @@ namespace Ameko.ViewModels
         private int _focusLostSelectionEnd;
 
         private bool _lockASR = true;
-        private double _videoWidth;
-        private double _videoHeight;
-        private ScalePercentage _videoScale = ScalePercentage.VS_50;
 
         private static readonly Event FALLBACK_EVENT = new Event(-1) { Text="<No Event Selected>" };
 
@@ -106,35 +99,10 @@ namespace Ameko.ViewModels
             set => this.RaiseAndSetIfChanged(ref _focusLostSelectionEnd, value);
         }
 
-        public ScalePercentage VideoScale
-        {
-            get => _videoScale;
-            set
-            {
-                this.RaiseAndSetIfChanged(ref _videoScale, value);
-                if (Wrapper.AVManager == null) return;
-
-                VideoWidth = value.Multiplier * Wrapper.AVManager.Video.SAR.Numerator;
-                VideoHeight = value.Multiplier * Wrapper.AVManager.Video.SAR.Denominator;
-            }
-        }
-
         public bool LockASR
         {
             get => _lockASR;
             set => this.RaiseAndSetIfChanged(ref _lockASR, value);
-        }
-
-        public double VideoWidth
-        {
-            get => _videoWidth;
-            set => this.RaiseAndSetIfChanged(ref _videoWidth, value);
-        }
-
-        public double VideoHeight
-        {
-            get => _videoHeight;
-            set => this.RaiseAndSetIfChanged(ref _videoHeight, value);
         }
 
         public int ID => _id;
@@ -236,11 +204,12 @@ namespace Ameko.ViewModels
 
             ScrollChangeScaleCommand = ReactiveCommand.Create((bool positive) =>
             {
-                var idx = ScalePercentage.Scales.IndexOf(VideoScale);
+                if (Wrapper.AVManager?.Video == null) return;
+                var idx = ScalePercentage.Scales.IndexOf(Wrapper.AVManager.Video.DisplayScale);
                 if (idx == 0 && !positive) return;
                 if (idx == ScalePercentage.Scales.Count - 1 && positive) return;
 
-                VideoScale = ScalePercentage.Scales[positive ? idx+1 : idx-1];
+                Wrapper.AVManager.Video.DisplayScale = ScalePercentage.Scales[positive ? idx+1 : idx-1];
             });
 
             ActivateScriptCommand = ReactiveCommand.Create<string>(async (string scriptName) =>
@@ -248,12 +217,9 @@ namespace Ameko.ViewModels
                 await ScriptService.Instance.Execute(scriptName);
             });
 
-            // TODO
-            VideoScale = ScalePercentage.VS_50;
-
             // TODO: Maybe not do this this way
             Wrapper.PropertyChanged += (o, e) => { this.RaisePropertyChanged(nameof(Display)); };
-            Wrapper.Select(new List<Event>() { Wrapper.File.EventManager.Head }, Wrapper.File.EventManager.Head);
+            Wrapper.Select([Wrapper.File.EventManager.Head], Wrapper.File.EventManager.Head);
             SelectedEvent = Wrapper.File.EventManager.Head;
         }
     }

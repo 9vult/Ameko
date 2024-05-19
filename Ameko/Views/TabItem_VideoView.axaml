@@ -20,11 +20,14 @@
 							   Grid.Row="0"
 							   Margin="2"
 							   Minimum="0"
-							   Maximum="{Binding Wrapper.AVManager.Video.__FrameCountZeroIndex}"
+							   Maximum="{Binding Wrapper.AVManager.Video.__FrameCountZeroIndex, FallbackValue=0}"
 							   SmallChange="1"
-							   LargeChange="{Binding Wrapper.AVManager.Video.__FrameRateCeiling}"
+							   LargeChange="{Binding Wrapper.AVManager.Video.__FrameRateCeiling, FallbackValue=1}"
 							   TickFrequency="1"
-							   TickPlacement="None" />
+							   TickPlacement="None"
+							   ValueChanged="SeekSlider_ValueChanged"
+							   DragEnded="SeekSlider_DragEnded"
+							   Value="{Binding Wrapper.AVManager.Video.CurrentFrame, FallbackValue=0, Mode=OneWay}"/>
 				<Grid Grid.Row="1"
 					  ColumnDefinitions="auto, auto, auto, *, auto, auto">
 					<TextBlock Grid.Column="0"
@@ -47,7 +50,7 @@
 					<ComboBox Grid.Column="5"
 							  Padding="2"
 							  ItemsSource="{Binding ScaleOptions}"
-							  SelectedItem="{Binding VideoScale}"
+							  SelectedItem="{Binding Wrapper.AVManager.Video.DisplayScale, FallbackValue=null}"
 							  Width="75"
 							  MaxDropDownHeight="425">
 						<ComboBox.ItemTemplate>
@@ -62,10 +65,10 @@
 						  HorizontalScrollBarVisibility="Auto"
 						  VerticalScrollBarVisibility="Auto">
 				<Panel Name="videoTarget"
-				   Width="{Binding VideoWidth}"
-				   Height="{Binding VideoHeight}"
+				   Width="{Binding Wrapper.AVManager.Video.DisplayWidth, FallbackValue=NaN}"
+				   Height="{Binding Wrapper.AVManager.Video.DisplayHeight, FallbackValue=NaN}"
 				   Background="Gray"
-				   PointerWheelChanged="videoTarget_PointerWheelChanged"/>
+				   PointerWheelChanged="videoTarget_PointerWheelChanged" />
 			</ScrollViewer>
 		</DockPanel>
 	</Panel>

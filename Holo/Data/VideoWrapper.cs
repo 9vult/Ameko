@@ -7,7 +7,7 @@ using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Text;
 
-namespace Holo
+namespace Holo.Data
 {
     public class VideoWrapper : INotifyPropertyChanged
     {
@@ -16,6 +16,13 @@ namespace Holo
         private readonly Rational _sar;
         private readonly Rational _frameRate;
 
+        private double _displayWidth;
+        private double _displayHeight;
+        private ScalePercentage _displayScale = ScalePercentage.VS_100;
+
+        /// <summary>
+        /// The current frame in the video
+        /// </summary>
         public int CurrentFrame
         {
             get => _currentFrame;
@@ -31,6 +38,47 @@ namespace Holo
         /// Current timestamp based on the current frame
         /// </summary>
         public Time CurrentTimeEstimated => FrameToTime(_currentFrame);
+
+        /// <summary>
+        /// Scale the video is being displayed at
+        /// </summary>
+        public ScalePercentage DisplayScale
+        {
+            get => _displayScale;
+            set
+            {
+                _displayScale = value;
+                OnPropertyChanged(nameof(DisplayScale));
+                DisplayWidth = value.Multiplier * SAR.Numerator;
+                DisplayHeight = value.Multiplier * SAR.Denominator;
+            }
+        }
+
+        /// <summary>
+        /// Width the video is being displayed at
+        /// </summary>
+        public double DisplayWidth
+        {
+            get => _displayWidth;
+            set
+            {
+                _displayWidth = value;
+                OnPropertyChanged(nameof(DisplayWidth));
+            }
+        }
+
+        /// <summary>
+        /// Height the video is being displayed at
+        /// </summary>
+        public double DisplayHeight
+        {
+            get => _displayHeight;
+            set
+            {
+                _displayHeight = value;
+                OnPropertyChanged(nameof(DisplayHeight));
+            }
+        }
 
         // Primaries
         public int FrameCount => _frameCount;
@@ -57,7 +105,7 @@ namespace Holo
         /// <returns>Milliseconds for the frame</returns>
         public long FrameToMillis(int frame)
         {
-            return (long)((frame / _frameRate.Ratio) * 1000);
+            return (long)(frame / _frameRate.Ratio * 1000);
         }
 
         /// <summary>
@@ -90,6 +138,7 @@ namespace Holo
             _frameCount = frameCount;
             _sar = sar;
             _frameRate = frameRate;
+            DisplayScale = ScalePercentage.VS_50;
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;

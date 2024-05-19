@@ -45,11 +45,24 @@ namespace Ameko.Views
             }
         }
 
+        private void SeekSlider_ValueChanged(object? sender, Avalonia.Controls.Primitives.RangeBaseValueChangedEventArgs e)
+        {
+            if (ViewModel == null) return;
+            if (!videoSlider.IsDragging) ViewModel.Wrapper.AVManager.Video.CurrentFrame = (int)e.NewValue;
+        }
+
+        private void SeekSlider_DragEnded(object sender, EventArgs e)
+        {
+            if (ViewModel == null) return;
+            ViewModel.Wrapper.AVManager.Video.CurrentFrame = (int)videoSlider.Value;
+        }
 
         public TabItem_VideoView()
         {
             InitializeComponent();
             previousVMs = new List<TabItemViewModel>();
+
+            videoTarget.Children.Add(new SKBitmapRenderer());
 
             this.WhenActivated((CompositeDisposable disposables) =>
             {
@@ -64,23 +77,6 @@ namespace Ameko.Views
                     previousVMs.Add(vm);
 
                     HoloContext.Instance.ConfigurationManager.PropertyChanged += ConfigurationManager_PropertyChanged;
-
-                    // TODO: TEMPORARY
-                    if (vm.Wrapper.AVManager != null && vm.Wrapper.AVManager.IsVideoLoaded)
-                    {
-                        var skb = new SKBitmapRenderer(vm.Wrapper.AVManager);
-                        videoTarget.Children.Add(skb);
-                        videoSlider.LargeChange = Math.Ceiling(vm.Wrapper.AVManager.Video.FrameRate.Ratio);
-                        videoSlider.ValueChanged += (object? sender, Avalonia.Controls.Primitives.RangeBaseValueChangedEventArgs e) =>
-                        {
-                            if (!videoSlider.IsDragging)
-                                vm.Wrapper.AVManager.Video.CurrentFrame = (int)e.NewValue;
-                        };
-                        videoSlider.DragEnded += (object sender, EventArgs e) =>
-                        {
-                            vm.Wrapper.AVManager.Video.CurrentFrame = (int)videoSlider.Value;
-                        };
-                    }
                 })
                 .DisposeWith(disposables);
             });

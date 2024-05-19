@@ -1,4 +1,5 @@
-﻿using Holo.Plugins;
+﻿using Holo.Data;
+using Holo.Plugins;
 using Holo.Utilities;
 using System;
 using System.Collections.Generic;
@@ -12,11 +13,10 @@ namespace Holo
     {
         // Video 
         // TODO: Extract to a class?
-        private Ffms2Source _source;
-        private bool _videoLoaded;
+        private IVideoSourcePlugin _source;
+        private bool _videoLoaded = false;
         private VideoWrapper _video;
         public bool IsVideoLoaded => _videoLoaded;
-
         public VideoWrapper Video => _video;
 
         public VideoFrame GetFrame()
