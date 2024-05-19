@@ -156,7 +156,7 @@ namespace Ameko.Services
             var uri = await interaction.Handle(vm);
             if (uri == null) return;
 
-            HoloContext.Instance.Workspace.WorkingFile.AVManager.LoadVideo(uri.AbsolutePath);
+            HoloContext.Instance.Workspace.WorkingFile.AVManager.LoadVideo(uri.LocalPath);
         }
 
         public static async void PasteLines(Interaction<TabItemViewModel, string[]?> interaction, TabItemViewModel vm)
