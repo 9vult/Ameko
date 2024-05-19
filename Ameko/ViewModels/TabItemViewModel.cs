@@ -4,6 +4,7 @@ using AssCS;
 using AssCS.IO;
 using DynamicData;
 using Holo;
+using Newtonsoft.Json.Linq;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
@@ -27,6 +28,7 @@ namespace Ameko.ViewModels
         private int _selectionEnd;
         private int _focusLostSelectionEnd;
 
+        private bool _lockASR = true;
         private double _videoWidth;
         private double _videoHeight;
         private ScalePercentage _videoScale = ScalePercentage.VS_50;
@@ -45,37 +47,12 @@ namespace Ameko.ViewModels
         }
 
         public List<ScalePercentage> ScaleOptions => ScalePercentage.Scales;
-        public ScalePercentage VideoScale
-        {
-            get => _videoScale;
-            set
-            {
-                this.RaiseAndSetIfChanged(ref _videoScale, value);
-                if (Wrapper.AVManager == null) return;
-
-                VideoWidth = value.Multiplier * Wrapper.AVManager.Video.SAR.Numerator;
-                VideoHeight = value.Multiplier * Wrapper.AVManager.Video.SAR.Denominator;
-            }
-        }
-
-        public double VideoWidth
-        {
-            get => _videoWidth;
-            set => this.RaiseAndSetIfChanged(ref _videoWidth, value);
-        }
-
-        public double VideoHeight
-        {
-            get => _videoHeight;
-            set => this.RaiseAndSetIfChanged(ref _videoHeight, value);
-        }
 
         public Interaction<TabItemViewModel, string?> CopySelectedEvents { get; }
         public Interaction<TabItemViewModel, string?> CutSelectedEvents { get; }
         public Interaction<TabItemViewModel, string[]?> Paste { get; }
         public Interaction<Event, Unit> ScrollIntoViewInteraction { get; }
         public Interaction<StyleEditorViewModel, StyleEditorViewModel?> ShowStyleEditor { get; }
-
         public Interaction<PasteOverWindowViewModel, PasteOverField> ShowPasteOverFieldDialog { get; }
 
         public ICommand DeleteSelectedCommand { get; }
@@ -127,6 +104,37 @@ namespace Ameko.ViewModels
         {
             get => _focusLostSelectionEnd;
             set => this.RaiseAndSetIfChanged(ref _focusLostSelectionEnd, value);
+        }
+
+        public ScalePercentage VideoScale
+        {
+            get => _videoScale;
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _videoScale, value);
+                if (Wrapper.AVManager == null) return;
+
+                VideoWidth = value.Multiplier * Wrapper.AVManager.Video.SAR.Numerator;
+                VideoHeight = value.Multiplier * Wrapper.AVManager.Video.SAR.Denominator;
+            }
+        }
+
+        public bool LockASR
+        {
+            get => _lockASR;
+            set => this.RaiseAndSetIfChanged(ref _lockASR, value);
+        }
+
+        public double VideoWidth
+        {
+            get => _videoWidth;
+            set => this.RaiseAndSetIfChanged(ref _videoWidth, value);
+        }
+
+        public double VideoHeight
+        {
+            get => _videoHeight;
+            set => this.RaiseAndSetIfChanged(ref _videoHeight, value);
         }
 
         public int ID => _id;

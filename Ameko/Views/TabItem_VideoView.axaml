@@ -40,8 +40,9 @@
 							   FontFamily="{StaticResource MonoidRegular}"
 							   Text="{Binding Wrapper.AVManager.Video.CurrentFrame, FallbackValue='123456'}" />
 					<CheckBox Grid.Column="4"
-							  Margin="2">
-						A/R
+							  Margin="2"
+							  IsChecked="{Binding LockASR}">
+						Lock
 					</CheckBox>
 					<ComboBox Grid.Column="5"
 							  Padding="2"
@@ -57,7 +58,8 @@
 					</ComboBox>
 				</Grid>
 			</Grid>
-			<ScrollViewer HorizontalScrollBarVisibility="Auto"
+			<ScrollViewer Name="scrollViewer"
+						  HorizontalScrollBarVisibility="Auto"
 						  VerticalScrollBarVisibility="Auto">
 				<Panel Name="videoTarget"
 				   Width="{Binding VideoWidth}"
