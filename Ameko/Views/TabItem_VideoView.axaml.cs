@@ -19,7 +19,10 @@ namespace Ameko.Views
         private void videoTarget_PointerWheelChanged(object? sender, Avalonia.Input.PointerWheelEventArgs e)
         {
             if (ViewModel == null) return;
-            ViewModel.ScrollChangeScaleCommand.Execute(e.Delta.Y > 0);
+            if (e.KeyModifiers.HasFlag(Avalonia.Input.KeyModifiers.Control))
+                ViewModel.ScrollChangeScaleCommand.Execute(e.Delta.Y > 0);
+            else
+                videoSlider.Value += e.Delta.Y; // 1 or -1
         }
 
         private void SetKeybinds()

@@ -65,10 +65,10 @@
 						  HorizontalScrollBarVisibility="Auto"
 						  VerticalScrollBarVisibility="Auto">
 				<Panel Name="videoTarget"
-				   Width="{Binding Wrapper.AVManager.Video.DisplayWidth, FallbackValue=NaN}"
-				   Height="{Binding Wrapper.AVManager.Video.DisplayHeight, FallbackValue=NaN}"
-				   Background="Gray"
-				   PointerWheelChanged="videoTarget_PointerWheelChanged" />
+				       Width="{Binding Wrapper.AVManager.Video.DisplayWidth, FallbackValue=NaN}"
+				       Height="{Binding Wrapper.AVManager.Video.DisplayHeight, FallbackValue=NaN}"
+				       Background="Gray"
+				       PointerWheelChanged="videoTarget_PointerWheelChanged" />
 			</ScrollViewer>
 		</DockPanel>
 	</Panel>
