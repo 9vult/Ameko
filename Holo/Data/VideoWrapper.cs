@@ -27,7 +27,11 @@ namespace Holo.Data
         private bool _isPaused;
         private Timer _playback;
         private int _playbackDestination;
+        private bool _isAutoSeekEnabled;
 
+        /// <summary>
+        /// Number of frames in the video
+        /// </summary>
         public int FrameCount
         {
             get => _frameCount;
@@ -39,6 +43,9 @@ namespace Holo.Data
             }
         }
 
+        /// <summary>
+        /// Rational aspect ratio
+        /// </summary>
         public Rational SAR
         {
             get => _sar;
@@ -49,6 +56,9 @@ namespace Holo.Data
             }
         }
 
+        /// <summary>
+        /// Rational frame rate
+        /// </summary>
         public Rational FrameRate
         {
             get => _frameRate;
@@ -117,6 +127,19 @@ namespace Holo.Data
             {
                 _displayHeight = value;
                 OnPropertyChanged(nameof(DisplayHeight));
+            }
+        }
+
+        /// <summary>
+        /// If the video should automatically seek to the start of selected lines
+        /// </summary>
+        public bool IsAutoSeekEnabled
+        {
+            get => _isAutoSeekEnabled;
+            set
+            {
+                _isAutoSeekEnabled = value;
+                OnPropertyChanged(nameof(IsAutoSeekEnabled));
             }
         }
 

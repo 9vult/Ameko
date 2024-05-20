@@ -19,11 +19,23 @@ namespace Ameko.Views
         private void videoTarget_PointerWheelChanged(object? sender, Avalonia.Input.PointerWheelEventArgs e)
         {
             if (ViewModel == null) return;
-            if (e.KeyModifiers.HasFlag(Avalonia.Input.KeyModifiers.Control))
-                ViewModel.ScrollChangeScaleCommand.Execute(e.Delta.Y > 0);
 
-            else if (!ViewModel.Wrapper.AVManager.Video.IsPlaying) // Only seek if not playing
-                videoSlider.Value += e.Delta.Y; // 1 or -1
+            switch (e.KeyModifiers)
+            {
+                case Avalonia.Input.KeyModifiers.Control:
+                    ViewModel.ScrollChangeScaleCommand.Execute(e.Delta.Y > 0);
+                    e.Handled = true;
+                    break;
+                case Avalonia.Input.KeyModifiers.Alt:
+                case Avalonia.Input.KeyModifiers.Alt | Avalonia.Input.KeyModifiers.Shift:
+                    e.Handled = false; // fall through to ScrollViewer
+                    break; // TODO: Shift (horizontal) does not seem to be working
+                default:
+                    if (!ViewModel.Wrapper.AVManager.Video.IsPlaying) // Only seek if not playing
+                        videoSlider.Value += e.Delta.Y; // 1 or -1
+                    e.Handled = true;
+                    break;
+            }
         }
 
         private void SetKeybinds()

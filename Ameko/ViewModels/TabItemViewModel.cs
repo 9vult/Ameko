@@ -67,6 +67,7 @@ namespace Ameko.ViewModels
         public ICommand StartPlayingCommand { get; }
         public ICommand StopPlayingCommand { get; }
         public ICommand PlaySelectionCommand { get; }
+        public ICommand ToggleAutoSeekCommand { get; }
 
         public string Title
         {
@@ -189,13 +190,11 @@ namespace Ameko.ViewModels
             SplitEventCommand = ReactiveCommand.Create(Wrapper.SplitSelected);
             MergeEventsCommand = ReactiveCommand.Create(Wrapper.MergeSelectedAdj);
             NextOrAddEventCommand = ReactiveCommand.Create(Wrapper.NextOrAdd);
-            ToggleTagCommand = ReactiveCommand.Create(
-                (string tag) =>
-                {
-                    (SelectionStart, SelectionEnd) = Wrapper.ToggleTag(tag, SelectionStart, FocusLostSelectionEnd);
-                    FocusLostSelectionEnd = SelectionEnd;
-                }
-            );
+            ToggleTagCommand = ReactiveCommand.Create((string tag) =>
+            {
+                (SelectionStart, SelectionEnd) = Wrapper.ToggleTag(tag, SelectionStart, FocusLostSelectionEnd);
+                FocusLostSelectionEnd = SelectionEnd;
+            });
 
             EditFileStyleCommand = ReactiveCommand.Create(async () =>
             {
@@ -208,7 +207,6 @@ namespace Ameko.ViewModels
 
             ScrollChangeScaleCommand = ReactiveCommand.Create((bool positive) =>
             {
-                if (Wrapper.AVManager.Video == null) return;
                 var idx = ScalePercentage.Scales.IndexOf(Wrapper.AVManager.Video.DisplayScale);
                 if (idx == 0 && !positive) return;
                 if (idx == ScalePercentage.Scales.Count - 1 && positive) return;
@@ -218,20 +216,23 @@ namespace Ameko.ViewModels
 
             StartPlayingCommand = ReactiveCommand.Create(() =>
             {
-                if (Wrapper.AVManager.Video == null) return;
                 Wrapper.AVManager.Video.PlayToEnd();
             });
 
             StopPlayingCommand = ReactiveCommand.Create(() =>
             {
-                if (Wrapper.AVManager.Video == null) return;
                 Wrapper.AVManager.Video.StopPlaying();
             });
 
             PlaySelectionCommand = ReactiveCommand.Create(() =>
             {
-                if (Wrapper.AVManager.Video == null || Wrapper.SelectedEventCollection == null) return;
+                if (Wrapper.SelectedEventCollection == null) return;
                 Wrapper.AVManager.Video.PlaySelection(Wrapper.SelectedEventCollection);
+            });
+
+            ToggleAutoSeekCommand = ReactiveCommand.Create(() =>
+            {
+                Wrapper.AVManager.Video.IsAutoSeekEnabled = !Wrapper.AVManager.Video.IsAutoSeekEnabled;
             });
 
             ActivateScriptCommand = ReactiveCommand.Create<string>(async (string scriptName) =>

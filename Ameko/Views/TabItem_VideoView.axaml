@@ -39,17 +39,16 @@
 						</Button>
 						<Button Margin="1"
 								Width="20" Height="20"
-								Command=""
+								Command="{Binding ToggleAutoSeekCommand}"
 								ToolTip.Tip="Enable auto seek to event start"
-								IsVisible="True"
-								IsEnabled="False">
+								IsVisible="{Binding !Wrapper.AVManager.Video.IsAutoSeekEnabled, FallbackValue=True}">
 							<Svg Path="avares://Ameko/Assets/B5/skip-start-circle.svg" />
 						</Button>
 						<Button Margin="1"
 								Width="20" Height="20"
-								Command=""
+								Command="{Binding ToggleAutoSeekCommand}"
 								ToolTip.Tip="Disable auto seek to event start"
-								IsVisible="False">
+								IsVisible="{Binding Wrapper.AVManager.Video.IsAutoSeekEnabled, FallbackValue=False}">
 							<Svg Path="avares://Ameko/Assets/B5/skip-start-circle-fill.svg" />
 						</Button>
 					</StackPanel>
@@ -106,7 +105,8 @@
 			</Grid>
 			<ScrollViewer Name="scrollViewer"
 						  HorizontalScrollBarVisibility="Auto"
-						  VerticalScrollBarVisibility="Auto">
+						  VerticalScrollBarVisibility="Auto"
+						  IsScrollChainingEnabled="False">
 				<Panel Name="videoTarget"
 				       Width="{Binding Wrapper.AVManager.Video.DisplayWidth, FallbackValue=NaN}"
 				       Height="{Binding Wrapper.AVManager.Video.DisplayHeight, FallbackValue=NaN}"
