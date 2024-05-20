@@ -25,7 +25,7 @@ namespace Holo.Data
 
         private bool _isPlaying;
         private bool _isPaused;
-        private Timer _playback;
+        private HighResolutionTimer _playback;
         private int _playbackDestination;
         private bool _isAutoSeekEnabled;
 
@@ -284,7 +284,7 @@ namespace Holo.Data
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void Tick(object sender, ElapsedEventArgs e)
+        private void Tick(object sender, HighResolutionTimerElapsedEventArgs e)
         {
             if (CurrentFrame < _playbackDestination) CurrentFrame++;
             else StopPlaying();
@@ -302,7 +302,7 @@ namespace Holo.Data
             _frameRate = frameRate;
             _msPerFrame = 1 / _frameRate.Ratio * 1000;
             DisplayScale = ScalePercentage.VS_50;
-            _playback = new Timer(_msPerFrame);
+            _playback = new HighResolutionTimer((float)_msPerFrame);
             _playback.Elapsed += Tick;
         }
 
