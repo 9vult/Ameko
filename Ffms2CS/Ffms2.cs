@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Ffms2CS.Structures;
+using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Runtime.InteropServices;

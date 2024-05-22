@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Ffms2CS.Enums;
+using Ffms2CS.Structures;
+using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -67,7 +69,7 @@ namespace Ffms2CS
         public FrameInfo GetFrameInfo(int frameNumber)
         {
             if (Type != TrackType.Video) throw new InvalidOperationException("FrameInfo is only for video tracks!");
-            return new FrameInfo((FrameInfoStruct)Marshal.PtrToStructure(External.GetFrameInfo(_ptr, frameNumber), typeof(FrameInfoStruct)));
+            return new FrameInfo((Structures.FrameInfo)Marshal.PtrToStructure(External.GetFrameInfo(_ptr, frameNumber), typeof(Structures.FrameInfo)));
         }
 
         /// <summary>

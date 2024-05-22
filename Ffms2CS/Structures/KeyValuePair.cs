@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using System.Text;
+﻿using System.Runtime.InteropServices;
 
-namespace Ffms2CS
+namespace Ffms2CS.Structures
 {
+    /// <summary>
+    /// A simple key-value pair
+    /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     public struct KeyValuePair
     {

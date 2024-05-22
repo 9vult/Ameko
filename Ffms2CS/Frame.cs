@@ -1,4 +1,5 @@
-﻿using SkiaSharp;
+﻿using Ffms2CS.Enums;
+using SkiaSharp;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -10,7 +11,7 @@ namespace Ffms2CS
 {
     public class Frame
     {
-        private readonly FrameStruct _struct;
+        private readonly Structures.Frame _struct;
         internal bool Invalid = false;
 
         /// <summary>
@@ -203,7 +204,7 @@ namespace Ffms2CS
         /// <param name="frame"></param>
         internal Frame(IntPtr frame)
         {
-            _struct = (FrameStruct)Marshal.PtrToStructure(frame, typeof(FrameStruct));
+            _struct = (Structures.Frame)Marshal.PtrToStructure(frame, typeof(Structures.Frame));
         }
     }
 
@@ -212,7 +213,7 @@ namespace Ffms2CS
     /// </summary>
     public class FrameInfo
     {
-        private readonly FrameInfoStruct _struct;
+        private readonly Structures.FrameInfo _struct;
 
         /// <summary>
         /// Frame timestamp
@@ -233,7 +234,7 @@ namespace Ffms2CS
         /// Create a frameinfo
         /// </summary>
         /// <param name="struct">FrameInfoStruct</param>
-        internal FrameInfo(FrameInfoStruct @struct)
+        internal FrameInfo(Structures.FrameInfo @struct)
         {
             _struct = @struct;
         }

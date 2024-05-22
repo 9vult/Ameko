@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Ffms2CS.Structures;
+using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Runtime.InteropServices;
@@ -378,7 +379,7 @@ namespace Ffms2CS
         /// <param name="errorInfo">ErrorInfo</param>
         /// <returns>Pointer to the indexer on success, Null on failure</returns>
         [DllImport("ffms2", EntryPoint = "FFMS_CreateIndexer2")]
-        public static extern IndexerPtr CreateIndexer2(byte[] sourceFile, ref KeyValuePair[] demuxerOptions, int numOptions, ref ErrorInfo errorInfo); // TODO: Check KVP
+        public static extern IndexerPtr CreateIndexer2(byte[] sourceFile, ref Structures.KeyValuePair[] demuxerOptions, int numOptions, ref ErrorInfo errorInfo); // TODO: Check KVP
 
         /// <summary>
         /// Enable or disable indexing of a track

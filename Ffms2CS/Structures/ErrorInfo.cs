@@ -1,10 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Ffms2CS.Enums;
 using System.Runtime.InteropServices;
-using System.Text;
 
-namespace Ffms2CS
+namespace Ffms2CS.Structures
 {
+    /// <summary>
+    /// Stores information about errors
+    /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     public struct ErrorInfo
     {

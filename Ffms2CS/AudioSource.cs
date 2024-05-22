@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Ffms2CS.Enums;
+using Ffms2CS.Structures;
+using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
