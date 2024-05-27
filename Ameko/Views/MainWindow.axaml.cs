@@ -33,6 +33,14 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
         interaction.SetOutput(Unit.Default);
     }
 
+    public async void DoShowJumpWindow(InteractionContext<JumpWindowViewModel, Unit> interaction)
+    {
+        var dialog = new JumpWindow();
+        dialog.DataContext = interaction.Input;
+        await dialog.ShowDialog(this);
+        interaction.SetOutput(Unit.Default);
+    }
+
     public void DoShowSearchWindow(InteractionContext<SearchWindowViewModel, string?> interaction)
     {
         if (_searchWindow == null) return;
@@ -267,6 +275,7 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
         KeybindService.TrySetKeybind(this, KeybindContext.GLOBAL, "ameko.file.shift", ViewModel.ShowShiftTimesDialogCommand);
         KeybindService.TrySetKeybind(this, KeybindContext.GLOBAL, "ameko.file.undo", ViewModel.UndoCommand);
         KeybindService.TrySetKeybind(this, KeybindContext.GLOBAL, "ameko.file.redo", ViewModel.RedoCommand);
+        KeybindService.TrySetKeybind(this, KeybindContext.GLOBAL, "ameko.video.jump", ViewModel.ShowJumpDialogCommand);
         KeybindService.TrySetKeybind(this, KeybindContext.GLOBAL, "ameko.app.about", ViewModel.ShowAboutDialogCommand);
         KeybindService.TrySetKeybind(this, KeybindContext.GLOBAL, "ameko.app.quit", ViewModel.QuitCommand);
 
@@ -359,6 +368,7 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
                 ViewModel.ShowScriptLogsDialog.RegisterHandler(DoShowScriptLogDialogAsync);
                 ViewModel.CloseScriptLogsDialog.RegisterHandler(DoCloseScriptLogDialog);
                 ViewModel.ShowFreeformPlayground.RegisterHandler(DoShowFreeformPlayground);
+                ViewModel.ShowJumpDialog.RegisterHandler(DoShowJumpWindow);
             }
 
             Disposable.Create(() => { }).DisposeWith(disposables);

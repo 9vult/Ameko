@@ -280,6 +280,24 @@ namespace Holo.Data
         }
 
         /// <summary>
+        /// Seek to a frame
+        /// </summary>
+        /// <param name="f"></param>
+        public void SeekTo(int f)
+        {
+            CurrentFrame = Math.Min(Math.Max(0, f), FrameCount - 1);
+        }
+
+        /// <summary>
+        /// Seek to a time
+        /// </summary>
+        /// <param name="t"></param>
+        public void SeekTo(Time t)
+        {
+            CurrentFrame = Math.Min(Math.Max(0, TimeToFrame(t)), FrameCount - 1);
+        }
+
+        /// <summary>
         /// Move forward one frame, or if the end point has been reached, stop playing
         /// </summary>
         /// <param name="sender"></param>

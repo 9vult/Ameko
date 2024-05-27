@@ -29,6 +29,7 @@ public class MainViewModel : ViewModelBase
     public Interaction<MainViewModel, Uri?> ShowOpenWorkspaceDialog { get; }
     public Interaction<Workspace, Uri?> ShowSaveAsWorkspaceDialog { get; }
     public Interaction<MainViewModel, Uri?> ShowOpenVideoDialog { get; }
+    public Interaction<JumpWindowViewModel, Unit> ShowJumpDialog { get; }
     public Interaction<SearchWindowViewModel, string?> ShowSearchDialog { get; }
     public Interaction<ShiftTimesWindowViewModel, Unit> ShowShiftTimesDialog { get; }
     public Interaction<ScriptPropertiesWindowViewModel, Unit> ShowScriptPropertiesDialog { get; }
@@ -50,6 +51,7 @@ public class MainViewModel : ViewModelBase
     public ICommand ShowOpenWorkspaceDialogCommand { get; }
     public ICommand ShowSaveWorkspaceDialogCommand { get; }
     public ICommand ShowOpenVideoDialogCommand { get; }
+    public ICommand ShowJumpDialogCommand { get; }
     public ICommand CloseTabCommand { get; }
     public ICommand RemoveFromWorkspaceCommand { get; }
     public ICommand ActivateScriptCommand { get; }
@@ -172,6 +174,7 @@ public class MainViewModel : ViewModelBase
         ShowOpenWorkspaceDialog = new Interaction<MainViewModel, Uri?>();
         ShowSaveAsWorkspaceDialog = new Interaction<Workspace, Uri?>();
         ShowOpenVideoDialog = new Interaction<MainViewModel, Uri?>();
+        ShowJumpDialog = new Interaction<JumpWindowViewModel, Unit>();
         ShowSearchDialog = new Interaction<SearchWindowViewModel, string?>();
         ShowShiftTimesDialog = new Interaction<ShiftTimesWindowViewModel, Unit>();
         ShowScriptPropertiesDialog = new Interaction<ScriptPropertiesWindowViewModel, Unit>();
@@ -297,6 +300,15 @@ public class MainViewModel : ViewModelBase
         {
             var vm = new FreeformWindowViewModel();
             await ShowFreeformPlayground.Handle(vm);
+        });
+
+        ShowJumpDialogCommand = ReactiveCommand.Create(async () =>
+        {
+            if (HoloContext.Instance.Workspace.WorkingFile.AVManager.IsVideoLoaded)
+            {
+                var vm = new JumpWindowViewModel();
+                await ShowJumpDialog.Handle(vm);
+            }
         });
 
         Tabs = new ObservableCollection<TabItemViewModel>(HoloContext.Instance.Workspace.Files.Select(f => new TabItemViewModel(f.Title, f)));

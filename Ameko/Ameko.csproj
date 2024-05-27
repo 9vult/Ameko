@@ -37,6 +37,7 @@
     <None Remove="Assets\B5\box-arrow-up.svg" />
     <None Remove="Assets\B5\braces.svg" />
     <None Remove="Assets\B5\brush.svg" />
+    <None Remove="Assets\B5\bullseye.svg" />
     <None Remove="Assets\B5\chat-left-dots.svg" />
     <None Remove="Assets\B5\clipboard-data.svg" />
     <None Remove="Assets\B5\clipboard.svg" />
