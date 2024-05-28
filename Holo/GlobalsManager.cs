@@ -1,4 +1,5 @@
 ﻿using AssCS;
+using Holo.Data;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -15,8 +16,6 @@ namespace Holo
         private int _styleId;
         public int NextStyleId => _styleId++;
         private string _globalsFilePath;
-
-        private static readonly string FreeformDocumentTemplate = "// Welcome to the Ameko Freeform Scripting Playground!\n// Here, you can write a \"freeform\" script to automate tasks.\nusing System;\nusing System.Collections.Generic;\nusing System.Linq;\nusing Ameko;\nusing Holo;\nusing AssCS;\n\n// Some commonly-used variables to get you started:\nFileWrapper file = HoloContext.Instance.Workspace.WorkingFile;\nEvent? selectedEvent = file.SelectedEvent;\nList<Event>? selectedEvents = file.SelectedEventCollection;\n\n// Write your script here!\n";
         private string _freeformDocument { get; set; }
 
         private ObservableCollection<Style> Styles { get; set; }
@@ -120,7 +119,7 @@ namespace Holo
                 Colors = new ObservableCollection<Color>(input.Colors.Select(c => new Color(c)));
                 if (input.FreeformDocument != null)
                     _freeformDocument = AssCS.Utilities.Base64Decode(input.FreeformDocument);
-                else _freeformDocument = FreeformDocumentTemplate;
+                else _freeformDocument = Constants.FreeformDocumentTemplate;
             }
             catch { throw new IOException($"An error occured while loading global file {_globalsFilePath}"); }
         }
@@ -130,7 +129,7 @@ namespace Holo
             _globalsFilePath = Path.Join(baseDirectory, "globals.toml");
             Styles = new ObservableCollection<Style>();
             Colors = new ObservableCollection<Color>();
-            _freeformDocument = FreeformDocumentTemplate;
+            _freeformDocument = Constants.FreeformDocumentTemplate;
             _styleId = 0;
             Read();
         }

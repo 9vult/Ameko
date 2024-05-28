@@ -8,25 +8,22 @@ using System.Text;
 namespace Holo.Api
 {
     /// <summary>
-    /// Experimental API class
+    /// Collection of APIs
     /// </summary>
     public static partial class Fern
     {
-        /*
-         * This class exposes various API methods, currently only for videos.
-         * We may want to move to Holo members being marked internal,
-         * leaving just the Fern class and basic data structures publicly accessible.
-         * 
-         * Alternatively, Holo members could be left as-is (public), and this classset
-         * would serve as an ease-of-use wrapper, leaving the "internal" members
-         * open for more advanced usecases.
-         */
 
         /// <summary>
         /// Is there a video loaded?
         /// </summary>
         public static bool IsVideoLoaded
             => HoloContext.Instance.Workspace.WorkingFile.AVManager.IsVideoLoaded;
+
+        /// <summary>
+        /// Path to the loaded video file
+        /// </summary>
+        public static string VideoPath
+            => HoloContext.Instance.Workspace.WorkingFile.AVManager.VideoPath;
 
         /// <summary>
         /// Track number of the loaded video
@@ -77,13 +74,13 @@ namespace Holo.Api
             => HoloContext.Instance.Workspace.WorkingFile.AVManager.Video.SAR.Denominator;
 
         /// <summary>
-        /// Screen aspect ratio
+        /// Rational aspect ratio
         /// </summary>
         public static Rational SAR
             => HoloContext.Instance.Workspace.WorkingFile.AVManager.Video.SAR;
 
         /// <summary>
-        /// Framerate
+        /// Rational framerate
         /// </summary>
         public static Rational Framerate
             => HoloContext.Instance.Workspace.WorkingFile.AVManager.Video.FrameRate;

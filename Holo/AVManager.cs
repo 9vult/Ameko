@@ -13,10 +13,10 @@ namespace Holo
         private IVideoSourcePlugin _source;
         private readonly VideoWrapper _video;
         private bool _videoLoaded = false;
-        
-        public int VideoTrack { get; private set; }
-
+                
         public VideoWrapper Video => _video;
+        public int VideoTrack { get; private set; }
+        public string VideoPath { get; private set; }
         
         public bool IsVideoLoaded
         {
@@ -54,6 +54,7 @@ namespace Holo
             var sar = new Rational(frame.Size.X, frame.Size.Y);
             var rate = _source.GetFrameRate();
             _video.Scaffold(fc, sar, rate);
+            VideoPath = filepath;
             return _videoLoaded;
         }
 
@@ -62,6 +63,7 @@ namespace Holo
             _source = new Ffms2Source();
             _source.Initialize();
             _videoLoaded = false;
+            VideoPath = string.Empty;
             _video = new VideoWrapper(25, new Rational(1280, 720), new Rational(24000, 1001));
         }
 
