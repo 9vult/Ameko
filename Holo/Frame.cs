@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SkiaSharp;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -6,20 +7,15 @@ namespace Holo
 {
     public struct VideoFrame
     {
-        public Dimension Size { get; }
-        public byte[] Data { get; set; }
-
-        public VideoFrame(Dimension size)
-        {
-            Size = size;
-            Data = new byte[size.X * size.Y * 4];
-        }
+        public bool IsKeyframe { get; set; }
+        public Dimension Size { get; set; }
+        public SKBitmap Bitmap { get; set; }
 
         public struct Dimension
         {
             public int X;
             public int Y;
-            public readonly double Ratio => (double)X / (double)Y;
+            public readonly double SAR => X / (double)Y;
         }
     }
 

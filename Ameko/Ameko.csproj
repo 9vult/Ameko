@@ -12,6 +12,11 @@
 
   
   <ItemGroup>
+    <AvaloniaResource Remove="Assets\Styles\SeekSlider.axaml" />
+  </ItemGroup>
+
+  
+  <ItemGroup>
     <None Remove="Assets\Ameko-Logo-256.png" />
     <None Remove="Assets\Ameko-Logo-512.png" />
     <None Remove="Assets\Ameko-Simplified-BG-64.ico" />
@@ -32,16 +37,19 @@
     <None Remove="Assets\B5\box-arrow-up.svg" />
     <None Remove="Assets\B5\braces.svg" />
     <None Remove="Assets\B5\brush.svg" />
+    <None Remove="Assets\B5\bullseye.svg" />
     <None Remove="Assets\B5\chat-left-dots.svg" />
     <None Remove="Assets\B5\clipboard-data.svg" />
     <None Remove="Assets\B5\clipboard.svg" />
     <None Remove="Assets\B5\code-slash.svg" />
     <None Remove="Assets\B5\collection.svg" />
+    <None Remove="Assets\B5\columns-gap.svg" />
     <None Remove="Assets\B5\cone-striped.svg" />
     <None Remove="Assets\B5\copy.svg" />
     <None Remove="Assets\B5\door-open.svg" />
     <None Remove="Assets\B5\file-earmark.svg" />
     <None Remove="Assets\B5\files.svg" />
+    <None Remove="Assets\B5\film.svg" />
     <None Remove="Assets\B5\floppy.svg" />
     <None Remove="Assets\B5\floppy2.svg" />
     <None Remove="Assets\B5\folder-plus.svg" />
@@ -55,10 +63,15 @@
     <None Remove="Assets\B5\link.svg" />
     <None Remove="Assets\B5\list-columns-reverse.svg" />
     <None Remove="Assets\B5\palette.svg" />
+    <None Remove="Assets\B5\pause.svg" />
     <None Remove="Assets\B5\pencil-square.svg" />
+    <None Remove="Assets\B5\play.svg" />
     <None Remove="Assets\B5\save.svg" />
     <None Remove="Assets\B5\scissors.svg" />
     <None Remove="Assets\B5\search.svg" />
+    <None Remove="Assets\B5\skip-end.svg" />
+    <None Remove="Assets\B5\skip-start-circle-fill.svg" />
+    <None Remove="Assets\B5\skip-start-circle.svg" />
     <None Remove="Assets\B5\trash.svg" />
     <None Remove="Assets\B5\type-bold.svg" />
     <None Remove="Assets\B5\type-italic.svg" />
@@ -111,5 +124,11 @@
     <Compile Update="Views\TabItemView.axaml.cs">
       <DependentUpon>TabItemView.axaml</DependentUpon>
     </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <AvaloniaXaml Update="Assets\Styles\SeekSlider.axaml">
+      <SubType>Designer</SubType>
+    </AvaloniaXaml>
   </ItemGroup>
 </Project>

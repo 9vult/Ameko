@@ -146,6 +146,19 @@ namespace Ameko.Services
             workspace.WriteWorkspaceFile(uri);
         }
 
+        /// <summary>
+        /// Display the Open File dialog for Workspaces
+        /// </summary>
+        /// <param name="interaction"></param>
+        /// <param name="vm"></param>
+        public static async void DisplayVideoOpenDialog(Interaction<MainViewModel, Uri?> interaction, MainViewModel vm)
+        {
+            var uri = await interaction.Handle(vm);
+            if (uri == null) return;
+
+            HoloContext.Instance.Workspace.WorkingFile.AVManager.LoadVideo(uri.LocalPath);
+        }
+
         public static async void PasteLines(Interaction<TabItemViewModel, string[]?> interaction, TabItemViewModel vm)
         {
             string[] lines = await interaction.Handle(vm);

@@ -1,0 +1,33 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:vm="using:Ameko.ViewModels"
+        mc:Ignorable="d" d:DesignWidth="200" d:DesignHeight="96"
+        x:Class="Ameko.Views.JumpWindow"
+		x:DataType="vm:JumpWindowViewModel"
+		Width="200"
+		Height="96"
+		Topmost="True"
+		CanResize="False"
+        Icon="/Assets/Ameko-Simplified-BG-64.ico"
+		WindowStartupLocation="CenterOwner"
+        Title="Jump">
+	<Grid ColumnDefinitions="*, *"
+		  RowDefinitions="auto, auto, auto">
+		<Label Grid.Column="0" Grid.Row="0" Margin="2">Frame:</Label>
+		<Label Grid.Column="0" Grid.Row="1" Margin="2">Time:</Label>
+		<NumericUpDown Grid.Column="1" Grid.Row="0"
+					   Margin="2"
+					   Minimum="0"
+					   Increment="1"
+					   FormatString="0"
+					   ShowButtonSpinner="False"
+					   Value="{Binding Frame}"/>
+		<TextBox Name="timeBox" Grid.Column="1" Grid.Row="1"
+				 Margin="2" 
+				 Text="{Binding Time.UpdatableText}"
+				 KeyUp="TextBox_KeyUp"/>
+		<Button Grid.Column="1" Grid.Row="2" Margin="2" IsDefault="True" Command="{Binding JumpCommand}">Jump</Button>
+	</Grid>
+</Window>

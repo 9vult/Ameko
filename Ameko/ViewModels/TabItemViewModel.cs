@@ -1,16 +1,13 @@
 ﻿using Ameko.DataModels;
 using Ameko.Services;
 using AssCS;
-using AssCS.IO;
 using DynamicData;
 using Holo;
+using Holo.Data;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Windows.Input;
@@ -27,6 +24,8 @@ namespace Ameko.ViewModels
         private int _selectionEnd;
         private int _focusLostSelectionEnd;
 
+        private bool _lockASR = true;
+
         private static readonly Event FALLBACK_EVENT = new Event(-1) { Text="<No Event Selected>" };
 
         public ObservableCollection<string> Actors { get; private set; }
@@ -40,12 +39,13 @@ namespace Ameko.ViewModels
             get => Effects.Count > 0;
         }
 
+        public List<ScalePercentage> ScaleOptions => ScalePercentage.Scales;
+
         public Interaction<TabItemViewModel, string?> CopySelectedEvents { get; }
         public Interaction<TabItemViewModel, string?> CutSelectedEvents { get; }
         public Interaction<TabItemViewModel, string[]?> Paste { get; }
         public Interaction<Event, Unit> ScrollIntoViewInteraction { get; }
         public Interaction<StyleEditorViewModel, StyleEditorViewModel?> ShowStyleEditor { get; }
-
         public Interaction<PasteOverWindowViewModel, PasteOverField> ShowPasteOverFieldDialog { get; }
 
         public ICommand DeleteSelectedCommand { get; }
@@ -62,6 +62,12 @@ namespace Ameko.ViewModels
         public ICommand ActivateScriptCommand { get; }
         public ICommand ToggleTagCommand { get; }
         public ICommand EditFileStyleCommand { get; }
+        public ICommand ScrollChangeScaleCommand { get; }
+
+        public ICommand StartPlayingCommand { get; }
+        public ICommand StopPlayingCommand { get; }
+        public ICommand PlaySelectionCommand { get; }
+        public ICommand ToggleAutoSeekCommand { get; }
 
         public string Title
         {
@@ -96,6 +102,12 @@ namespace Ameko.ViewModels
         {
             get => _focusLostSelectionEnd;
             set => this.RaiseAndSetIfChanged(ref _focusLostSelectionEnd, value);
+        }
+
+        public bool LockASR
+        {
+            get => _lockASR;
+            set => this.RaiseAndSetIfChanged(ref _lockASR, value);
         }
 
         public int ID => _id;
@@ -178,13 +190,11 @@ namespace Ameko.ViewModels
             SplitEventCommand = ReactiveCommand.Create(Wrapper.SplitSelected);
             MergeEventsCommand = ReactiveCommand.Create(Wrapper.MergeSelectedAdj);
             NextOrAddEventCommand = ReactiveCommand.Create(Wrapper.NextOrAdd);
-            ToggleTagCommand = ReactiveCommand.Create(
-                (string tag) =>
-                {
-                    (SelectionStart, SelectionEnd) = Wrapper.ToggleTag(tag, SelectionStart, FocusLostSelectionEnd);
-                    FocusLostSelectionEnd = SelectionEnd;
-                }
-            );
+            ToggleTagCommand = ReactiveCommand.Create((string tag) =>
+            {
+                (SelectionStart, SelectionEnd) = Wrapper.ToggleTag(tag, SelectionStart, FocusLostSelectionEnd);
+                FocusLostSelectionEnd = SelectionEnd;
+            });
 
             EditFileStyleCommand = ReactiveCommand.Create(async () =>
             {
@@ -195,6 +205,36 @@ namespace Ameko.ViewModels
                 await ShowStyleEditor.Handle(editor);
             });
 
+            ScrollChangeScaleCommand = ReactiveCommand.Create((bool positive) =>
+            {
+                var idx = ScalePercentage.Scales.IndexOf(Wrapper.AVManager.Video.DisplayScale);
+                if (idx == 0 && !positive) return;
+                if (idx == ScalePercentage.Scales.Count - 1 && positive) return;
+
+                Wrapper.AVManager.Video.DisplayScale = ScalePercentage.Scales[positive ? idx+1 : idx-1];
+            });
+
+            StartPlayingCommand = ReactiveCommand.Create(() =>
+            {
+                Wrapper.AVManager.Video.PlayToEnd();
+            });
+
+            StopPlayingCommand = ReactiveCommand.Create(() =>
+            {
+                Wrapper.AVManager.Video.StopPlaying();
+            });
+
+            PlaySelectionCommand = ReactiveCommand.Create(() =>
+            {
+                if (Wrapper.SelectedEventCollection == null) return;
+                Wrapper.AVManager.Video.PlaySelection(Wrapper.SelectedEventCollection);
+            });
+
+            ToggleAutoSeekCommand = ReactiveCommand.Create(() =>
+            {
+                Wrapper.AVManager.Video.IsAutoSeekEnabled = !Wrapper.AVManager.Video.IsAutoSeekEnabled;
+            });
+
             ActivateScriptCommand = ReactiveCommand.Create<string>(async (string scriptName) =>
             {
                 await ScriptService.Instance.Execute(scriptName);
@@ -202,7 +242,7 @@ namespace Ameko.ViewModels
 
             // TODO: Maybe not do this this way
             Wrapper.PropertyChanged += (o, e) => { this.RaisePropertyChanged(nameof(Display)); };
-            Wrapper.Select(new List<Event>() { Wrapper.File.EventManager.Head }, Wrapper.File.EventManager.Head);
+            Wrapper.Select([Wrapper.File.EventManager.Head], Wrapper.File.EventManager.Head);
             SelectedEvent = Wrapper.File.EventManager.Head;
         }
     }

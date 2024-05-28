@@ -31,7 +31,7 @@ namespace Ameko.ViewModels
 
         public LogWindowViewModel()
         {
-            _logs = new ObservableCollection<Log>(HoloContext.Logger.Logs.Reverse());
+            _logs = new ObservableCollection<Log>(HoloContext.Logger.Logs);
 
             CopySelectedLogs = new Interaction<LogWindowViewModel, string?>();
             CopySelectedLogsCommand = ReactiveCommand.Create(async () => {
@@ -43,7 +43,8 @@ namespace Ameko.ViewModels
 
         private void Logger_LogAdded(object? sender, NotifyCollectionChangedEventArgs e)
         {
-            e.NewItems?.Cast<Log>().ToList().ForEach(log => _logs.Insert(0, log));
+            if (e.NewItems != null)
+                _logs.AddRange(e.NewItems.Cast<Log>());
         }
     }
 }

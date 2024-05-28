@@ -33,6 +33,14 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
         interaction.SetOutput(Unit.Default);
     }
 
+    public async void DoShowJumpWindow(InteractionContext<JumpWindowViewModel, Unit> interaction)
+    {
+        var dialog = new JumpWindow();
+        dialog.DataContext = interaction.Input;
+        await dialog.ShowDialog(this);
+        interaction.SetOutput(Unit.Default);
+    }
+
     public void DoShowSearchWindow(InteractionContext<SearchWindowViewModel, string?> interaction)
     {
         if (_searchWindow == null) return;
@@ -170,6 +178,29 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
         interaction.SetOutput(null);
     }
 
+    private async Task DoShowOpenVideoDialogAsync(InteractionContext<MainViewModel, Uri?> interaction)
+    {
+        string[] extensions = [ "*.asf", "*.avi", "*.avs", "*.d2v",
+                                "*.h264", "*.hevc", "*.m2ts", "*.m4v",
+                                "*.mkv", "*.mov", "*.mp4", "*.mpeg",
+                                "*.ogm", "*.webm", "*.wmv", "*.ts", 
+                                "*.y4m", "*.yuv" ];
+        var files = await this.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+        {
+            Title = "Open Video File",
+            AllowMultiple = false,
+            FileTypeFilter = new[] {
+                new FilePickerFileType("Video Files") { Patterns = extensions }
+            }
+        });
+        if (files.Count > 0)
+        {
+            interaction.SetOutput(files[0].Path);
+            return;
+        }
+        interaction.SetOutput(null);
+    }
+
     private void DoShowStylesManager(InteractionContext<StylesManagerViewModel, StylesManagerViewModel?> interaction)
     {
         var manager = new StylesManagerWindow();
@@ -244,6 +275,7 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
         KeybindService.TrySetKeybind(this, KeybindContext.GLOBAL, "ameko.file.shift", ViewModel.ShowShiftTimesDialogCommand);
         KeybindService.TrySetKeybind(this, KeybindContext.GLOBAL, "ameko.file.undo", ViewModel.UndoCommand);
         KeybindService.TrySetKeybind(this, KeybindContext.GLOBAL, "ameko.file.redo", ViewModel.RedoCommand);
+        KeybindService.TrySetKeybind(this, KeybindContext.GLOBAL, "ameko.video.jump", ViewModel.ShowJumpDialogCommand);
         KeybindService.TrySetKeybind(this, KeybindContext.GLOBAL, "ameko.app.about", ViewModel.ShowAboutDialogCommand);
         KeybindService.TrySetKeybind(this, KeybindContext.GLOBAL, "ameko.app.quit", ViewModel.QuitCommand);
 
@@ -322,6 +354,7 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
                 ViewModel.ShowExportFileDialog.RegisterHandler(DoShowExportSaveAsFileDialogAsync);
                 ViewModel.ShowSaveAsWorkspaceDialog.RegisterHandler(DoShowSaveAsWorkspaceDialogAsync);
                 ViewModel.ShowOpenWorkspaceDialog.RegisterHandler(DoShowOpenWorkspaceDialogAsync);
+                ViewModel.ShowOpenVideoDialog.RegisterHandler(DoShowOpenVideoDialogAsync);
                 
                 ViewModel.ShowStylesManager.RegisterHandler(DoShowStylesManager);
                 ViewModel.ShowSearchDialog.RegisterHandler(DoShowSearchWindow);
@@ -335,6 +368,7 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
                 ViewModel.ShowScriptLogsDialog.RegisterHandler(DoShowScriptLogDialogAsync);
                 ViewModel.CloseScriptLogsDialog.RegisterHandler(DoCloseScriptLogDialog);
                 ViewModel.ShowFreeformPlayground.RegisterHandler(DoShowFreeformPlayground);
+                ViewModel.ShowJumpDialog.RegisterHandler(DoShowJumpWindow);
             }
 
             Disposable.Create(() => { }).DisposeWith(disposables);

@@ -1,0 +1,118 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="640" d:DesignHeight="480"
+			 xmlns:converters="using:Ameko.Converters"
+			 xmlns:vm="using:Ameko.ViewModels"
+			 xmlns:dm="using:Ameko.DataModels"
+			 xmlns:ac="using:Ameko.Controls"
+			 xmlns:asscs="using:AssCS"
+			 x:DataType="vm:TabItemViewModel"
+             x:Class="Ameko.Views.TabItem_VideoView">
+	<Panel Name="videoContainer"
+		   IsEnabled="{Binding Wrapper.AVManager.IsVideoLoaded}">
+		<DockPanel>
+			<Grid DockPanel.Dock="Bottom"
+				  RowDefinitions="auto, auto"
+				  Height="45">
+				<Grid Grid.Row="0" ColumnDefinitions="auto, *">
+					<StackPanel Grid.Column="0"
+							Orientation="Horizontal">
+						<Button Margin="1"
+								Width="20" Height="20"
+								Command="{Binding StartPlayingCommand}"
+								ToolTip.Tip="Play">
+							<Svg Path="avares://Ameko/Assets/B5/play.svg" />
+						</Button>
+						<Button Margin="1"
+								Width="20" Height="20"
+								Command="{Binding PlaySelectionCommand}"
+								ToolTip.Tip="Play Selection">
+							<Svg Path="avares://Ameko/Assets/B5/skip-end.svg" />
+						</Button>
+						<Button Margin="1"
+								Width="20" Height="20"
+								Command="{Binding StopPlayingCommand}"
+								ToolTip.Tip="Pause">
+							<Svg Path="avares://Ameko/Assets/B5/pause.svg" />
+						</Button>
+						<Button Margin="1"
+								Width="20" Height="20"
+								Command="{Binding ToggleAutoSeekCommand}"
+								ToolTip.Tip="Enable auto seek to event start"
+								IsVisible="{Binding !Wrapper.AVManager.Video.IsAutoSeekEnabled, FallbackValue=True}">
+							<Svg Path="avares://Ameko/Assets/B5/skip-start-circle.svg" />
+						</Button>
+						<Button Margin="1"
+								Width="20" Height="20"
+								Command="{Binding ToggleAutoSeekCommand}"
+								ToolTip.Tip="Disable auto seek to event start"
+								IsVisible="{Binding Wrapper.AVManager.Video.IsAutoSeekEnabled, FallbackValue=False}">
+							<Svg Path="avares://Ameko/Assets/B5/skip-start-circle-fill.svg" />
+						</Button>
+					</StackPanel>
+					<ac:SeekSlider Name="videoSlider"
+								   Grid.Column="1"
+								   VerticalAlignment="Center"
+								   Maximum="{Binding Wrapper.AVManager.Video.__FrameCountZeroIndex, FallbackValue=0}"
+								   SmallChange="1"
+								   LargeChange="{Binding Wrapper.AVManager.Video.__FrameRateCeiling, FallbackValue=1}"
+								   TickFrequency="1"
+								   TickPlacement="None"
+								   ValueChanged="SeekSlider_ValueChanged"
+								   DragStarted="SeekSlider_DragStarted"
+								   DragEnded="SeekSlider_DragEnded"
+								   Value="{Binding Wrapper.AVManager.Video.CurrentFrame, FallbackValue=0, Mode=OneWay}"/>
+				</Grid>
+				<Grid Grid.Row="1"
+					  ColumnDefinitions="auto, auto, auto, *, auto, auto">
+					<TextBlock Grid.Column="0"
+							   Margin="1"
+							   VerticalAlignment="Bottom"
+							   FontFamily="{StaticResource MonoidRegular}"
+							   Text="{Binding Wrapper.AVManager.Video.CurrentTimeEstimated.MillisecondText, FallbackValue='0:00:00.000'}" />
+					<TextBlock Grid.Column="1"
+							   Margin="1"
+							   VerticalAlignment="Bottom"
+							   FontFamily="{StaticResource MonoidRegular}"
+							   Text="-" />
+					<TextBlock Grid.Column="2"
+							   Margin="1"
+							   VerticalAlignment="Bottom"
+							   FontFamily="{StaticResource MonoidRegular}"
+							   Text="{Binding Wrapper.AVManager.Video.CurrentFrame, FallbackValue='0'}" />
+					<CheckBox Grid.Column="4"
+							  Margin="1"
+							  VerticalAlignment="Center"
+							  IsChecked="{Binding LockASR}">
+						Lock
+					</CheckBox>
+					<ComboBox Grid.Column="5"
+							  Padding="1"
+							  VerticalAlignment="Center"
+							  ItemsSource="{Binding ScaleOptions}"
+							  SelectedItem="{Binding Wrapper.AVManager.Video.DisplayScale, FallbackValue=null}"
+							  Width="75"
+							  MaxDropDownHeight="425">
+						<ComboBox.ItemTemplate>
+							<DataTemplate>
+								<TextBlock Text="{Binding Text}" />
+							</DataTemplate>
+						</ComboBox.ItemTemplate>
+					</ComboBox>
+				</Grid>
+			</Grid>
+			<ScrollViewer Name="scrollViewer"
+						  HorizontalScrollBarVisibility="Auto"
+						  VerticalScrollBarVisibility="Auto"
+						  IsScrollChainingEnabled="False">
+				<Panel Name="videoTarget"
+				       Width="{Binding Wrapper.AVManager.Video.DisplayWidth, FallbackValue=NaN}"
+				       Height="{Binding Wrapper.AVManager.Video.DisplayHeight, FallbackValue=NaN}"
+				       Background="Gray"
+				       PointerWheelChanged="videoTarget_PointerWheelChanged" />
+			</ScrollViewer>
+		</DockPanel>
+	</Panel>
+</UserControl>

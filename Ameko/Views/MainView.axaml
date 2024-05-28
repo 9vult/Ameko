@@ -105,7 +105,21 @@
 					</MenuItem.Icon>
 				</MenuItem>
 			</MenuItem>
+			<MenuItem Header="_Video">
+				<MenuItem Header="_Open Video" Command="{Binding ShowOpenVideoDialogCommand}">
+					<MenuItem.Icon>
+						<Svg Path="avares://Ameko/Assets/B5/film.svg" />
+					</MenuItem.Icon>
+				</MenuItem>
+				<Separator />
+				<MenuItem Header="_Jump To..." Command="{Binding ShowJumpDialogCommand}">
+					<MenuItem.Icon>
+						<Svg Path="avares://Ameko/Assets/B5/bullseye.svg" />
+					</MenuItem.Icon>
+				</MenuItem>
+			</MenuItem>
 			<MenuItem Header="Scri_pts" ItemsSource="{Binding ScriptMenuItems}" />
+			<MenuItem Header="_Layouts" ItemsSource="{Binding LayoutMenuItems}" />
 			<MenuItem Header="_Help">
 				<MenuItem Header="_Configuration" Command="{Binding ShowConfigWindowCommand}">
 					<MenuItem.Icon>

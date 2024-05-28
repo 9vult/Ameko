@@ -445,6 +445,7 @@ namespace Holo
                     ["ameko.file.shift"] = "Ctrl+I",
                     ["ameko.file.undo"] = "Ctrl+Z",
                     ["ameko.file.redo"] = "Ctrl+Y",
+                    ["ameko.video.jump"] = "Ctrl+G",
                     ["ameko.app.about"] = "Shift+F1",
                     ["ameko.app.quit"] = "Ctrl+Q"
                 },

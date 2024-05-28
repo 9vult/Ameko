@@ -1,8 +1,13 @@
 ﻿using AssCS;
+using Ffms2CS;
 using Holo.DC;
+using Holo.Plugins;
+using SkiaSharp;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.InteropServices;
 using Xdg.Directories;
 
 namespace Holo
@@ -18,6 +23,7 @@ namespace Holo
         public ConfigurationManager ConfigurationManager { get; }
         public GlobalsManager GlobalsManager { get; }
         public RepositoryManager RepositoryManager { get; }
+
         public Workspace Workspace { get; set; }
 
         private HoloContext()

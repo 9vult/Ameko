@@ -12,7 +12,7 @@ namespace AssCS
     /// This API supports millisecond percision, but note that
     /// precision will be dropped to centiseconds for export.
     /// </summary>
-    public class Time : IAssComponent, INotifyPropertyChanged
+    public class Time : IAssComponent, INotifyPropertyChanged, IComparable<Time>
     {
         private TimeSpan localTime;
 
@@ -121,6 +121,8 @@ namespace AssCS
             }
         }
 
+        public string MillisecondText => $"{Hours}:{Minutes:00}:{Seconds:00}.{Milliseconds:000}";
+
         public override bool Equals(object? obj)
         {
             return obj is Time time &&
@@ -167,6 +169,11 @@ namespace AssCS
         public static bool operator !=(Time a, Time b)
         {
             return !a.localTime.Equals(b.localTime);
+        }
+
+        public int CompareTo(Time other)
+        {
+            return this.TotalMilliseconds.CompareTo(other.TotalMilliseconds);
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
