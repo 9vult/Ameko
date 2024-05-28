@@ -13,6 +13,8 @@ namespace Holo
         private IVideoSourcePlugin _source;
         private readonly VideoWrapper _video;
         private bool _videoLoaded = false;
+        
+        public int VideoTrack { get; private set; }
 
         public VideoWrapper Video => _video;
         
@@ -42,6 +44,7 @@ namespace Holo
             int[] videoTracks = _source.GetVideoTracks();
             if (videoTracks.Length == 0) throw new Exception("No video tracks in file!");
 
+            VideoTrack = videoTracks[0];
             IsVideoLoaded = _source.LoadTrack(videoTracks[0]);
             if (!IsVideoLoaded) throw new Exception("Failed to load track!");
 

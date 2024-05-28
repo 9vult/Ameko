@@ -3,11 +3,8 @@ using Holo.Utilities;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Timers;
 
 namespace Holo.Data
 {
@@ -309,8 +306,8 @@ namespace Holo.Data
         }
 
         // Extras for GUI support
-        public int __FrameCountZeroIndex => _frameCount - 1;
-        public int __FrameRateCeiling => (int)Math.Ceiling(_frameRate.Ratio);
+        internal int __FrameCountZeroIndex => _frameCount - 1;
+        internal int __FrameRateCeiling => (int)Math.Ceiling(_frameRate.Ratio);
 
         public VideoWrapper(int frameCount, Rational sar, Rational frameRate)
         {
@@ -324,7 +321,7 @@ namespace Holo.Data
             _playback.Elapsed += Tick;
         }
 
-        public void Scaffold(int frameCount, Rational sar, Rational frameRate)
+        internal void Scaffold(int frameCount, Rational sar, Rational frameRate)
         {
             StopPlaying();
             IsPaused = false;
