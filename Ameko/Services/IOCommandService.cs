@@ -72,6 +72,7 @@ namespace Ameko.Services
             }
             var writer = new AssWriter(workingFile.File, uri.LocalPath, AmekoInfo.Instance);
             writer.Write(false);
+            workingFile.FilePath = uri;
             workingFile.UpToDate = true;
             return true;
         }
@@ -90,6 +91,7 @@ namespace Ameko.Services
 
             var writer = new AssWriter(workingFile.File, uri.LocalPath, AmekoInfo.Instance);
             writer.Write(false);
+            workingFile.FilePath = uri;
             workingFile.UpToDate = true;
 
             var reffile = HoloContext.Instance.Workspace.ReferencedFiles.Where(f => f.Id == workingFile.ID).Single();
@@ -156,7 +158,15 @@ namespace Ameko.Services
             var uri = await interaction.Handle(vm);
             if (uri == null) return;
 
-            HoloContext.Instance.Workspace.WorkingFile.AVManager.LoadVideo(uri.LocalPath);
+            var openResult = HoloContext.Instance.Workspace.WorkingFile.AVManager.LoadVideo(uri.LocalPath);
+            if (!openResult) return;
+
+            string relative;
+            if (string.IsNullOrEmpty(HoloContext.Instance.Workspace.WorkingFile.FilePath?.LocalPath))
+                relative = uri.LocalPath;
+            else
+                relative = System.IO.Path.GetRelativePath(HoloContext.Instance.Workspace.WorkingFile.FilePath.LocalPath, uri.LocalPath);
+            HoloContext.Instance.Workspace.WorkingFile.File.PropertiesManager.Set("Video File", relative);
         }
 
         public static async void PasteLines(Interaction<TabItemViewModel, string[]?> interaction, TabItemViewModel vm)
