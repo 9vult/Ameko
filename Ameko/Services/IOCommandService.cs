@@ -165,7 +165,11 @@ namespace Ameko.Services
             if (string.IsNullOrEmpty(HoloContext.Instance.Workspace.WorkingFile.FilePath?.LocalPath))
                 relative = uri.LocalPath;
             else
-                relative = System.IO.Path.GetRelativePath(HoloContext.Instance.Workspace.WorkingFile.FilePath.LocalPath, uri.LocalPath);
+            {
+                var dir = System.IO.Path.GetDirectoryName(HoloContext.Instance.Workspace.WorkingFile.FilePath.LocalPath);
+                if (string.IsNullOrEmpty(dir)) relative = uri.LocalPath;
+                else relative = System.IO.Path.GetRelativePath(dir, uri.LocalPath);
+            }
             HoloContext.Instance.Workspace.WorkingFile.File.PropertiesManager.Set("Video File", relative);
         }
 
