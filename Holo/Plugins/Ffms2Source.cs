@@ -74,8 +74,8 @@ namespace Holo.Plugins
             for (int i = 0; i < track.FrameCount; i++)
             {
                 var frame = track.GetFrameInfo(i);
-                // wallclock milliseconds = (long)((frame.PTS * track.TimebaseNumerator) / (double)track.TimebaseDenomerator);
-                times[i] = frame.PTS; // Presentation timestamp
+                var time = (long)((frame.PTS * track.TimebaseNumerator) / (double)track.TimebaseDenomerator);
+                times[i] = time; // Presentation timestamp
             }
 
             return times;

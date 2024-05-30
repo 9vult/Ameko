@@ -173,19 +173,38 @@ namespace Holo.Data
         // Methods
 
         /// <summary>
-        /// Get the frame closest to a millisecond value (Rounding Method)
+        /// Get the frame closest to the milliseconds provided
         /// </summary>
-        /// <remarks>If time is between two frames, will round down</remarks>
-        /// <param name="milliseconds">Milliseconds</param>
-        /// <returns>Frame number</returns>
-        public int MillisToFrame(long milliseconds)
+        /// <remarks>
+        /// With X milliseconds per frame, this should return 0 for:
+        /// <list type="bullet">
+        /// <item>Exact: [0, X - 1]</item>
+        /// <item>Start: [1 - X, 0]</item>
+        /// <item>End: [1, X]</item>
+        /// </list>
+        /// There are two properties we take advantage of here:
+        /// <list type="number">
+        /// <item>Start and End's ranges are adjacent, meaning doing
+        /// the calculations for End and adding one gives us Start.</item>
+        /// <item>End is Exact plus one millisecond, meaning we can subtract one millisecond to get Exact</item>
+        /// </list>
+        /// Combining these allows us to easily calculate Start and End in terms of Exact.
+        /// </remarks>
+        /// <param name="milliseconds"></param>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public int MillisToFrame(long milliseconds, FrameTimeType type = FrameTimeType.Exact)
         {
-            for (int i = 0; i < _frametimes.Length; i++)
-            {
-                if (_frametimes[i] == milliseconds) return i;
-                if (_frametimes[i] > milliseconds) return i-1;
-            }
-            return 0;
+            if (type == FrameTimeType.Start) return MillisToFrame(milliseconds - 1) + 1;
+            if (type == FrameTimeType.End) return MillisToFrame(milliseconds - 1);
+            
+            if (milliseconds < 0)
+                return (int)((milliseconds * FrameRate.Numerator / FrameRate.Denominator - 999) / 1000);
+
+            if (milliseconds > _frametimes.Last())
+                return (int)((milliseconds * FrameRate.Numerator - FrameRate.Numerator / 2 - _frametimes.Last() + FrameRate.Numerator - 1) / FrameRate.Denominator / 1000) + _frametimes.Length - 1;
+
+            return _frametimes.Count(ft => ft < milliseconds);
         }
 
         /// <summary>
@@ -193,8 +212,30 @@ namespace Holo.Data
         /// </summary>
         /// <param name="frame">Frame number</param>
         /// <returns>Milliseconds for the frame</returns>
-        public long FrameToMillis(int frame)
+        public long FrameToMillis(int frame, FrameTimeType type = FrameTimeType.Exact)
         {
+            if (type == FrameTimeType.Start)
+            {
+                var prev = FrameToMillis(frame - 1);
+                var cur = FrameToMillis(frame);
+                return prev + (cur - prev + 1) / 2;
+            }
+
+            if (type == FrameTimeType.End)
+            {
+                var cur = FrameToMillis(frame);
+                var next = FrameToMillis(frame + 1);
+                return cur + (next - cur + 1) / 2;
+            }
+
+            if (frame < 0) return (long)(frame * FrameRate.Denominator * 1000 / FrameRate.Numerator);
+
+            if (frame >= _frametimes.Length)
+            {
+                long framesPastEnd = frame - _frametimes.Length + 1;
+                return (long)((framesPastEnd * 1000 * FrameRate.Denominator + _frametimes.Last() + FrameRate.Numerator / 2) / FrameRate.Numerator);
+            }
+
             return _frametimes[frame];
         }
 
@@ -203,9 +244,9 @@ namespace Holo.Data
         /// </summary>
         /// <param name="time">Time to get the frame at</param>
         /// <returns>Frame number</returns>
-        public int TimeToFrame(Time time)
+        public int TimeToFrame(Time time, FrameTimeType type = FrameTimeType.Exact)
         {
-            return MillisToFrame(time.TotalMilliseconds);
+            return MillisToFrame(time.TotalMilliseconds, type);
         }
 
         /// <summary>
@@ -213,9 +254,9 @@ namespace Holo.Data
         /// </summary>
         /// <param name="frame">Frame number</param>
         /// <returns>Time object set to the time of the frame</returns>
-        public Time FrameToTime(int frame)
+        public Time FrameToTime(int frame, FrameTimeType type = FrameTimeType.Exact)
         {
-            return Time.FromMillis(FrameToMillis(frame));
+            return Time.FromMillis(FrameToMillis(frame, type));
         }
 
         /// <summary>

@@ -48,7 +48,7 @@ namespace Holo.Utilities
         /// </summary>
         private Thread? _thread;
 
-        private volatile bool _useIntervals = false;
+        private volatile bool _isMultiInterval = false;
         private volatile int _intervalIndex;
         private volatile float[] _intervals;
 
@@ -69,10 +69,18 @@ namespace Holo.Utilities
             _intervals = new float[] { };
         }
 
+        /// <summary>
+        /// Creates timer with per-tick intervals in [ms]
+        /// </summary>
+        /// <remarks>
+        /// When in use, the next interval will be selected each tick.
+        /// It is the responsibility of the caller to prevent out-of-bounds exceptions.
+        /// </remarks>
+        /// <param name="intervals">Array of interval times in [ms]</param>
         public HighResolutionTimer(float[] intervals)
         {
             _intervals = intervals;
-            _useIntervals = true;
+            _isMultiInterval = true;
             _intervalIndex = 0;
         }
 
@@ -92,12 +100,15 @@ namespace Holo.Utilities
             }
         }
 
+        /// <summary>
+        /// Index in the array of intervals, if <see cref="IsMultiInterval"/> is enabled.
+        /// </summary>
         public int IntervalIndex
         {
             get => _intervalIndex;
             set
             {
-                if (!_useIntervals) return;
+                if (!_isMultiInterval) return;
                 if (value < 0 || value > _intervals.Length - 1)
                 {
                     throw new ArgumentOutOfRangeException(nameof(value));
@@ -105,6 +116,11 @@ namespace Holo.Utilities
                 _intervalIndex = value;
             }
         }
+
+        /// <summary>
+        /// If this timer is using per-tick intervals
+        /// </summary>
+        public bool IsMultiInterval => _isMultiInterval;
 
         /// <summary>
         /// True when timer is running
@@ -168,7 +184,7 @@ namespace Holo.Utilities
 
             while (_isRunning)
             {
-                if (!_useIntervals)
+                if (!_isMultiInterval)
                     nextTrigger += _interval;
                 else
                     nextTrigger += _intervals[_intervalIndex++];
