@@ -198,13 +198,16 @@ namespace Holo.Data
             if (type == FrameTimeType.Start) return MillisToFrame(milliseconds - 1) + 1;
             if (type == FrameTimeType.End) return MillisToFrame(milliseconds - 1);
             
-            if (milliseconds < 0)
+            if (milliseconds < _frametimes[0])
                 return (int)((milliseconds * FrameRate.Numerator / FrameRate.Denominator - 999) / 1000);
 
             if (milliseconds > _frametimes.Last())
                 return (int)((milliseconds * FrameRate.Numerator - FrameRate.Numerator / 2 - _frametimes.Last() + FrameRate.Numerator - 1) / FrameRate.Denominator / 1000) + _frametimes.Length - 1;
 
-            return _frametimes.Count(ft => ft < milliseconds);
+            var bs = Array.BinarySearch(_frametimes, milliseconds);
+            if (bs >= 0) return bs;
+            if (~bs == _frametimes.Length + 1) return _frametimes.Length;
+            return ~bs - 1; // ~bs → index of first greater element. -1 because we want the smaller element
         }
 
         /// <summary>
