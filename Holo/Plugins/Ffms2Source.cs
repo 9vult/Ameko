@@ -74,11 +74,24 @@ namespace Holo.Plugins
             for (int i = 0; i < track.FrameCount; i++)
             {
                 var frame = track.GetFrameInfo(i);
-                long time = (long)((frame.PTS * track.TimebaseNumerator) / (double)track.TimebaseDenomerator);
-                times[i] = time;
+                // wallclock milliseconds = (long)((frame.PTS * track.TimebaseNumerator) / (double)track.TimebaseDenomerator);
+                times[i] = frame.PTS; // Presentation timestamp
             }
 
             return times;
+        }
+
+        public float[] GetFrameIntervals(long[] frametimes)
+        {
+            var frameCount = frametimes.Length;
+            var intervals = new float[frameCount];
+
+            for (int i = 0; i < frameCount; i++)
+            {
+                if (i + 1 >= frameCount) intervals[i] = 0;
+                else intervals[i] = frametimes[i + 1] - frametimes[i];
+            }
+            return intervals;
         }
 
         public int[] GetVideoTracks()

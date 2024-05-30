@@ -48,6 +48,10 @@ namespace Holo.Utilities
         /// </summary>
         private Thread? _thread;
 
+        private volatile bool _useIntervals = false;
+        private volatile int _intervalIndex;
+        private volatile float[] _intervals;
+
         /// <summary>
         /// Creates a timer with 1 [ms] interval
         /// </summary>
@@ -62,6 +66,14 @@ namespace Holo.Utilities
         public HighResolutionTimer(float interval)
         {
             Interval = interval;
+            _intervals = new float[] { };
+        }
+
+        public HighResolutionTimer(float[] intervals)
+        {
+            _intervals = intervals;
+            _useIntervals = true;
+            _intervalIndex = 0;
         }
 
         /// <summary>
@@ -77,6 +89,20 @@ namespace Holo.Utilities
                     throw new ArgumentOutOfRangeException(nameof(value));
                 }
                 _interval = value;
+            }
+        }
+
+        public int IntervalIndex
+        {
+            get => _intervalIndex;
+            set
+            {
+                if (!_useIntervals) return;
+                if (value < 0 || value > _intervals.Length - 1)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(value));
+                }
+                _intervalIndex = value;
             }
         }
 
@@ -142,7 +168,11 @@ namespace Holo.Utilities
 
             while (_isRunning)
             {
-                nextTrigger += _interval;
+                if (!_useIntervals)
+                    nextTrigger += _interval;
+                else
+                    nextTrigger += _intervals[_intervalIndex++];
+
                 double elapsed;
 
                 while (true)

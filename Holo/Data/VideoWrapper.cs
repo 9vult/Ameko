@@ -14,6 +14,9 @@ namespace Holo.Data
         private int _frameCount;
         private Rational _sar;
         private Rational _frameRate;
+
+        private long[] _frametimes;
+        private float[] _frameIntervals;
         private double _msPerFrame;
 
         private double _displayWidth;
@@ -177,7 +180,12 @@ namespace Holo.Data
         /// <returns>Frame number</returns>
         public int MillisToFrame(long milliseconds)
         {
-            return (int)Math.Round((milliseconds + 0.5) * _frameRate.Ratio * (1 / (double)1000));
+            for (int i = 0; i < _frametimes.Length; i++)
+            {
+                if (_frametimes[i] == milliseconds) return i;
+                if (_frametimes[i] > milliseconds) return i-1;
+            }
+            return 0;
         }
 
         /// <summary>
@@ -187,7 +195,7 @@ namespace Holo.Data
         /// <returns>Milliseconds for the frame</returns>
         public long FrameToMillis(int frame)
         {
-            return (long)(frame / _frameRate.Ratio * 1000);
+            return _frametimes[frame];
         }
 
         /// <summary>
@@ -227,6 +235,7 @@ namespace Holo.Data
         {
             StopPlaying();
             _playbackDestination = FrameCount - 1;
+            _playback.IntervalIndex = CurrentFrame;
             _playback.Start();
             IsPlaying = true;
             IsPaused = false;
@@ -246,6 +255,7 @@ namespace Holo.Data
 
             CurrentFrame = startFrame;
             _playbackDestination = endFrame;
+            _playback.IntervalIndex = CurrentFrame;
             _playback.Start();
             IsPlaying = true;
             IsPaused = false;
@@ -256,6 +266,7 @@ namespace Holo.Data
         /// </summary>
         public void ResumePlaying()
         {
+            _playback.IntervalIndex = CurrentFrame;
             _playback.Start();
             IsPlaying = true;
             IsPaused = false;
@@ -309,19 +320,21 @@ namespace Holo.Data
         internal int __FrameCountZeroIndex => _frameCount - 1;
         internal int __FrameRateCeiling => (int)Math.Ceiling(_frameRate.Ratio);
 
-        public VideoWrapper(int frameCount, Rational sar, Rational frameRate)
+        public VideoWrapper(int frameCount, Rational sar, Rational frameRate, long[] frametimes, float[] frameIntervals)
         {
             _currentFrame = 0;
             _frameCount = frameCount;
             _sar = sar;
             _frameRate = frameRate;
+            _frametimes = frametimes;
+            _frameIntervals = frameIntervals;
             _msPerFrame = 1 / _frameRate.Ratio * 1000;
             DisplayScale = ScalePercentage.VS_50;
             _playback = new HighResolutionTimer((float)_msPerFrame);
             _playback.Elapsed += Tick;
         }
 
-        internal void Scaffold(int frameCount, Rational sar, Rational frameRate)
+        internal void Scaffold(int frameCount, Rational sar, Rational frameRate, long[] frametimes, float[] frameIntervals)
         {
             StopPlaying();
             IsPaused = false;
@@ -330,7 +343,12 @@ namespace Holo.Data
             FrameCount = frameCount;
             SAR = sar;
             FrameRate = frameRate;
+            _frametimes = frametimes;
+            _frameIntervals = frameIntervals;
             DisplayScale = ScalePercentage.VS_50;
+            
+            _playback = new HighResolutionTimer(_frameIntervals);
+            _playback.Elapsed += Tick;
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
