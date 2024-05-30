@@ -74,6 +74,7 @@ namespace Holo
         public int GetFrameCount();
         public Rational GetFrameRate();
         public VideoFrame GetFrame(int frame);
+        public long[] GetFrameTimes();
     }
 
     public interface IAudioSourcePlugin : IPlugin

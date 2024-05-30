@@ -53,6 +53,9 @@ namespace Holo
             var frame = _source.GetFrame(0);
             var sar = new Rational(frame.Size.X, frame.Size.Y);
             var rate = _source.GetFrameRate();
+
+            var frametimes = _source.GetFrameTimes();
+
             _video.Scaffold(fc, sar, rate);
             VideoPath = filepath;
             return _videoLoaded;
