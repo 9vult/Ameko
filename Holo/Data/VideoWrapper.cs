@@ -57,7 +57,7 @@ namespace Holo.Data
         }
 
         /// <summary>
-        /// Rational frame rate
+        /// Rational frame rate. For reference use only.
         /// </summary>
         public Rational FrameRate
         {
@@ -175,7 +175,7 @@ namespace Holo.Data
         /// <summary>
         /// Get the frame closest to a millisecond value (Rounding Method)
         /// </summary>
-        /// <remarks>Based on https://github.com/moi15moi/PyonFX/blob/FrameUtility-V3/docs/Proof%20algorithm%20-%20ms_to_frames.md</remarks>
+        /// <remarks>If time is between two frames, will round down</remarks>
         /// <param name="milliseconds">Milliseconds</param>
         /// <returns>Frame number</returns>
         public int MillisToFrame(long milliseconds)
