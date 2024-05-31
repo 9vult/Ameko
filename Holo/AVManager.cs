@@ -53,7 +53,11 @@ namespace Holo
             var frame = _source.GetFrame(0);
             var sar = new Rational(frame.Size.X, frame.Size.Y);
             var rate = _source.GetFrameRate();
-            _video.Scaffold(fc, sar, rate);
+
+            var frametimes = _source.GetFrameTimes();
+            var frameIntervals = _source.GetFrameIntervals(frametimes);
+
+            _video.Scaffold(fc, sar, rate, frametimes, frameIntervals);
             VideoPath = filepath;
             return _videoLoaded;
         }
@@ -64,7 +68,7 @@ namespace Holo
             _source.Initialize();
             _videoLoaded = false;
             VideoPath = string.Empty;
-            _video = new VideoWrapper(25, new Rational(1280, 720), new Rational(24000, 1001));
+            _video = new VideoWrapper(25, new Rational(1280, 720), new Rational(24000, 1001), new long[] {0}, new float[] {0});
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;

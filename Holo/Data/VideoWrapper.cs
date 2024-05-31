@@ -14,6 +14,9 @@ namespace Holo.Data
         private int _frameCount;
         private Rational _sar;
         private Rational _frameRate;
+
+        private long[] _frametimes;
+        private float[] _frameIntervals;
         private double _msPerFrame;
 
         private double _displayWidth;
@@ -54,7 +57,7 @@ namespace Holo.Data
         }
 
         /// <summary>
-        /// Rational frame rate
+        /// Rational frame rate. For reference use only.
         /// </summary>
         public Rational FrameRate
         {
@@ -170,14 +173,41 @@ namespace Holo.Data
         // Methods
 
         /// <summary>
-        /// Get the frame closest to a millisecond value (Rounding Method)
+        /// Get the frame closest to the milliseconds provided
         /// </summary>
-        /// <remarks>Based on https://github.com/moi15moi/PyonFX/blob/FrameUtility-V3/docs/Proof%20algorithm%20-%20ms_to_frames.md</remarks>
-        /// <param name="milliseconds">Milliseconds</param>
-        /// <returns>Frame number</returns>
-        public int MillisToFrame(long milliseconds)
+        /// <remarks>
+        /// With X milliseconds per frame, this should return 0 for:
+        /// <list type="bullet">
+        /// <item>Exact: [0, X - 1]</item>
+        /// <item>Start: [1 - X, 0]</item>
+        /// <item>End: [1, X]</item>
+        /// </list>
+        /// There are two properties we take advantage of here:
+        /// <list type="number">
+        /// <item>Start and End's ranges are adjacent, meaning doing
+        /// the calculations for End and adding one gives us Start.</item>
+        /// <item>End is Exact plus one millisecond, meaning we can subtract one millisecond to get Exact</item>
+        /// </list>
+        /// Combining these allows us to easily calculate Start and End in terms of Exact.
+        /// </remarks>
+        /// <param name="milliseconds"></param>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public int MillisToFrame(long milliseconds, FrameTimeType type = FrameTimeType.Exact)
         {
-            return (int)Math.Round((milliseconds + 0.5) * _frameRate.Ratio * (1 / (double)1000));
+            if (type == FrameTimeType.Start) return MillisToFrame(milliseconds - 1) + 1;
+            if (type == FrameTimeType.End) return MillisToFrame(milliseconds - 1);
+            
+            if (milliseconds < _frametimes[0])
+                return (int)((milliseconds * FrameRate.Numerator / FrameRate.Denominator - 999) / 1000);
+
+            if (milliseconds > _frametimes.Last())
+                return (int)((milliseconds * FrameRate.Numerator - FrameRate.Numerator / 2 - _frametimes.Last() + FrameRate.Numerator - 1) / FrameRate.Denominator / 1000) + _frametimes.Length - 1;
+
+            var bs = Array.BinarySearch(_frametimes, milliseconds);
+            if (bs >= 0) return bs;
+            if (~bs == _frametimes.Length + 1) return _frametimes.Length;
+            return ~bs - 1; // ~bs → index of first greater element. -1 because we want the smaller element
         }
 
         /// <summary>
@@ -185,9 +215,31 @@ namespace Holo.Data
         /// </summary>
         /// <param name="frame">Frame number</param>
         /// <returns>Milliseconds for the frame</returns>
-        public long FrameToMillis(int frame)
+        public long FrameToMillis(int frame, FrameTimeType type = FrameTimeType.Exact)
         {
-            return (long)(frame / _frameRate.Ratio * 1000);
+            if (type == FrameTimeType.Start)
+            {
+                var prev = FrameToMillis(frame - 1);
+                var cur = FrameToMillis(frame);
+                return prev + (cur - prev + 1) / 2;
+            }
+
+            if (type == FrameTimeType.End)
+            {
+                var cur = FrameToMillis(frame);
+                var next = FrameToMillis(frame + 1);
+                return cur + (next - cur + 1) / 2;
+            }
+
+            if (frame < 0) return (long)(frame * FrameRate.Denominator * 1000 / FrameRate.Numerator);
+
+            if (frame >= _frametimes.Length)
+            {
+                long framesPastEnd = frame - _frametimes.Length + 1;
+                return (long)((framesPastEnd * 1000 * FrameRate.Denominator + _frametimes.Last() + FrameRate.Numerator / 2) / FrameRate.Numerator);
+            }
+
+            return _frametimes[frame];
         }
 
         /// <summary>
@@ -195,9 +247,9 @@ namespace Holo.Data
         /// </summary>
         /// <param name="time">Time to get the frame at</param>
         /// <returns>Frame number</returns>
-        public int TimeToFrame(Time time)
+        public int TimeToFrame(Time time, FrameTimeType type = FrameTimeType.Exact)
         {
-            return MillisToFrame(time.TotalMilliseconds);
+            return MillisToFrame(time.TotalMilliseconds, type);
         }
 
         /// <summary>
@@ -205,9 +257,9 @@ namespace Holo.Data
         /// </summary>
         /// <param name="frame">Frame number</param>
         /// <returns>Time object set to the time of the frame</returns>
-        public Time FrameToTime(int frame)
+        public Time FrameToTime(int frame, FrameTimeType type = FrameTimeType.Exact)
         {
-            return Time.FromMillis(FrameToMillis(frame));
+            return Time.FromMillis(FrameToMillis(frame, type));
         }
 
         /// <summary>
@@ -227,6 +279,7 @@ namespace Holo.Data
         {
             StopPlaying();
             _playbackDestination = FrameCount - 1;
+            _playback.IntervalIndex = CurrentFrame;
             _playback.Start();
             IsPlaying = true;
             IsPaused = false;
@@ -246,6 +299,7 @@ namespace Holo.Data
 
             CurrentFrame = startFrame;
             _playbackDestination = endFrame;
+            _playback.IntervalIndex = CurrentFrame;
             _playback.Start();
             IsPlaying = true;
             IsPaused = false;
@@ -256,6 +310,7 @@ namespace Holo.Data
         /// </summary>
         public void ResumePlaying()
         {
+            _playback.IntervalIndex = CurrentFrame;
             _playback.Start();
             IsPlaying = true;
             IsPaused = false;
@@ -309,19 +364,21 @@ namespace Holo.Data
         internal int __FrameCountZeroIndex => _frameCount - 1;
         internal int __FrameRateCeiling => (int)Math.Ceiling(_frameRate.Ratio);
 
-        public VideoWrapper(int frameCount, Rational sar, Rational frameRate)
+        public VideoWrapper(int frameCount, Rational sar, Rational frameRate, long[] frametimes, float[] frameIntervals)
         {
             _currentFrame = 0;
             _frameCount = frameCount;
             _sar = sar;
             _frameRate = frameRate;
+            _frametimes = frametimes;
+            _frameIntervals = frameIntervals;
             _msPerFrame = 1 / _frameRate.Ratio * 1000;
             DisplayScale = ScalePercentage.VS_50;
             _playback = new HighResolutionTimer((float)_msPerFrame);
             _playback.Elapsed += Tick;
         }
 
-        internal void Scaffold(int frameCount, Rational sar, Rational frameRate)
+        internal void Scaffold(int frameCount, Rational sar, Rational frameRate, long[] frametimes, float[] frameIntervals)
         {
             StopPlaying();
             IsPaused = false;
@@ -330,7 +387,12 @@ namespace Holo.Data
             FrameCount = frameCount;
             SAR = sar;
             FrameRate = frameRate;
+            _frametimes = frametimes;
+            _frameIntervals = frameIntervals;
             DisplayScale = ScalePercentage.VS_50;
+            
+            _playback = new HighResolutionTimer(_frameIntervals);
+            _playback.Elapsed += Tick;
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;

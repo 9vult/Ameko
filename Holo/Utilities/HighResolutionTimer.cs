@@ -48,6 +48,10 @@ namespace Holo.Utilities
         /// </summary>
         private Thread? _thread;
 
+        private volatile bool _isMultiInterval = false;
+        private volatile int _intervalIndex;
+        private volatile float[] _intervals;
+
         /// <summary>
         /// Creates a timer with 1 [ms] interval
         /// </summary>
@@ -62,6 +66,22 @@ namespace Holo.Utilities
         public HighResolutionTimer(float interval)
         {
             Interval = interval;
+            _intervals = new float[] { };
+        }
+
+        /// <summary>
+        /// Creates timer with per-tick intervals in [ms]
+        /// </summary>
+        /// <remarks>
+        /// When in use, the next interval will be selected each tick.
+        /// It is the responsibility of the caller to prevent out-of-bounds exceptions.
+        /// </remarks>
+        /// <param name="intervals">Array of interval times in [ms]</param>
+        public HighResolutionTimer(float[] intervals)
+        {
+            _intervals = intervals;
+            _isMultiInterval = true;
+            _intervalIndex = 0;
         }
 
         /// <summary>
@@ -79,6 +99,28 @@ namespace Holo.Utilities
                 _interval = value;
             }
         }
+
+        /// <summary>
+        /// Index in the array of intervals, if <see cref="IsMultiInterval"/> is enabled.
+        /// </summary>
+        public int IntervalIndex
+        {
+            get => _intervalIndex;
+            set
+            {
+                if (!_isMultiInterval) return;
+                if (value < 0 || value > _intervals.Length - 1)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(value));
+                }
+                _intervalIndex = value;
+            }
+        }
+
+        /// <summary>
+        /// If this timer is using per-tick intervals
+        /// </summary>
+        public bool IsMultiInterval => _isMultiInterval;
 
         /// <summary>
         /// True when timer is running
@@ -142,7 +184,11 @@ namespace Holo.Utilities
 
             while (_isRunning)
             {
-                nextTrigger += _interval;
+                if (!_isMultiInterval)
+                    nextTrigger += _interval;
+                else
+                    nextTrigger += _intervals[_intervalIndex++];
+
                 double elapsed;
 
                 while (true)

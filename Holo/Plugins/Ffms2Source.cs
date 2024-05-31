@@ -18,6 +18,7 @@ namespace Holo.Plugins
 
         private bool _initialized = false;
         private string? _filename;
+        private int _trackNumber;
         private Ffms2CS.Indexer? _indexer;
         private Ffms2CS.Index? _index;
         private Ffms2CS.VideoSource? _source;
@@ -61,6 +62,38 @@ namespace Holo.Plugins
             return new Rational(_source.FPSNumerator, _source.FPSDenominator);
         }
 
+        public long[] GetFrameTimes()
+        {
+            if (!_initialized) throw new InvalidOperationException("Ffms2 is not initialized");
+            if (_index == null) throw new InvalidOperationException("Index is not initialized");
+            if (_source == null) throw new InvalidOperationException("Video source is not initialized");
+
+            var times = new long[_source.FrameCount];
+            var track = _index.GetTrack(_trackNumber);
+
+            for (int i = 0; i < track.FrameCount; i++)
+            {
+                var frame = track.GetFrameInfo(i);
+                var time = (long)((frame.PTS * track.TimebaseNumerator) / (double)track.TimebaseDenomerator);
+                times[i] = time; // Presentation timestamp
+            }
+
+            return times;
+        }
+
+        public float[] GetFrameIntervals(long[] frametimes)
+        {
+            var frameCount = frametimes.Length;
+            var intervals = new float[frameCount];
+
+            for (int i = 0; i < frameCount; i++)
+            {
+                if (i + 1 >= frameCount) intervals[i] = 0;
+                else intervals[i] = frametimes[i + 1] - frametimes[i];
+            }
+            return intervals;
+        }
+
         public int[] GetVideoTracks()
         {
             if (!_initialized) throw new InvalidOperationException("Ffms2 is not initialized");
@@ -91,6 +124,7 @@ namespace Holo.Plugins
                 }
                 _index = _indexer.Index(IndexErrorHandling.Abort);
                 _source = _index.VideoSource(_filename!, track);
+                _trackNumber = track;
 
                 // Set up output format
                 if (_source.FrameCount > 0)
