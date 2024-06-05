@@ -18,6 +18,7 @@ The following libraries are property of their respective owners and may be licen
 - GitInfo
 - Lachee/DiscordRichPresence
 - MessageBox.Avalonia
+- SixLabors.Fonts
 - SkiaSharp
 - Svg.Skia
 - TextMateSharp.Grammars

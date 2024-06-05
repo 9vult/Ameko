@@ -17,6 +17,11 @@
 
   
   <ItemGroup>
+    <Content Remove="C:\Users\ame\.nuget\packages\sharpfont\4.0.1\build\..\config\SharpFont.dll.config" />
+  </ItemGroup>
+
+  
+  <ItemGroup>
     <None Remove="Assets\Ameko-Logo-256.png" />
     <None Remove="Assets\Ameko-Logo-512.png" />
     <None Remove="Assets\Ameko-Simplified-BG-64.ico" />
@@ -104,6 +109,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="MessageBox.Avalonia" Version="3.1.5.1" />
+    <PackageReference Include="SixLabors.Fonts" Version="2.0.3" />
     <PackageReference Include="TextMateSharp.Grammars" Version="1.0.56" />
   </ItemGroup>
 
