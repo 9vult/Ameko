@@ -1,5 +1,6 @@
 ﻿using Ameko.DataModels;
 using AssCS;
+using AssCS.History;
 using Holo;
 using ReactiveUI;
 using System;
@@ -27,10 +28,10 @@ namespace Ameko.ViewModels
         {
             List<Event> events;
             if (ShiftTimesFilter == ShiftTimesFilter.ALL_ROWS) events = HoloContext.Instance.Workspace.WorkingFile.File.EventManager.Ordered;
-            else events = HoloContext.Instance.Workspace.WorkingFile.SelectedEventCollection ?? new List<Event>();
+            else events = HoloContext.Instance.Workspace.WorkingFile.SelectedEventCollection ?? [];
 
-            var sps = events.Select(e => new SnapPosition<Event>(e.Clone(), HoloContext.Instance.Workspace.WorkingFile.File.EventManager.GetBefore(e.Id)?.Id)).ToList();
-            HoloContext.Instance.Workspace.WorkingFile.File.HistoryManager.Commit(new Commit<Event>(new Snapshot<Event>(sps, AssCS.Action.EDIT)));
+            var sps = events.Select(e => new CommitAction<Event>(e.Clone(), HoloContext.Instance.Workspace.WorkingFile.File.EventManager.GetBefore(e.Id)?.Id)).ToList();
+            HoloContext.Instance.Workspace.WorkingFile.File.HistoryManager.Commit(new CommitGroup<Event>(new Commit<Event>(sps, CommitActionType.Edit)));
 
             switch (ShiftTimesType)
             {

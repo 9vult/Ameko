@@ -1,4 +1,5 @@
 ﻿using AssCS;
+using AssCS.History;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -62,40 +63,40 @@ namespace Holo
         public AVManager AVManager => avManager;
 
         private bool selecting = false; // TODO: There MUST be a better way to do this but I can't think of it right now
-        public Snapshot<Event>? Select(List<Event> newSelectedEvents, Event newSelectedEvent, bool commit = true)
+        public Commit<Event>? Select(List<Event> newSelectedEvents, Event newSelectedEvent, bool shouldCommit = true)
         {
             if (selecting) return null; // Prevent `SelectedEvent = newSelectedEvent;` from triggering another select event (pain-peko!!!)
             selecting = true;
 
-            if (previouslySelectedEvent == null || previouslySelectedEvents == null)
+            if (previouslySelectedEvent is null || previouslySelectedEvents is null)
             {
-                // Don't check, just commit
-                logger.Debug("SELECT→ Null Save", "FileWrapper");
+                // Nothing to check against, commit new events
+                logger.Debug("SELECT→ No Prior", "FileWrapper");
                 previouslySelectedEvent = newSelectedEvent.Clone();
                 previouslySelectedEvents = newSelectedEvents.Select(e => e.Clone()).ToList();
-                var snapshot = new Snapshot<Event>(
-                    newSelectedEvents.Select(e => new SnapPosition<Event>(e.Clone(), file.EventManager.GetBefore(e.Id)?.Id)).ToList(),
-                    AssCS.Action.EDIT);
-                if (commit) file.HistoryManager.Commit(new Commit<Event>(snapshot));
+
+                var commit = new Commit<Event>(
+                    newSelectedEvents.Select(e => new CommitAction<Event>(e.Clone(), file.EventManager.GetBefore(e.Id)?.Id)).ToList(),
+                    CommitActionType.Edit
+                );
                 SelectedEvent = newSelectedEvent;
                 SelectedEventCollection = new List<Event>(newSelectedEvents);
                 selecting = false;
-                return snapshot;
+                return commit;
             }
 
             if (newSelectedEvents.Count == 0)
             {
-                // Skip
+                // Nothing selected, skip
                 logger.Debug("SELECT→ Empty (skipping)", "FileWrapper");
                 selecting = false;
                 return null;
             }
 
-            if (previouslySelectedEvent != null &&
-                ((file.EventManager.Has(previouslySelectedEvent.Id) && previouslySelectedEvent.Equals(file.EventManager.Get(previouslySelectedEvent.Id)))
-                || !file.EventManager.Has(previouslySelectedEvent.Id)))
+            var has = file.EventManager.TryGet(previouslySelectedEvent.Id, out var target);
+            if ((has && previouslySelectedEvent.Equals(target)) || !has)
             {
-                // No change, continue
+                // Nothing changed, skip
                 logger.Debug("SELECT→ No change", "FileWrapper");
                 previouslySelectedEvent = newSelectedEvent.Clone();
                 previouslySelectedEvents = newSelectedEvents.Select(e => e.Clone()).ToList();
@@ -106,33 +107,31 @@ namespace Holo
             }
             else
             {
-                // Change happened, commit the Previously Selected lines
+                // Something changed, commit changed events
                 logger.Debug("SELECT→ Committing changes", "FileWrapper");
-                if (previouslySelectedEvents.Count > 1 && previouslySelectedEvent != null)
-                {
-                    var curPreviouslySelectedEvents = previouslySelectedEvents.Select(e => file.EventManager.Get(e.Id)).ToList();
-                    var curPreviouslySelectedEvent = file.EventManager.Get(previouslySelectedEvent.Id);
-                    PropagateChanges(curPreviouslySelectedEvents, previouslySelectedEvent, curPreviouslySelectedEvent);
-                }
-                var snapshot = new Snapshot<Event>(
-                    previouslySelectedEvents.Select(e =>
-                        new SnapPosition<Event>(
-                            e.Clone(),
-                            file.EventManager.GetBefore(e.Id)?.Id)
-                        ).ToList(),
-                    AssCS.Action.EDIT);
-                if (commit) file.HistoryManager.Commit(new Commit<Event>(snapshot));
+
+                var changedEvents = previouslySelectedEvents.Select(e => file.EventManager.Get(e.Id)).ToList();
+                var changedEvent = file.EventManager.Get(previouslySelectedEvent.Id);
+                PropagateChanges(changedEvents, previouslySelectedEvent, changedEvent);
+
+                var commit = new Commit<Event>(
+                    changedEvents.Select(e => new CommitAction<Event>(
+                        e.Clone(),
+                        file.EventManager.GetBefore(e.Id)?.Id)
+                    ).ToList()
+                );
+                if (shouldCommit) file.HistoryManager.Commit(new CommitGroup<Event>(commit));
                 previouslySelectedEvent = newSelectedEvent.Clone();
                 previouslySelectedEvents = newSelectedEvents.Select(e => e.Clone()).ToList();
                 SelectedEvent = newSelectedEvent;
                 SelectedEventCollection = new List<Event>(newSelectedEvents);
                 UpToDate = false;
                 selecting = false;
-                return snapshot;
+                return commit;
             }
         }
 
-        public Snapshot<Event> Remove(List<Event> selectedEvents, Event selectedEvent, bool commit = true)
+        public Commit<Event> Remove(List<Event> selectedEvents, Event selectedEvent, bool shouldCommit = true)
         {
             // Save the parents
             var parents = selectedEvents.ToDictionary(e => e.Id, e => file.EventManager.GetBefore(e.Id)?.Id);
@@ -147,147 +146,141 @@ namespace Holo
             }
             // Commit the list, remove the final one, and select an adjacent event
             var want = SelectAdjOrDefault(selectedEvent);
-            var snapshot = new Snapshot<Event>(
+            var commit = new Commit<Event>(
                 selectedEvents.Select(e =>
-                    new SnapPosition<Event>(e.Clone(), parents[e.Id])).ToList(),
-                AssCS.Action.DELETE);
-            if (commit) file.HistoryManager.Commit(new Commit<Event>(snapshot));
+                    new CommitAction<Event>(e.Clone(), parents[e.Id])).ToList(),
+                CommitActionType.Delete);
+            if (shouldCommit) file.HistoryManager.Commit(new CommitGroup<Event>(commit));
             file.EventManager.Remove(selectedEvent.Id);
             SelectedEventCollection = new List<Event> { want };
             SelectedEvent = want;
             UpToDate = false;
-            return snapshot;
+            return commit;
         }
 
-        public Snapshot<Event> Add(List<Event> selectedEvents, Event selectedEvent, bool select, bool commit = true)
+        public Commit<Event> Add(List<Event> selectedEvents, Event selectedEvent, bool select, bool shouldCommit = true)
         {
-            var snapshots = new List<Snapshot<Event>>();
+            var commits = new List<Commit<Event>>();
 
-            var snapshot = new Snapshot<Event>(
+            var commit = new Commit<Event>(
                 selectedEvents.Select(e =>
-                    new SnapPosition<Event>(e.Clone(), file.EventManager.GetBefore(e.Id)?.Id)).ToList(),
-                AssCS.Action.INSERT);
-            snapshots.Add(snapshot);
+                    new CommitAction<Event>(e.Clone(), file.EventManager.GetBefore(e.Id)?.Id)).ToList(),
+                CommitActionType.Insert);
+            commits.Add(commit);
 
             if (select)
             {
-                var selectSnapshot = Select(selectedEvents, selectedEvent, false);
-                if (selectSnapshot != null) snapshots.Add(selectSnapshot);
+                var selectCommit = Select(selectedEvents, selectedEvent, false);
+                if (selectCommit != null) commits.Add((Commit<Event>)selectCommit);
             }
 
-            if (commit) file.HistoryManager.Commit(new Commit<Event>(snapshots));
+            if (shouldCommit) file.HistoryManager.Commit(new CommitGroup<Event>(commits));
             if (select)
             {
                 SelectedEvent = selectedEvent;
                 SelectedEventCollection = selectedEvents;
             }
             UpToDate = false;
-            return snapshot;
+            return commit;
         }
 
         public void Undo()
         {
             if (!file.HistoryManager.EventCanGoBack) return;
-            var historyCommit = file.HistoryManager.EventGoBack();
-            if (historyCommit == null) return;
+            var historyCommitGroup = file.HistoryManager.EventGoBack();
 
-            var futureSnapshots = new List<Snapshot<Event>>();
+            var newFuture = new List<Commit<Event>>();
 
-            foreach (var hsnap in historyCommit.Snapshots)
+            foreach (var commit in historyCommitGroup.Commits)
             {
-                switch (hsnap.action)
+                switch (commit.Type)
                 {
-                    case AssCS.Action.EDIT:
+                    case CommitActionType.Edit:
                         {
-                            var fsnap = new List<SnapPosition<Event>>();
-
-                            fsnap.AddRange(hsnap.snapshot.Select(sp => new SnapPosition<Event>(file.EventManager.Get(sp.Target.Id).Clone(), sp.Parent)));
-                            file.EventManager.ReplaceInplace(hsnap.snapshot.Select(sp => sp.Target));
-
-                            futureSnapshots.Add(new Snapshot<Event>(fsnap, AssCS.Action.EDIT));
-                            break;
+                            var future = new List<CommitAction<Event>>();
+                            future.AddRange(commit.Actions.Select(a => new CommitAction<Event>(file.EventManager.Get(a.Target.Id).Clone(), a.Parent)));
+                            file.EventManager.ReplaceInplace(commit.Actions.Select(a => a.Target.Clone()));
+                            newFuture.Add(new Commit<Event>(future));
                         }
-
-                    case AssCS.Action.DELETE:
+                        break;
+                    case CommitActionType.Delete:
                         {
-                            var fsnap = new List<SnapPosition<Event>>();
-                            foreach (var hpos in hsnap.snapshot)
+                            var future = new List<CommitAction<Event>>();
+                            foreach (var action in commit.Actions)
                             {
-                                fsnap.Add(new SnapPosition<Event>(hpos.Target.Clone(), hpos.Parent));
-                                if (hpos.Parent == null) file.EventManager.AddFirst(hpos.Target);
-                                else file.EventManager.AddAfter((int)hpos.Parent, hpos.Target);
+                                future.Add(new CommitAction<Event>(action.Target.Clone(), action.Parent));
+                                if (action.Parent is null)
+                                    file.EventManager.AddFirst(action.Target.Clone());
+                                else
+                                    file.EventManager.AddAfter((int)action.Parent, action.Target.Clone());
                             }
-                            futureSnapshots.Add(new Snapshot<Event>(fsnap, AssCS.Action.DELETE));
-                            break;
+                            newFuture.Add(new Commit<Event>(future, CommitActionType.Delete));
                         }
-
-                    case AssCS.Action.INSERT:
+                        break;
+                    case CommitActionType.Insert:
                         {
-                            var fsnap = new List<SnapPosition<Event>>();
-                            foreach (var hpos in hsnap.snapshot)
+                            var future = new List<CommitAction<Event>>();
+                            foreach (var action in commit.Actions)
                             {
-                                fsnap.Add(new SnapPosition<Event>(hpos.Target.Clone(), hpos.Parent));
-                                file.EventManager.Remove(hpos.Target.Id);
+                                future.Add(new CommitAction<Event>(action.Target.Clone(), action.Parent));
+                                file.EventManager.Remove(action.Target.Id);
                             }
-                            futureSnapshots.Add(new Snapshot<Event>(fsnap, AssCS.Action.INSERT));
-                            break;
+                            newFuture.Add(new Commit<Event>(future, CommitActionType.Insert));
                         }
+                        break;
                 }
             }
-            file.HistoryManager.PushFuture(new Commit<Event>(futureSnapshots));
+            file.HistoryManager.PushFuture(new CommitGroup<Event>(newFuture));
             UpToDate = false;
         }
 
         public void Redo()
         {
             if (!file.HistoryManager.EventCanGoForward) return;
-            var futurecommit = file.HistoryManager.EventGoForward();
-            if (futurecommit == null) return;
+            var futureCommitGroup = file.HistoryManager.EventGoForward();
 
-            var historySnapshots = new List<Snapshot<Event>>();
+            var newHistory = new List<Commit<Event>>();
 
-            foreach (var fsnap in futurecommit.Snapshots)
+            foreach (var commit in futureCommitGroup.Commits)
             {
-                switch (fsnap.action)
+                switch (commit.Type)
                 {
-                    case AssCS.Action.EDIT:
+                    case CommitActionType.Edit:
                         {
-                            var hsnap = new List<SnapPosition<Event>>();
-
-                            hsnap.AddRange(fsnap.snapshot.Select(sp => new SnapPosition<Event>(file.EventManager.Get(sp.Target.Id).Clone(), sp.Parent)));
-                            file.EventManager.ReplaceInplace(fsnap.snapshot.Select(sp => sp.Target));
-
-                            historySnapshots.Add(new Snapshot<Event>(hsnap, AssCS.Action.EDIT));
-                            break;
+                            var history = new List<CommitAction<Event>>();
+                            history.AddRange(commit.Actions.Select(a => new CommitAction<Event>(file.EventManager.Get(a.Target.Id).Clone(), a.Parent)));
+                            file.EventManager.ReplaceInplace(commit.Actions.Select(a => a.Target.Clone()));
+                            newHistory.Add(new Commit<Event>(history));
                         }
-
-                    case AssCS.Action.INSERT:
+                        break;
+                    case CommitActionType.Insert:
                         {
-                            var hpos = new List<SnapPosition<Event>>();
-                            foreach (var fpos in fsnap.snapshot)
+                            var history = new List<CommitAction<Event>>();
+                            foreach (var action in commit.Actions)
                             {
-                                hpos.Add(new SnapPosition<Event>(fpos.Target.Clone(), fpos.Parent));
-                                if (fpos.Parent == null) file.EventManager.AddFirst(fpos.Target);
-                                else file.EventManager.AddAfter((int)fpos.Parent, fpos.Target);
+                                history.Add(new CommitAction<Event>(action.Target.Clone(), action.Parent));
+                                if (action.Parent == null)
+                                    file.EventManager.AddFirst(action.Target.Clone());
+                                else
+                                    file.EventManager.AddAfter((int)action.Parent, action.Target);
                             }
-                            historySnapshots.Add(new Snapshot<Event>(hpos, AssCS.Action.INSERT));
-                            break;
+                            newHistory.Add(new Commit<Event>(history, CommitActionType.Insert));
                         }
-
-                    case AssCS.Action.DELETE:
+                        break;
+                    case CommitActionType.Delete:
                         {
-                            var hpos = new List<SnapPosition<Event>>();
-                            foreach (var fpos in fsnap.snapshot)
+                            var history = new List<CommitAction<Event>>();
+                            foreach (var action in commit.Actions)
                             {
-                                hpos.Add(new SnapPosition<Event>(fpos.Target.Clone(), fpos.Parent));
-                                file.EventManager.Remove(fpos.Target.Id);
+                                history.Add(new CommitAction<Event>(action.Target.Clone(), action.Parent));
+                                file.EventManager.Remove(action.Target.Id);
                             }
-                            historySnapshots.Add(new Snapshot<Event>(hpos, AssCS.Action.DELETE));
-                            break;
+                            newHistory.Add(new Commit<Event>(history, CommitActionType.Delete));
                         }
+                        break;
                 }
             }
-            file.HistoryManager.PushHistory(new Commit<Event>(historySnapshots));
+            file.HistoryManager.PushHistory(new CommitGroup<Event>(newHistory));
             UpToDate = false;
         }
 
@@ -382,8 +375,8 @@ namespace Holo
             }
             var addSnap = Add(newEvents, newEvents[0], true, false);
             var remSnap = Remove(new List<Event>() { original }, original, false);
-            var snaps = new List<Snapshot<Event>>() { addSnap, remSnap };
-            File.HistoryManager.Commit(new Commit<Event>(snaps));
+            var snaps = new List<Commit<Event>>() { addSnap, remSnap };
+            File.HistoryManager.Commit(new CommitGroup<Event>(snaps));
         }
 
         public void MergeSelectedAdj()
@@ -413,8 +406,8 @@ namespace Holo
                 SelectedEventCollection.Clear();
                 SelectedEventCollection.Add(result);
                 var addSnap = Add(new List<Event>() { result }, result, true, false);
-                var snaps = new List<Snapshot<Event>>() { addSnap, remSnap };
-                File.HistoryManager.Commit(new Commit<Event>(snaps));
+                var snaps = new List<Commit<Event>>() { addSnap, remSnap };
+                File.HistoryManager.Commit(new CommitGroup<Event>(snaps));
             }
             else if (beforeOne != null && beforeOne.Equals(two))
             {
@@ -430,8 +423,8 @@ namespace Holo
                 SelectedEventCollection.Clear();
                 SelectedEventCollection.Add(result);
                 var addSnap = Add(new List<Event>() { result }, result, false, false);
-                var snaps = new List<Snapshot<Event>>() { addSnap, remSnap };
-                File.HistoryManager.Commit(new Commit<Event>(snaps));
+                var snaps = new List<Commit<Event>>() { addSnap, remSnap };
+                File.HistoryManager.Commit(new CommitGroup<Event>(snaps));
             }
             else return;
         }
@@ -490,9 +483,9 @@ namespace Holo
             Style? style = file.StyleManager.Get(SelectedEvent.Style);
 
             // Commit previous to history
-            var sp = new SnapPosition<Event>(SelectedEvent, file.EventManager.GetBefore(SelectedEvent.Id)?.Id);
-            var s = new Snapshot<Event>(sp, AssCS.Action.EDIT);
-            file.HistoryManager.Commit(new Commit<Event>(s));
+            var sp = new CommitAction<Event>(SelectedEvent, file.EventManager.GetBefore(SelectedEvent.Id)?.Id);
+            var s = new Commit<Event>(sp, CommitActionType.Edit);
+            file.HistoryManager.Commit(new CommitGroup<Event>(s));
             Select(SelectedEventCollection, SelectedEvent);
 
             var shift = SelectedEvent.ToggleTag(tag, style, start, end);

@@ -1,4 +1,5 @@
 ﻿using AssCS;
+using AssCS.History;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -108,7 +109,7 @@ namespace Holo
         /// through this method so the user can undo them.
         /// </summary>
         /// <param name="action">Lambda expression that performs changes to the file</param>
-        protected void Commit(System.Action action)
+        protected void Commit(Action action)
         {
             EventManager em = HoloContext.Instance.Workspace.WorkingFile.File.EventManager;
             HistoryManager hm = HoloContext.Instance.Workspace.WorkingFile.File.HistoryManager;
@@ -120,19 +121,19 @@ namespace Holo
             var finalMap = new Dictionary<int, Event>(final.Select(f => new KeyValuePair<int, Event>(f.Id, f)));
 
             var insertions = finalMap.Where(kv => !preMap.ContainsKey(kv.Key))
-                                    .Select(kv => new SnapPosition<Event>(kv.Value, em.GetBefore(kv.Key)?.Id)).ToList();
+                                    .Select(kv => new CommitAction<Event>(kv.Value, em.GetBefore(kv.Key)?.Id)).ToList();
             var deletions = preMap.Where(kv => !finalMap.ContainsKey(kv.Key))
-                                    .Select(kv => new SnapPosition<Event>(kv.Value.Item2, kv.Value.Item1)).ToList();
+                                    .Select(kv => new CommitAction<Event>(kv.Value.Item2, kv.Value.Item1)).ToList();
             var edits = preMap.Where(kv => finalMap.ContainsKey(kv.Key))
                                     .Where(kv => !kv.Value.Item2.Equals(finalMap[kv.Key]))
-                                    .Select(kv => new SnapPosition<Event>(kv.Value.Item2, em.GetBefore(kv.Key)?.Id))
+                                    .Select(kv => new CommitAction<Event>(kv.Value.Item2, em.GetBefore(kv.Key)?.Id))
                                     .ToList();
 
-            var commit = new Commit<Event>(new List<Snapshot<Event>>()
+            var commit = new CommitGroup<Event>(new List<Commit<Event>>()
             {
-                new Snapshot<Event>(insertions, AssCS.Action.INSERT),
-                new Snapshot<Event>(deletions, AssCS.Action.DELETE),
-                new Snapshot<Event>(edits, AssCS.Action.EDIT)
+                new Commit<Event>(insertions, CommitActionType.Insert),
+                new Commit<Event>(deletions, CommitActionType.Delete),
+                new Commit<Event>(edits, CommitActionType.Edit)
             });
             hm.Commit(commit);
         }

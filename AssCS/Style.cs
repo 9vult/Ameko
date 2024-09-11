@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using AssCS.History;
+using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Text;
 using System.Text.RegularExpressions;
 
 namespace AssCS

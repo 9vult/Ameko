@@ -92,6 +92,9 @@ namespace AssCS
             Tags = new List<OverrideTag>();
         }
 
+        /// <summary>
+        /// Parse the tags in the override block
+        /// </summary>
         public void ParseTags()
         {
             Tags.Clear();
@@ -114,6 +117,10 @@ namespace AssCS
             if (_text.Length > 0) Tags.Add(new OverrideTag(_text[start..]));
         }
 
+        /// <summary>
+        /// Add a tag to the block
+        /// </summary>
+        /// <param name="tag"></param>
         public void AddTag(string tag)
         {
             Tags.Add(new OverrideTag(tag));

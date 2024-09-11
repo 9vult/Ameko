@@ -350,6 +350,19 @@ namespace AssCS
         }
 
         /// <summary>
+        /// Get an event by ID
+        /// </summary>
+        /// <param name="id">ID of the event</param>
+        /// <param name="evnt">Possible Event result</param>
+        /// <returns>True if an event with the ID was found</returns>
+        public bool TryGet(int id, out Event? evnt)
+        {
+            var found = events.TryGetValue(id, out var value);
+            evnt = found ? value.Event : null;
+            return found;
+        }
+
+        /// <summary>
         /// Check if an event exists
         /// </summary>
         /// <param name="id">Event ID to check</param>
@@ -375,6 +388,25 @@ namespace AssCS
         }
 
         /// <summary>
+        /// Get the event after the one with the specified ID
+        /// </summary>
+        /// <param name="id">ID of the preceeding event</param>
+        /// <param name="evnt">Possible Event result</param>
+        /// <returns>True if the event after the specified event was found</returns>
+        public bool TryGetAfter(int id, out Event? evnt)
+        {
+            if (events.TryGetValue(id, out var preceeding) &&
+                events.TryGetValue(preceeding.Link.Next.Value, out var value))
+            {
+                evnt = value.Event;
+                return true;
+            }
+
+            evnt = null;
+            return false;
+        }
+
+        /// <summary>
         /// Get the previous event
         /// </summary>
         /// <param name="id">ID of the event after</param>
@@ -387,6 +419,25 @@ namespace AssCS
                 return events[events[id].Link.Previous.Value].Event;
             }
             return null;
+        }
+
+        /// <summary>
+        /// Get the event before the one with the specified ID
+        /// </summary>
+        /// <param name="id">ID of the following event</param>
+        /// <param name="evnt">Possible Event result</param>
+        /// <returns>True if the event before the specified event was found</returns>
+        public bool TryGetBefore(int id, out Event? evnt)
+        {
+            if (events.TryGetValue(id, out var following) &&
+                events.TryGetValue(following.Link.Previous.Value, out var value))
+            {
+                evnt = value.Event;
+                return true;
+            }
+
+            evnt = null;
+            return false;
         }
 
         /// <summary>

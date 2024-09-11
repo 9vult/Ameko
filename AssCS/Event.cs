@@ -1,9 +1,9 @@
-﻿using System;
+﻿using AssCS.History;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
 using System.Text.RegularExpressions;
 
 namespace AssCS
@@ -413,9 +413,9 @@ namespace AssCS
             FromAss(data);
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
-            if (obj == null) return false;
+            if (obj is null) return false;
             if (!obj.GetType().Equals(typeof(Event))) return false;
             Event e = (Event)obj;
             if (Style == null || e.Style == null) return false;

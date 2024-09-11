@@ -1,6 +1,7 @@
 ﻿using Ameko.DataModels;
 using Ameko.ViewModels;
 using AssCS;
+using AssCS.History;
 using AssCS.IO;
 using Holo;
 using MsBox.Avalonia;
@@ -294,9 +295,9 @@ namespace Ameko.Services
                 else selectedId = -1;
             }
 
-            var editedSnap = new Snapshot<Event>(editedEvents.Select(e => new SnapPosition<Event>(e, file.EventManager.GetBefore(e.Id)?.Id)).ToList(), AssCS.Action.EDIT);
-            var newSnap = new Snapshot<Event>(newEvents.Select(e => new SnapPosition<Event>(e, file.EventManager.GetBefore(e.Id)?.Id)).ToList(), AssCS.Action.INSERT);
-            file.HistoryManager.Commit(new Commit<Event>( new List<Snapshot<Event>> { editedSnap, newSnap }));
+            var editedSnap = new Commit<Event>(editedEvents.Select(e => new CommitAction<Event>(e, file.EventManager.GetBefore(e.Id)?.Id)).ToList(), CommitActionType.Edit);
+            var newSnap = new Commit<Event>(newEvents.Select(e => new CommitAction<Event>(e, file.EventManager.GetBefore(e.Id)?.Id)).ToList(), CommitActionType.Insert);
+            file.HistoryManager.Commit(new CommitGroup<Event>( new[] { editedSnap, newSnap }));
         }
 
         /// <summary>

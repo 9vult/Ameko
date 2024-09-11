@@ -10,14 +10,27 @@ namespace AssCS
     /// </summary>
     public class Color : IAssComponent
     {
+        /// <summary>
+        /// Red component
+        /// </summary>
         public uint Red { get; set; }
+        /// <summary>
+        /// Green component
+        /// </summary>
         public uint Green { get; set; }
+        /// <summary>
+        /// Blue component
+        /// </summary>
         public uint Blue { get; set; }
         /// <summary>
-        /// It should be noted that 0xFF is transparent, and 0x00 is opaque
+        /// Alpha component
         /// </summary>
+        /// <remarks>0xFF is transparent, and 0x00 is opaque</remarks>
         public uint Alpha { get; set; }
 
+        /// <summary>
+        /// Luminance value
+        /// </summary>
         public double Luminance => (((0.2126 * Red) + (0.7152 * Green) + (0.0722 * Blue)) / 255) * Alpha;
 
         public string AsAss()
@@ -142,7 +155,7 @@ namespace AssCS
         /// </summary>
         /// <param name="a"></param>
         /// <param name="b"></param>
-        /// <returns></returns>
+        /// <returns>Contrast</returns>
         public static double Contrast(Color a, Color b)
         {
             return (a.Luminance + 0.05) / (b.Luminance + 0.05);
