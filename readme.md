@@ -33,3 +33,9 @@ I would strongly recommend using either Visual Studio or Jetbrains Rider for dev
 
 - Ameko and Ameko.Desktop use `.NET 8.0`
 - AssCS and Holo use `.NET Standard 2.1`
+
+### Licensing
+
+- Ameko and Ameko platform projects (Ameko.Desktop, etc) are licensed under the GNU GPL v3 license.
+- Libraries developed for Ameko (AssCS, Holo, FFMS2CS, etc) are licensed under the BSD 3-Clause license.
+- For more information, see the `license.txt` file under each project.

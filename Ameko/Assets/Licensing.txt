@@ -1,6 +1,8 @@
 ﻿Ameko is free software.
 
-Ameko, Holo, AssCS, FFMS2CS, and related files and imagery are copyright © 2024 9volt and collaborators, and are licensed under the BSD-3-Clause license. See license.txt for more information.
+Ameko is copyright © 2024 9volt and collaborators, and licensed under the GNU GPL v3 license.
+AssCS, Holo, FFMS2CS, and related library projects are copyright © 2024 9volt and collaborators, and licensed under the BSD 3-Clause license.
+See each project's license.txt for more information.
 
 Assets:
 - Ameko logo, copyright © 2024 Zahuczky.
