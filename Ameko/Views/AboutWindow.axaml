@@ -2,11 +2,11 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="450" d:DesignHeight="450"
+        mc:Ignorable="d" d:DesignWidth="575" d:DesignHeight="500"
 		xmlns:vm="using:Ameko.ViewModels"
 		x:DataType="vm:AboutWindowViewModel"
         x:Class="Ameko.Views.AboutWindow"
-		Width="450" Height="450"
+		Width="575" Height="500"
 		CanResize="False"
 		Icon="/Assets/Ameko-Simplified-BG-64.ico"
         Title="About Ameko">
@@ -20,6 +20,8 @@
 				 IsReadOnly="True"
 				 IsEnabled="True"
 				 TextWrapping="Wrap"
+				 FontFamily="{StaticResource MonoidRegular}"
+				 FontSize="11"
 				 Text="{Binding Licensing}" />
 	</DockPanel>
 </Window>

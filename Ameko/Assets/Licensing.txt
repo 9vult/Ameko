@@ -1,7 +1,12 @@
 ﻿Ameko is free software.
 
-Ameko is copyright © 2024 9volt and collaborators, and licensed under the GNU GPL v3 license.
-AssCS, Holo, FFMS2CS, and related library projects are copyright © 2024 9volt and collaborators, and licensed under the BSD 3-Clause license.
+Ameko is copyright © 2024 9volt and collaborators, and is licensed
+under the GNU GPL v3 license.
+
+AssCS, Holo, FFMS2CS, and related library projects developed for Ameko
+are copyright © 2024 9volt and collaborators, and are licensed under
+the BSD 3-Clause license.
+
 See each project's license.txt for more information.
 
 Assets:
@@ -10,7 +15,8 @@ Assets:
 - Migu 2M used under the IPA Font License (IPAフォントライセンス) v1.0
 - Monoid used under the SIL Open Font License
 
-The following libraries are property of their respective owners and may be licensed differently:
+The following libraries are property of their respective owners,
+and may be licensed differently:
 - Avalonia
 - Avalonia.AvaloniaEdit
 - AvaloniaEdit.TextMate
@@ -27,4 +33,5 @@ The following libraries are property of their respective owners and may be licen
 - Tomlet
 - Xdg.Directories
 
-Parts of AssCS are based on Aegisub, under a mostly BSD-style license. Ameko is not affiliated with the Aegisub project.
+Parts of AssCS are based on Aegisub, under a mostly BSD-style license.
+Ameko is not affiliated with the Aegisub project.
