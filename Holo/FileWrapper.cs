@@ -2,12 +2,9 @@
 using AssCS.History;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
 
 namespace Holo
 {
@@ -25,10 +22,12 @@ namespace Holo
 
         private AVManager avManager;
 
-        private Logger logger;
+        private readonly Logger logger;
 
         public File File => file;
         public int ID { get; }
+
+        public AVManager AVManager => avManager;
 
         public List<Event>? SelectedEventCollection
         {
@@ -60,74 +59,101 @@ namespace Holo
             set { title = value; OnPropertyChanged(nameof(Title)); }
         }
 
-        public AVManager AVManager => avManager;
+        private readonly object _processingLock = new object();
 
-        private bool selecting = false; // TODO: There MUST be a better way to do this but I can't think of it right now
-        public Commit<Event>? Select(List<Event> newSelectedEvents, Event newSelectedEvent, bool shouldCommit = true)
+        /// <summary>
+        /// Handler for when the selected events change
+        /// </summary>
+        /// <param name="newSelectedEvents">List of the new selected event</param>
+        /// <param name="newSelectedEvent">The currently selected event</param>
+        public void SelectedEventsChanged(List<Event> newSelectedEvents, Event newSelectedEvent)
         {
-            if (selecting) return null; // Prevent `SelectedEvent = newSelectedEvent;` from triggering another select event (pain-peko!!!)
-            selecting = true;
+            SelectedEventCollection = new List<Event>(newSelectedEvents);
+            ProcessSelectionChange(newSelectedEvents, newSelectedEvent, shouldCommit: true);
+        }
 
-            if (previouslySelectedEvent is null || previouslySelectedEvents is null)
+        /// <summary>
+        /// Set the currently selected events
+        /// </summary>
+        /// <param name="newSelectedEvents">Events to select</param>
+        /// <param name="newSelectedEvent">Event to select</param>
+        /// <returns></returns>
+        public Commit<Event>? SetSelectedEvents(List<Event> newSelectedEvents, Event newSelectedEvent)
+        {
+            var result = ProcessSelectionChange(newSelectedEvents, newSelectedEvent, shouldCommit: false);
+            SelectedEvent = newSelectedEvent;
+            SelectedEventCollection = new List<Event>(newSelectedEvents);
+            return result;
+        }
+
+        /// <summary>
+        /// Process changes for history
+        /// </summary>
+        /// <param name="newSelectedEvents">Selected events</param>
+        /// <param name="newSelectedEvent">Currently selected event</param>
+        /// <param name="shouldCommit">Should this function commit to history?</param>
+        /// <returns>Commit object</returns>
+        public Commit<Event>? ProcessSelectionChange(List<Event> newSelectedEvents, Event newSelectedEvent, bool shouldCommit)
+        {
+            lock (_processingLock)
             {
-                // Nothing to check against, commit new events
-                logger.Debug("SELECT→ No Prior", "FileWrapper");
-                previouslySelectedEvent = newSelectedEvent.Clone();
-                previouslySelectedEvents = newSelectedEvents.Select(e => e.Clone()).ToList();
+                if (previouslySelectedEvent is null || previouslySelectedEvents is null)
+                {
+                    // Nothing to check against, commit new events
+                    logger.Debug("SELECT→ No Prior", "FileWrapper");
+                    previouslySelectedEvent = newSelectedEvent.Clone();
+                    previouslySelectedEvents = newSelectedEvents.Select(e => e.Clone()).ToList();
 
-                var commit = new Commit<Event>(
-                    newSelectedEvents.Select(e => new CommitAction<Event>(e.Clone(), file.EventManager.GetBefore(e.Id)?.Id)).ToList(),
-                    CommitActionType.Edit
-                );
-                SelectedEvent = newSelectedEvent;
-                SelectedEventCollection = new List<Event>(newSelectedEvents);
-                selecting = false;
-                return commit;
-            }
+                    var commit = new Commit<Event>(
+                        newSelectedEvents.Select(e => new CommitAction<Event>(e.Clone(), file.EventManager.GetBefore(e.Id)?.Id)).ToList(),
+                        CommitActionType.Edit
+                    );
+                    if (shouldCommit)
+                        file.HistoryManager.Commit(new CommitGroup<Event>(commit));
+                    SelectedEvent = newSelectedEvent;
+                    return commit;
+                }
 
-            if (newSelectedEvents.Count == 0)
-            {
-                // Nothing selected, skip
-                logger.Debug("SELECT→ Empty (skipping)", "FileWrapper");
-                selecting = false;
-                return null;
-            }
+                if (newSelectedEvents.Count == 0)
+                {
+                    // Nothing selected, skip
+                    logger.Debug("SELECT→ Empty (skipping)", "FileWrapper");
+                    return null;
+                }
 
-            var has = file.EventManager.TryGet(previouslySelectedEvent.Id, out var target);
-            if ((has && previouslySelectedEvent.Equals(target)) || !has)
-            {
-                // Nothing changed, skip
-                logger.Debug("SELECT→ No change", "FileWrapper");
-                previouslySelectedEvent = newSelectedEvent.Clone();
-                previouslySelectedEvents = newSelectedEvents.Select(e => e.Clone()).ToList();
-                SelectedEvent = newSelectedEvent;
-                SelectedEventCollection = new List<Event>(newSelectedEvents);
-                selecting = false;
-                return null;
-            }
-            else
-            {
-                // Something changed, commit changed events
-                logger.Debug("SELECT→ Committing changes", "FileWrapper");
+                var has = file.EventManager.TryGet(previouslySelectedEvent.Id, out var target);
+                if ((has && previouslySelectedEvent.Equals(target)) || !has)
+                {
+                    // Nothing changed, skip
+                    logger.Debug("SELECT→ No change", "FileWrapper");
+                    previouslySelectedEvent = newSelectedEvent.Clone();
+                    previouslySelectedEvents = newSelectedEvents.Select(e => e.Clone()).ToList();
+                    SelectedEvent = newSelectedEvent;
+                    return null;
+                }
+                else
+                {
+                    // Something changed, commit changed events
+                    logger.Debug("SELECT→ Committing changes", "FileWrapper");
 
-                var changedEvents = previouslySelectedEvents.Select(e => file.EventManager.Get(e.Id)).ToList();
-                var changedEvent = file.EventManager.Get(previouslySelectedEvent.Id);
-                PropagateChanges(changedEvents, previouslySelectedEvent, changedEvent);
+                    var changedEvents = previouslySelectedEvents.Select(e => file.EventManager.Get(e.Id)).ToList();
+                    var changedEvent = file.EventManager.Get(previouslySelectedEvent.Id);
+                    PropagateChanges(changedEvents, previouslySelectedEvent, changedEvent);
 
-                var commit = new Commit<Event>(
-                    changedEvents.Select(e => new CommitAction<Event>(
-                        e.Clone(),
-                        file.EventManager.GetBefore(e.Id)?.Id)
-                    ).ToList()
-                );
-                if (shouldCommit) file.HistoryManager.Commit(new CommitGroup<Event>(commit));
-                previouslySelectedEvent = newSelectedEvent.Clone();
-                previouslySelectedEvents = newSelectedEvents.Select(e => e.Clone()).ToList();
-                SelectedEvent = newSelectedEvent;
-                SelectedEventCollection = new List<Event>(newSelectedEvents);
-                UpToDate = false;
-                selecting = false;
-                return commit;
+                    var commit = new Commit<Event>(
+                        changedEvents.Select(e => new CommitAction<Event>(
+                            e.Clone(),
+                            file.EventManager.GetBefore(e.Id)?.Id)
+                        ).ToList()
+                    );
+                    if (shouldCommit)
+                        file.HistoryManager.Commit(new CommitGroup<Event>(commit));
+                    previouslySelectedEvent = newSelectedEvent.Clone();
+                    previouslySelectedEvents = newSelectedEvents.Select(e => e.Clone()).ToList();
+                    SelectedEvent = newSelectedEvent;
+                    UpToDate = false;
+                    return commit;
+                }
             }
         }
 
@@ -170,7 +196,7 @@ namespace Holo
 
             if (select)
             {
-                var selectCommit = Select(selectedEvents, selectedEvent, false);
+                var selectCommit = SetSelectedEvents(selectedEvents, selectedEvent);
                 if (selectCommit != null) commits.Add((Commit<Event>)selectCommit);
             }
 
@@ -345,7 +371,7 @@ namespace Holo
         public void SplitSelected()
         {
             if (SelectedEvent == null || SelectedEventCollection == null) return;
-            Select(SelectedEventCollection, SelectedEvent);
+            SetSelectedEvents(SelectedEventCollection, SelectedEvent);
 
             var original = SelectedEvent;
             if (original == null) return;
@@ -384,7 +410,7 @@ namespace Holo
             if (SelectedEvent == null || SelectedEventCollection == null) return;
             if (SelectedEventCollection.Count != 2) return;
 
-            Select(SelectedEventCollection, SelectedEvent);
+            SetSelectedEvents(SelectedEventCollection, SelectedEvent);
 
             var one = SelectedEventCollection[0];
             var two = SelectedEventCollection[1];
@@ -439,7 +465,7 @@ namespace Holo
             var next = File.EventManager.GetAfter(SelectedEvent.Id);
             if (next != null)
             {
-                Select(new List<Event>() { next }, next);
+                SetSelectedEvents(new List<Event>() { next }, next);
             }
             else
             {
@@ -486,7 +512,7 @@ namespace Holo
             var sp = new CommitAction<Event>(SelectedEvent, file.EventManager.GetBefore(SelectedEvent.Id)?.Id);
             var s = new Commit<Event>(sp, CommitActionType.Edit);
             file.HistoryManager.Commit(new CommitGroup<Event>(s));
-            Select(SelectedEventCollection, SelectedEvent);
+            SetSelectedEvents(SelectedEventCollection, SelectedEvent);
 
             var shift = SelectedEvent.ToggleTag(tag, style, start, end);
             return (start + shift, end + shift);

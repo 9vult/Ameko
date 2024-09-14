@@ -126,7 +126,7 @@ namespace Ameko.ViewModels
 
         public void UpdateEventSelection(List<Event> selectedEvents, Event selectedEvent)
         {
-            Wrapper.Select(selectedEvents, selectedEvent);
+            Wrapper.SelectedEventsChanged(selectedEvents, selectedEvent);
             Actors.Clear();
             Actors.AddRange(Wrapper.File.EventManager.Actors);
             Effects.Clear();
@@ -242,7 +242,7 @@ namespace Ameko.ViewModels
 
             // TODO: Maybe not do this this way
             Wrapper.PropertyChanged += (o, e) => { this.RaisePropertyChanged(nameof(Display)); };
-            Wrapper.Select([Wrapper.File.EventManager.Head], Wrapper.File.EventManager.Head);
+            Wrapper.SelectedEventsChanged([Wrapper.File.EventManager.Head], Wrapper.File.EventManager.Head);
             SelectedEvent = Wrapper.File.EventManager.Head;
         }
     }
