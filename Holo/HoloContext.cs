@@ -2,6 +2,7 @@
 using Ffms2CS;
 using Holo.DC;
 using Holo.Plugins;
+using LibassCS;
 using SkiaSharp;
 using System;
 using System.Collections.Generic;
@@ -39,6 +40,9 @@ namespace Holo
             RepositoryManager.LoadUrlList(ConfigurationManager.GetRepositories());
 
             Workspace = new Workspace();
+
+            // TODO: TEMP
+            Libass.StartUp();
         }
 
         public class Directories

@@ -14,7 +14,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AssCS\AssCS.csproj" />
+    <ProjectReference Include="..\LibassCS\LibassCS.csproj" />
     <ProjectReference Include="..\Wrappers\Ffms2CS\Ffms2CS.csproj" />
+    <ProjectReference Include="..\Wrappers\LibassCS\LibassCS.csproj" />
   </ItemGroup>
 
 </Project>
