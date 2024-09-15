@@ -14,9 +14,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ameko", "Ameko\Ameko.csproj
 		{B01C58B5-B9D4-4EDD-8CFD-10C092DB8F57} = {B01C58B5-B9D4-4EDD-8CFD-10C092DB8F57}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ffms2CS", "Wrappers\Ffms2CS\Ffms2CS.csproj", "{5091307C-D789-4C7E-9608-C47257FEEC22}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ffms2CS", "Wrappers\Ffms2CS\Ffms2CS.csproj", "{5091307C-D789-4C7E-9608-C47257FEEC22}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Wrappers", "Wrappers", "{E517ECBF-FFB5-4A52-A5A4-008B2A1C8D96}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibassCS", "LibassCS\LibassCS.csproj", "{B35A2648-5ACD-4EBC-A0B4-C097705750BF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -44,12 +46,17 @@ Global
 		{5091307C-D789-4C7E-9608-C47257FEEC22}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5091307C-D789-4C7E-9608-C47257FEEC22}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5091307C-D789-4C7E-9608-C47257FEEC22}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B35A2648-5ACD-4EBC-A0B4-C097705750BF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B35A2648-5ACD-4EBC-A0B4-C097705750BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B35A2648-5ACD-4EBC-A0B4-C097705750BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B35A2648-5ACD-4EBC-A0B4-C097705750BF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{5091307C-D789-4C7E-9608-C47257FEEC22} = {E517ECBF-FFB5-4A52-A5A4-008B2A1C8D96}
+		{B35A2648-5ACD-4EBC-A0B4-C097705750BF} = {E517ECBF-FFB5-4A52-A5A4-008B2A1C8D96}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {65CDEBF2-05AC-4E48-9640-D5E843922128}

@@ -31,8 +31,7 @@ I would strongly recommend using either Visual Studio or Jetbrains Rider for dev
 - The final output for debugging and running is the `Ameko.Desktop` project
 - Holo and Ameko follow XDG directory guidelines
 
-- Ameko and Ameko.Desktop use `.NET 8.0`
-- AssCS and Holo use `.NET Standard 2.1`
+- Ameko uses `.NET 8.0`
 
 ### Licensing
 
