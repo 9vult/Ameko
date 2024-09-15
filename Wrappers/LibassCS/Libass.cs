@@ -13,8 +13,8 @@
         {
             if (_initialized) return;
 
-            IntPtr library = External.Init();
-            External.Uninit(library);
+            IntPtr library = External.InitLibrary();
+            External.UninitLibrary(library);
         }
     }
 }
