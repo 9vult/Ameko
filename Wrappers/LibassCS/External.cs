@@ -134,7 +134,7 @@ namespace LibassCS
         public static partial void SetPixelAspect(IntPtr renderer, double par);
 
         [LibraryImport("libass", EntryPoint = "ass_set_selective_style_override_enabled")]
-        public static partial void SetSelectiveStyleOverrideEnabled(IntPtr renderer, int bits);
+        public static partial void SetSelectiveStyleOverrideEnabled(IntPtr renderer, OverrideBits bits);
 
         [LibraryImport("libass", EntryPoint = "ass_set_selective_style_override")]
         public static partial void SetSelectiveStyleOverride(IntPtr renderer, IntPtr style);
