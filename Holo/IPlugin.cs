@@ -1,4 +1,5 @@
-﻿using Holo.Utilities;
+﻿using AssCS;
+using Holo.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -44,17 +45,6 @@ namespace Holo
         /// <returns>True if the plugin was successfully deinitialized</returns>
         public bool Deinitialize();
         /// <summary>
-        /// Open a file for processing
-        /// </summary>
-        /// <param name="filepath">Path to the file to open</param>
-        /// <returns>True if opening was successful</returns>
-        public bool OpenFile(string filepath);
-        /// <summary>
-        /// Close the currently loaded file
-        /// </summary>
-        /// <returns>True if closing was successful</returns>
-        public bool CloseFile();
-        /// <summary>
         /// Get the version of the library backing this plugin.
         /// </summary>
         /// <remarks>For example, a VapourSynth plugin should report the VapourSynth version</remarks>
@@ -69,6 +59,8 @@ namespace Holo
 
     public interface IVideoSourcePlugin : IPlugin
     {
+        public bool OpenFile(string filepath);
+        public bool CloseFile();
         public int[] GetVideoTracks();
         public bool LoadTrack(int track);
         public int GetFrameCount();
@@ -80,11 +72,16 @@ namespace Holo
 
     public interface IAudioSourcePlugin : IPlugin
     {
+        public bool OpenFile(string filepath);
+        public bool CloseFile();
         public AudioFrame GetFrame(long frameNumber, int stream);
     }
 
     public interface ISubtitlePlugin : IPlugin
     {
-        public int Execute(string[] args);
+        public void LoadSubtitles(string data);
+        public void LoadSubtitles(File subs, int time = -1);
+        public void DrawSubtitles(ref VideoFrame destination, long time);
+        public void Reinitialize() { }
     }
 }

@@ -42,7 +42,11 @@ namespace Holo
             Workspace = new Workspace();
 
             // TODO: TEMP
-            Libass.StartUp();
+            var temp = new LibassSource();
+            temp.Initialize();
+            // var ver = temp.GetBackingVersion();
+            // Logger.Info($"Libass version: {ver}", "Libass");
+            temp.Deinitialize();
         }
 
         public class Directories
