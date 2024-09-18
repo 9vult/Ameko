@@ -106,7 +106,6 @@ namespace LibassCS
                 External.UninitRenderer(_handle);
                 Invalid = true;
             }
-            else throw new ObjectDisposedException(nameof(Renderer));
         }
 
         internal Renderer(NativeRenderer* handle)

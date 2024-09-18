@@ -331,7 +331,7 @@ namespace LibassCS
         /// On all other systems there is no need for such consideration.
         /// </remarks>
         [LibraryImport("libass", EntryPoint = "ass_read_file")]
-        public static partial NativeTrack* ReadFile(NativeLibrary* library, [MarshalAs(UnmanagedType.LPStr)] string fileName, [MarshalAs(UnmanagedType.LPStr)] string codePage);
+        public static partial NativeTrack* ReadFile(NativeLibrary* library, [MarshalAs(UnmanagedType.LPStr)] string fileName, [MarshalAs(UnmanagedType.LPStr)] string? codePage);
 
         /// <summary>
         /// Read subtitles from memory
@@ -342,7 +342,7 @@ namespace LibassCS
         /// <param name="codePage">Codepage encoding (iconv format)</param>
         /// <returns>Newly allocated track or null on failure</returns>
         [LibraryImport("libass", EntryPoint = "ass_read_memory")]
-        public static partial NativeTrack* ReadMemory(NativeLibrary* library, in byte[] buffer, UIntPtr bufferSize, [MarshalAs(UnmanagedType.LPStr)] string codePage);
+        public static partial NativeTrack* ReadMemory(NativeLibrary* library, [MarshalAs(UnmanagedType.LPStr)] in string buffer, UIntPtr bufferSize, [MarshalAs(UnmanagedType.LPStr)] string? codePage);
 
         /// <summary>
         /// Read styles from file into an already-initialized track
@@ -520,7 +520,7 @@ namespace LibassCS
         /// </remarks>
         /// <seealso cref="SetSelectiveStyleOverrideEnabled(NativeRenderer*, OverrideBits)"/>
         [LibraryImport("libass", EntryPoint = "ass_set_selective_style_override")]
-        public static partial void SetSelectiveStyleOverride(NativeRenderer* renderer, void* style);
+        public static partial void SetSelectiveStyleOverride(NativeRenderer* renderer, NativeStyle* style);
 
         /// <summary>
         /// Set whether the ReadOrder field when processing a packet with <see cref="ProcessChunk(NativeTrack*, string, int, long, long)"/>

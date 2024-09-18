@@ -1,10 +1,5 @@
 ﻿using LibassCS.Enums;
 using LibassCS.Structures;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LibassCS
 {
@@ -58,6 +53,8 @@ namespace LibassCS
         }
 
         // TODO: Process data, etc...
+
+
 
         public void Uninitialize()
         {

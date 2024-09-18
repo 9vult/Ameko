@@ -20,6 +20,8 @@ namespace Holo.Plugins
         public bool IsInitialized => this._initialized;
 
         private bool _initialized = false;
+        private Renderer? _renderer;
+        private Track? _track;
 
         public void DrawSubtitles(ref VideoFrame destination, long time)
         {
@@ -31,6 +33,12 @@ namespace Holo.Plugins
             throw new NotImplementedException();
         }
 
+        public void LoadSubtitles(string data)
+        {
+            _track?.Uninitialize();
+            _track = Libass.ReadMemory(data, null);
+        }
+
         public bool Initialize()
         {
             if (_initialized) return false;
@@ -38,6 +46,7 @@ namespace Holo.Plugins
             {
                 Libass.StartUp();
                 _initialized = true;
+                _renderer = Libass.CreateRenderer();
                 return true;
             }
             catch (Exception ex)
@@ -68,11 +77,6 @@ namespace Holo.Plugins
         }
 
         public IDictionary<string, dynamic> GetProperties()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void LoadSubtitles(string data)
         {
             throw new NotImplementedException();
         }
