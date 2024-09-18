@@ -18,10 +18,28 @@ namespace AssCS.IO
         private readonly Encoding encoding;
         private readonly ConsumerInfo consumer;
 
+        public string WriteString(bool export = true)
+        {
+            var stream = new MemoryStream();
+            var writer = new StreamWriter(stream, encoding);
+            writer.NewLine = "\n";
+
+            WriteHeader(writer);
+            WriteScriptInfo(writer);
+            if (!export) WriteProjectProperties(writer);
+            WriteStyles(writer);
+            WriteAttachments(writer);
+            WriteEvents(writer);
+            if (!export) WriteExtradata(writer);
+
+            writer.Flush();
+            return Encoding.UTF8.GetString(stream.ToArray());
+        }
+
         public void Write(bool export)
         {
             using var ioFile = System.IO.File.Open(filepath, System.IO.FileMode.OpenOrCreate);
-            var writer = new System.IO.StreamWriter(ioFile, encoding);
+            var writer = new StreamWriter(ioFile, encoding);
 
             WriteHeader(writer);
             WriteScriptInfo(writer);

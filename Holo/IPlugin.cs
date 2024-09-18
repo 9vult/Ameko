@@ -81,7 +81,7 @@ namespace Holo
     {
         public void LoadSubtitles(string data);
         public void LoadSubtitles(File subs, int time = -1);
-        public void DrawSubtitles(ref VideoFrame destination, long time);
+        public void DrawSubtitles(ref VideoFrame frame, long time);
         public void Reinitialize() { }
     }
 }

@@ -193,7 +193,7 @@ namespace Ffms2CS
                     false
                 );
                 bitmap.SetPixels(_struct.Data[0]);
-                bitmap.SetImmutable();
+                // bitmap.SetImmutable();
                 return bitmap;
             }
         }

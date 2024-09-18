@@ -342,7 +342,7 @@ namespace LibassCS
         /// <param name="codePage">Codepage encoding (iconv format)</param>
         /// <returns>Newly allocated track or null on failure</returns>
         [LibraryImport("libass", EntryPoint = "ass_read_memory")]
-        public static partial NativeTrack* ReadMemory(NativeLibrary* library, [MarshalAs(UnmanagedType.LPStr)] in string buffer, UIntPtr bufferSize, [MarshalAs(UnmanagedType.LPStr)] string? codePage);
+        public static partial NativeTrack* ReadMemory(NativeLibrary* library, [MarshalAs(UnmanagedType.LPStr)] string buffer, UIntPtr bufferSize, [MarshalAs(UnmanagedType.LPStr)] string? codePage);
 
         /// <summary>
         /// Read styles from file into an already-initialized track
@@ -580,10 +580,9 @@ namespace LibassCS
         /// </remarks>
         [LibraryImport("libass", EntryPoint = "ass_free")]
         public static partial void Free(void* pointer);
-
-        public delegate void MessageCallback(int level, [MarshalAs(UnmanagedType.LPStr)] string format, params object[] args);
     }
 
+    public delegate void MessageCallback(int level, [MarshalAs(UnmanagedType.LPStr)] string format, params object[] args);
     public unsafe struct NativeLibrary;
     public unsafe struct NativeRenderer;
 }
