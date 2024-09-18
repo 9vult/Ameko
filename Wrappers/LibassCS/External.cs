@@ -1,23 +1,24 @@
 ﻿using LibassCS.Enums;
+using LibassCS.Structures;
 using System.Runtime.InteropServices;
 
 namespace LibassCS
 {
-    internal static partial class External
+    internal static unsafe partial class External
     {
         /// <summary>
         /// Initialize the ass Library
         /// </summary>
         /// <returns>Library handle structure</returns>
         [LibraryImport("libass", EntryPoint = "ass_library_init")]
-        public static partial IntPtr InitLibrary();
+        public static partial NativeLibrary* InitLibrary();
 
         /// <summary>
         /// Uninitialize the ass library
         /// </summary>
         /// <param name="library">Library handle</param>
         [LibraryImport("libass", EntryPoint = "ass_library_done")]
-        public static partial void UninitLibrary(IntPtr library);
+        public static partial void UninitLibrary(NativeLibrary* library);
 
         /// <summary>
         /// Get the version of Libass in use
@@ -32,7 +33,7 @@ namespace LibassCS
         /// <param name="library">Library handle</param>
         /// <param name="path">Path to the directory</param>
         [LibraryImport("libass", EntryPoint = "ass_set_fonts_dir")]
-        public static partial void SetFontsDir(IntPtr library, [MarshalAs(UnmanagedType.LPStr)] string path);
+        public static partial void SetFontsDir(NativeLibrary* library, [MarshalAs(UnmanagedType.LPStr)] string path);
 
         /// <summary>
         /// Should fonts be extracted?
@@ -40,7 +41,7 @@ namespace LibassCS
         /// <param name="library">Library handle</param>
         /// <param name="extract">If fonts should be extracted</param>
         [LibraryImport("libass", EntryPoint = "ass_set_extract_fonts")]
-        public static partial void SetExtractFonts(IntPtr library, [MarshalAs(UnmanagedType.Bool)] bool extract);
+        public static partial void SetExtractFonts(NativeLibrary* library, [MarshalAs(UnmanagedType.Bool)] bool extract);
 
         /// <summary>
         /// Set global style overrides
@@ -48,7 +49,7 @@ namespace LibassCS
         /// <param name="library">Library handle</param>
         /// <param name="list">List of style overrides</param>
         [LibraryImport("libass", EntryPoint = "ass_set_style_overrides")]
-        public static partial void SetStyleOverrides(IntPtr library, IntPtr list);
+        public static partial void SetStyleOverrides(NativeLibrary* library, IntPtr list);
 
         /// <summary>
         /// Initializes the renderer
@@ -57,19 +58,19 @@ namespace LibassCS
         /// <returns>Renderer handle structure</returns>
         /// <remarks>
         /// Before rendering starts, the renderer should be configured with at least
-        /// <see cref="SetStorageSize(nint, int, int)"/>,
-        /// <see cref="SetFrameSize(nint, int, int)"/>, and
-        /// <see cref="SetFonts(nint, string, string, int, string, int)"/>.
+        /// <see cref="SetStorageSize(NativeRenderer*, int, int)"/>,
+        /// <see cref="SetFrameSize(NativeRenderer*, int, int)"/>, and
+        /// <see cref="SetFonts(NativeRenderer*, string, string, DefaultFontProvider, string, int)"/>.
         /// </remarks>
         [LibraryImport("libass", EntryPoint = "ass_renderer_init")]
-        public static partial IntPtr InitRenderer(IntPtr library);
+        public static partial NativeRenderer* InitRenderer(NativeLibrary* library);
 
         /// <summary>
         /// Unitialize the renderer
         /// </summary>
         /// <param name="renderer">Renderer handle</param>
         [LibraryImport("libass", EntryPoint = "ass_renderer_done")]
-        public static partial void UninitRenderer(IntPtr renderer);
+        public static partial void UninitRenderer(NativeRenderer* renderer);
 
         /// <summary>
         /// Set the frame size, in pixels, including margins
@@ -83,10 +84,10 @@ namespace LibassCS
         /// the pixel aspect ratio used for rendering.<br/>
         /// If after compensating for configured margins the frame size is
         /// not an isotropically scaled version of the video display size,
-        /// you may have to use <see cref="SetPixelAspect(nint, double)"/>.
+        /// you may have to use <see cref="SetPixelAspect(NativeRenderer*, double)"/>.
         /// </remarks>
         [LibraryImport("libass", EntryPoint = "ass_set_frame_size")]
-        public static partial void SetFrameSize(IntPtr renderer, int width, int height);
+        public static partial void SetFrameSize(NativeRenderer* renderer, int width, int height);
 
         /// <summary>
         /// Set the source image size in pixels.
@@ -104,9 +105,9 @@ namespace LibassCS
         /// The values must be the actual storage size of the video stream,
         /// without any anamorphic de-squeeze applied.
         /// </remarks>
-        /// <seealso cref="SetPixelAspect(nint, double)"/>
+        /// <seealso cref="SetPixelAspect(NativeRenderer*, double)"/>
         [LibraryImport("libass", EntryPoint = "ass_set_storage_size")]
-        public static partial void SetStorageSize(IntPtr renderer, int width, int height);
+        public static partial void SetStorageSize(NativeRenderer* renderer, int width, int height);
 
         /// <summary>
         /// Set frame margins. These values may be negative if pan-and-scan is used.<br/>
@@ -134,7 +135,7 @@ namespace LibassCS
         /// </para>
         /// </remarks>
         [LibraryImport("libass", EntryPoint = "ass_set_margins")]
-        public static partial void SetMargins(IntPtr renderer, int top, int botton, int left, int right);
+        public static partial void SetMargins(NativeRenderer* renderer, int top, int botton, int left, int right);
 
         /// <summary>
         /// Set whether margins should be used for placing regular events
@@ -142,7 +143,7 @@ namespace LibassCS
         /// <param name="renderer">Renderer handle</param>
         /// <param name="useMargins">If margins should be used</param>
         [LibraryImport("libass", EntryPoint = "ass_set_use_margins")]
-        public static partial void SetUseMargins(IntPtr renderer, [MarshalAs(UnmanagedType.Bool)] bool useMargins);
+        public static partial void SetUseMargins(NativeRenderer* renderer, [MarshalAs(UnmanagedType.Bool)] bool useMargins);
 
         /// <summary>
         /// Set aspect ratio parameters
@@ -152,7 +153,7 @@ namespace LibassCS
         /// <param name="sar">Storage aspect ratio</param>
         [Obsolete("Use SetPixelAspect instead")]
         [LibraryImport("libass", EntryPoint = "ass_set_aspect_ratio")]
-        public static partial void SetAspectRatio(IntPtr renderer, double dar, double sar);
+        public static partial void SetAspectRatio(NativeRenderer* renderer, double dar, double sar);
 
         /// <summary>
         /// Set a fixed font scaling factor
@@ -160,7 +161,7 @@ namespace LibassCS
         /// <param name="renderer">Renderer handle</param>
         /// <param name="scale">Scaling factor, default is 1.0</param>
         [LibraryImport("libass", EntryPoint = "ass_set_font_scale")]
-        public static partial void SetFontScale(IntPtr renderer, double scale);
+        public static partial void SetFontScale(NativeRenderer* renderer, double scale);
 
         /// <summary>
         /// Set the font hinting method
@@ -168,7 +169,7 @@ namespace LibassCS
         /// <param name="renderer">Renderer handle</param>
         /// <param name="hinting">Hinting method</param>
         [LibraryImport("libass", EntryPoint = "ass_set_hinting")]
-        public static partial void SetHinting(IntPtr renderer, Hinting hinting);
+        public static partial void SetHinting(NativeRenderer* renderer, Hinting hinting);
 
         /// <summary>
         /// Set line spacing (Not scaled with frame size)
@@ -176,7 +177,7 @@ namespace LibassCS
         /// <param name="renderer">Renderer handle</param>
         /// <param name="spacing">Line spacing in pixels</param>
         [LibraryImport("libass", EntryPoint = "ass_set_line_spacing")]
-        public static partial void SetLineSpacing(IntPtr renderer, double spacing);
+        public static partial void SetLineSpacing(NativeRenderer* renderer, double spacing);
 
         /// <summary>
         /// Get the list of available font providers
@@ -189,7 +190,7 @@ namespace LibassCS
         /// If an allocation occurs, size is set to (size_t)-1.
         /// </remarks>
         [LibraryImport("libass", EntryPoint = "ass_get_available_font_providers")]
-        public static partial void GetAvailableFontProviders(IntPtr library, out IntPtr providers, out UIntPtr size);
+        public static partial void GetAvailableFontProviders(NativeLibrary* library, out IntPtr providers, out UIntPtr size);
 
         /// <summary>
         /// Set font lookup defaults
@@ -203,10 +204,10 @@ namespace LibassCS
         /// Only relevant if fontconfig is used. Encoding must match fontconfig encoding</param>
         /// <param name="update">Whether FontConfig cache should be build or updated now</param>
         [LibraryImport("libass", EntryPoint = "ass_set_fonts")]
-        public static partial void SetFonts(IntPtr renderer, [MarshalAs(UnmanagedType.LPStr)] string defaultFont, [MarshalAs(UnmanagedType.LPStr)] string defaultFamily, DefaultFontProvider dfp, [MarshalAs(UnmanagedType.LPStr)] string config, int update);
+        public static partial void SetFonts(NativeRenderer* renderer, [MarshalAs(UnmanagedType.LPStr)] string defaultFont, [MarshalAs(UnmanagedType.LPStr)] string defaultFamily, DefaultFontProvider dfp, [MarshalAs(UnmanagedType.LPStr)] string config, int update);
 
         /// <summary>
-        /// Render a frame, producing a list of <see cref="Structures.Image"/>s
+        /// Render a frame, producing a list of <see cref="NativeImage"/>s
         /// </summary>
         /// <param name="renderer">Renderer handle</param>
         /// <param name="track">Subtitle track</param>
@@ -215,22 +216,22 @@ namespace LibassCS
         /// to 1 if positions may have changed, or 2 if content may have changed</param>
         /// <returns>List of Images</returns>
         [LibraryImport("libass", EntryPoint = "ass_render_frame")]
-        public static partial IntPtr RenderFrame(IntPtr renderer, IntPtr track, long now, int detectChange);
+        public static partial NativeImage* RenderFrame(NativeRenderer* renderer, NativeTrack* track, long now, int detectChange);
 
         /// <summary>
-        /// Allocate a new empty <see cref="Structures.Track"/>
+        /// Allocate a new empty <see cref="NativeTrack"/>
         /// </summary>
         /// <param name="library">Library handle</param>
         /// <returns>Pointer to empty track, or null on failure</returns>
         [LibraryImport("libass", EntryPoint = "ass_new_track")]
-        public static partial IntPtr NewTrack(IntPtr library);
+        public static partial NativeTrack* NewTrack(NativeLibrary* library);
 
         /// <summary>
         /// Deallocate a track and all its child objects (styles, events)
         /// </summary>
         /// <param name="track">Track to deallocate</param>
         [LibraryImport("libass", EntryPoint = "ass_free_track")]
-        public static partial void FreeTrack(IntPtr track);
+        public static partial void FreeTrack(NativeTrack* track);
 
         /// <summary>
         /// Allocate a new style
@@ -238,7 +239,7 @@ namespace LibassCS
         /// <param name="track">Track</param>
         /// <returns>Newly allocated style id, >= 0, or a value < 0 on failure</returns>
         [LibraryImport("libass", EntryPoint = "ass_alloc_style")]
-        public static partial int AllocStyle(IntPtr track);
+        public static partial int AllocStyle(NativeTrack* track);
 
         /// <summary>
         /// Allocate a new event
@@ -246,7 +247,7 @@ namespace LibassCS
         /// <param name="track">Track</param>
         /// <returns>Newly allocated event id, >= 0, or a value < 0 on failure</returns>
         [LibraryImport("libass", EntryPoint = "ass_alloc_event")]
-        public static partial int AllocEvent(IntPtr track);
+        public static partial int AllocEvent(NativeTrack* track);
 
         /// <summary>
         /// Delete a style
@@ -254,15 +255,15 @@ namespace LibassCS
         /// <param name="track">Track</param>
         /// <param name="styleId">ID of the style</param>
         /// <remarks>
-        /// Deallocates style data. Does not modify <see cref="Structures.Track.NumStyles"/>.<br/>
-        /// Freeing a style without subsequently setting <see cref="Structures.Track.NumStyles"/>
+        /// Deallocates style data. Does not modify <see cref="NativeTrack.NumStyles"/>.<br/>
+        /// Freeing a style without subsequently setting <see cref="NativeTrack.NumStyles"/>
         /// to a value less than or equal to the freed style id before calling any other libass
         /// api function is undefined behavior.<br/>
-        /// Additionally, a freed style still being referenced by an event in <see cref="Structures.Track.Events"/>
+        /// Additionally, a freed style still being referenced by an event in <see cref="NativeTrack.Events"/>
         /// will also result in undefined behavior.
         /// </remarks>
         [LibraryImport("libass", EntryPoint = "ass_free_style")]
-        public static partial void FreeStyle(IntPtr track, int styleId);
+        public static partial void FreeStyle(NativeTrack* track, int styleId);
 
         /// <summary>
         /// Delete an event
@@ -270,13 +271,13 @@ namespace LibassCS
         /// <param name="track">Track</param>
         /// <param name="eventId">ID of the event</param>
         /// <remarks>
-        /// Deallocates event data. Does not modify <see cref="Structures.Track.NumEvents"/>.<br/>
-        /// Freeing an event without subsequently setting <see cref="Structures.Track.NumEvents"/>
+        /// Deallocates event data. Does not modify <see cref="NativeTrack.NumEvents"/>.<br/>
+        /// Freeing an event without subsequently setting <see cref="NativeTrack.NumEvents"/>
         /// to a value less than or equal to the freed event id before calling any other libass
         /// api function is undefined behavior.<br/>
         /// </remarks>
         [LibraryImport("libass", EntryPoint = "ass_free_event")]
-        public static partial void FreeEvent(IntPtr track, int eventId);
+        public static partial void FreeEvent(NativeTrack* track, int eventId);
 
         /// <summary>
         /// Parse a chunk of subtitle stream data
@@ -285,7 +286,7 @@ namespace LibassCS
         /// <param name="data">String to parse</param>
         /// <param name="size">Length of data</param>
         [LibraryImport("libass", EntryPoint = "ass_process_data")]
-        public static partial void ProcessData(IntPtr track, [MarshalAs(UnmanagedType.LPStr)] string data, int size);
+        public static partial void ProcessData(NativeTrack* track, [MarshalAs(UnmanagedType.LPStr)] string data, int size);
 
         /// <summary>
         /// Parse the Codec Private section of the subtitle stream, in Matroska format
@@ -294,7 +295,7 @@ namespace LibassCS
         /// <param name="data">String to parse</param>
         /// <param name="size">Length of data</param>
         [LibraryImport("libass", EntryPoint = "ass_process_codec_private")]
-        public static partial void ProcessCodecPrivate(IntPtr track, [MarshalAs(UnmanagedType.LPStr)] string data, int size);
+        public static partial void ProcessCodecPrivate(NativeTrack* track, [MarshalAs(UnmanagedType.LPStr)] string data, int size);
 
         /// <summary>
         /// Parse a chunk of subtitle stream data
@@ -308,12 +309,12 @@ namespace LibassCS
         /// See the Matroska specification for details.
         /// In later libass versions(since LIBASS_VERSION==0x01300001), using this
         /// function means you agree not to modify events manually, or using other
-        /// functions manipulating the event list like <see cref="ProcessData(nint, string, int)"/>. 
+        /// functions manipulating the event list like <see cref="ProcessData(NativeTrack*, string, int)"/>. 
         /// If you do anyway, the internal duplicate checking might break.
-        /// Calling <see cref="FlushEvents(nint)"/> is still allowed.
+        /// Calling <see cref="FlushEvents(NativeTrack*)"/> is still allowed.
         /// </remarks>
         [LibraryImport("libass", EntryPoint = "ass_process_chunk")]
-        public static partial void ProcessChunk(IntPtr track, [MarshalAs(UnmanagedType.LPStr)] string data, int size, long timecode, long duration);
+        public static partial void ProcessChunk(NativeTrack* track, [MarshalAs(UnmanagedType.LPStr)] string data, int size, long timecode, long duration);
 
         /// <summary>
         /// Read subtitles from a file
@@ -330,7 +331,7 @@ namespace LibassCS
         /// On all other systems there is no need for such consideration.
         /// </remarks>
         [LibraryImport("libass", EntryPoint = "ass_read_file")]
-        public static partial IntPtr ReadFile(IntPtr library, [MarshalAs(UnmanagedType.LPStr)] string fileName, [MarshalAs(UnmanagedType.LPStr)] string codePage);
+        public static partial NativeTrack* ReadFile(NativeLibrary* library, [MarshalAs(UnmanagedType.LPStr)] string fileName, [MarshalAs(UnmanagedType.LPStr)] string codePage);
 
         /// <summary>
         /// Read subtitles from memory
@@ -341,7 +342,7 @@ namespace LibassCS
         /// <param name="codePage">Codepage encoding (iconv format)</param>
         /// <returns>Newly allocated track or null on failure</returns>
         [LibraryImport("libass", EntryPoint = "ass_read_memory")]
-        public static partial IntPtr ReadMemory(IntPtr library, in byte[] buffer, UIntPtr bufferSize, [MarshalAs(UnmanagedType.LPStr)] string codePage);
+        public static partial NativeTrack* ReadMemory(NativeLibrary* library, in byte[] buffer, UIntPtr bufferSize, [MarshalAs(UnmanagedType.LPStr)] string codePage);
 
         /// <summary>
         /// Read styles from file into an already-initialized track
@@ -358,7 +359,7 @@ namespace LibassCS
         /// On all other systems there is no need for such consideration.
         /// </remarks>
         [LibraryImport("libass", EntryPoint = "ass_read_styles")]
-        public static partial int ReadStyles(IntPtr track, [MarshalAs (UnmanagedType.LPStr)] string fileName, [MarshalAs(UnmanagedType.LPStr)] string codePage);
+        public static partial int ReadStyles(NativeTrack* track, [MarshalAs (UnmanagedType.LPStr)] string fileName, [MarshalAs(UnmanagedType.LPStr)] string codePage);
 
         /// <summary>
         /// Add a memory font
@@ -368,18 +369,18 @@ namespace LibassCS
         /// <param name="data">Binary font data</param>
         /// <param name="dataSize">Size of data</param>
         [LibraryImport("libass", EntryPoint = "ass_add_font")]
-        public static partial void AddFont(IntPtr library, [MarshalAs(UnmanagedType.LPStr)] string name, in byte[] data, int dataSize);
+        public static partial void AddFont(NativeLibrary* library, [MarshalAs(UnmanagedType.LPStr)] string name, in byte[] data, int dataSize);
 
         /// <summary>
         /// Remove all fonts stores in a library object
         /// </summary>
         /// <param name="library">Library handle</param>
         /// <remarks>
-        /// This can only be called safely if all <see cref="Structures.Track"/> objects
+        /// This can only be called safely if all <see cref="NativeTrack"/> objects
         /// and Renderer instances associated with the library handle have been released first.
         /// </remarks>
         [LibraryImport("libass", EntryPoint = "ass_clear_fonts")]
-        public static partial void ClearFonts(IntPtr library);
+        public static partial void ClearFonts(NativeLibrary* library);
 
         /// <summary>
         /// Calculates timeshift from now to the start of some other subtitle event
@@ -393,14 +394,14 @@ namespace LibassCS
         /// -1 means "previous", etc.
         /// </remarks>
         [LibraryImport("libass", EntryPoint = "ass_step_sub")]
-        public static partial long StepSub(IntPtr track, long now, int movement);
+        public static partial long StepSub(NativeTrack* track, long now, int movement);
 
         /// <summary>
         /// Explicitly process style overrides for a track
         /// </summary>
         /// <param name="track">Track handle</param>
         [LibraryImport("libass", EntryPoint = "ass_process_force_style")]
-        public static partial void ProcessForceStyle(IntPtr track);
+        public static partial void ProcessForceStyle(NativeTrack* track);
 
         /// <summary>
         /// Register a callback for debug/info messages
@@ -417,11 +418,11 @@ namespace LibassCS
         /// prefixed with [ass].
         /// </remarks>
         [LibraryImport("libass", EntryPoint = "ass_set_message_cb")]
-        public static partial void SetMessageCallback(IntPtr library, MessageCallback callback);
+        public static partial void SetMessageCallback(NativeLibrary* library, MessageCallback callback);
 
         [Obsolete("Does nothing")]
         [LibraryImport("libass", EntryPoint = "ass_fonts_update")]
-        public static partial int FontsUpdate(IntPtr renderer);
+        public static partial int FontsUpdate(NativeRenderer* renderer);
 
         /// <summary>
         /// Set cache hard limits. Do not set, or set to zero, for reasonable defaults.
@@ -430,14 +431,14 @@ namespace LibassCS
         /// <param name="glyphMax">Maximum number of cached glyphs</param>
         /// <param name="bitmapMaxSize">Maximum bitmap cache size in megabytes</param>
         [LibraryImport("libass", EntryPoint = "ass_set_cache_limits")]
-        public static partial void SetCacheLimits(IntPtr renderer, int glyphMax, int bitmapMaxSize);
+        public static partial void SetCacheLimits(NativeRenderer* renderer, int glyphMax, int bitmapMaxSize);
 
         /// <summary>
         /// Flush buffered events
         /// </summary>
         /// <param name="track">Track</param>
         [LibraryImport("libass", EntryPoint = "ass_flush_events")]
-        public static partial void FlushEvents(IntPtr track);
+        public static partial void FlushEvents(NativeTrack* track);
 
         /// <summary>
         /// Set the shaping level
@@ -449,7 +450,7 @@ namespace LibassCS
         /// whatever is available if the request cannot be fulfilled.
         /// </remarks>
         [LibraryImport("libass", EntryPoint = "ass_set_shaper")]
-        public static partial void SetShaper(IntPtr renderer, ShapingLevel level);
+        public static partial void SetShaper(NativeRenderer* renderer, ShapingLevel level);
 
         /// <summary>
         /// Set the vertical line position
@@ -457,7 +458,7 @@ namespace LibassCS
         /// <param name="renderer">Renderer handle</param>
         /// <param name="position">Line spacing in pixels</param>
         [LibraryImport("libass", EntryPoint = "ass_set_line_position")]
-        public static partial void SetLinePosition(IntPtr renderer, double position);
+        public static partial void SetLinePosition(NativeRenderer* renderer, double position);
 
         /// <summary>
         /// Set the pixel aspect ratio correction. This is the ratio of pixel width to pixel height.
@@ -472,18 +473,18 @@ namespace LibassCS
         /// </para><para>
         /// If the pixel aspect ratio is 0, or if the aspect ratio has never been set by
         /// calling this function, libass will calculate a default pixel aspect ratio
-        /// out of values set with <see cref="SetFrameSize(nint, int, int)"/> and
-        /// <see cref="SetStorageSize(nint, int, int)"/>. Note that this corresponds to
+        /// out of values set with <see cref="SetFrameSize(NativeRenderer*, int, int)"/> and
+        /// <see cref="SetStorageSize(NativeRenderer*, int, int)"/>. Note that this corresponds to
         /// an isotropically scaled version of the video display size. If the storage size
         /// has not been set, a pixel aspect ratio of 1 is assumed.
         /// </para><para>
         /// If subtitles specify valid LayoutRes headers, the API-configured pixel aspect value
         /// is discarded in favor of one calculated out of the headers and values set
-        /// with <see cref="SetFrameSize(nint, int, int)"/>.
+        /// with <see cref="SetFrameSize(NativeRenderer*, int, int)"/>.
         /// </para>
         /// </remarks>
         [LibraryImport("libass", EntryPoint = "ass_set_pixel_aspect")]
-        public static partial void SetPixelAspect(IntPtr renderer, double par);
+        public static partial void SetPixelAspect(NativeRenderer* renderer, double par);
 
         /// <summary>
         /// Set selective style override mode
@@ -495,7 +496,7 @@ namespace LibassCS
         /// If enabled, the renderer attempts to override the ASS script's styling of
         /// normal subtitles, without affecting explicitly positioned text.If an event
         /// looks like a normal subtitle, parts of the font style are copied from the
-        /// user style set with <see cref="SetSelectiveStyleOverride(nint, nint)"/>.
+        /// user style set with <see cref="SetSelectiveStyleOverride(NativeRenderer*, void*)"/>.
         /// </para><para>
         /// <b>WARNING</b>: the heuristic used for deciding when to override the style is rather
         /// rough, and enabling this option can lead to incorrectly rendered
@@ -506,7 +507,7 @@ namespace LibassCS
         /// </para>
         /// </remarks>
         [LibraryImport("libass", EntryPoint = "ass_set_selective_style_override_enabled")]
-        public static partial void SetSelectiveStyleOverrideEnabled(IntPtr renderer, OverrideBits bits);
+        public static partial void SetSelectiveStyleOverrideEnabled(NativeRenderer* renderer, OverrideBits bits);
 
         /// <summary>
         /// Set style for selective style override
@@ -517,18 +518,47 @@ namespace LibassCS
         /// Applications should initialize <paramref name="style"/> with {0} 
         /// before setting fields. Strings will be copied by the function.
         /// </remarks>
-        /// <seealso cref="SetSelectiveStyleOverrideEnabled(nint, OverrideBits)"/>
+        /// <seealso cref="SetSelectiveStyleOverrideEnabled(NativeRenderer*, OverrideBits)"/>
         [LibraryImport("libass", EntryPoint = "ass_set_selective_style_override")]
-        public static partial void SetSelectiveStyleOverride(IntPtr renderer, IntPtr style);
+        public static partial void SetSelectiveStyleOverride(NativeRenderer* renderer, void* style);
 
         /// <summary>
-        /// Set whether the ReadOrder field when processing a packet with <see cref="ProcessChunk(nint, string, int, long, long)"/>
+        /// Set whether the ReadOrder field when processing a packet with <see cref="ProcessChunk(NativeTrack*, string, int, long, long)"/>
         /// should be used for eliminating duplicates
         /// </summary>
         /// <param name="track">Track</param>
         /// <param name="checkReadOrder">0 = no, 1 = yes, other = undefined</param>
         [LibraryImport("libass", EntryPoint = "ass_set_check_readorder")]
-        public static partial void SetCheckReadOrder(IntPtr track, int checkReadOrder);
+        public static partial void SetCheckReadOrder(NativeTrack* track, int checkReadOrder);
+
+        /// <summary>
+        /// Enable or disable certain features
+        /// </summary>
+        /// <param name="track">Track</param>
+        /// <param name="feature">Feature to enable or disable</param>
+        /// <param name="enable">Whether to enable the feature</param>
+        /// <returns>0 if the feature was set, -1 if feature is unknown</returns>
+        /// <remarks>
+        /// <para>
+        /// This manages flags that control the behavior of the renderer and
+        /// how certain tags, etc within the track are interpreted. The defaults
+        /// on a newly created <see cref="NativeTrack"/> are such that rendering is
+        /// compatible with traditional renderers like VSFilter, and/or old versions of libass.
+        /// </para><para>
+        /// Calling <see cref="ProcessData(NativeTrack*, string, int)"/> or
+        /// <see cref="ProcessCodecPrivate(NativeTrack*, string, int)"/> may change
+        /// some of these flags according to file headers.
+        /// (<see cref="ProcessChunk(NativeTrack*, string, int, long, long)"/>
+        /// will not change any of the flags).
+        /// </para><para>
+        /// Additions to <see cref="Feature"/> are backwards-compatible to old libass
+        /// releases (ABI compativility).
+        /// </para>
+        /// After calling <see cref="RenderFrame(NativeRenderer*, NativeTrack*, long, int)"/>,
+        /// changing features is no longer allowed.
+        /// </remarks>
+        [LibraryImport("libass", EntryPoint = "ass_track_set_feature")]
+        public static partial int SetTrackFeature(NativeTrack* track, Feature feature, [MarshalAs(UnmanagedType.Bool)] bool enable);
 
         /// <summary>
         /// Allocates memory that can be safely freed by libass later
@@ -536,10 +566,10 @@ namespace LibassCS
         /// <param name="size">Number of bytes to allocate</param>
         /// <returns>Pointer to the allocated buffer, or null on failure</returns>
         /// <remarks>
-        /// Use this to allocate buffers you'll use to manually modify <see cref="Structures.Track"/> events
+        /// Use this to allocate buffers you'll use to manually modify <see cref="NativeTrack"/> events
         /// </remarks>
         [LibraryImport("libass", EntryPoint = "ass_malloc")]
-        public static partial IntPtr Malloc(UIntPtr size);
+        public static partial void* Malloc(UIntPtr size);
 
         /// <summary>
         /// Releases memory previously allocated within libass
@@ -549,9 +579,11 @@ namespace LibassCS
         /// Use this to free memory allocated using <see cref="Malloc(nuint)"/>
         /// </remarks>
         [LibraryImport("libass", EntryPoint = "ass_free")]
-        public static partial void Free(IntPtr pointer);
-
+        public static partial void Free(void* pointer);
 
         public delegate void MessageCallback(int level, [MarshalAs(UnmanagedType.LPStr)] string format, params object[] args);
     }
+
+    public unsafe struct NativeLibrary;
+    public unsafe struct NativeRenderer;
 }
