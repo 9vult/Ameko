@@ -9,6 +9,7 @@
     <PackageReference Include="Samboy063.Tomlet" Version="5.3.0" />
     <PackageReference Include="System.Net.Http.Json" Version="8.0.0" />
     <PackageReference Include="System.Text.Json" Version="8.0.2" />
+    <PackageReference Include="TextCopy" Version="6.2.1" />
     <PackageReference Include="Xdg.Directories" Version="0.1.1" />
   </ItemGroup>
 
