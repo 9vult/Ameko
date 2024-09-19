@@ -70,7 +70,7 @@ namespace LibassCS
             External.SetLinePosition(_handle, linePosition);
         }
 
-        public void SetFonts(string defaultFont, string defaultFamily, DefaultFontProvider dfp, string config, int update)
+        public void SetFonts(string? defaultFont, string? defaultFamily, DefaultFontProvider dfp, string? config, bool update)
         {
             ObjectDisposedException.ThrowIf(Invalid, nameof(Renderer));
             External.SetFonts(_handle, defaultFont, defaultFamily, dfp, config, update);

@@ -204,7 +204,7 @@ namespace LibassCS
         /// Only relevant if fontconfig is used. Encoding must match fontconfig encoding</param>
         /// <param name="update">Whether FontConfig cache should be build or updated now</param>
         [LibraryImport("libass", EntryPoint = "ass_set_fonts")]
-        public static partial void SetFonts(NativeRenderer* renderer, [MarshalAs(UnmanagedType.LPStr)] string defaultFont, [MarshalAs(UnmanagedType.LPStr)] string defaultFamily, DefaultFontProvider dfp, [MarshalAs(UnmanagedType.LPStr)] string config, int update);
+        public static partial void SetFonts(NativeRenderer* renderer, [MarshalAs(UnmanagedType.LPStr)] string? defaultFont, [MarshalAs(UnmanagedType.LPStr)] string? defaultFamily, DefaultFontProvider dfp, [MarshalAs(UnmanagedType.LPStr)] string? config, [MarshalAs(UnmanagedType.Bool)] bool update);
 
         /// <summary>
         /// Render a frame, producing a list of <see cref="NativeImage"/>s

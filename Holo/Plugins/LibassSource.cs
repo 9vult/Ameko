@@ -36,57 +36,19 @@ namespace Holo.Plugins
             var image = _renderer!.RenderFrame(_track, time);
             if (image is null)
                 return;
-            var dst = frame.Bitmap;
 
             // Libass returns a linked list of alpha-masked monochrome images.
             // Loop through the list, blending each one into the frame
-
-            for (; image is not null; image = image.Next)
+            
+            for (var img = image; img is not null; img = img.Next)
             {
                 uint opacity = 255 - image.Color & 0xFF;
                 uint r = image.Color >> 24;
                 uint g = (image.Color >> 16) & 0xFF;
                 uint b = (image.Color >> 8) & 0xFF;
                 uint a = image.Color & 0xFF;
-
-                var srcBitmap = new SKBitmap(image.Width, image.Height, false);
-                srcBitmap.SetPixels(new IntPtr(image.Bitmap));
-                
-                SKRectI dstRect = new(image.DistX, image.DistY, image.DistX + image.Width, image.DistY + image.Height);
-                dstRect.Intersect(new SKRectI(0, 0, image.Width, image.Height));
-
-                IntPtr srcPixels = srcBitmap.GetPixels();
-                IntPtr dstPixels = dst.GetPixels();
-
-                byte* srcPtr = (byte*)srcPixels.ToPointer();
-                byte* dstPtr = (byte*)dstPixels.ToPointer();
-
-                for (int y = 0; y < image.Height; y++)
-                {
-                    for (int x = 0; x < image.Width; x++)
-                    {
-                        int srcIndex = (y * srcBitmap.RowBytes) + x;
-                        int dstIndex = ((y + image.DistX) * dst.RowBytes) + x + image.DistX;
-                           
-                        // Source is grayscale
-                        byte srcGray = srcPtr[srcIndex];
-                        uint k = srcGray * opacity / 255;
-                        uint ck = 255 - k;
-
-                        // Destination is BGRA
-                        byte* dstPixel = &dstPtr[dstIndex * 4];
-                        byte frameB = dstPixel[0];
-                        byte frameG = dstPixel[1];
-                        byte frameR = dstPixel[2];
-
-                        // Blend the pixels
-                        dstPixel[0] = (byte)((k * b + ck * frameB) / 255);
-                        dstPixel[1] = (byte)((k * g + ck * frameG) / 255);
-                        dstPixel[2] = (byte)((k * r + ck * frameR) / 255);
-                        dstPixel[3] = 255; // Alpha
-                    }
-                }
             }
+
         }
 
         public void LoadSubtitles(File file, int time = -1)
@@ -118,6 +80,11 @@ namespace Holo.Plugins
 
                 _initialized = true;
                 _renderer = Libass.CreateRenderer();
+                // TODO
+                _renderer.SetFrameSize(1280, 720);
+                _renderer.SetStorageSize(1280, 720);
+                _renderer.SetFontScale(1.0d);
+                _renderer.SetFonts(null, "Sans", LibassCS.Enums.DefaultFontProvider.AutoDetect, null, true);
                 return true;
             }
             catch (Exception ex)

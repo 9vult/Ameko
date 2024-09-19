@@ -33,7 +33,7 @@ namespace LibassCS.Structures
         /// 1bpp stride * height alpha buffer
         /// </summary>
         /// <remarks>The last row may not be padded to bitmap stride!</remarks>
-        public byte* Bitmap;
+        public IntPtr Bitmap;
         /// <summary>
         /// Bitmap color and alpha, RGBA
         /// </summary>
