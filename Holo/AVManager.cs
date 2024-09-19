@@ -15,6 +15,8 @@ namespace Holo
         private ISubtitlePlugin _subtitlesource;
         private readonly VideoWrapper _video;
         private bool _videoLoaded = false;
+        private int _lastFrameIdx = -1;
+        private VideoFrame _lastFrame;
                 
         public VideoWrapper Video => _video;
         public int VideoTrack { get; private set; }
@@ -33,8 +35,14 @@ namespace Holo
         public VideoFrame GetFrame()
         {
             if (!IsVideoLoaded) throw new Exception("Cannot get frame when video is unloaded!");
+
+            if (_video.CurrentFrame == _lastFrameIdx)
+                return _lastFrame;
+
             var frame = _videosource.GetFrame(_video.CurrentFrame);
-            _subtitlesource.DrawSubtitles(ref frame, _video.CurrentTimeEstimated.TotalMilliseconds);
+            // _subtitlesource.DrawSubtitles(ref frame, _video.CurrentTimeEstimated.TotalMilliseconds);
+            _lastFrame = frame;
+            _lastFrameIdx = _video.CurrentFrame;
             return frame;
         }
 
