@@ -58,7 +58,7 @@ namespace Ameko.Controls
                 {
                     using var lease = leaseFeature.Lease();
                     var canvas = lease.SkCanvas;
-                    if (_b.Data.Count > 0)
+                    if (_b.Data.Length > 0)
                     {
                         using var bitmap = new SKBitmap(_b.Width, _b.Height, SKColorType.Bgra8888, SKAlphaType.Premul);
                         // bitmap.InstallPixels();

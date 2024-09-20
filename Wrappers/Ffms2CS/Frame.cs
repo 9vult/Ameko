@@ -12,13 +12,13 @@ namespace Ffms2CS
     public class Frame
     {
         private readonly Structures.Frame _struct;
-        private readonly List<byte> _data;
+        private readonly byte[] _data;
         internal bool Invalid = false;
 
         /// <summary>
         /// List of pointers to pixel data
         /// </summary>
-        public List<byte> Data => (!Invalid) ? _data : throw new ObjectDisposedException(nameof(Frame));
+        public byte[] Data => (!Invalid) ? _data : throw new ObjectDisposedException(nameof(Frame));
 
         /// <summary>
         /// List of integers for the length of each scan line
@@ -187,17 +187,13 @@ namespace Ffms2CS
             _struct = (Structures.Frame)Marshal.PtrToStructure(frame, typeof(Structures.Frame))!;
 
             _data = [];
-            for (int i = 0; i < _struct.Data.Length; i++)
+            IntPtr plane0 = _struct.Data[0];
+            int plane0size = _struct.LineSize[0];
+            if (plane0 != IntPtr.Zero && plane0size > 0 && _struct.ScaledHeight > 0)
             {
-                IntPtr dataPointer = _struct.Data[i];
-                int lineSize = _struct.LineSize[i];
-
-                if (dataPointer != IntPtr.Zero && lineSize > 0)
-                {
-                    byte[] temp = new byte[lineSize];
-                    Marshal.Copy(dataPointer, temp, 0, lineSize);
-                    _data.AddRange(temp);
-                }
+                int bgraBitmapSize = plane0size * _struct.ScaledHeight;
+                _data = new byte[bgraBitmapSize];
+                Marshal.Copy(plane0, _data, 0, bgraBitmapSize);
             }
         }
     }
