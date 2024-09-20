@@ -65,7 +65,7 @@ namespace Holo
         public bool LoadTrack(int track);
         public int GetFrameCount();
         public Rational GetFrameRate();
-        public VideoFrame GetFrame(int frame);
+        public void GetFrame(int frameNumber, ref VideoFrame frame);
         public long[] GetFrameTimes();
         public float[] GetFrameIntervals(long[] frametimes);
     }

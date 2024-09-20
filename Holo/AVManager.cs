@@ -16,7 +16,7 @@ namespace Holo
         private readonly VideoWrapper _video;
         private bool _videoLoaded = false;
         private int _lastFrameIdx = -1;
-        private VideoFrame _lastFrame;
+        private VideoFrame _frame;
                 
         public VideoWrapper Video => _video;
         public int VideoTrack { get; private set; }
@@ -37,13 +37,12 @@ namespace Holo
             if (!IsVideoLoaded) throw new Exception("Cannot get frame when video is unloaded!");
 
             if (_video.CurrentFrame == _lastFrameIdx)
-                return _lastFrame;
+                return _frame;
 
-            var frame = _videosource.GetFrame(_video.CurrentFrame);
+            _videosource.GetFrame(_video.CurrentFrame, ref _frame);
             // _subtitlesource.DrawSubtitles(ref frame, _video.CurrentTimeEstimated.TotalMilliseconds);
-            _lastFrame = frame;
             _lastFrameIdx = _video.CurrentFrame;
-            return frame;
+            return _frame;
         }
 
         public bool LoadVideo(string filepath)
@@ -62,8 +61,8 @@ namespace Holo
 
             var fc = _videosource.GetFrameCount();
             if (fc <= 0) throw new Exception("No frames in this file!");
-            var frame = _videosource.GetFrame(0);
-            var sar = new Rational(frame.Size.X, frame.Size.Y);
+            _videosource.GetFrame(0, ref _frame);
+            var sar = new Rational(_frame.Width, _frame.Height);
             var rate = _videosource.GetFrameRate();
 
             var frametimes = _videosource.GetFrameTimes();
@@ -80,7 +79,7 @@ namespace Holo
             _videosource.Initialize();
             _videoLoaded = false;
             VideoPath = string.Empty;
-            _video = new VideoWrapper(25, new Rational(1280, 720), new Rational(24000, 1001), new long[] {0}, new float[] {0});
+            _video = new VideoWrapper(25, new Rational(1280, 720), new Rational(24000, 1001), [0], [0]);
 
             _subtitlesource = new LibassSource();
             _subtitlesource.Initialize();

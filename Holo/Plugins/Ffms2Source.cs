@@ -23,28 +23,25 @@ namespace Holo.Plugins
         private Ffms2CS.Index? _index;
         private Ffms2CS.VideoSource? _source;
 
-        public VideoFrame GetFrame(int frame)
+        public void GetFrame(int frameNumber, ref VideoFrame frame)
         {
             if (!_initialized) throw new InvalidOperationException("Ffms2 is not initialized");
             if (_source == null) throw new InvalidOperationException("Video source is not initialized");
             
             try
             {
-                var frameData = _source.GetFrame(frame);
-                return new VideoFrame
-                {
-                    IsKeyframe = frameData.IsKeyframe,
-                    Size = new VideoFrame.Dimension
-                    {
-                        X = frameData.OutputResolution.Width,
-                        Y = frameData.OutputResolution.Height
-                    },
-                    Bitmap = frameData.SKBitmap
-                };
+                var frameData = _source.GetFrame(frameNumber);
+
+                frame.Flipped = false;
+                frame.IsKeyframe = frameData.IsKeyframe;
+                frame.Width = frameData.OutputResolution.Width;
+                frame.Height = frameData.OutputResolution.Height;
+                frame.Pitch = 0;
+                frame.Data = frameData.Data;
             }
             catch (Exception ex)
             {
-                throw new Exception($"Failed to get frame {frame}", ex);
+                throw new Exception($"Failed to get frame {frameNumber}", ex);
             }
         }
 

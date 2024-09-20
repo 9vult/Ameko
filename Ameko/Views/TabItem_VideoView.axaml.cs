@@ -91,7 +91,8 @@ namespace Ameko.Views
             InitializeComponent();
             previousVMs = new List<TabItemViewModel>();
 
-            videoTarget.Children.Add(new SKBitmapRenderer());
+            //videoTarget.Children.Add(new SKBitmapRenderer());
+            videoTarget.Children.Add(new OpenGlVideoRenderer());
 
             this.WhenActivated((CompositeDisposable disposables) =>
             {

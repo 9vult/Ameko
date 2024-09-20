@@ -12,17 +12,18 @@ namespace Ffms2CS
     public class Frame
     {
         private readonly Structures.Frame _struct;
+        private readonly List<byte> _data;
         internal bool Invalid = false;
 
         /// <summary>
         /// List of pointers to pixel data
         /// </summary>
-        public ReadOnlyCollection<IntPtr> Data => (!Invalid) ? new ReadOnlyCollection<IntPtr>(_struct.Data) : throw new ObjectDisposedException(nameof(Frame));
+        public List<byte> Data => (!Invalid) ? _data : throw new ObjectDisposedException(nameof(Frame));
 
         /// <summary>
         /// List of integers for the length of each scan line
         /// </summary>
-        public ReadOnlyCollection<int> DataLength => (!Invalid) ? new ReadOnlyCollection<int>(_struct.LineSize) : throw new ObjectDisposedException(nameof(Frame));
+        public ReadOnlyCollection<int> LineSize => (!Invalid) ? new ReadOnlyCollection<int>(_struct.LineSize) : throw new ObjectDisposedException(nameof(Frame));
 
         /// <summary>
         /// Frame size in pixels
@@ -157,27 +158,6 @@ namespace Ffms2CS
         public int HDR10PlusSize => (!Invalid) ? _struct.HDR10PlusSize : throw new ObjectDisposedException(nameof(Frame));
 
         */
-
-        /// <summary>
-        /// Get the pixel data as a bitmap. Required PixelFormat to be BGRA.
-        /// </summary>
-        public Bitmap Bitmap
-        {
-            get
-            {
-                if (Invalid) throw new ObjectDisposedException(nameof(Frame));
-
-                if (_struct.ConvertedPixelFormat != Ffms2.GetPixelFormat("bgra")) throw new InvalidOperationException("Invalid pixel format");
-
-                return new Bitmap(
-                    _struct.ScaledWidth,
-                    _struct.ScaledHeight,
-                    _struct.ScaledWidth * 4,
-                    System.Drawing.Imaging.PixelFormat.Format32bppArgb,
-                    _struct.Data[0]
-                );
-            }
-        }
         
         public SKBitmap SKBitmap
         {
@@ -204,7 +184,21 @@ namespace Ffms2CS
         /// <param name="frame"></param>
         internal Frame(IntPtr frame)
         {
-            _struct = (Structures.Frame)Marshal.PtrToStructure(frame, typeof(Structures.Frame));
+            _struct = (Structures.Frame)Marshal.PtrToStructure(frame, typeof(Structures.Frame))!;
+
+            _data = [];
+            for (int i = 0; i < _struct.Data.Length; i++)
+            {
+                IntPtr dataPointer = _struct.Data[i];
+                int lineSize = _struct.LineSize[i];
+
+                if (dataPointer != IntPtr.Zero && lineSize > 0)
+                {
+                    byte[] temp = new byte[lineSize];
+                    Marshal.Copy(dataPointer, temp, 0, lineSize);
+                    _data.AddRange(temp);
+                }
+            }
         }
     }
 
