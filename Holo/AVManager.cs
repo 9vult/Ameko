@@ -3,7 +3,9 @@ using Holo.Data;
 using Holo.Plugins;
 using Holo.Utilities;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
 namespace Holo
@@ -21,6 +23,9 @@ namespace Holo
         public VideoWrapper Video => _video;
         public int VideoTrack { get; private set; }
         public string VideoPath { get; private set; }
+
+        Stopwatch s = new();
+        List<long> times = [];
         
         public bool IsVideoLoaded
         {
@@ -35,11 +40,19 @@ namespace Holo
         public VideoFrame GetFrame()
         {
             if (!IsVideoLoaded) throw new Exception("Cannot get frame when video is unloaded!");
-
+            s.Start();
             if (_video.CurrentFrame == _lastFrameIdx)
+            {
+                s.Stop();
+                times.Add(s.ElapsedMilliseconds);
+                s.Reset();
                 return _frame;
+            }
 
             _videosource.GetFrame(_video.CurrentFrame, ref _frame);
+            s.Stop();
+            times.Add(s.ElapsedMilliseconds);
+            s.Reset();
             // _subtitlesource.DrawSubtitles(ref frame, _video.CurrentTimeEstimated.TotalMilliseconds);
             _lastFrameIdx = _video.CurrentFrame;
             return _frame;
