@@ -5,6 +5,7 @@ using SkiaSharp;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace Holo.Plugins
@@ -30,7 +31,7 @@ namespace Holo.Plugins
         private static ConsumerInfo ConsumerInfo => new("Ameko LibassSource", "(Internal)", "https://ameko.moe");
         private AssWriter? _writer;
 
-        // TODO: ???
+        private const int BGRA_WIDTH = 4;
         public unsafe void DrawSubtitles(ref VideoFrame frame, long time)
         {
             if (!_initialized) throw new InvalidOperationException("Libass is not initialized");
@@ -39,8 +40,16 @@ namespace Holo.Plugins
             if (image is null)
                 return;
 
-            byte* frameData = (byte*)frame.Data.ToPointer();
-            byte* dst = frameData;
+            /*
+                int bufferSize = frame.Width * frame.Height * BGRA_WIDTH;
+                byte[] subtitleBuffer = new byte[bufferSize];
+
+                // Set to transparent
+                for (int i = 0; i < bufferSize; i++)
+                    subtitleBuffer[i] = 0;
+            */
+
+            byte* subtitleBuffer = (byte*)frame.Data.ToPointer();
 
             // Libass returns a linked list of alpha-masked monochrome images.
             // Loop through the list, blending each one into the frame
@@ -64,17 +73,26 @@ namespace Holo.Plugins
                 {
                     for (int x = 0; x < img.Width; x++)
                     {
-                        // Calculate the pixel's gray value and its position
-                        byte gray = *(bitmap + y * img.Stride + x);
-                        byte* pos = dst + (img.DistY + y) * frame.Width * 4 + (img.DistX + x) * 4;
+                        // source pixel index
+                        int srcIndex = y * img.Stride + x;
 
-                        uint k = gray * opacity / 255;
-                        uint ck = 255 - k;
+                        // destination pixel index
+                        int destX = x + img.DistX;
+                        int destY = y + img.DistY;
 
-                        pos[0] = (byte)((k * b + ck * pos[0]) / 255);
-                        pos[1] = (byte)((k * g + ck * pos[1]) / 255);
-                        pos[2] = (byte)((k * r + ck * pos[2]) / 255);
-                        pos[3] = 0;
+                        if (destX >= 0 && destX < frame.Width && destY >= 0 && destY < frame.Height)
+                        {
+                            int destIndex = (destY * frame.Width + destX) * BGRA_WIDTH;
+
+                            byte srcAlpha = bitmap[srcIndex];
+                            byte k = (byte)(srcAlpha * opacity / 255);
+                            byte ck = (byte)(255 - k);
+
+                            subtitleBuffer[destIndex + 0] = (byte)((k * b + ck * subtitleBuffer[destIndex + 0]) / 255);
+                            subtitleBuffer[destIndex + 1] = (byte)((k * g + ck * subtitleBuffer[destIndex + 1]) / 255);
+                            subtitleBuffer[destIndex + 2] = (byte)((k * r + ck * subtitleBuffer[destIndex + 2]) / 255);
+                            subtitleBuffer[destIndex + 3] = 255; // Set alpha to fully opaque
+                        }
                     }
                 }
             }
