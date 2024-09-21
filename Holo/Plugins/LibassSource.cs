@@ -4,6 +4,7 @@ using LibassCS;
 using SkiaSharp;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Holo.Plugins
 {
@@ -37,18 +38,45 @@ namespace Holo.Plugins
             if (image is null)
                 return;
 
+            byte* frameData = (byte*)frame.Data.ToPointer();
+            byte* dst = frameData;
+
             // Libass returns a linked list of alpha-masked monochrome images.
             // Loop through the list, blending each one into the frame
-            
+
+            // TODO: Not this
+            // This is extremely slow lmao
+            // Maybe OpenGL can do this instead?
+            // Either that or I'll have to write some C to do this part *_*
+
             for (var img = image; img is not null; img = img.Next)
             {
+                byte* bitmap = (byte*)img.Bitmap.ToPointer();
+
                 uint opacity = 255 - image.Color & 0xFF;
                 uint r = image.Color >> 24;
                 uint g = (image.Color >> 16) & 0xFF;
                 uint b = (image.Color >> 8) & 0xFF;
                 uint a = image.Color & 0xFF;
-            }
 
+                for (int y = 0; y < img.Height; y++)
+                {
+                    for (int x = 0; x < img.Width; x++)
+                    {
+                        // Calculate the pixel's gray value and its position
+                        byte gray = *(bitmap + y * img.Stride + x);
+                        byte* pos = dst + (img.DistY + y) * frame.Width * 4 + (img.DistX + x) * 4;
+
+                        uint k = gray * opacity / 255;
+                        uint ck = 255 - k;
+
+                        pos[0] = (byte)((k * b + ck * pos[0]) / 255);
+                        pos[1] = (byte)((k * g + ck * pos[1]) / 255);
+                        pos[2] = (byte)((k * r + ck * pos[2]) / 255);
+                        pos[3] = 0;
+                    }
+                }
+            }
         }
 
         public void LoadSubtitles(File file, int time = -1)

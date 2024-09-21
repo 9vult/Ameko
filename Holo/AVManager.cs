@@ -3,9 +3,7 @@ using Holo.Data;
 using Holo.Plugins;
 using Holo.Utilities;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
 namespace Holo
@@ -24,9 +22,6 @@ namespace Holo
         public int VideoTrack { get; private set; }
         public string VideoPath { get; private set; }
 
-        Stopwatch s = new();
-        List<long> times = [];
-        
         public bool IsVideoLoaded
         {
             get => _videoLoaded;
@@ -40,20 +35,11 @@ namespace Holo
         public VideoFrame GetFrame()
         {
             if (!IsVideoLoaded) throw new Exception("Cannot get frame when video is unloaded!");
-            s.Start();
             if (_video.CurrentFrame == _lastFrameIdx)
-            {
-                s.Stop();
-                times.Add(s.ElapsedMilliseconds);
-                s.Reset();
                 return _frame;
-            }
 
             _videosource.GetFrame(_video.CurrentFrame, ref _frame);
-            s.Stop();
-            times.Add(s.ElapsedMilliseconds);
-            s.Reset();
-            // _subtitlesource.DrawSubtitles(ref frame, _video.CurrentTimeEstimated.TotalMilliseconds);
+            _subtitlesource.DrawSubtitles(ref _frame, _video.CurrentTimeEstimated.TotalMilliseconds);
             _lastFrameIdx = _video.CurrentFrame;
             return _frame;
         }
@@ -92,7 +78,7 @@ namespace Holo
             _videosource.Initialize();
             _videoLoaded = false;
             VideoPath = string.Empty;
-            _video = new VideoWrapper(25, new Rational(1280, 720), new Rational(24000, 1001), [0], [0]);
+            _video = new VideoWrapper(25, new Rational(1920, 1080), new Rational(24000, 1001), [0], [0]);
 
             _subtitlesource = new LibassSource();
             _subtitlesource.Initialize();
@@ -100,11 +86,10 @@ namespace Holo
             // TEMP
             var file = new File();
             file.StyleManager.Add(new Style(file.StyleManager.NextId));
-            file.EventManager.AddFirst(new Event(file.EventManager.NextId) {
-                Text = "Hello from Libass!",
-                Start = Time.FromMillis(0),
-                End = Time.FromSeconds(5) }
-            );
+            file.EventManager.AddLast(new Event(file.EventManager.NextId) {
+                Text = "{\\frz45}You're a breeze blowing through a meadow",
+                Start = Time.FromMillis(0), End = Time.FromMillis(2500)
+            });
             _subtitlesource.LoadSubtitles(file);
         }
 
