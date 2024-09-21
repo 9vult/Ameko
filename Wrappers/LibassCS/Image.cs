@@ -1,16 +1,13 @@
 ﻿using LibassCS.Enums;
 using LibassCS.Structures;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LibassCS
 {
     public unsafe class Image
     {
         private readonly NativeImage _image;
+
+        public NativeImage* Pointer { get; }
 
         public int Width => _image.Width;
         public int Height => _image.Height;
@@ -24,6 +21,7 @@ namespace LibassCS
 
         internal Image(NativeImage* image)
         {
+            Pointer = image;
             _image = *image;
         }
     }

@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 
 namespace Holo
 {
+    [StructLayout(LayoutKind.Sequential)]
     public struct VideoFrame
     {
         public bool IsKeyframe;

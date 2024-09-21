@@ -1,4 +1,5 @@
 ﻿using AssCS;
+using AssCS.IO;
 using Holo.Data;
 using Holo.Plugins;
 using Holo.Utilities;
@@ -87,9 +88,11 @@ namespace Holo
             var file = new File();
             file.InfoManager.LoadDefault();
             file.StyleManager.Add(new Style(file.StyleManager.NextId));
-            file.EventManager.AddLast(new Event(file.EventManager.NextId) {
+            file.EventManager.AddLast(new Event(file.EventManager.NextId)
+            {
                 Text = "It's the victorious return of the heroes' party.",
-                Start = Time.FromMillis(0), End = Time.FromMillis(2500)
+                Start = Time.FromMillis(0),
+                End = Time.FromMillis(2500)
             });
             _subtitlesource.LoadSubtitles(file);
         }

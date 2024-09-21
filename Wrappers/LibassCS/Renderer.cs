@@ -88,13 +88,13 @@ namespace LibassCS
             External.SetSelectiveStyleOverride(_handle, style.GetHandle());
         }
 
-        public Image? RenderFrame(Track track, long time, int detectChanges = 0)
+        public NativeImage* RenderFrame(Track track, long time, int detectChanges = 0)
         {
             ObjectDisposedException.ThrowIf(Invalid, nameof(Renderer));
             ObjectDisposedException.ThrowIf(track.Invalid, nameof(Track));
             NativeImage* nImg = External.RenderFrame(_handle, track.GetHandle(), time, detectChanges);
             if (nImg is not null)
-                return new Image(nImg);
+                return nImg;
             return null;
         }
 

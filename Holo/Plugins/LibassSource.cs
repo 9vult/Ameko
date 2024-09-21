@@ -3,11 +3,12 @@ using AssCS.IO;
 using LibassCS;
 using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace Holo.Plugins
 {
-    internal class LibassSource : ISubtitlePlugin
+    internal partial class LibassSource : ISubtitlePlugin
     {
         public string Name => "LibassSource";
 
@@ -33,54 +34,13 @@ namespace Holo.Plugins
         {
             if (!_initialized) throw new InvalidOperationException("Libass is not initialized");
             if (_track is null) throw new InvalidOperationException("Track is null!");
+
             var image = _renderer!.RenderFrame(_track, time);
             if (image is null)
                 return;
 
-            byte* subtitleBuffer = (byte*)frame.Data.ToPointer();
-
-            // Libass returns a linked list of alpha-masked monochrome images.
-            // Loop through the list, blending each one into the frame
-
-            // TODO: This is extremely slow lmao
-            // Potentially move into OpenGL if possible, or C
-            for (var img = image; img is not null; img = img.Next)
-            {
-                byte* bitmap = (byte*)img.Bitmap.ToPointer();
-
-                uint opacity = 255 - img.Color & 0xFF;
-                uint r = img.Color >> 24;
-                uint g = (img.Color >> 16) & 0xFF;
-                uint b = (img.Color >> 8) & 0xFF;
-                uint a = img.Color & 0xFF;
-
-                for (int y = 0; y < img.Height; y++)
-                {
-                    for (int x = 0; x < img.Width; x++)
-                    {
-                        // source pixel index
-                        int srcIndex = y * img.Stride + x;
-
-                        // destination pixel index
-                        int destX = x + img.DistX;
-                        int destY = y + img.DistY;
-
-                        if (destX >= 0 && destX < frame.Width && destY >= 0 && destY < frame.Height)
-                        {
-                            int destIndex = (destY * frame.Width + destX) * BGRA_WIDTH;
-
-                            byte srcAlpha = bitmap[srcIndex];
-                            byte k = (byte)(srcAlpha * opacity / 255);
-                            byte ck = (byte)(255 - k);
-
-                            subtitleBuffer[destIndex + 0] = (byte)((k * b + ck * subtitleBuffer[destIndex + 0]) / 255);
-                            subtitleBuffer[destIndex + 1] = (byte)((k * g + ck * subtitleBuffer[destIndex + 1]) / 255);
-                            subtitleBuffer[destIndex + 2] = (byte)((k * r + ck * subtitleBuffer[destIndex + 2]) / 255);
-                            subtitleBuffer[destIndex + 3] = 255; // Set alpha to fully opaque
-                        }
-                    }
-                }
-            }
+            // byte* frameBuffer = (byte*)frame.Data.ToPointer();
+            Pixelize_External.RenderSubs(frame.Data, frame.Width, frame.Height, image);
         }
 
         public void LoadSubtitles(File file, int time = -1)
@@ -149,6 +109,12 @@ namespace Holo.Plugins
         public IDictionary<string, dynamic> GetProperties()
         {
             throw new NotImplementedException();
+        }
+
+        private partial class Pixelize_External
+        {
+            [LibraryImport("Pixelize", EntryPoint = "render_subs")]
+            public static unsafe partial void RenderSubs(IntPtr frameData, int width, int height, LibassCS.Structures.NativeImage* img);
         }
     }
 }
