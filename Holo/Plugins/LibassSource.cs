@@ -1,11 +1,8 @@
 ﻿using AssCS;
 using AssCS.IO;
 using LibassCS;
-using SkiaSharp;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Runtime.InteropServices;
 using System.Text;
 
 namespace Holo.Plugins
@@ -40,34 +37,22 @@ namespace Holo.Plugins
             if (image is null)
                 return;
 
-            /*
-                int bufferSize = frame.Width * frame.Height * BGRA_WIDTH;
-                byte[] subtitleBuffer = new byte[bufferSize];
-
-                // Set to transparent
-                for (int i = 0; i < bufferSize; i++)
-                    subtitleBuffer[i] = 0;
-            */
-
             byte* subtitleBuffer = (byte*)frame.Data.ToPointer();
 
             // Libass returns a linked list of alpha-masked monochrome images.
             // Loop through the list, blending each one into the frame
 
-            // TODO: Not this
-            // This is extremely slow lmao
-            // Maybe OpenGL can do this instead?
-            // Either that or I'll have to write some C to do this part *_*
-
+            // TODO: This is extremely slow lmao
+            // Potentially move into OpenGL if possible, or C
             for (var img = image; img is not null; img = img.Next)
             {
                 byte* bitmap = (byte*)img.Bitmap.ToPointer();
 
-                uint opacity = 255 - image.Color & 0xFF;
-                uint r = image.Color >> 24;
-                uint g = (image.Color >> 16) & 0xFF;
-                uint b = (image.Color >> 8) & 0xFF;
-                uint a = image.Color & 0xFF;
+                uint opacity = 255 - img.Color & 0xFF;
+                uint r = img.Color >> 24;
+                uint g = (img.Color >> 16) & 0xFF;
+                uint b = (img.Color >> 8) & 0xFF;
+                uint a = img.Color & 0xFF;
 
                 for (int y = 0; y < img.Height; y++)
                 {
