@@ -5,6 +5,7 @@ using SkiaSharp;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Text;
 
 namespace Holo.Plugins
 {
@@ -87,7 +88,7 @@ namespace Holo.Plugins
             }
             else
             {
-                _writer = new(file, string.Empty, ConsumerInfo);
+                _writer = new(file, string.Empty, ConsumerInfo, new UTF8Encoding(true));
                 LoadSubtitles(_writer.WriteString());
             }
         }
@@ -109,8 +110,8 @@ namespace Holo.Plugins
                 _initialized = true;
                 _renderer = Libass.CreateRenderer();
                 // TODO
-                _renderer.SetFrameSize(1280, 720);
-                _renderer.SetStorageSize(1280, 720);
+                _renderer.SetFrameSize(1920, 1080);
+                _renderer.SetStorageSize(1920, 1080);
                 _renderer.SetFontScale(1.0d);
                 _renderer.SetFonts(null, "Sans", LibassCS.Enums.DefaultFontProvider.AutoDetect, null, true);
                 return true;

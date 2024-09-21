@@ -85,9 +85,10 @@ namespace Holo
 
             // TEMP
             var file = new File();
+            file.InfoManager.LoadDefault();
             file.StyleManager.Add(new Style(file.StyleManager.NextId));
             file.EventManager.AddLast(new Event(file.EventManager.NextId) {
-                Text = "{\\frz45}You're a breeze blowing through a meadow",
+                Text = "It's the victorious return of the heroes' party.",
                 Start = Time.FromMillis(0), End = Time.FromMillis(2500)
             });
             _subtitlesource.LoadSubtitles(file);
