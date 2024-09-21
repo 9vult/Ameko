@@ -12,13 +12,15 @@ namespace Ffms2CS
     public class Frame
     {
         private readonly Structures.Frame _struct;
-        private readonly byte[] _data;
+        //private readonly byte[] _bytes;
+        private readonly IntPtr _data;
         internal bool Invalid = false;
 
         /// <summary>
         /// List of pointers to pixel data
         /// </summary>
-        public byte[] Data => (!Invalid) ? _data : throw new ObjectDisposedException(nameof(Frame));
+        //public byte[] Bytes => (!Invalid) ? _bytes : throw new ObjectDisposedException(nameof(Frame));
+        public IntPtr Data => (!Invalid) ? _data : throw new ObjectDisposedException(nameof(Frame));
 
         /// <summary>
         /// List of integers for the length of each scan line
@@ -186,15 +188,16 @@ namespace Ffms2CS
         {
             _struct = (Structures.Frame)Marshal.PtrToStructure(frame, typeof(Structures.Frame))!;
 
-            _data = [];
-            IntPtr plane0 = _struct.Data[0];
-            int plane0size = _struct.LineSize[0];
-            if (plane0 != IntPtr.Zero && plane0size > 0 && _struct.ScaledHeight > 0)
-            {
-                int bgraBitmapSize = plane0size * _struct.ScaledHeight;
-                _data = new byte[bgraBitmapSize];
-                Marshal.Copy(plane0, _data, 0, bgraBitmapSize);
-            }
+            _data = _struct.Data[0];
+            //_bytes = [];
+            //IntPtr plane0 = _struct.Data[0];
+            //int plane0size = _struct.LineSize[0];
+            //if (plane0 != IntPtr.Zero && plane0size > 0 && _struct.ScaledHeight > 0)
+            //{
+            //    int bgraBitmapSize = plane0size * _struct.ScaledHeight;
+            //    _data = new byte[bgraBitmapSize];
+            //    Marshal.Copy(plane0, _bytes, 0, bgraBitmapSize);
+            //}
         }
     }
 

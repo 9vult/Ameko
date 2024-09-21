@@ -10,7 +10,8 @@ namespace Holo
         public int Height;
         public int Pitch;
         public bool Flipped;
-        public byte[] Data;
+        public IntPtr Data;
+        //public byte[] Bytes;
     }
 
     public struct AudioFrame

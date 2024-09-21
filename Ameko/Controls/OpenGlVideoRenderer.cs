@@ -1,164 +1,128 @@
 ﻿using Holo;
-using OpenTK.Graphics.OpenGL;
-using System;
+using Ameko.DataModels;
+using OpenTK.Graphics.ES30;
 
 namespace Ameko.Controls
 {
     internal class OpenGlVideoRenderer : BaseOpenTkControl
-    {
-        private int _textureId;
-        private int _vbo;
-        private int _vao;
-        private int _shaderProgram;
+    { 
+        private readonly float[] _vertices =
+        [
+        //   Position           Texture coordinates
+             1.0f,  1.0f, 0.0f, 1.0f, 1.0f, // top right
+             1.0f, -1.0f, 0.0f, 1.0f, 0.0f, // bottom right
+            -1.0f, -1.0f, 0.0f, 0.0f, 0.0f, // bottom left
+            -1.0f,  1.0f, 0.0f, 0.0f, 1.0f  // top left
+        ];
+
+        private readonly uint[] _indices = [
+            0, 1, 3, // First triangle
+            1, 2, 3  // Second triangle
+        ];
+
+        private int _ebo; // Element Buffer Object
+        private int _vbo; // Vertex Buffer Object
+        private int _vao; // Vertex Array Object
+        private int _tex; // Texture
+        private Shader? _shader; // Shader program
 
         protected override void OpenTkInit()
         {
-            // Generate the texture ID
-            GL.GenTextures(1, out _textureId);
-            GL.BindTexture(TextureTarget.Texture2D, _textureId);
+            GL.ClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+
+            _vao = GL.GenVertexArray();
+            GL.BindVertexArray(_vao);
+
+            _vbo = GL.GenBuffer();
+            GL.BindBuffer(BufferTarget.ArrayBuffer, _vbo);
+            GL.BufferData(BufferTarget.ArrayBuffer, _vertices.Length * sizeof(float), _vertices, BufferUsageHint.StaticDraw);
+
+            _ebo = GL.GenBuffer();
+            GL.BindBuffer(BufferTarget.ElementArrayBuffer, _ebo);
+            GL.BufferData(BufferTarget.ElementArrayBuffer, _indices.Length * sizeof(uint), _indices, BufferUsageHint.StaticDraw);
+
+            _shader = new Shader(vertexShaderSource, fragmentShaderSource);
+            _shader.Use();
+
+            var vertexLocation = _shader.GetAttribLocation("aPosition");
+            GL.EnableVertexAttribArray(vertexLocation);
+            GL.VertexAttribPointer(vertexLocation, 3, VertexAttribPointerType.Float, false, 5 * sizeof(float), 0);
+
+            var texCoordLocation = _shader.GetAttribLocation("aTexCoord");
+            GL.EnableVertexAttribArray(texCoordLocation);
+            GL.VertexAttribPointer(texCoordLocation, 2, VertexAttribPointerType.Float, false, 5 * sizeof(float), 3 * sizeof(float));
+
+            _tex = GL.GenTexture();
+            GL.ActiveTexture(TextureUnit.Texture0);
+            GL.BindTexture(TextureTarget.Texture2D, _tex);
+
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
 
-            float[] vertices = [
-                -1.0f, -1.0f, 0.0f, 0.0f, // Bottom-left
-                 1.0f, -1.0f, 1.0f, 0.0f, // Bottom-right
-                 1.0f,  1.0f, 1.0f, 1.0f, // Top-right
-                -1.0f,  1.0f, 0.0f, 1.0f  // Top-left
-            ];
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
 
-            GL.GenVertexArrays(1, out _vao);
-            GL.GenBuffers(1, out _vbo);
-
-            GL.BindVertexArray(_vao);
-
-            GL.BindBuffer(BufferTarget.ArrayBuffer, _vbo);
-            GL.BufferData(BufferTarget.ArrayBuffer, vertices.Length * sizeof(float), vertices, BufferUsageHint.StaticDraw);
-
-            // Define the layout of the vertex data
-            GL.VertexAttribPointer(0, 2, VertexAttribPointerType.Float, false, 4 * sizeof(float), 0);
-            GL.EnableVertexAttribArray(0);
-            GL.VertexAttribPointer(1, 2, VertexAttribPointerType.Float, false, 4 * sizeof(float), 2 * sizeof(float));
-            GL.EnableVertexAttribArray(1);
-
-            string version = GL.GetString(StringName.Version);
-            bool isES = version.Contains("ES");
-
-            _shaderProgram = CreateShaderProgram(isES);
-            GL.UseProgram(_shaderProgram);
+            // OpenGL ES 3.0 doesn't support BGRA8888 by default, so swizzle B and R
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureSwizzleR, (int)All.Blue);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureSwizzleG, (int)All.Green);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureSwizzleB, (int)All.Red);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureSwizzleA, (int)All.Alpha);
         }
 
         protected override void OpenTkRender()
         {
-            // Clear the screen
             GL.Clear(ClearBufferMask.ColorBufferBit);
 
-            if (!HoloContext.Instance.Workspace.WorkingFile.AVManager.IsVideoLoaded || _textureId == 0)
+            if (!HoloContext.Instance.Workspace.WorkingFile.AVManager.IsVideoLoaded || _tex == 0)
                 return;
 
             VideoFrame frame = HoloContext.Instance.Workspace.WorkingFile.AVManager.GetFrame();
 
-            // Bind the texture
-            GL.BindTexture(TextureTarget.Texture2D, _textureId);
-            var x = GL.GetError();
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, frame.Width, frame.Height, 0, PixelFormat.Bgra, PixelType.UnsignedByte, frame.Data);
-            x = GL.GetError(); // ???? invalid operation
             GL.BindVertexArray(_vao);
-            GL.DrawArrays(PrimitiveType.Quads, 0, 4);
+
+            GL.ActiveTexture(TextureUnit.Texture0);
+            GL.BindTexture(TextureTarget.Texture2D, _tex);
+            GL.TexImage2D(TextureTarget2d.Texture2D, 0, TextureComponentCount.Rgba, frame.Width, frame.Height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, frame.Data);
+            
+            _shader?.Use();
+
+            GL.DrawElements(PrimitiveType.Triangles, _indices.Length, DrawElementsType.UnsignedInt, 0);
         }
 
         protected override void OpenTkDeinit()
         {
-            if (_textureId == 0)
-                return;
-            GL.DeleteTextures(1, ref _textureId);
-            GL.DeleteBuffers(1, ref _vbo);
-            GL.DeleteVertexArrays(1, ref _vao);
-            GL.DeleteProgram(_shaderProgram);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+            GL.DeleteBuffer(_vbo);
+            GL.DeleteTexture(_tex);
+            _shader?.Dispose();
         }
 
-        private int CreateShaderProgram(bool isOpenGLES)
-        {
-            int vertexShader = GL.CreateShader(ShaderType.VertexShader);
-            string vertexShaderSource = isOpenGLES ? 
-                @"#version 300 es
-                layout(location = 0) in vec2 aPos;
-                layout(location = 1) in vec2 aTexCoord;
-                out vec2 TexCoord;
-                void main()
-                {
-                    gl_Position = vec4(aPos, 0.0, 1.0);
-                    TexCoord = aTexCoord;
-                }" :
-                @"#version 330 core
-                layout(location = 0) in vec2 aPos;
-                layout(location = 1) in vec2 aTexCoord;
-                out vec2 TexCoord;
-                void main()
-                {
-                    gl_Position = vec4(aPos, 0.0, 1.0);
-                    TexCoord = aTexCoord;
-                }";
+        private const string vertexShaderSource =
+            @"#version 300 es
+            in vec3 aPosition;
+            in vec2 aTexCoord;
 
-            GL.ShaderSource(vertexShader, vertexShaderSource);
-            GL.CompileShader(vertexShader);
+            out vec2 texCoord;
 
-            // Check compilation
-            GL.GetShader(vertexShader, ShaderParameter.CompileStatus, out int vertexCompileStatus);
-            if (vertexCompileStatus == 0)
+            void main(void)
             {
-                string infoLog = GL.GetShaderInfoLog(vertexShader);
-                throw new Exception($"Vertex Shader Compilation Error: {infoLog}");
-            }
+                texCoord = aTexCoord;
+                texCoord.y = 1.0 - texCoord.y; // Flip image
+                gl_Position = vec4(aPosition, 1.0);
+            }";
 
-            int fragmentShader = GL.CreateShader(ShaderType.FragmentShader);
-            string fragmentShaderSource = isOpenGLES ?
-                @"#version 300 es
-                precision mediump float;
-                out vec4 FragColor;
-                in vec2 TexCoord;
-                uniform sampler2D texture1;
-                void main()
-                {
-                    FragColor = texture(texture1, TexCoord);
-                }" :
-                @"#version 330 core
-                out vec4 FragColor;
-                in vec2 TexCoord;
-                uniform sampler2D texture1;
-                void main()
-                {
-                    FragColor = texture(texture1, TexCoord);
-                }";
+        private const string fragmentShaderSource =
+            @"#version 300 es
+            precision mediump float; // Set the precision for floating-point operations
 
-            GL.ShaderSource(fragmentShader, fragmentShaderSource);
-            GL.CompileShader(fragmentShader);
+            in vec2 texCoord;
+            out vec4 outputColor;
 
-            // Check compilation
-            GL.GetShader(fragmentShader, ShaderParameter.CompileStatus, out int fragmentCompileStatus);
-            if (fragmentCompileStatus == 0)
+            uniform sampler2D texture0;
+
+            void main()
             {
-                string infoLog = GL.GetShaderInfoLog(fragmentShader);
-                throw new Exception($"Fragment Shader Compilation Error: {infoLog}");
-            }
-
-            int program = GL.CreateProgram();
-            GL.AttachShader(program, vertexShader);
-            GL.AttachShader(program, fragmentShader);
-            GL.LinkProgram(program);
-
-            // Check linking
-            GL.GetProgram(program, GetProgramParameterName.LinkStatus, out int linkStatus);
-            if (linkStatus == 0)
-            {
-                string infoLog = GL.GetProgramInfoLog(program);
-                throw new Exception($"Shader Program Linking Error: {infoLog}");
-            }
-
-            GL.DeleteShader(vertexShader);
-            GL.DeleteShader(fragmentShader);
-
-            return program;
-        }
-
+                outputColor = texture(texture0, texCoord);
+            }";
     }
 }

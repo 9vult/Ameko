@@ -5,7 +5,7 @@ using Avalonia.OpenGL.Controls;
 using OpenTK;
 using System;
 using Avalonia.Threading;
-using OpenTK.Graphics.OpenGL;
+using OpenTK.Graphics.ES30;
 
 namespace Ameko.Controls
 {
