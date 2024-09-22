@@ -1,5 +1,7 @@
 ﻿using System;
+using System.IO;
 using System.Reflection.Metadata;
+using Avalonia.Platform;
 using OpenTK.Graphics.ES30;
 
 namespace Ameko.DataModels
@@ -20,6 +22,11 @@ namespace Ameko.DataModels
         {
             return GL.GetAttribLocation(_program, attribName);
         }
+
+        public Shader(Uri vertexFile, Uri fragmentFile)
+            : this(new StreamReader(AssetLoader.Open(vertexFile)).ReadToEnd(),
+                   new StreamReader(AssetLoader.Open(fragmentFile)).ReadToEnd()
+        ) { }
 
         public Shader(string vertexSource, string fragmentSource)
         {

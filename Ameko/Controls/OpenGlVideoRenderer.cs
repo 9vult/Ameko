@@ -41,7 +41,7 @@ namespace Ameko.Controls
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, _ebo);
             GL.BufferData(BufferTarget.ElementArrayBuffer, _indices.Length * sizeof(uint), _indices, BufferUsageHint.StaticDraw);
 
-            _shader = new Shader(vertexShaderSource, fragmentShaderSource);
+            _shader = new Shader(new System.Uri("avares://Ameko/Assets/Shaders/video.vert"), new System.Uri("avares://Ameko/Assets/Shaders/video.frag"));
             _shader.Use();
 
             var vertexLocation = _shader.GetAttribLocation("aPosition");
@@ -96,33 +96,5 @@ namespace Ameko.Controls
             GL.DeleteTexture(_tex);
             _shader?.Dispose();
         }
-
-        private const string vertexShaderSource =
-            @"#version 300 es
-            in vec3 aPosition;
-            in vec2 aTexCoord;
-
-            out vec2 texCoord;
-
-            void main(void)
-            {
-                texCoord = aTexCoord;
-                texCoord.y = 1.0 - texCoord.y; // Flip image
-                gl_Position = vec4(aPosition, 1.0);
-            }";
-
-        private const string fragmentShaderSource =
-            @"#version 300 es
-            precision mediump float; // Set the precision for floating-point operations
-
-            in vec2 texCoord;
-            out vec4 outputColor;
-
-            uniform sampler2D texture0;
-
-            void main()
-            {
-                outputColor = texture(texture0, texCoord);
-            }";
     }
 }
