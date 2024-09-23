@@ -69,6 +69,8 @@ namespace Ameko.ViewModels
         public ICommand PlaySelectionCommand { get; }
         public ICommand ToggleAutoSeekCommand { get; }
 
+        public ICommand UpdateSubtitlesCommand { get; }
+
         public string Title
         {
             get => _title;
@@ -238,6 +240,11 @@ namespace Ameko.ViewModels
             ActivateScriptCommand = ReactiveCommand.Create<string>(async (string scriptName) =>
             {
                 await ScriptService.Instance.Execute(scriptName);
+            });
+
+            UpdateSubtitlesCommand = ReactiveCommand.Create(() =>
+            {
+                Wrapper.AVManager.UpdateSubtitles(Wrapper.File);
             });
 
             // TODO: Maybe not do this this way

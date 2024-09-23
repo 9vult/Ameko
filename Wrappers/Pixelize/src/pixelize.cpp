@@ -1,8 +1,10 @@
 #include "pixelize.hpp"
 
-PIXELIZE_API void render_subs(unsigned char* frameData, unsigned char* frameCopy, int width, int height, ASS_Image* img) {
-    std::copy(frameData, frameData + (width * height * 4), frameCopy); // Copy original frame data
+PIXELIZE_API void copy_frame(unsigned char* source, unsigned char* destination, int size) {
+    std::copy(source, source + size, destination);
+}
 
+PIXELIZE_API void render_subs(unsigned char* frameData, int width, int height, ASS_Image* img) {
     for (; img; img = img->next) {
         unsigned int o = 255 - img->color & 0xFF;
         unsigned int r = img->color >> 24;

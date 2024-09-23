@@ -30,7 +30,9 @@ typedef struct ass_image {
     } type;
 } ASS_Image;
 
-PIXELIZE_API void render_subs(unsigned char* frameData, unsigned char* frameCopy, int width, int height, ASS_Image* img);
+PIXELIZE_API void copy_frame(unsigned char* source, unsigned char* destination, int size);
+
+PIXELIZE_API void render_subs(unsigned char* frameData, int width, int height, ASS_Image* img);
 
 #ifdef __cplusplus
 }

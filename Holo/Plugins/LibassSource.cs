@@ -33,19 +33,30 @@ namespace Holo.Plugins
         public unsafe void DrawSubtitles(ref VideoFrame frame, long time)
         {
             if (!_initialized) throw new InvalidOperationException("Libass is not initialized");
-            if (_track is null) throw new InvalidOperationException("Track is null!");
+            if (_track is null) return;
 
+            _renderer!.SetFrameSize(frame.Width, frame.Height);
+            _renderer!.SetStorageSize(frame.Width, frame.Height);
+            _renderer!.SetFontScale(1.0d);
             var image = _renderer!.RenderFrame(_track, time);
             if (image is null)
                 return;
 
-            frame.Copy ??= new byte[frame.Width * frame.Height * BGRA_WIDTH];
-            
-            fixed (byte* ptr = frame.Copy)
+            if (frame.Copy is not null)
             {
-                Pixelize_External.RenderSubs(frame.Data, ptr, frame.Width, frame.Height, image);
+                // Copy frame data from copy
+                fixed (byte* ptr = frame.Copy)
+                    Pixelize_External.CopyFrame(ptr, frame.Data, frame.Width * frame.Height * BGRA_WIDTH);
+            }
+            else
+            {
+                // Copy frame data to copy
+                frame.Copy = new byte[frame.Width * frame.Height * BGRA_WIDTH];
+                fixed (byte* ptr = frame.Copy)
+                    Pixelize_External.CopyFrame(frame.Data, ptr, frame.Width * frame.Height * BGRA_WIDTH);
             }
 
+            Pixelize_External.RenderSubs(frame.Data, frame.Width, frame.Height, image);
         }
 
         public void LoadSubtitles(File file, int time = -1)
@@ -119,7 +130,13 @@ namespace Holo.Plugins
         private partial class Pixelize_External
         {
             [LibraryImport("Pixelize", EntryPoint = "render_subs")]
-            public static unsafe partial void RenderSubs(IntPtr frameData, byte* frameCopy, int width, int height, LibassCS.Structures.NativeImage* img);
+            public static unsafe partial void RenderSubs(IntPtr frameData, int width, int height, LibassCS.Structures.NativeImage* img);
+
+            [LibraryImport("Pixelize", EntryPoint = "copy_frame")]
+            public static unsafe partial void CopyFrame(IntPtr source, byte* destination, int size);
+
+            [LibraryImport("Pixelize", EntryPoint = "copy_frame")]
+            public static unsafe partial void CopyFrame(byte* source, IntPtr destination, int size);
         }
     }
 }

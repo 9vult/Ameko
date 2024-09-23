@@ -77,6 +77,13 @@ namespace Holo
             return _videoLoaded;
         }
 
+        public bool UpdateSubtitles(File file)
+        {
+            if (!_videoLoaded) return false;
+            _subtitlesource.LoadSubtitles(file);
+            return true;
+        }
+
         public AVManager()
         {
             _videosource = new Ffms2Source();
@@ -87,18 +94,6 @@ namespace Holo
 
             _subtitlesource = new LibassSource();
             _subtitlesource.Initialize();
-
-            // TEMP
-            var file = new File();
-            file.InfoManager.LoadDefault();
-            file.StyleManager.Add(new Style(file.StyleManager.NextId));
-            file.EventManager.AddLast(new Event(file.EventManager.NextId)
-            {
-                Text = "It's the victorious return of the heroes' party.",
-                Start = Time.FromMillis(0),
-                End = Time.FromMillis(2500)
-            });
-            _subtitlesource.LoadSubtitles(file);
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;

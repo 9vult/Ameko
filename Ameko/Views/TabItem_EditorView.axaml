@@ -149,6 +149,7 @@
 						 TextWrapping="Wrap"
 						 KeyDown="TextBox_KeyDown"
 						 LostFocus="TextBox_LostFocus"
+						 TextChanged="TextBox_TextChanged"
 						 FontSize="16"
 						 FontFamily="{StaticResource Migu2MRegular}"
 						 IsUndoEnabled="False"
