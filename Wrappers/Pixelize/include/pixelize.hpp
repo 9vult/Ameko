@@ -1,5 +1,8 @@
 #pragma once
 
+#include <cstdint>
+#include <algorithm>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -12,9 +15,6 @@ extern "C" {
     #define PIXELIZE_API __attribute__((visibility("default")))
 #endif
 #endif
-
-#include <cstdint>
-
 
 typedef struct ass_image {
     int w, h;
@@ -30,7 +30,7 @@ typedef struct ass_image {
     } type;
 } ASS_Image;
 
-PIXELIZE_API void render_subs(unsigned char* frameData, int width, int height, ASS_Image* img);
+PIXELIZE_API void render_subs(unsigned char* frameData, unsigned char* frameCopy, int width, int height, ASS_Image* img);
 
 #ifdef __cplusplus
 }

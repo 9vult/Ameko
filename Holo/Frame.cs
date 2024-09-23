@@ -13,6 +13,7 @@ namespace Holo
         public int Pitch;
         public bool Flipped;
         public IntPtr Data;
+        public byte[]? Copy;
         //public byte[] Bytes;
     }
 

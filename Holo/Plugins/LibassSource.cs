@@ -39,8 +39,13 @@ namespace Holo.Plugins
             if (image is null)
                 return;
 
-            // byte* frameBuffer = (byte*)frame.Data.ToPointer();
-            Pixelize_External.RenderSubs(frame.Data, frame.Width, frame.Height, image);
+            frame.Copy ??= new byte[frame.Width * frame.Height * BGRA_WIDTH];
+            
+            fixed (byte* ptr = frame.Copy)
+            {
+                Pixelize_External.RenderSubs(frame.Data, ptr, frame.Width, frame.Height, image);
+            }
+
         }
 
         public void LoadSubtitles(File file, int time = -1)
@@ -114,7 +119,7 @@ namespace Holo.Plugins
         private partial class Pixelize_External
         {
             [LibraryImport("Pixelize", EntryPoint = "render_subs")]
-            public static unsafe partial void RenderSubs(IntPtr frameData, int width, int height, LibassCS.Structures.NativeImage* img);
+            public static unsafe partial void RenderSubs(IntPtr frameData, byte* frameCopy, int width, int height, LibassCS.Structures.NativeImage* img);
         }
     }
 }

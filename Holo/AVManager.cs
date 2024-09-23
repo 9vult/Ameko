@@ -37,8 +37,12 @@ namespace Holo
         {
             if (!IsVideoLoaded) throw new Exception("Cannot get frame when video is unloaded!");
             if (_video.CurrentFrame == _lastFrameIdx)
+            {
+                _subtitlesource.DrawSubtitles(ref _frame, _video.CurrentTimeEstimated.TotalMilliseconds);
                 return _frame;
+            }
 
+            _frame.Copy = null;
             _videosource.GetFrame(_video.CurrentFrame, ref _frame);
             _subtitlesource.DrawSubtitles(ref _frame, _video.CurrentTimeEstimated.TotalMilliseconds);
             _lastFrameIdx = _video.CurrentFrame;
