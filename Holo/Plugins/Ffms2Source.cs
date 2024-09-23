@@ -37,7 +37,7 @@ namespace Holo.Plugins
                 frame.Width = frameData.OutputResolution.Width;
                 frame.Height = frameData.OutputResolution.Height;
                 frame.Pitch = 0;
-                frame.Data = frameData.Data;
+                frame.VideoPixelData = frameData.Data;
             }
             catch (Exception ex)
             {

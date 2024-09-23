@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Numerics;
 using System.Runtime.InteropServices;
 
 namespace Holo
 {
-    [StructLayout(LayoutKind.Sequential)]
     public struct VideoFrame
     {
         public bool IsKeyframe;
@@ -12,8 +12,17 @@ namespace Holo
         public int Height;
         public int Pitch;
         public bool Flipped;
-        public IntPtr Data;
-        //public byte[] Bytes;
+        public IntPtr VideoPixelData;
+        public byte[] SubtitlePixelData;
+        public List<Vertex> Vertices;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct Vertex
+    {
+        public Vector2 Position;
+        public Vector2 TexCoord;
+        public Vector4 Color;
     }
 
     public struct AudioFrame

@@ -15,7 +15,6 @@ extern "C" {
 
 #include <cstdint>
 
-
 typedef struct ass_image {
     int w, h;
     int stride;
@@ -29,6 +28,8 @@ typedef struct ass_image {
         IMAGE_TYPE_SHADOW
     } type;
 } ASS_Image;
+
+unsigned char blend_alpha(unsigned char srcAlpha, unsigned char dstAlpha);
 
 PIXELIZE_API void render_subs(unsigned char* frameData, int width, int height, ASS_Image* img);
 

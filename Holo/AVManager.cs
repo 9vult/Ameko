@@ -36,8 +36,15 @@ namespace Holo
         public VideoFrame GetFrame()
         {
             if (!IsVideoLoaded) throw new Exception("Cannot get frame when video is unloaded!");
+            // TODO: Don't re-draw subs if unchanged!
+            _frame.SubtitlePixelData = new byte[_frame.Width * _frame.Height];
+            _frame.Vertices = [];
+
             if (_video.CurrentFrame == _lastFrameIdx)
+            {
+                _subtitlesource.DrawSubtitles(ref _frame, _video.CurrentTimeEstimated.TotalMilliseconds);
                 return _frame;
+            }
 
             _videosource.GetFrame(_video.CurrentFrame, ref _frame);
             _subtitlesource.DrawSubtitles(ref _frame, _video.CurrentTimeEstimated.TotalMilliseconds);

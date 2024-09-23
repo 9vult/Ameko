@@ -81,6 +81,7 @@
     <None Remove="Assets\Fonts\Monoid-Regular.ttf" />
     <None Remove="Assets\Licensing.txt" />
     <None Remove="Assets\migu-2m-regular.ttf" />
+    <None Remove="Assets\Shaders\submask.frag" />
     <None Remove="Assets\Shaders\video.frag" />
     <None Remove="Assets\Shaders\video.vert" />
   </ItemGroup>

@@ -3,6 +3,7 @@ using AssCS.IO;
 using LibassCS;
 using System;
 using System.Collections.Generic;
+using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -39,8 +40,30 @@ namespace Holo.Plugins
             if (image is null)
                 return;
 
-            // byte* frameBuffer = (byte*)frame.Data.ToPointer();
-            Pixelize_External.RenderSubs(frame.Data, frame.Width, frame.Height, image);
+            fixed(byte* ptr = frame.SubtitlePixelData)
+            {
+                Pixelize_External.RenderSubs(ptr, frame.Width, frame.Height, image);
+            }
+
+            // Calculate vertices for each quad
+            for (var img = image; img is not null; img = img->Next)
+            {
+                float x1 = img->DistX;
+                float y1 = img->DistY;
+                float x2 = img->DistX + img->Width;
+                float y2 = img->DistY + img->Height;
+
+                float r = (image->Color >> 24) & 0xFF;
+                float g = (image->Color >> 16) & 0xFF;
+                float b = (image->Color >> 8) & 0xFF;
+                float a = image->Color & 0xFF;
+                Vector4 color = new(r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f); // Normalize to [0, 1]
+
+                frame.Vertices.Add(new Vertex { Position = ConvertToNDC(x1, y1, frame.Width, frame.Height), TexCoord = ConvertToNDC(x1, y1, frame.Width, frame.Height), Color = color });
+                frame.Vertices.Add(new Vertex { Position = ConvertToNDC(x2, y1, frame.Width, frame.Height), TexCoord = ConvertToNDC(x2, y1, frame.Width, frame.Height), Color = color });
+                frame.Vertices.Add(new Vertex { Position = ConvertToNDC(x2, y2, frame.Width, frame.Height), TexCoord = ConvertToNDC(x2, y2, frame.Width, frame.Height), Color = color });
+                frame.Vertices.Add(new Vertex { Position = ConvertToNDC(x1, y2, frame.Width, frame.Height), TexCoord = ConvertToNDC(x1, y2, frame.Width, frame.Height), Color = color });
+            }
         }
 
         public void LoadSubtitles(File file, int time = -1)
@@ -111,10 +134,17 @@ namespace Holo.Plugins
             throw new NotImplementedException();
         }
 
+        private Vector2 ConvertToNDC(float x1, float y1, int width, int height)
+        {
+            float x = (x1 / width) * 2 - 1; // Map from [0, width] to [-1, 1]
+            float y = 1 - (y1 / height) * 2; // Map from [0, height] to [1, -1]
+            return new Vector2(x, y);
+        }
+
         private partial class Pixelize_External
         {
             [LibraryImport("Pixelize", EntryPoint = "render_subs")]
-            public static unsafe partial void RenderSubs(IntPtr frameData, int width, int height, LibassCS.Structures.NativeImage* img);
+            public static unsafe partial void RenderSubs(byte* frameData, int width, int height, LibassCS.Structures.NativeImage* img);
         }
     }
 }
