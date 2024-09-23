@@ -27,7 +27,7 @@ namespace Holo.Data
         private bool _isPaused;
         private HighResolutionTimer _playback;
         private int _playbackDestination;
-        private bool _isAutoSeekEnabled;
+        private bool _isAutoSeekEnabled = true;
 
         /// <summary>
         /// Number of frames in the video
@@ -328,7 +328,8 @@ namespace Holo.Data
         /// <param name="e">Event to seek to</param>
         public void SeekTo(Event e)
         {
-            CurrentFrame = Math.Min(Math.Max(0, TimeToFrame(e.Start)), FrameCount - 1);
+            // TODO: Added a +1 here because was showing the frame before start. Check back on this!
+            CurrentFrame = Math.Min(Math.Max(0, TimeToFrame(e.Start) + 1), FrameCount - 1);
         }
 
         /// <summary>

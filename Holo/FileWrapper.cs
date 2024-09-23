@@ -70,6 +70,9 @@ namespace Holo
         {
             SelectedEventCollection = new List<Event>(newSelectedEvents);
             ProcessSelectionChange(newSelectedEvents, newSelectedEvent, shouldCommit: true);
+            if (newSelectedEvent is not null && avManager.IsVideoLoaded)
+                if (avManager.Video.IsAutoSeekEnabled)
+                    avManager.Video.SeekTo(newSelectedEvent);
         }
 
         /// <summary>
