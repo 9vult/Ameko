@@ -1,5 +1,6 @@
 ﻿using AssCS;
 using AssCS.History;
+using Holo.Media;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -71,8 +72,8 @@ namespace Holo
             SelectedEventCollection = new List<Event>(newSelectedEvents);
             ProcessSelectionChange(newSelectedEvents, newSelectedEvent, shouldCommit: true);
             if (newSelectedEvent is not null && avManager.IsVideoLoaded)
-                if (avManager.Video.IsAutoSeekEnabled)
-                    avManager.Video.SeekTo(newSelectedEvent);
+                if (avManager.PlaybackController.IsAutoSeekEnabled)
+                    avManager.PlaybackController.SeekTo(newSelectedEvent);
         }
 
         /// <summary>

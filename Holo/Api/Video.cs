@@ -1,9 +1,6 @@
 ﻿using AssCS;
 using Holo.Data;
 using Holo.Utilities;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Holo.Api
 {
@@ -35,31 +32,31 @@ namespace Holo.Api
         /// If the video is playing
         /// </summary>
         public static bool IsPlaying
-           => HoloContext.Instance.Workspace.WorkingFile.AVManager.Video.IsPlaying;
+           => HoloContext.Instance.Workspace.WorkingFile.AVManager.PlaybackController.IsPlaying;
 
         /// <summary>
         /// If the video is paused
         /// </summary>
         public static bool IsPaused
-            => HoloContext.Instance.Workspace.WorkingFile.AVManager.Video.IsPaused;
+            => HoloContext.Instance.Workspace.WorkingFile.AVManager.PlaybackController.IsPaused;
 
         /// <summary>
         /// Currently selected scale multiplier
         /// </summary>
         public static ScalePercentage DisplayScale
-            => HoloContext.Instance.Workspace.WorkingFile.AVManager.Video.DisplayScale;
+            => HoloContext.Instance.Workspace.WorkingFile.AVManager.PlaybackController.DisplayScale;
 
         /// <summary>
         /// Scaled width
         /// </summary>
         public static double DisplayWidth
-            => HoloContext.Instance.Workspace.WorkingFile.AVManager.Video.DisplayWidth;
+            => HoloContext.Instance.Workspace.WorkingFile.AVManager.PlaybackController.DisplayWidth;
 
         /// <summary>
         /// Scaled height
         /// </summary>
         public static double DisplayHeight
-            => HoloContext.Instance.Workspace.WorkingFile.AVManager.Video.DisplayHeight;
+            => HoloContext.Instance.Workspace.WorkingFile.AVManager.PlaybackController.DisplayHeight;
 
         /// <summary>
         /// Actual width of the video
@@ -96,15 +93,15 @@ namespace Holo.Api
         /// </summary>
         public static int CurrentFrame
         {
-            get => HoloContext.Instance.Workspace.WorkingFile.AVManager.Video.CurrentFrame;
-            set => HoloContext.Instance.Workspace.WorkingFile.AVManager.Video.CurrentFrame = value;
+            get => HoloContext.Instance.Workspace.WorkingFile.AVManager.PlaybackController.CurrentFrame;
+            set => HoloContext.Instance.Workspace.WorkingFile.AVManager.PlaybackController.CurrentFrame = value;
         }
 
         /// <summary>
         /// Estimated current time
         /// </summary>
         public static Time CurrentTimeEstimated
-            => HoloContext.Instance.Workspace.WorkingFile.AVManager.Video.CurrentTimeEstimated;
+            => HoloContext.Instance.Workspace.WorkingFile.AVManager.PlaybackController.CurrentTimeEstimated;
 
     }
 }

@@ -1,5 +1,4 @@
 using Ameko.Controls;
-using Ameko.Services;
 using Ameko.ViewModels;
 using Avalonia;
 using Avalonia.Interactivity;
@@ -31,7 +30,7 @@ namespace Ameko.Views
                     e.Handled = false; // fall through to ScrollViewer
                     break; // TODO: Shift (horizontal) does not seem to be working
                 default:
-                    if (!ViewModel.Wrapper.AVManager.Video.IsPlaying) // Only seek if not playing
+                    if (!ViewModel.Wrapper.AVManager.PlaybackController.IsPlaying) // Only seek if not playing
                         videoSlider.Value += e.Delta.Y; // 1 or -1
                     e.Handled = true;
                     break;
@@ -64,25 +63,25 @@ namespace Ameko.Views
         private void SeekSlider_ValueChanged(object? sender, Avalonia.Controls.Primitives.RangeBaseValueChangedEventArgs e)
         {
             if (ViewModel == null) return;
-            if (!videoSlider.IsDragging) ViewModel.Wrapper.AVManager.Video.CurrentFrame = (int)e.NewValue;
+            if (!videoSlider.IsDragging) ViewModel.Wrapper.AVManager.PlaybackController.CurrentFrame = (int)e.NewValue;
         }
 
         private void SeekSlider_DragStarted(object sender, EventArgs e)
         {
             if (ViewModel == null) return;
-            if (ViewModel.Wrapper.AVManager.Video.IsPlaying)
+            if (ViewModel.Wrapper.AVManager.PlaybackController.IsPlaying)
             {
-                ViewModel.Wrapper.AVManager.Video.PausePlaying();
+                ViewModel.Wrapper.AVManager.PlaybackController.PausePlaying();
             }
         }
 
         private void SeekSlider_DragEnded(object sender, EventArgs e)
         {
             if (ViewModel == null) return;
-            ViewModel.Wrapper.AVManager.Video.CurrentFrame = (int)videoSlider.Value;
-            if (ViewModel.Wrapper.AVManager.Video.IsPaused)
+            ViewModel.Wrapper.AVManager.PlaybackController.CurrentFrame = (int)videoSlider.Value;
+            if (ViewModel.Wrapper.AVManager.PlaybackController.IsPaused)
             {
-                ViewModel.Wrapper.AVManager.Video.ResumePlaying();
+                ViewModel.Wrapper.AVManager.PlaybackController.ResumePlaying();
             }
         }
 
