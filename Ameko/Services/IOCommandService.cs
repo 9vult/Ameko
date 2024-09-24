@@ -159,6 +159,11 @@ namespace Ameko.Services
             var uri = await interaction.Handle(vm);
             if (uri == null) return;
 
+            LoadVideo(uri);
+        }
+
+        public static void LoadVideo(Uri uri)
+        {
             var openResult = HoloContext.Instance.Workspace.WorkingFile.AVManager.LoadVideo(uri.LocalPath);
             if (!openResult) return;
 
