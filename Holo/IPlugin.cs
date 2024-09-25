@@ -72,9 +72,9 @@ namespace Holo
         /// <summary>
         /// Load a particular track
         /// </summary>
-        /// <param name="track">Track index</param>
+        /// <param name="trackIdx">Track index</param>
         /// <returns>True if the track was successfully loaded</returns>
-        public bool LoadTrack(int track);
+        public bool LoadTrack(int trackIdx);
         /// <summary>
         /// Get the number of frames in the video
         /// </summary>
@@ -108,6 +108,11 @@ namespace Holo
         /// <returns>List of millisecond lengths</returns>
         /// <seealso cref="GetFrameTimes"/>
         public float[] GetFrameIntervals(long[] frametimes);
+        /// <summary>
+        /// Get a list of keyframes
+        /// </summary>
+        /// <returns></returns>
+        public int[] GetKeyframes();
     }
 
     public interface IAudioSourcePlugin : IPlugin

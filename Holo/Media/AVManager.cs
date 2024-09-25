@@ -75,8 +75,9 @@ namespace Holo.Media
 
             var frametimes = _videosource.GetFrameTimes();
             var frameIntervals = _videosource.GetFrameIntervals(frametimes);
+            var keyframes = _videosource.GetKeyframes();
 
-            _videoWrapper.Scaffold(fc, sar, rate, frametimes, frameIntervals);
+            _videoWrapper.Scaffold(fc, sar, rate, frametimes, frameIntervals, keyframes);
             VideoPath = filepath;
             return _videoLoaded;
         }
@@ -95,7 +96,7 @@ namespace Holo.Media
             _videoLoaded = false;
             VideoPath = string.Empty;
 
-            _videoWrapper = new VideoWrapper(25, new Rational(1920, 1080), new Rational(24000, 1001), [0], [0]);
+            _videoWrapper = new VideoWrapper(25, new Rational(1920, 1080), new Rational(24000, 1001), [0], [0], []);
             _playbackController = new(ref _videoWrapper);
 
             _subtitlesource = new LibassSource();

@@ -15,6 +15,7 @@ namespace Holo.Media
 
         private long[] _frametimes;
         private float[] _frameIntervals;
+        private int[] _keyframes;
         private double _msPerFrame;
 
         /// <summary>
@@ -62,6 +63,15 @@ namespace Holo.Media
         /// How long each frame is to be displayed for
         /// </summary>
         public float[] FrameIntervals => _frameIntervals;
+
+        /// <summary>
+        /// List of keyframes
+        /// </summary>
+        public int[] Keyframes
+        {
+            get => _keyframes;
+            set => _keyframes = value; // Keyframes can be changed by loading a keyframe file
+        }
 
         /// <summary>
         /// Milliseconds per frame (estimated)
@@ -164,7 +174,7 @@ namespace Holo.Media
         internal int FrameCountZeroIndex => _frameCount - 1;
         internal int FrameRateCeiling => (int)Math.Ceiling(_frameRate.Ratio);
 
-        public VideoWrapper(int frameCount, Rational sar, Rational frameRate, long[] frametimes, float[] frameIntervals)
+        public VideoWrapper(int frameCount, Rational sar, Rational frameRate, long[] frametimes, float[] frameIntervals, int[] keyframes)
         {
             _frameCount = frameCount;
             _sar = sar;
@@ -172,9 +182,10 @@ namespace Holo.Media
             _frametimes = frametimes;
             _frameIntervals = frameIntervals;
             _msPerFrame = 1 / _frameRate.Ratio * 1000;
+            _keyframes = keyframes;
         }
 
-        internal void Scaffold(int frameCount, Rational sar, Rational frameRate, long[] frametimes, float[] frameIntervals)
+        internal void Scaffold(int frameCount, Rational sar, Rational frameRate, long[] frametimes, float[] frameIntervals, int[] keyframes)
         {
             FrameCount = frameCount;
             SAR = sar;
@@ -182,6 +193,7 @@ namespace Holo.Media
             _frametimes = frametimes;
             _frameIntervals = frameIntervals;
             _msPerFrame = 1 / _frameRate.Ratio * 1000;
+            _keyframes = keyframes;
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;

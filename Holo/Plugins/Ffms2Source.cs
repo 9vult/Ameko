@@ -23,6 +23,9 @@ namespace Holo.Plugins
         private Ffms2CS.Index? _index;
         private Ffms2CS.VideoSource? _source;
 
+        private long[] _frameTimes = [];
+        private int[] _keyframes = [];
+
         public void GetFrame(int frameNumber, ref VideoFrame frame)
         {
             if (!_initialized) throw new InvalidOperationException("Ffms2 is not initialized");
@@ -65,17 +68,7 @@ namespace Holo.Plugins
             if (_index == null) throw new InvalidOperationException("Index is not initialized");
             if (_source == null) throw new InvalidOperationException("Video source is not initialized");
 
-            var times = new long[_source.FrameCount];
-            var track = _index.GetTrack(_trackNumber);
-
-            for (int i = 0; i < track.FrameCount; i++)
-            {
-                var frame = track.GetFrameInfo(i);
-                var time = (long)((frame.PTS * track.TimebaseNumerator) / (double)track.TimebaseDenomerator);
-                times[i] = time; // Presentation timestamp
-            }
-
-            return times;
+            return _frameTimes;
         }
 
         public float[] GetFrameIntervals(long[] frametimes)
@@ -89,6 +82,15 @@ namespace Holo.Plugins
                 else intervals[i] = frametimes[i + 1] - frametimes[i];
             }
             return intervals;
+        }
+
+        public int[] GetKeyframes()
+        {
+            if (!_initialized) throw new InvalidOperationException("Ffms2 is not initialized");
+            if (_index == null) throw new InvalidOperationException("Index is not initialized");
+            if (_source == null) throw new InvalidOperationException("Video source is not initialized");
+
+            return _keyframes;
         }
 
         public int[] GetVideoTracks()
@@ -106,7 +108,7 @@ namespace Holo.Plugins
             return tracks.ToArray();
         }
 
-        public bool LoadTrack(int track)
+        public bool LoadTrack(int trackIdx)
         {
             if (!_initialized) throw new InvalidOperationException("Ffms2 is not initialized");
             if (_indexer == null) throw new InvalidOperationException("Indexer is not initialized");
@@ -116,12 +118,12 @@ namespace Holo.Plugins
                 var totalTrackCount = _indexer.TrackCount;
                 for (int i = 0; i < totalTrackCount - 1; i++)
                 {
-                    if (i != track)
+                    if (i != trackIdx)
                         _indexer.SetTrackShouldIndex(i, false);
                 }
                 _index = _indexer.Index(IndexErrorHandling.Abort);
-                _source = _index.VideoSource(_filename!, track);
-                _trackNumber = track;
+                _source = _index.VideoSource(_filename!, trackIdx);
+                _trackNumber = trackIdx;
 
                 // Set up output format
                 if (_source.FrameCount > 0)
@@ -133,6 +135,22 @@ namespace Holo.Plugins
                         Ffms2.GetPixelFormat("bgra")
                     };
                     _source.SetOutputFormat(pixfmts, testframe.EncodedResolution.Width, testframe.EncodedResolution.Height, Resizer.Bicubic);
+
+                    // Get frame time and keyframe data
+                    var track = _index.GetTrack(_trackNumber);
+                    _frameTimes = new long[_source.FrameCount];
+                    var keyframes = new List<int>();
+
+                    for (int i = 0; i < track.FrameCount; i++)
+                    {
+                        var frame = track.GetFrameInfo(i);
+                        var time = (long)((frame.PTS * track.TimebaseNumerator) / (double)track.TimebaseDenomerator);
+                        _frameTimes[i] = time; // Presentation timestamp
+
+                        if (frame.IsKeyframe)
+                            keyframes.Add(i);
+                    }
+                    _keyframes = keyframes.ToArray();
                 }
                 else
                 {
@@ -143,7 +161,7 @@ namespace Holo.Plugins
             }
             catch (Exception ex)
             {
-                throw new Exception($"Failed to load track {track}", ex);
+                throw new Exception($"Failed to load track {trackIdx}", ex);
             }
         }
 
