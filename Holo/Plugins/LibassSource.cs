@@ -1,5 +1,6 @@
 ﻿using AssCS;
 using AssCS.IO;
+using Holo.Utilities;
 using LibassCS;
 using System;
 using System.Collections.Generic;
@@ -46,17 +47,17 @@ namespace Holo.Plugins
             {
                 // Copy frame data from copy
                 fixed (byte* ptr = frame.Copy)
-                    SpeedDemon_External.CopyFrame(ptr, frame.Data, frame.Width * frame.Height * BGRA_WIDTH);
+                    SpeedDemonNative.CopyFrame(ptr, frame.Data, frame.Width * frame.Height * BGRA_WIDTH);
             }
             else
             {
                 // Copy frame data to copy
                 frame.Copy = new byte[frame.Width * frame.Height * BGRA_WIDTH];
                 fixed (byte* ptr = frame.Copy)
-                    SpeedDemon_External.CopyFrame(frame.Data, ptr, frame.Width * frame.Height * BGRA_WIDTH);
+                    SpeedDemonNative.CopyFrame(frame.Data, ptr, frame.Width * frame.Height * BGRA_WIDTH);
             }
 
-            SpeedDemon_External.RenderSubs(frame.Data, frame.Width, frame.Height, image);
+            SpeedDemonNative.RenderSubs(frame.Data, frame.Width, frame.Height, image);
         }
 
         public void LoadSubtitles(File file, int time = -1)
@@ -125,18 +126,6 @@ namespace Holo.Plugins
         public IDictionary<string, dynamic> GetProperties()
         {
             throw new NotImplementedException();
-        }
-
-        private partial class SpeedDemon_External
-        {
-            [LibraryImport("SpeedDemon", EntryPoint = "render_subs")]
-            public static unsafe partial void RenderSubs(IntPtr frameData, int width, int height, LibassCS.Structures.NativeImage* img);
-
-            [LibraryImport("SpeedDemon", EntryPoint = "copy_frame")]
-            public static unsafe partial void CopyFrame(IntPtr source, byte* destination, int size);
-
-            [LibraryImport("SpeedDemon", EntryPoint = "copy_frame")]
-            public static unsafe partial void CopyFrame(byte* source, IntPtr destination, int size);
         }
     }
 }
