@@ -11,7 +11,7 @@ namespace Ffms2CS
     /// <summary>
     /// External methods for FFMS2
     /// </summary>
-    internal static class External
+    internal unsafe static class External
     {
         /// <summary>
         /// Initialize FFMS2
@@ -125,7 +125,7 @@ namespace Ffms2CS
         /// <param name="errorInfo">ErrorInfo</param>
         /// <returns>Pointer to the frame on success, Null on failure</returns>
         [DllImport("ffms2", EntryPoint = "FFMS_GetFrame")]
-        public static extern IntPtr GetFrame(IntPtr videoSource, int num, ref ErrorInfo errorInfo);
+        public static extern NativeFrame* GetFrame(IntPtr videoSource, int num, ref ErrorInfo errorInfo);
 
         /// <summary>
         /// Retrieve a given video frame
@@ -135,7 +135,7 @@ namespace Ffms2CS
         /// <param name="errorInfo">ErrorInfo</param>
         /// <returns>Pointer to the frame on success, Null on failure</returns>
         [DllImport("ffms2", EntryPoint = "FFMS_GetFrameByTime")]
-        public static extern IntPtr GetFrameByTime(IntPtr videoSource, double time, ref ErrorInfo errorInfo);
+        public static extern NativeFrame* GetFrameByTime(IntPtr videoSource, double time, ref ErrorInfo errorInfo);
 
         /// <summary>
         /// Decode a number of audio samples

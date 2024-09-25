@@ -28,9 +28,9 @@ namespace Ameko.Controls
         {
             private readonly IImmutableGlyphRunReference? _noSkia;
             private SKRect _rect;
-            private SKBitmap? _b;
+            private VideoFrame _b;
 
-            public CustomDrawOp(Rect bounds, GlyphRun noSkia, SKBitmap? b)
+            public CustomDrawOp(Rect bounds, GlyphRun noSkia, VideoFrame b)
             {
                 _noSkia = noSkia.TryCreateImmutableGlyphRunReference();
                 Bounds = bounds;
@@ -58,9 +58,11 @@ namespace Ameko.Controls
                 {
                     using var lease = leaseFeature.Lease();
                     var canvas = lease.SkCanvas;
-                    if (_b != null)
+                    if (_b.Data != IntPtr.Zero)
                     {
-                        canvas.DrawBitmap(_b, _rect);
+                        using var bitmap = new SKBitmap(_b.Width, _b.Height, SKColorType.Bgra8888, SKAlphaType.Premul);
+                        // bitmap.InstallPixels();
+                        canvas.DrawBitmap(bitmap, _rect);
                     }
                     else
                     {
@@ -74,7 +76,7 @@ namespace Ameko.Controls
         {
             if (HoloContext.Instance.Workspace.WorkingFile.AVManager.IsVideoLoaded)
             context.Custom(new CustomDrawOp(new Rect(0, 0, Bounds.Width, Bounds.Height), _noSkia, 
-                HoloContext.Instance.Workspace.WorkingFile.AVManager.GetFrame().Bitmap));
+                HoloContext.Instance.Workspace.WorkingFile.AVManager.GetFrame()));
             Dispatcher.UIThread.InvokeAsync(InvalidateVisual, DispatcherPriority.Background);
         }
     }

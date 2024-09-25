@@ -4,12 +4,18 @@ using System.Runtime.InteropServices;
 namespace Ffms2CS.Structures
 {
     [StructLayout(LayoutKind.Sequential)]
-    public struct Frame
+    public struct NativeFrame
     {
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
-        public IntPtr[] Data;
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
-        public int[] LineSize;
+        public IntPtr Data0;
+        public IntPtr Data1;
+        public IntPtr Data2;
+        public IntPtr Data3;
+
+        public int LineSize0;
+        public int LineSize1;
+        public int LineSize2;
+        public int LineSize3;
+
         public int EncodedWidth;
         public int EncodedHeight;
         public int EncodedPixelFormat;
@@ -27,10 +33,14 @@ namespace Ffms2CS.Structures
         public int TransferCharacteristics;
         public int ChromaLocation;
         public int HasMasteringDisplayPrimaries;
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 3)]
-        public double[] MasteringDisplayPrimariesX;
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 3)]
-        public double[] MasteringDisplayPrimariesY;
+
+        public double MasteringDisplayPrimariesX0;
+        public double MasteringDisplayPrimariesX1;
+        public double MasteringDisplayPrimariesX2;
+        public double MasteringDisplayPrimariesY0;
+        public double MasteringDisplayPrimariesY1;
+        public double MasteringDisplayPrimariesY2;
+
         public double MasteringDisplayWhitePointX;
         public double MasteringDisplayWhitePointY;
         public int HasMasteringDisplayLuminance;

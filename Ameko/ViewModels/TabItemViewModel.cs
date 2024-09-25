@@ -69,6 +69,8 @@ namespace Ameko.ViewModels
         public ICommand PlaySelectionCommand { get; }
         public ICommand ToggleAutoSeekCommand { get; }
 
+        public ICommand UpdateSubtitlesCommand { get; }
+
         public string Title
         {
             get => _title;
@@ -207,37 +209,42 @@ namespace Ameko.ViewModels
 
             ScrollChangeScaleCommand = ReactiveCommand.Create((bool positive) =>
             {
-                var idx = ScalePercentage.Scales.IndexOf(Wrapper.AVManager.Video.DisplayScale);
+                var idx = ScalePercentage.Scales.IndexOf(Wrapper.AVManager.PlaybackController.DisplayScale);
                 if (idx == 0 && !positive) return;
                 if (idx == ScalePercentage.Scales.Count - 1 && positive) return;
 
-                Wrapper.AVManager.Video.DisplayScale = ScalePercentage.Scales[positive ? idx+1 : idx-1];
+                Wrapper.AVManager.PlaybackController.DisplayScale = ScalePercentage.Scales[positive ? idx+1 : idx-1];
             });
 
             StartPlayingCommand = ReactiveCommand.Create(() =>
             {
-                Wrapper.AVManager.Video.PlayToEnd();
+                Wrapper.AVManager.PlaybackController.PlayToEnd();
             });
 
             StopPlayingCommand = ReactiveCommand.Create(() =>
             {
-                Wrapper.AVManager.Video.StopPlaying();
+                Wrapper.AVManager.PlaybackController.StopPlaying();
             });
 
             PlaySelectionCommand = ReactiveCommand.Create(() =>
             {
                 if (Wrapper.SelectedEventCollection == null) return;
-                Wrapper.AVManager.Video.PlaySelection(Wrapper.SelectedEventCollection);
+                Wrapper.AVManager.PlaybackController.PlaySelection(Wrapper.SelectedEventCollection);
             });
 
             ToggleAutoSeekCommand = ReactiveCommand.Create(() =>
             {
-                Wrapper.AVManager.Video.IsAutoSeekEnabled = !Wrapper.AVManager.Video.IsAutoSeekEnabled;
+                Wrapper.AVManager.PlaybackController.IsAutoSeekEnabled = !Wrapper.AVManager.PlaybackController.IsAutoSeekEnabled;
             });
 
             ActivateScriptCommand = ReactiveCommand.Create<string>(async (string scriptName) =>
             {
                 await ScriptService.Instance.Execute(scriptName);
+            });
+
+            UpdateSubtitlesCommand = ReactiveCommand.Create(() =>
+            {
+                Wrapper.AVManager.UpdateSubtitles(Wrapper.File);
             });
 
             // TODO: Maybe not do this this way

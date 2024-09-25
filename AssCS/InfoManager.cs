@@ -52,7 +52,7 @@ namespace AssCS
             Set("ScriptType", "v4.00+");
             Set("PlayResX", "1920");
             Set("PlayResY", "1080");
-            Set("Timer", "0.0000");
+            //Set("Timer", "0.0000");
             Set("WrapStyle", "0");
             Set("ScaledBorderAndShadow", "yes");
             Set("YCbCr Matrix", "TV.709");

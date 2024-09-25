@@ -81,6 +81,8 @@
     <None Remove="Assets\Fonts\Monoid-Regular.ttf" />
     <None Remove="Assets\Licensing.txt" />
     <None Remove="Assets\migu-2m-regular.ttf" />
+    <None Remove="Assets\Shaders\video.frag" />
+    <None Remove="Assets\Shaders\video.vert" />
   </ItemGroup>
 
   <ItemGroup>
@@ -104,7 +106,9 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="MessageBox.Avalonia" Version="3.1.5.1" />
+    <PackageReference Include="OpenTK" Version="4.8.2" />
     <PackageReference Include="SixLabors.Fonts" Version="2.0.3" />
+    <PackageReference Include="System.Text.Json" Version="8.0.4" />
     <PackageReference Include="TextMateSharp.Grammars" Version="1.0.56" />
   </ItemGroup>
 

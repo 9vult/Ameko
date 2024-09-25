@@ -1,22 +1,20 @@
-﻿using SkiaSharp;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Runtime.InteropServices;
 
 namespace Holo
 {
+    [StructLayout(LayoutKind.Sequential)]
     public struct VideoFrame
     {
-        public bool IsKeyframe { get; set; }
-        public Dimension Size { get; set; }
-        public SKBitmap Bitmap { get; set; }
-
-        public struct Dimension
-        {
-            public int X;
-            public int Y;
-            public readonly double SAR => X / (double)Y;
-        }
+        public bool IsKeyframe;
+        public int Width;
+        public int Height;
+        public int Pitch;
+        public bool Flipped;
+        public IntPtr Data;
+        public byte[]? Copy;
+        //public byte[] Bytes;
     }
 
     public struct AudioFrame

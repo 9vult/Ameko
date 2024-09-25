@@ -10,7 +10,7 @@ namespace Ffms2CS
     /// <summary>
     /// A video source
     /// </summary>
-    public class VideoSource
+    public unsafe class VideoSource
     {
         private readonly IntPtr _ptr;
         private readonly VideoProperties _properties;
@@ -194,13 +194,13 @@ namespace Ffms2CS
             var errorInfo = Ffms2.NewErrorInfo();
             InvalidateLastFrame();
 
-            IntPtr framePointer;
+            NativeFrame* framePointer;
             lock (this)
             {
                 framePointer = External.GetFrame(_ptr, frameNumber, ref errorInfo);
             }
 
-            if (framePointer != IntPtr.Zero)
+            if (framePointer != null)
             {
                 LastFrame = new Frame(framePointer);
                 return LastFrame;
@@ -222,13 +222,13 @@ namespace Ffms2CS
             var errorInfo = Ffms2.NewErrorInfo();
             InvalidateLastFrame();
 
-            IntPtr framePointer;
+            NativeFrame* framePointer;
             lock (this)
             {
                 framePointer = External.GetFrameByTime(_ptr, time, ref errorInfo);
             }
 
-            if (framePointer != IntPtr.Zero)
+            if (framePointer != null)
             {
                 LastFrame = new Frame(framePointer);
                 return LastFrame;

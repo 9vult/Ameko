@@ -21,7 +21,8 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
     private SearchWindow _searchWindow;
     private ScriptLogWindow? _scriptLogWindow;
     private bool _isSearching = false;
-    private static string[] DragDropExtensions = { ".ass" };
+    private static readonly string[] ScriptDragDropExtensions = [ ".ass" ];
+    private static readonly string[] VideoDragDropExtensions = [".mkv", ".mp4"];
 
     private bool _canClose = false;
 
@@ -319,8 +320,10 @@ public partial class MainWindow : ReactiveWindow<MainViewModel>
                 foreach (var file in files)
                 {
                     var lp = file.Path.LocalPath;
-                    if (DragDropExtensions.Contains(System.IO.Path.GetExtension(lp)))
+                    if (ScriptDragDropExtensions.Contains(System.IO.Path.GetExtension(lp)))
                         HoloContext.Instance.Workspace.AddFileToWorkspace(file.Path);
+                    if (VideoDragDropExtensions.Contains(System.IO.Path.GetExtension(lp)))
+                        IOCommandService.LoadVideo(file.Path);
                 }
             }
         });

@@ -1,14 +1,9 @@
-﻿using Ameko.DataModels;
-using AssCS;
+﻿using AssCS;
 using Holo;
 using ReactiveUI;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace Ameko.ViewModels
@@ -29,13 +24,13 @@ namespace Ameko.ViewModels
             {
                 if (Frame != 0)
                 {
-                    HoloContext.Instance.Workspace.WorkingFile.AVManager.Video.SeekTo(Frame);
+                    HoloContext.Instance.Workspace.WorkingFile.AVManager.PlaybackController.SeekTo(Frame);
                     CloseWindow.Handle(Unit.Default).Subscribe();
                     return;
                 }
                 else
                 {
-                    HoloContext.Instance.Workspace.WorkingFile.AVManager.Video.SeekTo(Time);
+                    HoloContext.Instance.Workspace.WorkingFile.AVManager.PlaybackController.SeekTo(Time);
                     CloseWindow.Handle(Unit.Default).Subscribe();
                     return;
                 }

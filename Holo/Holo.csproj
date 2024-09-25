@@ -1,20 +1,22 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Samboy063.Tomlet" Version="5.3.0" />
     <PackageReference Include="System.Net.Http.Json" Version="8.0.0" />
-    <PackageReference Include="System.Text.Json" Version="8.0.2" />
+    <PackageReference Include="System.Text.Json" Version="8.0.4" />
     <PackageReference Include="Xdg.Directories" Version="0.1.1" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\AssCS\AssCS.csproj" />
     <ProjectReference Include="..\Wrappers\Ffms2CS\Ffms2CS.csproj" />
+    <ProjectReference Include="..\Wrappers\LibassCS\LibassCS.csproj" />
   </ItemGroup>
 
 </Project>

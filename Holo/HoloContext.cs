@@ -2,6 +2,7 @@
 using Ffms2CS;
 using Holo.DC;
 using Holo.Plugins;
+using LibassCS;
 using SkiaSharp;
 using System;
 using System.Collections.Generic;

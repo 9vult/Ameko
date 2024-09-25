@@ -1,6 +1,7 @@
 using Ameko.Services;
 using Ameko.ViewModels;
 using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.ReactiveUI;
@@ -62,6 +63,12 @@ namespace Ameko.Views
         {
             if (ViewModel == null) return;
             ViewModel.FocusLostSelectionEnd = editBox.FocusLostSelectionEnd;
+        }
+
+        private void TextBox_TextChanged(object? sender, TextChangedEventArgs e)
+        {
+            if (ViewModel == null) return;
+            ViewModel.UpdateSubtitlesCommand.Execute(Unit.Default);
         }
 
         private void SetKeybinds()
