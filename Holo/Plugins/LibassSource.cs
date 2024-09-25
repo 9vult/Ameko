@@ -46,17 +46,17 @@ namespace Holo.Plugins
             {
                 // Copy frame data from copy
                 fixed (byte* ptr = frame.Copy)
-                    Pixelize_External.CopyFrame(ptr, frame.Data, frame.Width * frame.Height * BGRA_WIDTH);
+                    SpeedDemon_External.CopyFrame(ptr, frame.Data, frame.Width * frame.Height * BGRA_WIDTH);
             }
             else
             {
                 // Copy frame data to copy
                 frame.Copy = new byte[frame.Width * frame.Height * BGRA_WIDTH];
                 fixed (byte* ptr = frame.Copy)
-                    Pixelize_External.CopyFrame(frame.Data, ptr, frame.Width * frame.Height * BGRA_WIDTH);
+                    SpeedDemon_External.CopyFrame(frame.Data, ptr, frame.Width * frame.Height * BGRA_WIDTH);
             }
 
-            Pixelize_External.RenderSubs(frame.Data, frame.Width, frame.Height, image);
+            SpeedDemon_External.RenderSubs(frame.Data, frame.Width, frame.Height, image);
         }
 
         public void LoadSubtitles(File file, int time = -1)
@@ -127,15 +127,15 @@ namespace Holo.Plugins
             throw new NotImplementedException();
         }
 
-        private partial class Pixelize_External
+        private partial class SpeedDemon_External
         {
-            [LibraryImport("Pixelize", EntryPoint = "render_subs")]
+            [LibraryImport("SpeedDemon", EntryPoint = "render_subs")]
             public static unsafe partial void RenderSubs(IntPtr frameData, int width, int height, LibassCS.Structures.NativeImage* img);
 
-            [LibraryImport("Pixelize", EntryPoint = "copy_frame")]
+            [LibraryImport("SpeedDemon", EntryPoint = "copy_frame")]
             public static unsafe partial void CopyFrame(IntPtr source, byte* destination, int size);
 
-            [LibraryImport("Pixelize", EntryPoint = "copy_frame")]
+            [LibraryImport("SpeedDemon", EntryPoint = "copy_frame")]
             public static unsafe partial void CopyFrame(byte* source, IntPtr destination, int size);
         }
     }

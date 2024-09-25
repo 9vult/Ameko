@@ -1,10 +1,10 @@
-#include "pixelize.hpp"
+#include "SpeedDemon.hpp"
 
-PIXELIZE_API void copy_frame(unsigned char* source, unsigned char* destination, int size) {
+SPEED_DEMON_API void copy_frame(unsigned char* source, unsigned char* destination, int size) {
     std::copy(source, source + size, destination);
 }
 
-PIXELIZE_API void render_subs(unsigned char* frameData, int width, int height, ASS_Image* img) {
+SPEED_DEMON_API void render_subs(unsigned char* frameData, int width, int height, ASS_Image* img) {
     for (; img; img = img->next) {
         unsigned int o = 255 - img->color & 0xFF;
         unsigned int r = img->color >> 24;

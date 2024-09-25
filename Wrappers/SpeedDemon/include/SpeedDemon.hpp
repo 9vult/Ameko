@@ -8,11 +8,11 @@ extern "C" {
 #endif
 
 // Export macro
-#ifndef PIXELIZE_API
+#ifndef SPEED_DEMON_API
 #ifdef _WIN32
-    #define PIXELIZE_API __declspec(dllexport)
+    #define SPEED_DEMON_API __declspec(dllexport)
 #else
-    #define PIXELIZE_API __attribute__((visibility("default")))
+    #define SPEED_DEMON_API __attribute__((visibility("default")))
 #endif
 #endif
 
@@ -30,9 +30,9 @@ typedef struct ass_image {
     } type;
 } ASS_Image;
 
-PIXELIZE_API void copy_frame(unsigned char* source, unsigned char* destination, int size);
+SPEED_DEMON_API void copy_frame(unsigned char* source, unsigned char* destination, int size);
 
-PIXELIZE_API void render_subs(unsigned char* frameData, int width, int height, ASS_Image* img);
+SPEED_DEMON_API void render_subs(unsigned char* frameData, int width, int height, ASS_Image* img);
 
 #ifdef __cplusplus
 }
