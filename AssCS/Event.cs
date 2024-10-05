@@ -1,6 +1,8 @@
 ﻿// SPDX-License-Identifier: MPL-2.0
 
 using System.Text.RegularExpressions;
+using AssCS.Overrides;
+using AssCS.Overrides.Blocks;
 
 namespace AssCS;
 
@@ -137,16 +139,28 @@ public class Event(int id) : BindableBase
     /// <remarks>It is recommended to keep dialogue events below 18 CPS.</remarks>
     public double Cps
     {
-        get { throw new NotImplementedException(); }
+        get
+        {
+            var secs = (End - Start).TotalSeconds;
+            if (secs == 0)
+                return 0;
+            var text = GetStrippedText()
+                .Replace("\\N", string.Empty)
+                .Replace("\\n", string.Empty)
+                .Replace(" ", string.Empty);
+            return Math.Round(text.Length / (End - Start).TotalSeconds);
+        }
     }
 
     /// <summary>
     /// Length (in characters) of the longest line in the event
     /// </summary>
-    public int MaxLineWidth
-    {
-        get { throw new NotImplementedException(); }
-    }
+    public int MaxLineWidth =>
+        GetStrippedText()
+            .Replace(" ", string.Empty)
+            .Split(["\\N", "\\n"], StringSplitOptions.None)
+            .Select(l => l.Length)
+            .Max();
 
     /// <summary>
     /// Make inline Lua code snippets ass-compliant
@@ -187,6 +201,19 @@ public class Event(int id) : BindableBase
                 return Environment.NewLine + new string(' ', spacesCount);
             }
         );
+    }
+
+    /// <summary>
+    /// Check if this event collides with another event.
+    /// Events collide if their timestamps overlap.
+    /// </summary>
+    /// <param name="other">Event to check against</param>
+    /// <returns>True if the events collide</returns>
+    public bool CollidesWith(Event other)
+    {
+        if (other == null)
+            return false;
+        return (Start < other.Start) ? (other.Start < End) : (Start < other.End);
     }
 
     /// <summary>
@@ -235,7 +262,7 @@ public class Event(int id) : BindableBase
             },
             _effect = match.Groups[10].Value,
             _text = match.Groups[11].Value,
-            // TODO: Load extradata
+            LinkedExtradatas = ParseExtradata(data),
         };
     }
 
@@ -251,6 +278,179 @@ public class Event(int id) : BindableBase
     {
         return FromAss(Id, AsAss());
     }
+
+    #region Tags n stuff
+
+    /// <summary>
+    /// Parse the event into a list of Blocks
+    /// </summary>
+    /// <returns>List of Blocks representing the event</returns>
+    public List<Block> ParseTags()
+    {
+        List<Block> blocks = [];
+        if (_text.Length <= 0)
+        {
+            blocks.Add(new PlainBlock(string.Empty));
+            return blocks;
+        }
+
+        int drawingLevel = 0;
+        string text = new(_text);
+        string work;
+        int endPlain;
+
+        for (int len = text.Length, cur = 0; cur < len; )
+        {
+            // Override block
+            if (text[cur] == '{')
+            {
+                int end = text.IndexOf('}', cur);
+                if (end == -1)
+                {
+                    // ----- Plain -----
+                    endPlain = text.IndexOf('{', cur + 1);
+                    if (endPlain == -1)
+                    {
+                        work = text[cur..];
+                        cur = len;
+                    }
+                    else
+                    {
+                        work = text[cur..endPlain];
+                        cur = endPlain;
+                    }
+                    if (drawingLevel == 0)
+                        blocks.Add(new PlainBlock(work));
+                    else
+                        blocks.Add(new DrawingBlock(work, drawingLevel));
+                    // ----- End Plain -----
+                }
+                else
+                {
+                    ++cur;
+                    // Get block contents
+                    work = text[cur..end];
+                    cur = end + 1;
+
+                    if (work.Length > 0 && !work.Contains('\\'))
+                    {
+                        // Comment
+                        blocks.Add(new CommentBlock(work));
+                    }
+                    else
+                    {
+                        // Create block
+                        var block = new OverrideBlock(work);
+                        block.ParseTags();
+                        // Search for drawings
+                        foreach (var tag in block.Tags)
+                        {
+                            if (tag.Name == "\\p")
+                                drawingLevel = tag.Parameters[0].GetInt();
+                        }
+                        blocks.Add(block);
+                    }
+                    continue;
+                }
+            }
+            // ----- Plain 2 electric boogaloo -----
+            if (cur + 1 < text.Length)
+            {
+                endPlain = text.IndexOf('{', cur + 1);
+                if (endPlain == -1)
+                {
+                    work = text[cur..];
+                    cur = len;
+                }
+                else
+                {
+                    work = text[cur..endPlain];
+                    cur = endPlain;
+                }
+                if (drawingLevel == 0)
+                    blocks.Add(new PlainBlock(work));
+                else
+                    blocks.Add(new DrawingBlock(work, drawingLevel));
+            }
+            else
+            {
+                cur += 1;
+            }
+            // ----- End Plain -----
+        }
+        return blocks;
+    }
+
+    /// <summary>
+    /// Get the event's text content without override tags,
+    /// comments, or drawings
+    /// </summary>
+    /// <returns>Stripped text content</returns>
+    public string GetStrippedText()
+    {
+        var blocks = ParseTags();
+        return string.Join(string.Empty, blocks.OfType<PlainBlock>().Select(b => b.Text));
+    }
+
+    /// <summary>
+    /// Strip away all tags in the event
+    /// </summary>
+    /// <seealso cref="GetStrippedText"/>
+    public void StripTags()
+    {
+        Text = GetStrippedText();
+    }
+
+    /// <summary>
+    /// Toggle a tag
+    /// </summary>
+    /// <param name="tag">Tag to toggle</param>
+    /// <param name="style">Event style</param>
+    /// <param name="selStart">Start of the selection</param>
+    /// <param name="selEnd">End of the selection</param>
+    /// <returns>Number of characters to shift the cursor</returns>
+    public int ToggleTag(string tag, Style? style, int selStart, int selEnd)
+    {
+        if (selStart > selEnd)
+            (selStart, selEnd) = (selEnd, selStart);
+
+        int normSelStart = NormalizePos(selStart);
+        int normSelEnd = NormalizePos(selEnd);
+
+        bool state =
+            style is not null
+            && tag switch
+            {
+                "\\b" => style.IsBold,
+                "\\i" => style.IsItalic,
+                "\\u" => style.IsUnderline,
+                "\\s" => style.IsStrikethrough,
+                _ => false,
+            };
+
+        ParsedEvent parsed = new ParsedEvent(this);
+        int blockn = parsed.BlockAt(normSelStart);
+        state = parsed.FindTag(blockn, tag, "")?.Parameters[0].GetBool() ?? state;
+
+        int shift = parsed.SetTag(tag, state ? "0" : "1", normSelStart, selStart);
+        if (selStart != selEnd)
+            parsed.SetTag(tag, state ? "1" : "0", normSelEnd, selEnd + shift);
+        return shift;
+    }
+
+    /// <summary>
+    /// Replace the text in this line.
+    /// Operation is skipped if the input is empty.
+    /// </summary>
+    /// <param name="blocks">Blocks to set</param>
+    public void UpdateText(List<Block> blocks)
+    {
+        if (blocks.Count == 0)
+            return;
+        Text = string.Join(string.Empty, blocks.Select(b => b.Text));
+    }
+
+    #endregion
 
     public override bool Equals(object? obj)
     {
@@ -282,4 +482,212 @@ public class Event(int id) : BindableBase
         hash.Add(_text);
         return hash.ToHashCode();
     }
+
+    /// <summary>
+    /// Parse the event's extradata
+    /// </summary>
+    /// <param name="data">Ass-formatted string</param>
+    /// <returns>List of extradata IDs</returns>
+    private static List<int> ParseExtradata(string data)
+    {
+        if (data.Length < 2)
+            return [];
+        if (!data.StartsWith("{="))
+            return [];
+        var extraRegex = @"^\{(=\d+)+\}";
+        var match = Regex.Match(data, extraRegex);
+        if (!match.Success)
+            return [];
+
+        List<int> result = [];
+
+        for (int i = 1; i < match.Groups.Count; i++)
+        {
+            var rawId = match.Groups[i].Value[1..]; // =123 → 123
+            var id = Convert.ToInt32(rawId);
+            result.Add(id);
+        }
+        return result;
+    }
+
+    #region Private tag stuff
+
+    /// <summary>
+    /// Normalize positions inside the text
+    /// </summary>
+    /// <param name="pos">Original position</param>
+    /// <returns>Normalized position</returns>
+    private int NormalizePos(int pos)
+    {
+        int plainLength = 0;
+        bool inside = false;
+        for (int i = 0, max = Text.Length - 1; i < pos && i <= max; i++)
+        {
+            if (Text[i] == '{')
+                inside = true;
+            if (!inside)
+                plainLength++;
+            if (Text[i] == '}' && inside)
+                inside = false;
+        }
+        return plainLength;
+    }
+
+    private class ParsedEvent
+    {
+        readonly Event Line;
+        List<Block> Blocks;
+
+        public ParsedEvent(Event line)
+        {
+            Line = line;
+            Blocks = Line.ParseTags();
+        }
+
+        /// <summary>
+        /// Find the tag with the given name
+        /// </summary>
+        /// <param name="blockn">Block number to check</param>
+        /// <param name="tagName">Name of the tag</param>
+        /// <param name="alt">Alternate name for the tag</param>
+        /// <returns>The tag, or null if not found</returns>
+        public OverrideTag? FindTag(int blockn, string tagName, string alt)
+        {
+            foreach (
+                var ovr in Blocks
+                    .GetRange(0, blockn + 1)
+                    .AsEnumerable()
+                    .Reverse()
+                    .OfType<OverrideBlock>()
+            )
+            {
+                foreach (var tag in ovr.Tags.AsEnumerable().Reverse())
+                {
+                    if (tag.Name == tagName || tag.Name == alt)
+                        return tag;
+                }
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Get the block number for the text at the index
+        /// </summary>
+        /// <param name="index">Index in the text to look up</param>
+        /// <returns>Block number</returns>
+        public int BlockAt(int index)
+        {
+            int n = 0;
+            bool inside = false;
+            for (var i = 0; i <= Line.Text.Length - 1; i++)
+            {
+                if (Line.Text[i] == '{')
+                {
+                    if (!inside && i > 0 && index >= 0)
+                        n++;
+                    inside = true;
+                }
+                else if (Line.Text[i] == '}' && inside)
+                {
+                    inside = false;
+                    if (index > 0 && (i + 1 == Line.Text.Length - 1 || Line.Text[i + 1] != '{'))
+                        n++;
+                }
+                else if (!inside)
+                {
+                    if (--index == 0)
+                        return n + ((i < Line.Text.Length - 1 && Line.Text[i + 1] == '{') ? 1 : 0);
+                }
+            }
+            return n - (inside ? 1 : 0);
+        }
+
+        /// <summary>
+        /// Set the value of a tag
+        /// </summary>
+        /// <param name="tag">Tag to set</param>
+        /// <param name="value">New value</param>
+        /// <param name="normPos">Normalized position</param>
+        /// <param name="originPos">Original position</param>
+        /// <returns>Number of characters to shift the caret</returns>
+        public int SetTag(string tag, string value, int normPos, int originPos)
+        {
+            int blockn = BlockAt(normPos);
+            PlainBlock? plain = null;
+            OverrideBlock? ovr = null;
+            while (blockn >= 0 && plain is null && ovr is null)
+            {
+                Block block = Blocks[blockn];
+                switch (block.Type)
+                {
+                    case BlockType.Plain:
+                        plain = (PlainBlock)block;
+                        break;
+                    case BlockType.Drawing:
+                        --blockn;
+                        break;
+                    case BlockType.Comment:
+                        --blockn;
+                        originPos = Line.Text.IndexOf('{', originPos);
+                        break;
+                    case BlockType.Override:
+                        ovr = (OverrideBlock)block;
+                        break;
+                }
+            }
+
+            // If there is no suitable block, place it at the beginning of the line
+            if (blockn < 0)
+                originPos = 0;
+
+            string insert = tag + value;
+            int shift = insert.Length;
+
+            if (plain is not null || blockn < 0)
+            {
+                Line.Text = string.Concat(
+                    Line.Text.AsSpan(0, originPos),
+                    $"{{{insert}}}",
+                    Line.Text.AsSpan(originPos)
+                );
+                shift += 2;
+                Blocks = Line.ParseTags();
+            }
+            else if (ovr is not null)
+            {
+                string alt = string.Empty;
+                if (tag == "\\c")
+                    alt = "\\1c";
+                bool found = false;
+                for (var i = 0; i < ovr.Tags.Count; i++)
+                {
+                    var name = ovr.Tags[i].Name;
+                    if (tag == name || alt == name)
+                    {
+                        shift -= (ovr.Tags[i].ToString()).Length;
+                        if (found)
+                        {
+                            ovr.Tags.RemoveAt(i);
+                            i--;
+                        }
+                        else
+                        {
+                            ovr.Tags[i].Parameters[0].Set(value);
+                            found = true;
+                        }
+                    }
+                }
+                if (!found)
+                    ovr.AddTag(insert);
+
+                Line.UpdateText(Blocks);
+            }
+            else
+            {
+                // ?
+            }
+            return shift;
+        }
+    }
+    #endregion
 }
