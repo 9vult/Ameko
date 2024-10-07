@@ -64,9 +64,17 @@ public class EventTests
     }
 
     [Fact]
-    public void GetStrippedText_Short()
+    public void GetStrippedText_Short_After()
     {
         Event e = new Event(1) { Text = "{\\q2}A" };
+
+        e.GetStrippedText().Should().Be("A");
+    }
+
+    [Fact]
+    public void GetStrippedText_Short_Before()
+    {
+        Event e = new Event(1) { Text = "A{\\q2}" };
 
         e.GetStrippedText().Should().Be("A");
     }
