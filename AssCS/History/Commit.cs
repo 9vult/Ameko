@@ -16,3 +16,10 @@ public class EventCommit : ICommit
     public required string Message;
     public required List<EventLink> Targets;
 }
+
+public class StyleCommit : ICommit
+{
+    public required int Id;
+    public required string Message;
+    public required Style Target;
+}
