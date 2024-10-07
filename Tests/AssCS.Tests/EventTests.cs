@@ -8,8 +8,6 @@ public class EventTests
 {
     private const string BasicEvent =
         "Dialogue: 0,0:02:10.57,0:02:13.51,Default,Heiter,0,0,0,,It's the victorious return of the heroes' party.";
-    private const string MultilineEvent =
-        "Dialogue: 0,0:08:52.91,0:08:57.00,Default,Frieren,0,0,0,,I see. That's a problem;\\NI need it for a summoning.";
     private const string TagEvent =
         "Dialogue: 0,0:11:34.65,0:11:37.38,Default,Frieren,0,0,0,,You're {\\i1}bald{\\i0}, there's no point in fussing.";
 
@@ -27,6 +25,14 @@ public class EventTests
         e.Margins.Should().Be(new Margins(0, 0, 0));
         e.Effect.Should().Be(string.Empty);
         e.Text.Should().Be("It's the victorious return of the heroes' party.");
+    }
+
+    [Fact]
+    public void FromAss_Malformed()
+    {
+        Action action = () => Event.FromAss(1, BasicEvent.Replace(',', 'Q'));
+
+        action.Should().Throw<ArgumentException>();
     }
 
     [Fact]
