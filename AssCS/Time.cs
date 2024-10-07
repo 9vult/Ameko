@@ -197,12 +197,12 @@ public class Time : BindableBase, IComparable<Time>
 
     public override bool Equals(object? obj)
     {
-        return obj is Time time && _local.Equals(time._local);
+        return obj is Time time && _local.TotalMilliseconds.Equals(time._local.TotalMilliseconds);
     }
 
     public override int GetHashCode()
     {
-        return HashCode.Combine(_local);
+        return HashCode.Combine(_local.TotalMilliseconds);
     }
 
     #region Operators
