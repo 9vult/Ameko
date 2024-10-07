@@ -354,7 +354,7 @@ public class Event(int id) : BindableBase, IEntry
                 }
             }
             // ----- Plain 2 electric boogaloo -----
-            if (cur + 1 < text.Length)
+            if (cur + 1 <= text.Length)
             {
                 endPlain = text.IndexOf('{', cur + 1);
                 if (endPlain == -1)
