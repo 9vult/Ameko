@@ -17,7 +17,7 @@ public abstract class BindableBase : INotifyPropertyChanged
     /// <param name="storage">Reference to the backing member</param>
     /// <param name="value">Potential new value</param>
     /// <param name="propertyName">Name of the property</param>
-    /// <returns>True if the property changed</returns>
+    /// <returns><see langword="true"/> if the property changed</returns>
     /// <example>Example:
     /// <code>
     /// private string _data;

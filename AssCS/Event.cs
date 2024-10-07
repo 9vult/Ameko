@@ -10,7 +10,7 @@ namespace AssCS;
 /// An event in a subtitle document
 /// </summary>
 /// <param name="id">ID of the event</param>
-public class Event(int id) : BindableBase
+public class Event(int id) : BindableBase, IEntry
 {
     private readonly int _id = id;
     private bool _isComment = false;
@@ -208,7 +208,7 @@ public class Event(int id) : BindableBase
     /// Events collide if their timestamps overlap.
     /// </summary>
     /// <param name="other">Event to check against</param>
-    /// <returns>True if the events collide</returns>
+    /// <returns><see langword="true"/> if the events collide</returns>
     public bool CollidesWith(Event other)
     {
         if (other == null)
@@ -550,7 +550,7 @@ public class Event(int id) : BindableBase
         /// <param name="blockn">Block number to check</param>
         /// <param name="tagName">Name of the tag</param>
         /// <param name="alt">Alternate name for the tag</param>
-        /// <returns>The tag, or null if not found</returns>
+        /// <returns>The tag, or <see langword="null"/> if not found</returns>
         public OverrideTag? FindTag(int blockn, string tagName, string alt)
         {
             foreach (
