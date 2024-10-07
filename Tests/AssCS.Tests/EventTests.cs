@@ -37,6 +37,136 @@ public class EventTests
         e.AsAss().Should().Be(BasicEvent);
     }
 
+    [Fact]
+    public void StripText()
+    {
+        Event e = Event.FromAss(1, TagEvent);
+        e.StripTags();
+
+        e.Text.Should().Be("You're bald, there's no point in fussing.");
+    }
+
+    [Fact]
+    public void Clone()
+    {
+        Event e1 = Event.FromAss(1, BasicEvent);
+        Event e2 = e1.Clone();
+
+        e2.Should().Be(e1);
+    }
+
+    [Fact]
+    public void CollidesWith()
+    {
+        Event e1 = new Event(1) { Start = Time.FromSeconds(0), End = Time.FromSeconds(5) };
+        Event e2 = new Event(2) { Start = Time.FromSeconds(2.5), End = Time.FromSeconds(7.5) };
+        Event e3 = new Event(3) { Start = Time.FromSeconds(10), End = Time.FromSeconds(15) };
+
+        e1.CollidesWith(e2).Should().BeTrue();
+        e2.CollidesWith(e1).Should().BeTrue();
+
+        e1.CollidesWith(e3).Should().BeFalse();
+        e2.CollidesWith(e3).Should().BeFalse();
+    }
+
+    #region Cps & Line Width
+
+    [Fact]
+    public void Cps_NoTags()
+    {
+        Event e = new Event(1)
+        {
+            Start = Time.FromSeconds(0),
+            End = Time.FromSeconds(1),
+            Text = "The quick brown fox jumps over the lazy dog",
+        };
+
+        e.Cps.Should().Be(35);
+    }
+
+    [Fact]
+    public void Cps_Newline()
+    {
+        Event e = new Event(1)
+        {
+            Start = Time.FromSeconds(0),
+            End = Time.FromSeconds(1),
+            Text = "The quick brown fox\\Njumps over the lazy dog",
+        };
+
+        e.Cps.Should().Be(35);
+    }
+
+    [Fact]
+    public void Cps_Tags()
+    {
+        Event e = new Event(1)
+        {
+            Start = Time.FromSeconds(0),
+            End = Time.FromSeconds(1),
+            Text =
+                "The quick {\\i1}brown{\\i0} fox{it could be an artic fox} jumps over the lazy dog",
+        };
+
+        e.Cps.Should().Be(35);
+    }
+
+    [Fact]
+    public void MaxLineWidth_SingleLine()
+    {
+        Event e = new Event(1)
+        {
+            Start = Time.FromSeconds(0),
+            End = Time.FromSeconds(1),
+            Text = "The quick brown fox jumps over the lazy dog",
+        };
+
+        e.MaxLineWidth.Should().Be(35);
+    }
+
+    [Fact]
+    public void MaxLineWidth_SingleLine_Tags()
+    {
+        Event e = new Event(1)
+        {
+            Start = Time.FromSeconds(0),
+            End = Time.FromSeconds(1),
+            Text =
+                "The quick {\\i1}brown{\\i0} fox{it could be an artic fox} jumps over the lazy dog",
+        };
+
+        e.MaxLineWidth.Should().Be(35);
+    }
+
+    [Fact]
+    public void MaxLineWidth_MultipleLines()
+    {
+        Event e = new Event(1)
+        {
+            Start = Time.FromSeconds(0),
+            End = Time.FromSeconds(1),
+            Text = "The quick brown fox\\Njumps over the lazy dog",
+        };
+
+        e.MaxLineWidth.Should().Be(19);
+    }
+
+    [Fact]
+    public void MaxLineWidth_MultipeLines_Tags()
+    {
+        Event e = new Event(1)
+        {
+            Start = Time.FromSeconds(0),
+            End = Time.FromSeconds(1),
+            Text =
+                "The quick {\\i1}brown{\\i0} fox{it could be an artic fox}\\Njumps over the lazy dog",
+        };
+
+        e.MaxLineWidth.Should().Be(19);
+    }
+
+    #endregion Cps & Line Width
+
     #region GetStrippedText
 
     [Fact]
