@@ -55,8 +55,7 @@ public class Color : BindableBase
     /// <summary>
     /// Luminance value of the color
     /// </summary>
-    public double Luminance =>
-        (((0.2126 * _red) + (0.7152 * _green) + (0.0722 * _blue)) / 255) * _alpha;
+    public double Luminance => ((0.2126 * _red) + (0.7152 * _green) + (0.0722 * _blue)) / 255;
 
     /// <summary>
     /// Ass-formatted style color string (<c>ABGR</c>)

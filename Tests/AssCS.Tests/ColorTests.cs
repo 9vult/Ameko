@@ -1,0 +1,92 @@
+﻿// SPDX-License-Identifier: MPL-2.0
+
+using FluentAssertions;
+
+namespace AssCS.Tests;
+
+public class ColorTests
+{
+    [Fact]
+    public void FromAss_NoAlpha()
+    {
+        var c = Color.FromAss("&H00FF33");
+
+        c.Alpha.Should().Be(0x00);
+        c.Blue.Should().Be(0x00);
+        c.Green.Should().Be(0xFF);
+        c.Red.Should().Be(0x33);
+    }
+
+    [Fact]
+    public void FromAss_Alpha()
+    {
+        var c = Color.FromAss("&H4400FF33&");
+
+        c.Alpha.Should().Be(0x44);
+        c.Blue.Should().Be(0x00);
+        c.Green.Should().Be(0xFF);
+        c.Red.Should().Be(0x33);
+    }
+
+    [Fact]
+    public void FromAss_Malformed()
+    {
+        Action action = () => Color.FromAss("&H4400FF533&");
+
+        action
+            .Should()
+            .Throw<ArgumentException>()
+            .WithMessage("Color &H4400FF533& is invalid or malformed.");
+    }
+
+    [Fact]
+    public void AsStyleColor_RGB()
+    {
+        var c = Color.FromRGB(0x44, 0xFF, 0x25);
+
+        c.AsStyleColor().Should().Be("&H0025FF44");
+    }
+
+    [Fact]
+    public void AsStyleColor_RGBA()
+    {
+        var c = Color.FromRGBA(0x44, 0xFF, 0x25, 0x50);
+
+        c.AsStyleColor().Should().Be("&H5025FF44");
+    }
+
+    [Fact]
+    public void AsOverrideColor_RGB()
+    {
+        var c = Color.FromRGB(0x44, 0xFF, 0x25);
+
+        c.AsOverrideColor().Should().Be("&H25FF44&");
+    }
+
+    [Fact]
+    public void AsOverrideColor_RGBA()
+    {
+        var c = Color.FromRGBA(0x44, 0xFF, 0x25, 0x50);
+
+        c.AsOverrideColor().Should().Be("&H25FF44&");
+    }
+
+    [Fact]
+    public void Contrast()
+    {
+        var white = Color.FromRGB(255, 255, 255);
+        var black = Color.FromRGB(0, 0, 0);
+
+        Color.Contrast(white, black).Should().BeInRange(20.9999, 21.0001);
+    }
+
+    [Fact]
+    public void Luminance()
+    {
+        var white = Color.FromRGB(255, 255, 255);
+        var black = Color.FromRGB(0, 0, 0);
+
+        white.Luminance.Should().BeInRange(0.9999, 1.0001);
+        black.Luminance.Should().Be(0);
+    }
+}
