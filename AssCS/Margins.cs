@@ -53,4 +53,14 @@ public class Margins(int left, int right, int vertical) : BindableBase
     {
         return HashCode.Combine(_left, _right, _vertical);
     }
+
+    public static bool operator ==(Margins? left, Margins? right)
+    {
+        return left?.Equals(right) ?? false;
+    }
+
+    public static bool operator !=(Margins? left, Margins? right)
+    {
+        return !(left == right);
+    }
 }

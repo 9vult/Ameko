@@ -173,6 +173,16 @@ public class Color : BindableBase
         return HashCode.Combine(_red, _green, _blue, _alpha);
     }
 
+    public static bool operator ==(Color? left, Color? right)
+    {
+        return left?.Equals(right) ?? false;
+    }
+
+    public static bool operator !=(Color? left, Color? right)
+    {
+        return !(left == right);
+    }
+
     #region Operators
 
     public static Color operator +(Color a, Color b)

@@ -209,7 +209,7 @@ public class Time : BindableBase, IComparable<Time>
 
     public static bool operator ==(Time? left, Time? right)
     {
-        return EqualityComparer<Time>.Default.Equals(left, right);
+        return left?._local.Milliseconds == right?._local.Milliseconds;
     }
 
     public static bool operator !=(Time? left, Time? right)
