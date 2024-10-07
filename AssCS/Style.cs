@@ -358,4 +358,14 @@ public class Style(int id) : BindableBase
         hash.Add(_encoding);
         return hash.ToHashCode();
     }
+
+    public static bool operator ==(Style? left, Style? right)
+    {
+        return left?.Equals(right) ?? false;
+    }
+
+    public static bool operator !=(Style? left, Style? right)
+    {
+        return !(left == right);
+    }
 }

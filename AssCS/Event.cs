@@ -483,6 +483,16 @@ public class Event(int id) : BindableBase, IEntry
         return hash.ToHashCode();
     }
 
+    public static bool operator ==(Event? left, Event? right)
+    {
+        return left?.Equals(right) ?? false;
+    }
+
+    public static bool operator !=(Event? left, Event? right)
+    {
+        return !(left == right);
+    }
+
     /// <summary>
     /// Parse the event's extradata
     /// </summary>
