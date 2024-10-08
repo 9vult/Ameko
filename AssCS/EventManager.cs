@@ -2,7 +2,6 @@
 
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
-using AssCS.History;
 
 namespace AssCS;
 
@@ -17,7 +16,7 @@ public class EventManager : BindableBase
     private int _id = 0;
 
     /// <summary>
-    /// Obtain the next available ID for use in the document
+    /// Obtain the next available event ID for use in the document
     /// </summary>
     /// <remarks>
     /// <para>
@@ -478,7 +477,8 @@ public class EventManager : BindableBase
     /// </summary>
     /// <param name="id">ID of the event</param>
     /// <param name="event">The event with the requested ID, if it exists</param>
-    /// <returns><see langword="true"/> if the event exists in the document; otherwise, <see langword="false"/></returns>
+    /// <returns><see langword="true"/> if the event exists in the document;
+    /// otherwise, <see langword="false"/></returns>
     public bool TryGet(int id, [MaybeNullWhen(false)] out Event @event)
     {
         var found = _events.TryGetValue(id, out var value);
@@ -508,7 +508,8 @@ public class EventManager : BindableBase
     /// </summary>
     /// <param name="id">ID of the parent event</param>
     /// <param name="event">The event after the parent, if it exists</param>
-    /// <returns><see langword="true"/> if there is an event after the parent; otherwise, <see langword="false"/></returns>
+    /// <returns><see langword="true"/> if there is an event after the parent;
+    /// otherwise, <see langword="false"/></returns>
     public bool TryGetAfter(int id, [MaybeNullWhen(false)] out Event @event)
     {
         if (
@@ -547,7 +548,8 @@ public class EventManager : BindableBase
     /// </summary>
     /// <param name="id">ID of the child event</param>
     /// <param name="event">The event before the child, if it exists</param>
-    /// <returns><see langword="true"/> if there is an event before the child; otherwise, <see langword="false"/></returns>
+    /// <returns><see langword="true"/> if there is an event before the child;
+    /// otherwise, <see langword="false"/></returns>
     public bool TryGetBefore(int id, [MaybeNullWhen(false)] out Event @event)
     {
         if (
@@ -665,6 +667,20 @@ public class EventManager : BindableBase
     }
 
     #endregion Advanced Actions
+
+    /// <summary>
+    /// Clear everything and load in a default event
+    /// </summary>
+    public void LoadDefault()
+    {
+        _chain.Clear();
+        _events.Clear();
+        _currentIds.Clear();
+        _id = 0;
+
+        AddFirst(new Event(NextId));
+        Notify();
+    }
 
     private void Notify()
     {

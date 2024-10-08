@@ -11,6 +11,7 @@ public class Document(AssVersion version = AssVersion.V400P)
 {
     private readonly AssVersion _version = version;
     private readonly EventManager _eventManager = new();
+    private readonly StyleManager _styleManager = new();
     private readonly HistoryManager _historyManager = new();
 
     /// <summary>
@@ -19,14 +20,19 @@ public class Document(AssVersion version = AssVersion.V400P)
     public AssVersion Version => _version;
 
     /// <summary>
-    /// The document's History Manager
-    /// </summary>
-    public HistoryManager HistoryManager => _historyManager;
-
-    /// <summary>
     /// The document's Event Manager
     /// </summary>
     public EventManager EventManager => _eventManager;
+
+    /// <summary>
+    /// The document's Style Manager
+    /// </summary>
+    public StyleManager StyleManager => _styleManager;
+
+    /// <summary>
+    /// The document's History Manager
+    /// </summary>
+    public HistoryManager HistoryManager => _historyManager;
 }
 
 /// <summary>
