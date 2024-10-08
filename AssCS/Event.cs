@@ -279,6 +279,20 @@ public class Event(int id) : BindableBase, IEntry
         return FromAss(Id, AsAss());
     }
 
+    /// <summary>
+    /// Clone this event with a new ID
+    /// </summary>
+    /// <param name="id">New ID</param>
+    /// <returns>Clone of the event</returns>
+    /// <remarks>
+    /// This method currently uses serialization
+    /// as the clone method. This is subject to change.
+    /// </remarks>
+    public Event Clone(int id)
+    {
+        return FromAss(id, AsAss());
+    }
+
     #region Tags n stuff
 
     /// <summary>

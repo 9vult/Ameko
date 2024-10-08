@@ -96,6 +96,8 @@ public class EventManager : BindableBase
             ? throw new ArgumentNullException("Cannot access Tail event because it is null")
             : _events[_chain.Last.Value].Event;
 
+    #region Basic Actions
+
     /// <summary>
     /// Add an event after another event
     /// </summary>
@@ -437,6 +439,9 @@ public class EventManager : BindableBase
         return result;
     }
 
+    #endregion Basic Actions
+    #region Getters
+
     /// <summary>
     /// Check if an event exists in the document
     /// </summary>
@@ -553,6 +558,9 @@ public class EventManager : BindableBase
         return false;
     }
 
+    #endregion Getters
+    #region Advanced Actions
+
     /// <summary>
     /// Change the style name of all events with
     /// the given<paramref name="oldName"/>
@@ -569,6 +577,88 @@ public class EventManager : BindableBase
             e.Event.Style = newName;
         }
     }
+
+    /// <summary>
+    /// Duplicate an event, placing the clone after the existing one
+    /// </summary>
+    /// <param name="target">Event to duplicate</param>
+    /// <returns>The duplicate event</returns>
+    public Event Duplicate(Event target)
+    {
+        var newEvent = target.Clone(NextId);
+        AddAfter(target.Id, newEvent);
+        return newEvent;
+    }
+
+    /// <summary>
+    /// Insert a new event before the target event
+    /// </summary>
+    /// <param name="target">Child event</param>
+    /// <returns>The newly created event</returns>
+    /// <remarks>
+    /// The inserted event's length will be limited if there is an event
+    /// before the <paramref name="target"/> event that would overlap with
+    /// the creation of a full-length event.
+    /// </remarks>
+    public Event InsertBefore(Event target)
+    {
+        var newEvent = new Event(NextId)
+        {
+            Style = target.Style,
+            End = Time.FromTime(target.Start),
+        };
+
+        var before = GetBefore(target.Id);
+        if (before is not null)
+        {
+            if ((target.Start - before.End).TotalSeconds < 5)
+                newEvent.Start = before.End;
+            else
+                newEvent.Start = target.Start - Time.FromSeconds(5);
+        }
+        else
+        {
+            newEvent.Start = target.Start - Time.FromSeconds(5);
+        }
+        AddBefore(target.Id, newEvent);
+        return newEvent;
+    }
+
+    /// <summary>
+    /// Insert a new event after the target event
+    /// </summary>
+    /// <param name="target">Parent event</param>
+    /// <returns>The newly created event</returns>
+    /// <remarks>
+    /// The inserted event's length will be limited if there is an event
+    /// after the <paramref name="target"/> event that would overlap with
+    /// the creation of a full-length event.
+    /// </remarks>
+    public Event InsertAfter(Event target)
+    {
+        var newEvent = new Event(NextId)
+        {
+            Style = target.Style,
+            Start = Time.FromTime(target.End),
+        };
+
+        var after = GetAfter(target.Id);
+        if (after is not null)
+        {
+            if ((after.Start - target.End).TotalSeconds < 5)
+                newEvent.End = after.Start;
+            else
+                newEvent.End = target.End + Time.FromSeconds(5);
+        }
+        else
+        {
+            newEvent.End = target.End + Time.FromSeconds(5);
+        }
+        AddAfter(target.Id, newEvent);
+        return newEvent;
+    }
+
+    #endregion Advanced Actions
 
     private void Notify()
     {
