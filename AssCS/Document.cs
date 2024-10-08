@@ -1,11 +1,33 @@
 ﻿// SPDX-License-Identifier: MPL-2.0
 
+using AssCS.History;
+
 namespace AssCS;
 
 /// <summary>
 /// A single Advanced Substation Alpha subtitle file
 /// </summary>
-public class Document { }
+public class Document(AssVersion version = AssVersion.V400P)
+{
+    private readonly AssVersion _version = version;
+    private readonly EventManager _eventManager = new();
+    private readonly HistoryManager _historyManager = new();
+
+    /// <summary>
+    /// ASS version of the document
+    /// </summary>
+    public AssVersion Version => _version;
+
+    /// <summary>
+    /// The document's History Manager
+    /// </summary>
+    public HistoryManager HistoryManager => _historyManager;
+
+    /// <summary>
+    /// The document's Event Manager
+    /// </summary>
+    public EventManager EventManager => _eventManager;
+}
 
 /// <summary>
 /// ASS file version
