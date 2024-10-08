@@ -1,6 +1,7 @@
 ﻿// SPDX-License-Identifier: MPL-2.0
 
 using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
 using AssCS.History;
 
 namespace AssCS;
@@ -57,6 +58,11 @@ public class EventManager : BindableBase
                 }
             )
             .ToList();
+
+    /// <summary>
+    /// The number of events currently in the document
+    /// </summary>
+    public int Count => _chain.Count;
 
     /// <summary>
     /// An observable collection of the IDs of the events currently
@@ -348,7 +354,7 @@ public class EventManager : BindableBase
 
         _events.Remove(id); // Remove the original ID
         link.Node.Value = e.Id; // Set the Node's value to the new ID
-        _events[e.Id] = new Link(link.Node, originalEvent); // Add the new ID
+        _events[e.Id] = new Link(link.Node, e); // Add the new ID
         _currentIds[_currentIds.IndexOf(id)] = id; // Replace the ID in the list
         Notify();
         return originalEvent;
@@ -473,7 +479,7 @@ public class EventManager : BindableBase
     /// <param name="id">ID of the event</param>
     /// <param name="event">The event with the requested ID, if it exists</param>
     /// <returns><see langword="true"/> if the event exists in the document; otherwise, <see langword="false"/></returns>
-    public bool TryGet(int id, out Event? @event)
+    public bool TryGet(int id, [MaybeNullWhen(false)] out Event @event)
     {
         var found = _events.TryGetValue(id, out var value);
         @event = found ? value.Event : null;
@@ -503,7 +509,7 @@ public class EventManager : BindableBase
     /// <param name="id">ID of the parent event</param>
     /// <param name="event">The event after the parent, if it exists</param>
     /// <returns><see langword="true"/> if there is an event after the parent; otherwise, <see langword="false"/></returns>
-    public bool TryGetAfter(int id, out Event? @event)
+    public bool TryGetAfter(int id, [MaybeNullWhen(false)] out Event @event)
     {
         if (
             _events.TryGetValue(id, out var preceeding)
@@ -542,7 +548,7 @@ public class EventManager : BindableBase
     /// <param name="id">ID of the child event</param>
     /// <param name="event">The event before the child, if it exists</param>
     /// <returns><see langword="true"/> if there is an event before the child; otherwise, <see langword="false"/></returns>
-    public bool TryGetBefore(int id, out Event? @event)
+    public bool TryGetBefore(int id, [MaybeNullWhen(false)] out Event @event)
     {
         if (
             _events.TryGetValue(id, out var following)
