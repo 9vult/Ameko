@@ -27,6 +27,11 @@ public abstract class FileWriter
     {
         using var file = File.Open(filename, FileMode.OpenOrCreate);
         using var writer = new StreamWriter(file, encoding: Encoding.UTF8);
-        return Write(writer, export);
+
+        var result = Write(writer, export);
+
+        writer.Flush();
+        file.SetLength(file.Position);
+        return result;
     }
 }
