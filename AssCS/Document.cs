@@ -13,6 +13,7 @@ public class Document(AssVersion version = AssVersion.V400P)
     private readonly EventManager _eventManager = new();
     private readonly StyleManager _styleManager = new();
     private readonly HistoryManager _historyManager = new();
+    private readonly ExtradataManager _extradataManager = new();
 
     /// <summary>
     /// ASS version of the document
@@ -33,6 +34,11 @@ public class Document(AssVersion version = AssVersion.V400P)
     /// The document's History Manager
     /// </summary>
     public HistoryManager HistoryManager => _historyManager;
+
+    /// <summary>
+    /// The document's Extradata Manager
+    /// </summary>
+    public ExtradataManager ExtradataManager => _extradataManager;
 }
 
 /// <summary>
