@@ -9,6 +9,9 @@ public class ScriptInfoManager
 {
     private readonly Dictionary<string, string> _data = [];
 
+    /// <summary>
+    /// Number of entries in the manager
+    /// </summary>
     public int Count => _data.Count;
 
     /// <summary>
