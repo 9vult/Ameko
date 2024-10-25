@@ -100,8 +100,7 @@ public class OverrideParameter(VariableType type, ParameterType classification)
     /// <returns>Color value</returns>
     public Color GetColor()
     {
-        // TODO: return new Color(GetString());
-        throw new NotImplementedException();
+        return Color.FromAss(GetString());
     }
 
     /// <summary>
