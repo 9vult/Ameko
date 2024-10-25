@@ -41,14 +41,24 @@ public class AssWriter(Document document, ConsumerInfo consumer) : FileWriter
 
     private void WriteScriptInfo(TextWriter writer)
     {
-        // TODO: ScriptInfo Manager
+        foreach (var info in document.ScriptInfoManager.GetAll())
+        {
+            writer.WriteLine($"{info.Key}: {info.Value}");
+        }
+        writer.WriteLine();
     }
 
     private void WriteGarbage(TextWriter writer)
     {
-        writer.WriteLine("[Aegisub Project Garbage]");
+        if (document.GarbageManager.Count == 0)
+            return;
 
-        // TODO: Garbage Manager (Project Properties)
+        writer.WriteLine("[Aegisub Project Garbage]");
+        foreach (var prop in document.GarbageManager.GetAll())
+        {
+            writer.WriteLine($"{prop.Name}: {prop.Value}");
+        }
+        writer.WriteLine();
     }
 
     private void WriteStyles(TextWriter writer)

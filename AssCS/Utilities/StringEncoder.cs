@@ -69,12 +69,12 @@ internal static class StringEncoder
                 src[2] = input[pos + 2];
 
             char[] dst =
-            {
+            [
                 (char)(src[0] >> 2),
                 (char)(((src[0] & 0x3) << 4) | ((src[1] & 0xF0) >> 4)),
                 (char)(((src[1] & 0xF) << 2) | ((src[2] & 0xC0) >> 6)),
                 (char)(src[2] & 0x3F),
-            };
+            ];
 
             for (int i = 0; i < Math.Min(size - pos + 1, 4); ++i)
             {

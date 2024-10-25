@@ -40,7 +40,7 @@ public class ScriptInfoManager
     /// Get all the info
     /// </summary>
     /// <returns>Read-only collection of key/value pairs</returns>
-    public IReadOnlyCollection<KeyValuePair<string, string>> Get()
+    public IReadOnlyCollection<KeyValuePair<string, string>> GetAll()
     {
         return _data;
     }
