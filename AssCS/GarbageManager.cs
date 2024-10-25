@@ -139,7 +139,7 @@ public class GarbageManager
     /// Get all the entries
     /// </summary>
     /// <returns>Read-only collection of entries</returns>
-    public ReadOnlyCollection<GarbageEntry> GetEntries()
+    public ReadOnlyCollection<GarbageEntry> GetAll()
     {
         return new(_data.Values.ToList());
     }

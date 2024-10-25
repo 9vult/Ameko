@@ -14,6 +14,8 @@ public class Document(AssVersion version = AssVersion.V400P)
     private readonly StyleManager _styleManager = new();
     private readonly HistoryManager _historyManager = new();
     private readonly ExtradataManager _extradataManager = new();
+    private readonly ScriptInfoManager _scriptInfoManager = new();
+    private readonly GarbageManager _garbageManager = new();
 
     /// <summary>
     /// ASS version of the document
@@ -39,6 +41,16 @@ public class Document(AssVersion version = AssVersion.V400P)
     /// The document's Extradata Manager
     /// </summary>
     public ExtradataManager ExtradataManager => _extradataManager;
+
+    /// <summary>
+    /// The document's Script Info Manager
+    /// </summary>
+    public ScriptInfoManager ScriptInfoManager => _scriptInfoManager;
+
+    /// <summary>
+    /// The document's Aegisub Project Garbage Manager
+    /// </summary>
+    public GarbageManager GarbageManager => _garbageManager;
 }
 
 /// <summary>
