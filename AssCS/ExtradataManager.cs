@@ -16,7 +16,11 @@ public class ExtradataManager
     /// <summary>
     /// The next available extradata ID
     /// </summary>
-    public int NextId => _id++;
+    public int NextId
+    {
+        get => _id++;
+        internal set => _id = value;
+    }
 
     /// <summary>
     /// Add an extradata entry to the document

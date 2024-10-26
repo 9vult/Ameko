@@ -9,7 +9,7 @@ namespace AssCS;
 /// </summary>
 public class Document(AssVersion version = AssVersion.V400P)
 {
-    private readonly AssVersion _version = version;
+    private AssVersion _version = version;
     private readonly EventManager _eventManager = new();
     private readonly StyleManager _styleManager = new();
     private readonly HistoryManager _historyManager = new();
@@ -20,7 +20,11 @@ public class Document(AssVersion version = AssVersion.V400P)
     /// <summary>
     /// ASS version of the document
     /// </summary>
-    public AssVersion Version => _version;
+    public AssVersion Version
+    {
+        get => _version;
+        internal set => _version = value;
+    }
 
     /// <summary>
     /// The document's Event Manager
