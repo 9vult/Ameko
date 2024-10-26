@@ -125,12 +125,9 @@ public class RangeObservableCollection<T> : ObservableCollection<T>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is not in the collection range.</exception>
     public void InsertRange(int index, IEnumerable<T> collection)
     {
-        if (collection == null)
-            throw new ArgumentNullException(nameof(collection));
-        if (index < 0)
-            throw new ArgumentOutOfRangeException(nameof(index));
-        if (index > Count)
-            throw new ArgumentOutOfRangeException(nameof(index));
+        ArgumentNullException.ThrowIfNull(collection);
+        ArgumentOutOfRangeException.ThrowIfNegative(index);
+        ArgumentOutOfRangeException.ThrowIfGreaterThan(index, Count);
 
         if (!AllowDuplicates)
             collection = collection
@@ -154,7 +151,7 @@ public class RangeObservableCollection<T> : ObservableCollection<T>
 
         OnEssentialPropertiesChanged();
 
-        if (!(collection is IList list))
+        if (collection is not IList list)
             list = new List<T>(collection);
 
         OnCollectionChanged(
@@ -169,8 +166,7 @@ public class RangeObservableCollection<T> : ObservableCollection<T>
     /// <exception cref="ArgumentNullException"><paramref name="collection"/> is null.</exception>
     public void RemoveRange(IEnumerable<T> collection)
     {
-        if (collection == null)
-            throw new ArgumentNullException(nameof(collection));
+        ArgumentNullException.ThrowIfNull(collection);
 
         if (Count == 0)
             return;
@@ -205,7 +201,7 @@ public class RangeObservableCollection<T> : ObservableCollection<T>
             if (lastIndex == index && lastCluster != null)
                 lastCluster.Add(item);
             else
-                clusters[lastIndex = index] = lastCluster = new List<T> { item };
+                clusters[lastIndex = index] = lastCluster = [item];
         }
 
         OnEssentialPropertiesChanged();
@@ -248,14 +244,11 @@ public class RangeObservableCollection<T> : ObservableCollection<T>
     /// <exception cref="ArgumentNullException"><paramref name="match"/> is null.</exception>
     public int RemoveAll(int index, int count, Predicate<T> match)
     {
-        if (index < 0)
-            throw new ArgumentOutOfRangeException(nameof(index));
-        if (count < 0)
-            throw new ArgumentOutOfRangeException(nameof(count));
+        ArgumentOutOfRangeException.ThrowIfNegative(index);
+        ArgumentOutOfRangeException.ThrowIfNegative(count);
         if (index + count > Count)
             throw new ArgumentOutOfRangeException(nameof(index));
-        if (match == null)
-            throw new ArgumentNullException(nameof(match));
+        ArgumentNullException.ThrowIfNull(match);
 
         if (Count == 0)
             return 0;
@@ -282,7 +275,7 @@ public class RangeObservableCollection<T> : ObservableCollection<T>
                     }
                     else
                     {
-                        cluster = new List<T> { item };
+                        cluster = [item];
                         clusterIndex = index;
                     }
 
@@ -326,10 +319,8 @@ public class RangeObservableCollection<T> : ObservableCollection<T>
     /// <exception cref="ArgumentOutOfRangeException">The specified range is exceeding the collection.</exception>
     public void RemoveRange(int index, int count)
     {
-        if (index < 0)
-            throw new ArgumentOutOfRangeException(nameof(index));
-        if (count < 0)
-            throw new ArgumentOutOfRangeException(nameof(count));
+        ArgumentOutOfRangeException.ThrowIfNegative(index);
+        ArgumentOutOfRangeException.ThrowIfNegative(count);
         if (index + count > Count)
             throw new ArgumentOutOfRangeException(nameof(index));
 
@@ -387,15 +378,12 @@ public class RangeObservableCollection<T> : ObservableCollection<T>
     /// <exception cref="ArgumentNullException"><paramref name="comparer"/> is null.</exception>
     public void ReplaceRange(int index, int count, IEnumerable<T> collection)
     {
-        if (index < 0)
-            throw new ArgumentOutOfRangeException(nameof(index));
-        if (count < 0)
-            throw new ArgumentOutOfRangeException(nameof(count));
+        ArgumentOutOfRangeException.ThrowIfNegative(index);
+        ArgumentOutOfRangeException.ThrowIfNegative(count);
         if (index + count > Count)
             throw new ArgumentOutOfRangeException(nameof(index));
 
-        if (collection == null)
-            throw new ArgumentNullException(nameof(collection));
+        ArgumentNullException.ThrowIfNull(collection);
 
         if (!AllowDuplicates)
             collection = collection.Distinct(Comparer).ToList();
@@ -420,7 +408,7 @@ public class RangeObservableCollection<T> : ObservableCollection<T>
             return;
         }
 
-        if (!(collection is IList<T> list))
+        if (collection is not IList<T> list)
             list = new List<T>(collection);
 
         using (BlockReentrancy())
@@ -451,8 +439,8 @@ public class RangeObservableCollection<T> : ObservableCollection<T>
                     if (newCluster == null)
                     {
                         Debug.Assert(oldCluster == null);
-                        newCluster = new List<T> { @new };
-                        oldCluster = new List<T> { old };
+                        newCluster = [@new];
+                        oldCluster = [old];
                     }
                     else
                     {
@@ -635,11 +623,7 @@ public class RangeObservableCollection<T> : ObservableCollection<T>
     /// <param name="oldCluster"></param>
     //TODO should have really been a local method inside ReplaceRange(int index, int count, IEnumerable<T> collection, IEqualityComparer<T> comparer),
     //move when supported language version updated.
-    void OnRangeReplaced(
-        int followingItemIndex,
-        ICollection<T> newCluster,
-        ICollection<T> oldCluster
-    )
+    void OnRangeReplaced(int followingItemIndex, List<T> newCluster, List<T> oldCluster)
     {
         if (oldCluster == null || oldCluster.Count == 0)
         {
@@ -697,10 +681,9 @@ public class RangeObservableCollection<T> : ObservableCollection<T>
 /// </remarks>
 internal static class EventArgsCache
 {
-    internal static readonly PropertyChangedEventArgs CountPropertyChanged =
-        new PropertyChangedEventArgs("Count");
-    internal static readonly PropertyChangedEventArgs IndexerPropertyChanged =
-        new PropertyChangedEventArgs("Item[]");
-    internal static readonly NotifyCollectionChangedEventArgs ResetCollectionChanged =
-        new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset);
+    internal static readonly PropertyChangedEventArgs CountPropertyChanged = new("Count");
+    internal static readonly PropertyChangedEventArgs IndexerPropertyChanged = new("Item[]");
+    internal static readonly NotifyCollectionChangedEventArgs ResetCollectionChanged = new(
+        NotifyCollectionChangedAction.Reset
+    );
 }
