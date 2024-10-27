@@ -88,7 +88,7 @@ public class AssWriter(Document document, ConsumerInfo consumer) : FileWriter
 
     private void WriteEvents(TextWriter writer)
     {
-        writer.WriteLine("[Events");
+        writer.WriteLine("[Events]");
         writer.WriteLine(EVENT_FORMAT_V400P); // TODO: Event versioning
 
         foreach (var @event in document.EventManager.Events)
