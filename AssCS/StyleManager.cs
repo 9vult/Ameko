@@ -14,6 +14,11 @@ public class StyleManager : BindableBase
     private int _id = 0;
 
     /// <summary>
+    /// Number of styles
+    /// </summary>
+    public int Count => _styles.Count;
+
+    /// <summary>
     /// An observable collection of the styles currently in the document
     /// </summary>
     public ObservableCollection<Style> Styles => _styles;
