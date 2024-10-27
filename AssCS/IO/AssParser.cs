@@ -5,6 +5,9 @@ using AssCS.Utilities;
 
 namespace AssCS.IO;
 
+/// <summary>
+/// Parse an ass document
+/// </summary>
 public partial class AssParser : FileParser
 {
     /// <inheritdoc/>

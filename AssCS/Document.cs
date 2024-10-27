@@ -55,6 +55,15 @@ public class Document(AssVersion version = AssVersion.V400P)
     /// The document's Aegisub Project Garbage Manager
     /// </summary>
     public GarbageManager GarbageManager => _garbageManager;
+
+    /// <summary>
+    /// Load the default state
+    /// </summary>
+    public void LoadDefault()
+    {
+        _styleManager.LoadDefault();
+        _eventManager.LoadDefault();
+    }
 }
 
 /// <summary>
