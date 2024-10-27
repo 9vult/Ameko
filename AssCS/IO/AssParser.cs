@@ -99,7 +99,10 @@ public partial class AssParser : FileParser
         if (pair.Length < 2)
             return; // Not a key:value pair
 
-        doc.ScriptInfoManager.Set(pair[0].Trim(), string.Join(":", 1, pair.Length - 1).Trim());
+        doc.ScriptInfoManager.Set(
+            pair[0].Trim(),
+            string.Join(":", pair, 1, pair.Length - 1).Trim()
+        );
 
         if (pair[0].Trim().ToUpperInvariant().Equals("SCRIPTTYPE"))
         {
@@ -124,7 +127,7 @@ public partial class AssParser : FileParser
         if (pair.Length < 2)
             return; // Not a key:value pair
 
-        doc.GarbageManager.Set(pair[0].Trim(), string.Join(":", 1, pair.Length - 1).Trim());
+        doc.GarbageManager.Set(pair[0].Trim(), string.Join(":", pair, 1, pair.Length - 1).Trim());
     }
 
     /// <summary>
