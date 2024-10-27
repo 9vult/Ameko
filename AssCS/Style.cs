@@ -307,7 +307,6 @@ public class Style(int id) : BindableBase
     public override bool Equals(object? obj)
     {
         return obj is Style style
-            && _id == style._id
             && _name == style._name
             && _fontFamily == style._fontFamily
             && _fontSize == style._fontSize
@@ -334,7 +333,6 @@ public class Style(int id) : BindableBase
     public override int GetHashCode()
     {
         var hash = new HashCode();
-        hash.Add(_id);
         hash.Add(_name);
         hash.Add(_fontFamily);
         hash.Add(_fontSize);

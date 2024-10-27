@@ -469,7 +469,6 @@ public class Event(int id) : BindableBase, IEntry
     public override bool Equals(object? obj)
     {
         return obj is Event @event
-            && _id == @event._id
             && _isComment == @event._isComment
             && _layer == @event._layer
             && _start == @event._start
@@ -484,7 +483,6 @@ public class Event(int id) : BindableBase, IEntry
     public override int GetHashCode()
     {
         var hash = new HashCode();
-        hash.Add(_id);
         hash.Add(_isComment);
         hash.Add(_layer);
         hash.Add(_start);
