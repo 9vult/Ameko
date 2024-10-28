@@ -9,7 +9,7 @@ namespace AssCS.IO;
 /// </summary>
 /// <param name="commentDelim">Identifier for comment lines</param>
 /// <param name="actorDelim">Delimiter for actors</param>
-public class TextParser(char commentDelim = '#', char actorDelim = ':') : FileParser
+public class TxtParser(char commentDelim = '#', char actorDelim = ':') : FileParser
 {
     public override Document Parse(TextReader reader)
     {
