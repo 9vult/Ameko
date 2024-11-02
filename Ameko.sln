@@ -12,7 +12,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{5F2340F9-7C8A-4B1C-BB27-9322D27ED0B9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssCS.Tests", "Tests\AssCS.Tests\AssCS.Tests.csproj", "{1AB09F9A-0993-4176-ACE4-664E4F703BCF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AssCS.Tests", "Tests\AssCS.Tests\AssCS.Tests.csproj", "{1AB09F9A-0993-4176-ACE4-664E4F703BCF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Holo", "Holo\Holo.csproj", "{0F1F696C-3D95-4A07-86CD-B0B671DC7B31}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -28,6 +30,10 @@ Global
 		{1AB09F9A-0993-4176-ACE4-664E4F703BCF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1AB09F9A-0993-4176-ACE4-664E4F703BCF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1AB09F9A-0993-4176-ACE4-664E4F703BCF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0F1F696C-3D95-4A07-86CD-B0B671DC7B31}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0F1F696C-3D95-4A07-86CD-B0B671DC7B31}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0F1F696C-3D95-4A07-86CD-B0B671DC7B31}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0F1F696C-3D95-4A07-86CD-B0B671DC7B31}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
