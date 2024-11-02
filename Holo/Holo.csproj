@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="NLog" Version="5.3.4" />
+    <PackageReference Include="Samboy063.Tomlet" Version="5.4.0" />
     <PackageReference Include="Xdg.Directories" Version="0.1.2" />
   </ItemGroup>
 
