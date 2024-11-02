@@ -49,7 +49,11 @@ public class Workspace(Document document, int id, Uri? savePath = null) : Bindab
     /// <summary>
     /// <see langword="true"/> if the <see cref="Document"/> has been saved and is up to date
     /// </summary>
-    public bool IsSaved => _isSaved;
+    public bool IsSaved
+    {
+        get => _isSaved;
+        private set => SetProperty(ref _isSaved, value);
+    }
 
     /// <summary>
     /// Title to display in the GUI

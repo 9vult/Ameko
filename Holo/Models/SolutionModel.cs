@@ -8,7 +8,9 @@ namespace Holo.Models;
 /// </summary>
 internal record SolutionModel
 {
-    public required double Version;
+    internal const decimal CURRENT_API_VERSION = 1.0m;
+
+    public required decimal Version;
     public required List<string> ReferencedFiles;
     public required List<string> Styles;
     public required int Cps;

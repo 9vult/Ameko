@@ -30,16 +30,33 @@ public class Solution : BindableBase
 {
     private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
-    private readonly RangeObservableCollection<Uri> _referencedFiles = [];
-    private readonly RangeObservableCollection<Workspace> _loadedFiles = [];
-    private readonly RangeObservableCollection<Style> _styles = [];
+    public Solution(bool isEmpty = false)
+    {
+        _referencedFiles = [];
+        _loadedFiles = [];
+        _styleManager = new();
+
+        if (!isEmpty)
+        {
+            var id = NextFileId;
+            var defaultWorkspace = new Workspace(new Document(), id);
+            var defaultLink = new Link(id, defaultWorkspace, null);
+
+            _referencedFiles.Add(defaultLink);
+            _loadedFiles.Add(defaultWorkspace);
+            _workingFileId = id;
+        }
+    }
+
+    private readonly RangeObservableCollection<Link> _referencedFiles;
+    private readonly RangeObservableCollection<Workspace> _loadedFiles;
+    private readonly StyleManager _styleManager;
 
     private Uri? _savePath;
     private bool _isSaved;
 
     private int _fileId = 0;
-    private int _styleId = 0;
-    private int? _workingFileId = null;
+    private int _workingFileId = 0;
 
     private int _cps = 0;
     private bool? _useSoftLinebreaks = null;
@@ -57,7 +74,11 @@ public class Solution : BindableBase
     /// <summary>
     /// <see langword="true"/> if the <see cref="Document"/> has been saved and is up to date
     /// </summary>
-    public bool IsSaved { get; private set; }
+    public bool IsSaved
+    {
+        get => _isSaved;
+        private set => SetProperty(ref _isSaved, value);
+    }
 
     /// <summary>
     /// Next available ID for files
@@ -65,14 +86,18 @@ public class Solution : BindableBase
     internal int NextFileId => _fileId++;
 
     /// <summary>
-    /// Next available ID for styles
+    /// The currently-selected file ID
     /// </summary>
-    internal int NextStyleId => _styleId++;
+    public int WorkingFileId
+    {
+        get => _workingFileId;
+        set => SetProperty(ref _workingFileId, value);
+    }
 
     /// <summary>
-    /// The currently-selected file
+    /// The currently-loaded file
     /// </summary>
-    public int? WorkingFileId => _workingFileId;
+    public Workspace? WorkingFile => _loadedFiles.First(f => f.Id == _workingFileId);
 
     /// <summary>
     /// Workspace-scoped characters-per-second threshold
@@ -108,7 +133,53 @@ public class Solution : BindableBase
             ? Path.GetFileNameWithoutExtension(SavePath.LocalPath)
             : $"Default Solution";
 
-    public void Save() { }
+    /// <summary>
+    /// Write the solution to file
+    /// </summary>
+    /// <returns><see langword="true"/> if saving was successful</returns>
+    /// <remarks>
+    /// <see cref="SavePath"/> must be set prior to calling this method.
+    /// </remarks>
+    public bool Save()
+    {
+        if (SavePath is null)
+            return false;
+
+        logger.Info($"Saving solution {Title}");
+
+        var fp = SavePath.LocalPath;
+        var dir = Path.GetDirectoryName(fp) ?? string.Empty;
+
+        try
+        {
+            var model = new SolutionModel
+            {
+                Version = SolutionModel.CURRENT_API_VERSION,
+                ReferencedFiles = _referencedFiles
+                    .Where(f => f.IsSaved)
+                    .Select(f => Path.GetRelativePath(dir, f.Uri!.LocalPath))
+                    .ToList(),
+                Styles = _styleManager.Styles.Select(s => s.AsAss()).ToList(),
+                Cps = _cps,
+                UseSoftLinebreaks = _useSoftLinebreaks,
+            };
+
+            using var writer = new StreamWriter(fp, false);
+            var content = TomletMain.TomlStringFrom(model);
+            writer.Write(content);
+            return true;
+        }
+        catch (TomlException te)
+        {
+            logger.Error(te);
+            return false;
+        }
+        catch (IOException ioe)
+        {
+            logger.Error(ioe);
+            return false;
+        }
+    }
 
     /// <summary>
     /// Parse a saved solution file
@@ -125,17 +196,26 @@ public class Solution : BindableBase
             using var reader = new StreamReader(fp);
             var model = TomletMain.To<SolutionModel>(reader.ReadToEnd());
 
-            var sln = new Solution();
-            sln._savePath = filePath;
+            // If the solution has no referenced files, initialize it with one
+            var sln = new Solution(model.ReferencedFiles.Count != 0) { _savePath = filePath };
 
             // De-relative the file paths in the solution
             sln._referencedFiles.AddRange(
-                model.ReferencedFiles.Select(f => new Uri(Path.Combine(dir, f)))
+                model.ReferencedFiles.Select(f => new Link(
+                    sln.NextFileId,
+                    null,
+                    new Uri(Path.Combine(dir, f))
+                ))
             );
-            sln._styles.AddRange(model.Styles.Select(s => Style.FromAss(sln.NextStyleId, s)));
             sln._cps = model.Cps;
             sln._useSoftLinebreaks = model.UseSoftLinebreaks;
 
+            model
+                .Styles.Select(s => Style.FromAss(sln._styleManager.NextId, s))
+                .ToList()
+                .ForEach(sln._styleManager.Add);
+
+            sln.WorkingFileId = sln._referencedFiles.First().Id;
             sln.IsSaved = true;
             return sln;
         }
@@ -149,5 +229,30 @@ public class Solution : BindableBase
             logger.Error(ioe);
             return new Solution();
         }
+    }
+
+    /// <summary>
+    /// A simple link between a <see cref="Workspace"/> and a <see cref="Uri"/>
+    /// </summary>
+    /// <param name="id">Workspace ID</param>
+    /// <param name="workspace">The linked workspace</param>
+    /// <param name="uri">The linked URI</param>
+    private struct Link(int id, Workspace? workspace = null, Uri? uri = null)
+    {
+        public int Id = id;
+        public Workspace? Workspace = workspace;
+        public Uri? Uri = uri;
+
+        /// <summary>
+        /// Indicates whether the <see cref="Workspace"/>
+        /// is (or can be) read from disk
+        /// </summary>
+        public readonly bool IsSaved => Uri != null;
+
+        /// <summary>
+        /// Indicated whether the <see cref="Workspace"/>
+        /// is currently loaded in the <see cref="Solution"/>
+        /// </summary>
+        public readonly bool IsLoaded => Workspace != null;
     }
 }
