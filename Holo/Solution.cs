@@ -187,7 +187,7 @@ public class Solution : BindableBase
     /// Open a document in the workspace
     /// </summary>
     /// <param name="id">ID of the document to open</param>
-    /// <returns>ID of the document/workspace</returns>
+    /// <returns>ID of the document or -1 on failure</returns>
     /// <remarks>
     /// A new <see cref="Workspace"/> containing the document and any supporting
     /// files will be created and set as the <see cref="WorkingSpace"/>
@@ -195,24 +195,68 @@ public class Solution : BindableBase
     public int OpenDocument(int id)
     {
         logger.Trace($"Opening referenced document {id}");
-        return -1;
+        try
+        {
+            var matches = _referencedDocuments.Where(l => l.Id == id);
+            if (!matches.Any())
+            {
+                logger.Error($"Referenced document {id} was not found");
+                return -1;
+            }
+
+            var link = matches.First();
+            if (!link.IsSaved)
+            {
+                logger.Error(
+                    $"Referenced document {id} could not be opened because it does not exist on disk"
+                );
+                return -1;
+            }
+            var parser = new AssParser();
+            var doc = parser.Parse(link.Uri!.LocalPath);
+
+            link.Workspace = new Workspace(doc, id, link.Uri);
+            _loadedWorkspaces.Add(link.Workspace);
+            WorkingSpaceId = id;
+            return id;
+        }
+        catch (Exception ex)
+        {
+            logger.Error(ex);
+            return -1;
+        }
     }
 
     /// <summary>
     /// Close a document in the workspace
     /// </summary>
     /// <param name="id">ID of the document to close</param>
+    /// <param name="replaceIfLast">If the document should be replaced if its the last open</param>
     /// <returns><see langword="true"/> if the document was closed</returns>
     /// <remarks>
+    /// <para>
+    /// It is assumed that the caller has saved the file prior
+    /// </para><para>
     /// If the document closed is in the <see cref="WorkingSpace"/>, then
     /// the <see cref="WorkingSpace"/> will be set to any other currently open
     /// <see cref="Workspace"/>. If there are no other open workspaces, a new
-    /// workspace will be created and selected.
+    /// workspace will be created and selected, so long as <paramref name="replaceIfLast"/>
+    /// is <see langword="true"/>.
+    /// </para>
     /// </remarks>
-    public bool CloseDocument(int id)
+    public bool CloseDocument(int id, bool replaceIfLast = true)
     {
         logger.Trace($"Closing referenced document {id}");
-        return false;
+
+        if (WorkingSpaceId == id)
+        {
+            if (_loadedWorkspaces.Count > 1)
+                WorkingSpaceId = _loadedWorkspaces.First(w => w.Id != id).Id;
+            else if (replaceIfLast)
+                WorkingSpaceId = AddWorkspace();
+        }
+
+        return _loadedWorkspaces.RemoveAll(d => d.Id == id) != 0;
     }
 
     /// <summary>
