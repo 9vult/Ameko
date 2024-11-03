@@ -2,6 +2,7 @@
 
 using System.Collections.ObjectModel;
 using AssCS;
+using AssCS.IO;
 using Holo.Models;
 using NLog;
 using Tomlet;
@@ -30,33 +31,15 @@ public class Solution : BindableBase
 {
     private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
-    public Solution(bool isEmpty = false)
-    {
-        _referencedFiles = [];
-        _loadedFiles = [];
-        _styleManager = new();
-
-        if (!isEmpty)
-        {
-            var id = NextFileId;
-            var defaultWorkspace = new Workspace(new Document(), id);
-            var defaultLink = new Link(id, defaultWorkspace, null);
-
-            _referencedFiles.Add(defaultLink);
-            _loadedFiles.Add(defaultWorkspace);
-            _workingFileId = id;
-        }
-    }
-
-    private readonly RangeObservableCollection<Link> _referencedFiles;
-    private readonly RangeObservableCollection<Workspace> _loadedFiles;
+    private readonly RangeObservableCollection<Link> _referencedDocuments;
+    private readonly RangeObservableCollection<Workspace> _loadedWorkspaces;
     private readonly StyleManager _styleManager;
 
     private Uri? _savePath;
     private bool _isSaved;
 
-    private int _fileId = 0;
-    private int _workingFileId = 0;
+    private int _docId = 0;
+    private int _workingSpaceId = 0;
 
     private int _cps = 0;
     private bool? _useSoftLinebreaks = null;
@@ -81,23 +64,23 @@ public class Solution : BindableBase
     }
 
     /// <summary>
-    /// Next available ID for files
+    /// Next available ID for documents/workspaces
     /// </summary>
-    internal int NextFileId => _fileId++;
+    internal int NextId => _docId++;
 
     /// <summary>
-    /// The currently-selected file ID
+    /// The currently-selected workspace ID
     /// </summary>
-    public int WorkingFileId
+    public int WorkingSpaceId
     {
-        get => _workingFileId;
-        set => SetProperty(ref _workingFileId, value);
+        get => _workingSpaceId;
+        set => SetProperty(ref _workingSpaceId, value);
     }
 
     /// <summary>
-    /// The currently-loaded file
+    /// The currently-loaded workspace
     /// </summary>
-    public Workspace? WorkingFile => _loadedFiles.First(f => f.Id == _workingFileId);
+    public Workspace? WorkingSpace => _loadedWorkspaces.First(f => f.Id == _workingSpaceId);
 
     /// <summary>
     /// Workspace-scoped characters-per-second threshold
@@ -134,6 +117,105 @@ public class Solution : BindableBase
             : $"Default Solution";
 
     /// <summary>
+    /// Get a loaded <see cref="Workspace"/> by ID
+    /// </summary>
+    /// <param name="id">ID of the desired workspace</param>
+    /// <returns>The workspace with the given ID, or <see langword="null"/> if one does not exist</returns>
+    public Workspace? GetWorkspace(int id)
+    {
+        return _loadedWorkspaces.FirstOrDefault(f => f.Id == id);
+    }
+
+    /// <summary>
+    /// Add a blank <see cref="Workspace"/> to the solution
+    /// </summary>
+    /// <returns>The ID of the created workspace</returns>
+    public int AddWorkspace()
+    {
+        logger.Trace("Adding a new default workspace");
+        var space = new Workspace(new Document(), NextId);
+        var link = new Link(space.Id, space);
+        space.Document.LoadDefault();
+
+        _referencedDocuments.Add(link);
+        _loadedWorkspaces.Add(space);
+        WorkingSpaceId = space.Id;
+        return space.Id;
+    }
+
+    /// <summary>
+    /// Add a <see cref="Workspace"/> to the solution
+    /// </summary>
+    /// <param name="space">Workspaceto add</param>
+    /// <returns>ID of the document</returns>
+    public int AddWorkspace(Workspace space)
+    {
+        logger.Trace($"Adding workspace {space.Title}");
+        var link = new Link(space.Id, space, space.SavePath);
+        _referencedDocuments.Add(link);
+        _loadedWorkspaces.Add(space);
+        WorkingSpaceId = space.Id;
+        return space.Id;
+    }
+
+    /// <summary>
+    /// Remove a <see cref="Workspace"/> from the solution
+    /// </summary>
+    /// <param name="id">ID of the workspace to remove</param>
+    /// <returns><see langword="true"/> if the space was removed</returns>
+    /// <remarks>
+    /// If the workspace to remove is the <see cref="WorkingSpace"/>, then
+    /// the <see cref="WorkingSpace"/> will be set to any other currently open
+    /// <see cref="Workspace"/>. If there are no other open workspaces, a new
+    /// workspace will be created and selected.
+    /// </remarks>
+    public bool RemoveWorkspace(int id)
+    {
+        logger.Trace($"Removing workspace {id} from the solution");
+        if (WorkingSpaceId == id)
+        {
+            if (_loadedWorkspaces.Count > 1)
+                WorkingSpaceId = _loadedWorkspaces.First(w => w.Id != id).Id;
+            else
+                WorkingSpaceId = AddWorkspace();
+        }
+        _loadedWorkspaces.RemoveAll(d => d.Id == id);
+        return _referencedDocuments.RemoveAll(d => d.Id == id) != 0;
+    }
+
+    /// <summary>
+    /// Open a document in the workspace
+    /// </summary>
+    /// <param name="id">ID of the document to open</param>
+    /// <returns>ID of the document/workspace</returns>
+    /// <remarks>
+    /// A new <see cref="Workspace"/> containing the document and any supporting
+    /// files will be created and set as the <see cref="WorkingSpace"/>
+    /// </remarks>
+    public int OpenDocument(int id)
+    {
+        logger.Trace($"Opening referenced document {id}");
+        return -1;
+    }
+
+    /// <summary>
+    /// Close a document in the workspace
+    /// </summary>
+    /// <param name="id">ID of the document to close</param>
+    /// <returns><see langword="true"/> if the document was closed</returns>
+    /// <remarks>
+    /// If the document closed is in the <see cref="WorkingSpace"/>, then
+    /// the <see cref="WorkingSpace"/> will be set to any other currently open
+    /// <see cref="Workspace"/>. If there are no other open workspaces, a new
+    /// workspace will be created and selected.
+    /// </remarks>
+    public bool CloseDocument(int id)
+    {
+        logger.Trace($"Closing referenced document {id}");
+        return false;
+    }
+
+    /// <summary>
     /// Write the solution to file
     /// </summary>
     /// <returns><see langword="true"/> if saving was successful</returns>
@@ -155,7 +237,7 @@ public class Solution : BindableBase
             var model = new SolutionModel
             {
                 Version = SolutionModel.CURRENT_API_VERSION,
-                ReferencedFiles = _referencedFiles
+                ReferencedDocuments = _referencedDocuments
                     .Where(f => f.IsSaved)
                     .Select(f => Path.GetRelativePath(dir, f.Uri!.LocalPath))
                     .ToList(),
@@ -196,13 +278,13 @@ public class Solution : BindableBase
             using var reader = new StreamReader(fp);
             var model = TomletMain.To<SolutionModel>(reader.ReadToEnd());
 
-            // If the solution has no referenced files, initialize it with one
-            var sln = new Solution(model.ReferencedFiles.Count != 0) { _savePath = filePath };
+            // If the solution has no referenced documents, initialize it with one
+            var sln = new Solution(model.ReferencedDocuments.Count != 0) { _savePath = filePath };
 
             // De-relative the file paths in the solution
-            sln._referencedFiles.AddRange(
-                model.ReferencedFiles.Select(f => new Link(
-                    sln.NextFileId,
+            sln._referencedDocuments.AddRange(
+                model.ReferencedDocuments.Select(f => new Link(
+                    sln.NextId,
                     null,
                     new Uri(Path.Combine(dir, f))
                 ))
@@ -215,7 +297,7 @@ public class Solution : BindableBase
                 .ToList()
                 .ForEach(sln._styleManager.Add);
 
-            sln.WorkingFileId = sln._referencedFiles.First().Id;
+            sln.WorkingSpaceId = sln._referencedDocuments.First().Id;
             sln.IsSaved = true;
             return sln;
         }
@@ -254,5 +336,28 @@ public class Solution : BindableBase
         /// is currently loaded in the <see cref="Solution"/>
         /// </summary>
         public readonly bool IsLoaded => Workspace != null;
+    }
+
+    /// <summary>
+    /// Initialize a solution
+    /// </summary>
+    /// <param name="isEmpty">If the solution should be created
+    /// without a default <see cref="Workspace"/></param>
+    public Solution(bool isEmpty = false)
+    {
+        _referencedDocuments = [];
+        _loadedWorkspaces = [];
+        _styleManager = new();
+
+        if (!isEmpty)
+        {
+            var id = NextId;
+            var defaultWorkspace = new Workspace(new Document(), id);
+            var defaultLink = new Link(id, defaultWorkspace, null);
+
+            _referencedDocuments.Add(defaultLink);
+            _loadedWorkspaces.Add(defaultWorkspace);
+            _workingSpaceId = id;
+        }
     }
 }
