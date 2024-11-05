@@ -10,7 +10,7 @@ namespace AssCS;
 /// </summary>
 public class StyleManager : BindableBase
 {
-    private readonly ObservableCollection<Style> _styles = [];
+    private readonly ObservableCollection<Style> _styles;
     private int _id = 0;
 
     /// <summary>
@@ -21,7 +21,7 @@ public class StyleManager : BindableBase
     /// <summary>
     /// An observable collection of the styles currently in the document
     /// </summary>
-    public ObservableCollection<Style> Styles => _styles;
+    public ReadOnlyObservableCollection<Style> Styles { get; }
 
     /// <summary>
     /// Obtain the next available style ID for use in the document
@@ -157,5 +157,11 @@ public class StyleManager : BindableBase
         _styles.Clear();
         _id = 0;
         Add(new Style(NextId));
+    }
+
+    public StyleManager()
+    {
+        _styles = [];
+        Styles = new(_styles);
     }
 }

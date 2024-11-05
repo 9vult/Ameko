@@ -24,8 +24,7 @@ public class HoloContext
 {
     private static readonly Lazy<HoloContext> _instance = new(() => new HoloContext());
     private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-
-    private readonly ObservableCollection<string> _logEntries = [];
+    private readonly ObservableCollection<string> _logEntries;
 
     /// <summary>
     /// Holo instance
@@ -36,10 +35,13 @@ public class HoloContext
     /// <summary>
     /// Observable collection of formatted log entries
     /// </summary>
-    public ObservableCollection<string> LogEntries => _logEntries;
+    public ReadOnlyObservableCollection<string> LogEntries { get; }
 
     private HoloContext()
     {
+        _logEntries = [];
+        LogEntries = new(_logEntries);
+
         Directories.Create();
         LoggerHelper.Initialize(_logEntries);
 

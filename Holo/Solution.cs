@@ -44,6 +44,9 @@ public class Solution : BindableBase
     private int _cps = 0;
     private bool? _useSoftLinebreaks = null;
 
+    public ReadOnlyObservableCollection<Link> ReferencedDocuments { get; }
+    public ReadOnlyObservableCollection<Workspace> LoadedWorkspaces { get; }
+
     /// <summary>
     /// The path the <see cref="Document"/> is saved to,
     /// or <see langword="null"/> if the document has not been saved.
@@ -358,31 +361,6 @@ public class Solution : BindableBase
     }
 
     /// <summary>
-    /// A simple link between a <see cref="Workspace"/> and a <see cref="Uri"/>
-    /// </summary>
-    /// <param name="id">Workspace ID</param>
-    /// <param name="workspace">The linked workspace</param>
-    /// <param name="uri">The linked URI</param>
-    private struct Link(int id, Workspace? workspace = null, Uri? uri = null)
-    {
-        public int Id = id;
-        public Workspace? Workspace = workspace;
-        public Uri? Uri = uri;
-
-        /// <summary>
-        /// Indicates whether the <see cref="Workspace"/>
-        /// is (or can be) read from disk
-        /// </summary>
-        public readonly bool IsSaved => Uri != null;
-
-        /// <summary>
-        /// Indicated whether the <see cref="Workspace"/>
-        /// is currently loaded in the <see cref="Solution"/>
-        /// </summary>
-        public readonly bool IsLoaded => Workspace != null;
-    }
-
-    /// <summary>
     /// Initialize a solution
     /// </summary>
     /// <param name="isEmpty">If the solution should be created
@@ -392,6 +370,9 @@ public class Solution : BindableBase
         _referencedDocuments = [];
         _loadedWorkspaces = [];
         _styleManager = new();
+
+        ReferencedDocuments = new(_referencedDocuments);
+        LoadedWorkspaces = new(_loadedWorkspaces);
 
         if (!isEmpty)
         {
