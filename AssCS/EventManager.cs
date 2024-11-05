@@ -10,9 +10,9 @@ namespace AssCS;
 /// </summary>
 public class EventManager : BindableBase
 {
-    private readonly LinkedList<int> _chain = [];
-    private readonly RangeObservableCollection<int> _currentIds = [];
-    private readonly Dictionary<int, Link> _events = [];
+    private readonly LinkedList<int> _chain;
+    private readonly RangeObservableCollection<int> _currentIds;
+    private readonly Dictionary<int, Link> _events;
     private int _id = 0;
 
     /// <summary>
@@ -71,7 +71,7 @@ public class EventManager : BindableBase
     /// This collection can be listened to to detect changes in the
     /// events in the document; For example, to re-render a subtitle grid.
     /// </remarks>
-    public RangeObservableCollection<int> CurrentIds => _currentIds;
+    public ReadOnlyObservableCollection<int> CurrentIds { get; }
 
     /// <summary>
     /// A set of all the actor values currently present in the document
@@ -685,6 +685,15 @@ public class EventManager : BindableBase
     private void Notify()
     {
         RaisePropertyChanged(nameof(Events));
+    }
+
+    public EventManager()
+    {
+        _chain = [];
+        _currentIds = [];
+        _events = [];
+
+        CurrentIds = new(_currentIds);
     }
 
     private struct Link(LinkedListNode<int> node, Event e)
