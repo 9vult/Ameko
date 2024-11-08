@@ -271,12 +271,25 @@ public class Solution : BindableBase
     /// </remarks>
     public bool Save()
     {
-        if (SavePath is null)
+        if (string.IsNullOrEmpty(SavePath?.LocalPath))
             return false;
 
+        var fp = SavePath.LocalPath;
+        using var writer = new StreamWriter(fp, false);
+        return Save(writer, SavePath);
+    }
+
+    /// <summary>
+    /// Write the solution to file
+    /// </summary>
+    /// <param name="writer">Writer to write to</param>
+    /// <param name="savePath">Path the solution for relative filepath parsing</param>
+    /// <returns><see langword="true"/> if saving was successful</returns>
+    public bool Save(TextWriter writer, Uri savePath)
+    {
         logger.Info($"Saving solution {Title}");
 
-        var fp = SavePath.LocalPath;
+        var fp = savePath.LocalPath;
         var dir = Path.GetDirectoryName(fp) ?? string.Empty;
 
         try
@@ -293,7 +306,6 @@ public class Solution : BindableBase
                 UseSoftLinebreaks = _useSoftLinebreaks,
             };
 
-            using var writer = new StreamWriter(fp, false);
             var content = TomletMain.TomlStringFrom(model);
             writer.Write(content);
             return true;
@@ -314,15 +326,25 @@ public class Solution : BindableBase
     /// Parse a saved solution file
     /// </summary>
     /// <param name="filePath">Path to the solution file</param>
-    /// <returns><see cref="Solution"/> object</returns>
+    /// <returns></returns>
     public static Solution Parse(Uri filePath)
     {
-        var fp = filePath.LocalPath;
-        var dir = Path.GetDirectoryName(fp) ?? string.Empty;
+        using var reader = new StreamReader(filePath.LocalPath);
+        return Parse(reader, filePath);
+    }
+
+    /// <summary>
+    /// Parse a saved solution file
+    /// </summary>
+    /// <param name="reader">Reader to read the solution from</param>
+    /// <param name="filePath">Path to the solution file for relative filepath parsing</param>
+    /// <returns><see cref="Solution"/> object</returns>
+    public static Solution Parse(TextReader reader, Uri filePath)
+    {
+        var dir = Path.GetDirectoryName(filePath.LocalPath) ?? string.Empty;
 
         try
         {
-            using var reader = new StreamReader(fp);
             var model = TomletMain.To<SolutionModel>(reader.ReadToEnd());
 
             // If the solution has no referenced documents, initialize it with one
