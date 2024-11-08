@@ -1,5 +1,7 @@
 ﻿// SPDX-License-Identifier: MPL-2.0
 
+using Tomlet.Attributes;
+
 namespace Holo.Models;
 
 /// <summary>
@@ -8,9 +10,10 @@ namespace Holo.Models;
 /// </summary>
 internal record SolutionModel
 {
-    internal const decimal CURRENT_API_VERSION = 1.0m;
+    [TomlNonSerialized]
+    internal const double CURRENT_API_VERSION = 1.0d;
 
-    public required decimal Version;
+    public required double Version;
     public required List<string> ReferencedDocuments;
     public required List<string> Styles;
     public required int Cps;

@@ -44,8 +44,20 @@ public class Solution : BindableBase
     private int _cps = 0;
     private bool? _useSoftLinebreaks = null;
 
+    /// <summary>
+    /// All documents referenced by the solution
+    /// </summary>
     public ReadOnlyObservableCollection<Link> ReferencedDocuments { get; }
+
+    /// <summary>
+    /// Currently-open workspaces
+    /// </summary>
     public ReadOnlyObservableCollection<Workspace> LoadedWorkspaces { get; }
+
+    /// <summary>
+    /// The solution's style manager
+    /// </summary>
+    public StyleManager StyleManager => _styleManager;
 
     /// <summary>
     /// The path the <see cref="Document"/> is saved to,
