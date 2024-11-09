@@ -1,12 +1,11 @@
 ﻿// SPDX-License-Identifier: MPL-2.0
 
 using System.Collections.ObjectModel;
+using System.Text.Json;
 using AssCS;
 using AssCS.IO;
 using Holo.Models;
 using NLog;
-using Tomlet;
-using Tomlet.Exceptions;
 
 namespace Holo;
 
@@ -30,6 +29,7 @@ namespace Holo;
 public class Solution : BindableBase
 {
     private static readonly Logger logger = LogManager.GetCurrentClassLogger();
+    private static readonly JsonSerializerOptions jsonOptions = new() { IncludeFields = true };
 
     private readonly RangeObservableCollection<Link> _referencedDocuments;
     private readonly RangeObservableCollection<Workspace> _loadedWorkspaces;
@@ -312,19 +312,19 @@ public class Solution : BindableBase
                 ReferencedDocuments = _referencedDocuments
                     .Where(f => f.IsSaved)
                     .Select(f => Path.GetRelativePath(dir, f.Uri!.LocalPath))
-                    .ToList(),
-                Styles = _styleManager.Styles.Select(s => s.AsAss()).ToList(),
+                    .ToArray(),
+                Styles = _styleManager.Styles.Select(s => s.AsAss()).ToArray(),
                 Cps = _cps,
                 UseSoftLinebreaks = _useSoftLinebreaks,
             };
 
-            var content = TomletMain.TomlStringFrom(model);
+            var content = JsonSerializer.Serialize(model, jsonOptions);
             writer.Write(content);
             return true;
         }
-        catch (TomlException te)
+        catch (JsonException je)
         {
-            logger.Error(te);
+            logger.Error(je);
             return false;
         }
         catch (IOException ioe)
@@ -357,10 +357,12 @@ public class Solution : BindableBase
 
         try
         {
-            var model = TomletMain.To<SolutionModel>(reader.ReadToEnd());
+            var model =
+                JsonSerializer.Deserialize<SolutionModel>(reader.ReadToEnd(), jsonOptions)
+                ?? throw new InvalidDataException("Solution model serialization failed");
 
             // If the solution has no referenced documents, initialize it with one
-            var sln = new Solution(model.ReferencedDocuments.Count != 0) { _savePath = filePath };
+            var sln = new Solution(model.ReferencedDocuments.Length != 0) { _savePath = filePath };
 
             // De-relative the file paths in the solution
             sln._referencedDocuments.AddRange(
@@ -382,9 +384,9 @@ public class Solution : BindableBase
             sln.IsSaved = true;
             return sln;
         }
-        catch (TomlException te)
+        catch (JsonException je)
         {
-            logger.Error(te);
+            logger.Error(je);
             return new Solution();
         }
         catch (IOException ioe)
