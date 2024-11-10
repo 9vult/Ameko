@@ -290,4 +290,221 @@ public class EventManagerTests
         var e3 = em.InsertAfter(e1);
         (e3.End - e3.Start).TotalSeconds.Should().Be(3);
     }
+
+    [Fact]
+    public void Split_MultipleSegments()
+    {
+        var em = new EventManager();
+        var testEvent = new Event(em.NextId)
+        {
+            Text = "Short\\NLonger segment",
+            Start = Time.FromMillis(0),
+            End = Time.FromMillis(3000),
+        };
+        em.AddFirst(testEvent);
+
+        var result = em.Split(testEvent.Id).ToList();
+
+        result.Should().HaveCount(2);
+        result[0].End.TotalMilliseconds.Should().BeLessThan(result[1].End.TotalMilliseconds);
+        result[1].Start.Should().Be(result[0].End);
+        result.Last().End.Should().Be(testEvent.End);
+
+        foreach (var e in result)
+        {
+            em.TryGet(e.Id, out var addedEvent).Should().BeTrue();
+            addedEvent.Should().BeEquivalentTo(e);
+        }
+    }
+
+    [Fact]
+    public void Split_SingleSegment()
+    {
+        var em = new EventManager();
+        var testEvent = new Event(em.NextId)
+        {
+            Text = "No newlines here",
+            Start = Time.FromMillis(0),
+            End = Time.FromMillis(3000),
+        };
+        em.AddFirst(testEvent);
+
+        var result = em.Split(testEvent.Id).ToList();
+
+        result.Should().HaveCount(1);
+        result[0].Text.Should().Be("No newlines here");
+        result[0].Start.Should().Be(testEvent.Start);
+        result[0].End.Should().Be(testEvent.End);
+    }
+
+    [Fact]
+    public void Split_NotFound()
+    {
+        var em = new EventManager();
+        var result = em.Split(999);
+
+        result.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void Split_Empty()
+    {
+        var em = new EventManager();
+        var testEvent = new Event(em.NextId)
+        {
+            Text = string.Empty,
+            Start = Time.FromMillis(0),
+            End = Time.FromMillis(3000),
+        };
+        em.AddFirst(testEvent);
+
+        var result = em.Split(testEvent.Id);
+        result.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void Merge_AreAdjacent_Forward()
+    {
+        var em = new EventManager();
+        var eventA = new Event(5)
+        {
+            Text = "Hello",
+            Start = Time.FromMillis(0),
+            End = Time.FromMillis(1000),
+        };
+        var eventB = new Event(10)
+        {
+            Text = "World",
+            Start = eventA.End,
+            End = Time.FromMillis(2000),
+        };
+        em.AddFirst(eventA);
+        em.AddAfter(eventA.Id, eventB);
+
+        var result = em.Merge(eventA.Id, eventB.Id);
+
+        result.Should().NotBeNull();
+        result!.Text.Should().Be("Hello\\NWorld");
+        result.Start.Should().Be(eventA.Start);
+        result.End.Should().Be(eventB.End);
+    }
+
+    [Fact]
+    public void Merge_AreAdjacent_Backward()
+    {
+        var em = new EventManager();
+        var eventA = new Event(5)
+        {
+            Text = "Hello",
+            Start = Time.FromMillis(0),
+            End = Time.FromMillis(1000),
+        };
+        var eventB = new Event(10)
+        {
+            Text = "World",
+            Start = eventA.End,
+            End = Time.FromMillis(2000),
+        };
+        em.AddFirst(eventA);
+        em.AddAfter(eventA.Id, eventB);
+
+        var result = em.Merge(eventB.Id, eventA.Id);
+
+        result.Should().NotBeNull();
+        result!.Text.Should().Be("Hello\\NWorld");
+        result.Start.Should().Be(eventA.Start);
+        result.End.Should().Be(eventB.End);
+    }
+
+    [Fact]
+    public void Merge_UseSoftLinebreaks()
+    {
+        var em = new EventManager();
+        var eventA = new Event(5)
+        {
+            Text = "Hello",
+            Start = Time.FromMillis(0),
+            End = Time.FromMillis(1000),
+        };
+        var eventB = new Event(10)
+        {
+            Text = "World",
+            Start = eventA.End,
+            End = Time.FromMillis(2000),
+        };
+        em.AddFirst(eventA);
+        em.AddAfter(eventA.Id, eventB);
+
+        var result = em.Merge(eventA.Id, eventB.Id, true);
+
+        result.Should().NotBeNull();
+        result!.Text.Should().Be("Hello\\nWorld");
+        result.Start.Should().Be(eventA.Start);
+        result.End.Should().Be(eventB.End);
+    }
+
+    [Fact]
+    public void Merge_NotAdjacent()
+    {
+        var em = new EventManager();
+        var eventA = new Event(5)
+        {
+            Text = "Hello",
+            Start = Time.FromMillis(0),
+            End = Time.FromMillis(1000),
+        };
+        var eventB = new Event(10)
+        {
+            Text = "Cool",
+            Start = eventA.End,
+            End = Time.FromMillis(2000),
+        };
+        var eventC = new Event(15)
+        {
+            Text = "World",
+            Start = eventB.End,
+            End = Time.FromMillis(3000),
+        };
+        em.AddFirst(eventA);
+        em.AddAfter(eventA.Id, eventB);
+        em.AddAfter(eventB.Id, eventC);
+
+        var result = em.Merge(eventA.Id, eventC.Id);
+
+        result.Should().BeNull();
+    }
+
+    [Fact]
+    public void Merge_NotExist()
+    {
+        var em = new EventManager();
+        var result = em.Merge(999, 1);
+
+        result.Should().BeNull();
+    }
+
+    [Fact]
+    public void Merge_OriginalsRemoved()
+    {
+        var em = new EventManager();
+        var eventA = new Event(5)
+        {
+            Text = "Hello",
+            Start = Time.FromMillis(0),
+            End = Time.FromMillis(1000),
+        };
+        var eventB = new Event(10)
+        {
+            Text = "World",
+            Start = eventA.End,
+            End = Time.FromMillis(2000),
+        };
+        em.AddFirst(eventA);
+        em.AddAfter(eventA.Id, eventB);
+
+        em.Merge(eventA.Id, eventB.Id);
+
+        em.TryGet(eventA.Id, out _).Should().BeFalse();
+        em.TryGet(eventB.Id, out _).Should().BeFalse();
+    }
 }

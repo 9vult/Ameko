@@ -267,6 +267,33 @@ public class Event(int id) : BindableBase, IEntry
     }
 
     /// <summary>
+    /// Initialize a congruent event
+    /// </summary>
+    /// <param name="id">ID of the event to create</param>
+    /// <param name="e">Base event</param>
+    /// <returns>Congruent event</returns>
+    public static Event FromEvent(int id, Event e)
+    {
+        return new Event(id)
+        {
+            _isComment = e.IsComment,
+            _layer = e.Layer,
+            _start = Time.FromTime(e.Start),
+            _end = Time.FromTime(e.End),
+            _style = e.Style,
+            _actor = e.Actor,
+            _margins =
+            {
+                Left = e.Margins.Left,
+                Right = e.Margins.Right,
+                Vertical = e.Margins.Vertical,
+            },
+            _effect = e.Effect,
+            _text = e.Text,
+        };
+    }
+
+    /// <summary>
     /// Clone this event
     /// </summary>
     /// <returns>Clone of the event</returns>

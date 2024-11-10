@@ -666,6 +666,110 @@ public class EventManager : BindableBase
         return newEvent;
     }
 
+    /// <summary>
+    /// Split an event on newlines, adjusted by CPS
+    /// </summary>
+    /// <param name="id">ID of the event to split</param>
+    /// <returns>List of events created by the split</returns>
+    public IEnumerable<Event> Split(int id)
+    {
+        if (!TryGet(id, out var e))
+            return [];
+        if (string.IsNullOrEmpty(e.Text))
+            return [];
+
+        string[] delims = ["\\N", "\\n"];
+        var segments = e.Text.Split(delims, StringSplitOptions.None);
+        if (segments.Length == 0)
+            return [];
+
+        List<Event> result = [];
+
+        var rollingTime = e.Start;
+        var goalTime = e.End;
+
+        Event previous = e;
+        foreach (var segment in segments)
+        {
+            var newEvent = Event.FromEvent(NextId, e);
+            var ratio =
+                segment.Length
+                / (double)
+                    e
+                        .Text.Replace(
+                            @"\N",
+                            string.Empty,
+                            true,
+                            System.Globalization.CultureInfo.InvariantCulture
+                        )
+                        .Length;
+
+            newEvent.Text = segment;
+            newEvent.Start = Time.FromTime(rollingTime);
+            newEvent.End =
+                rollingTime
+                + Time.FromMillis(
+                    Convert.ToInt64(
+                        (goalTime.TotalMilliseconds - e.Start.TotalMilliseconds) * ratio
+                    )
+                );
+            if (newEvent.End > goalTime)
+                newEvent.End = Time.FromTime(goalTime);
+
+            AddAfter(previous.Id, newEvent);
+            result.Add(newEvent);
+            previous = newEvent;
+            rollingTime = newEvent.End;
+        }
+        return result;
+    }
+
+    /// <summary>
+    /// Merge two adjacent events together
+    /// </summary>
+    /// <param name="a">IDs of the first event</param>
+    /// <param name="b">IDs of the second event</param>
+    /// <param name="useSoftLinebreaks">Whether to use soft linebreaks or not</param>
+    /// <returns>The new event, or <see langword="null"/> on failure</returns>
+    /// <remarks>The events must be adjacent. Non-adjacency will result in failure.</remarks>
+    public Event? Merge(int a, int b, bool useSoftLinebreaks = false)
+    {
+        var newline = !useSoftLinebreaks ? @"\N" : @"\n";
+
+        if (!TryGet(a, out var first))
+            return null;
+        if (!TryGet(b, out var second))
+            return null;
+
+        var afterFirst = GetAfter(a);
+        var beforeFirst = GetBefore(a);
+
+        if (afterFirst is not null && afterFirst.Equals(second))
+        {
+            var result = Event.FromEvent(NextId, first);
+            result.Start = first.Start;
+            result.End = second.End;
+            result.Text = $"{first.Text}{newline}{second.Text}";
+
+            AddAfter(b, result);
+            Remove(a);
+            Remove(b);
+            return result;
+        }
+        else if (beforeFirst is not null && beforeFirst.Equals(second))
+        {
+            var result = Event.FromEvent(NextId, first);
+            result.Start = second.Start;
+            result.End = first.End;
+            result.Text = $"{second.Text}{newline}{first.Text}";
+            AddAfter(a, result);
+            Remove(a);
+            Remove(b);
+            return result;
+        }
+        return null;
+    }
+
     #endregion Advanced Actions
 
     /// <summary>
