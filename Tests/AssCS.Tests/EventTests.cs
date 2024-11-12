@@ -75,6 +75,20 @@ public class EventTests
         e2.CollidesWith(e3).Should().BeFalse();
     }
 
+    [Fact]
+    public void TransformCodeToAss()
+    {
+        var evt = new Event(1) { Text = "Line1\n  Line2" };
+        evt.TransformCodeToAss().Should().Contain("--[[2]]");
+    }
+
+    [Fact]
+    public void TransformAssToCode()
+    {
+        var evt = new Event(1) { Text = "Line1--[[2]]Line2" };
+        evt.TransformAssToCode().Should().Contain(Environment.NewLine + "  Line2");
+    }
+
     #region Cps & Line Width
 
     [Fact]
