@@ -13,7 +13,7 @@ public partial class AssParser : FileParser
     /// <inheritdoc/>
     public override Document Parse(TextReader reader)
     {
-        Document doc = new();
+        Document doc = new(false);
 
         ParseFunc parseState = ParseUnknown;
 

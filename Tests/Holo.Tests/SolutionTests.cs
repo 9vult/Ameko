@@ -30,7 +30,7 @@ public class SolutionTests
     public void AddWorkspace_Existing()
     {
         var sln = new Solution();
-        var workspace = new Workspace(new Document(), 123);
+        var workspace = new Workspace(new Document(true), 123);
         int workspaceId = sln.AddWorkspace(workspace);
 
         sln.LoadedWorkspaces.Should().ContainSingle(w => w.Id == workspaceId);
