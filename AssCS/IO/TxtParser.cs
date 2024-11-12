@@ -13,8 +13,7 @@ public class TxtParser(char commentDelim = '#', char actorDelim = ':') : FilePar
 {
     public override Document Parse(TextReader reader)
     {
-        var doc = new Document();
-        doc.LoadDefault();
+        var doc = new Document(true);
 
         while (reader.ReadLine() is { } line)
         {

@@ -148,9 +148,8 @@ public class Solution : BindableBase
     public int AddWorkspace()
     {
         logger.Trace("Adding a new default workspace");
-        var space = new Workspace(new Document(), NextId);
+        var space = new Workspace(new Document(true), NextId);
         var link = new Link(space.Id, space);
-        space.Document.LoadDefault();
 
         _referencedDocuments.Add(link);
         _loadedWorkspaces.Add(space);
@@ -413,7 +412,7 @@ public class Solution : BindableBase
         if (!isEmpty)
         {
             var id = NextId;
-            var defaultWorkspace = new Workspace(new Document(), id);
+            var defaultWorkspace = new Workspace(new Document(true), id);
             var defaultLink = new Link(id, defaultWorkspace, null);
 
             _referencedDocuments.Add(defaultLink);

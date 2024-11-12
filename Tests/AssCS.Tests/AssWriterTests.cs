@@ -49,7 +49,7 @@ public class AssWriterTests
 
     private static Document CreateDoc()
     {
-        var doc = new Document();
+        var doc = new Document(false);
         var s = new Style(1)
         {
             Name = "Test",

@@ -7,9 +7,9 @@ namespace AssCS;
 /// <summary>
 /// A single Advanced Substation Alpha subtitle file
 /// </summary>
-public class Document(AssVersion version = AssVersion.V400P)
+public class Document
 {
-    private AssVersion _version = version;
+    private AssVersion _version;
     private readonly EventManager _eventManager = new();
     private readonly StyleManager _styleManager = new();
     private readonly HistoryManager _historyManager = new();
@@ -63,6 +63,19 @@ public class Document(AssVersion version = AssVersion.V400P)
     {
         _styleManager.LoadDefault();
         _eventManager.LoadDefault();
+    }
+
+    /// <summary>
+    /// A single Advanced Substation Alpha subtitle file
+    /// </summary>
+    /// <param name="initDefault">If <see cref="LoadDefault"/> should be called automatically</param>
+    /// <param name="version">ASS Version</param>
+    public Document(bool initDefault, AssVersion version = AssVersion.V400P)
+    {
+        _version = version;
+
+        if (initDefault)
+            LoadDefault();
     }
 }
 

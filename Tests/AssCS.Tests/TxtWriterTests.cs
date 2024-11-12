@@ -137,7 +137,7 @@ public class TxtWriterTests
 
     private static Document CreateDoc()
     {
-        var doc = new Document();
+        var doc = new Document(false);
         var e1 = new Event(1) { Actor = "Joe", Text = "Mama" };
         var e2 = new Event(2)
         {
