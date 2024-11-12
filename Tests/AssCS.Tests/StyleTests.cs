@@ -61,4 +61,22 @@ public class StyleTests
 
         s2.Should().Be(s1);
     }
+
+    [Fact]
+    public void Equals_True()
+    {
+        var style1 = new Style(1) { Name = "TestStyle" };
+        var style2 = new Style(1) { Name = "TestStyle" };
+
+        style1.Should().Be(style2);
+    }
+
+    [Fact]
+    public void Equals_False()
+    {
+        var style1 = new Style(1) { Name = "StyleA" };
+        var style2 = new Style(2) { Name = "StyleB" };
+
+        style1.Should().NotBe(style2);
+    }
 }

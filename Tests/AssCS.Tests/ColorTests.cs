@@ -89,4 +89,50 @@ public class ColorTests
         white.Luminance.Should().BeInRange(0.9999, 1.0001);
         black.Luminance.Should().Be(0);
     }
+
+    [Fact]
+    public void Add()
+    {
+        var color1 = Color.FromRGBA(200, 200, 200, 200);
+        var color2 = Color.FromRGBA(100, 100, 100, 100);
+
+        var result = color1 + color2;
+
+        result.Red.Should().Be(255);
+        result.Green.Should().Be(255);
+        result.Blue.Should().Be(255);
+        result.Alpha.Should().Be(255);
+    }
+
+    [Fact]
+    public void Subtract()
+    {
+        var color1 = Color.FromRGBA(100, 100, 100, 100);
+        var color2 = Color.FromRGBA(150, 150, 150, 150);
+
+        var result = color1 - color2;
+
+        result.Red.Should().Be(0);
+        result.Green.Should().Be(0);
+        result.Blue.Should().Be(0);
+        result.Alpha.Should().Be(0);
+    }
+
+    [Fact]
+    public void Equals_True()
+    {
+        var color1 = Color.FromRGBA(10, 20, 30, 40);
+        var color2 = Color.FromRGBA(10, 20, 30, 40);
+
+        color1.Should().Be(color2);
+    }
+
+    [Fact]
+    public void Equals_False()
+    {
+        var color1 = Color.FromRGBA(10, 20, 30, 40);
+        var color2 = Color.FromRGBA(50, 60, 70, 80);
+
+        color1.Should().NotBe(color2);
+    }
 }
