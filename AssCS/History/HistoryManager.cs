@@ -71,6 +71,9 @@ public class HistoryManager : BindableBase
             return id;
         }
 
+        if (!CanUndo)
+            throw new InvalidOperationException("Cannot amend, no commits in the undo stack!");
+
         if (_history.Peek() is EventCommit commit)
         {
             commit.Message += ";" + description;
