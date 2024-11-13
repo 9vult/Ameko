@@ -91,6 +91,33 @@ public class HistoryManager : BindableBase
     }
 
     /// <summary>
+    /// Commit a style change to history
+    /// </summary>
+    /// <remarks>
+    /// Side-effect: Clears future stack
+    /// </remarks>
+    /// <param name="description"></param>
+    /// <param name="type">Type of change</param>
+    /// <param name="target">Target style</param>
+    /// <returns>ID of the commit</returns>
+    public int Commit(string description, CommitType type, ref Style target)
+    {
+        var id = NextId;
+        _history.Push(
+            new StyleCommit
+            {
+                Id = id,
+                Message = description,
+                Target = target,
+                Type = type,
+            }
+        );
+        _future.Clear();
+        NotifyAbilitiesChanged();
+        return id;
+    }
+
+    /// <summary>
     /// Retrieve the latest commit from the Undo stack
     /// and add it to the Redo stack
     /// </summary>
