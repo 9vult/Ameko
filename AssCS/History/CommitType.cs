@@ -25,9 +25,9 @@ public enum CommitType
     ScriptInfo = 1 << 1,
 
     /// <summary>
-    /// Styles have been changed
+    /// A style has been changed
     /// </summary>
-    Styles = 1 << 2,
+    Style = 1 << 2,
 
     /// <summary>
     /// Attachments have been changed
@@ -72,4 +72,14 @@ public enum CommitType
     /// Extradata entries were changed
     /// </summary>
     Extradata = 1 << 9,
+
+    /// <summary>
+    /// A style has been added
+    /// </summary>
+    StyleAdd = 1 << 10,
+
+    /// <summary>
+    /// A style has been removed
+    /// </summary>
+    StyleRemove = 1 << 11,
 }
