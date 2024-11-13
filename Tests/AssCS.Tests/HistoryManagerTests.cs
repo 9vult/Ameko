@@ -11,7 +11,7 @@ public class HistoryManagerTests
     private Event event2 = new(2);
 
     [Fact]
-    public void Commit_NoAmmend()
+    public void Commit_NoAmend()
     {
         var hm = new HistoryManager();
 
@@ -21,17 +21,17 @@ public class HistoryManagerTests
     }
 
     [Fact]
-    public void Commit_Ammend()
+    public void Commit_Amend()
     {
         var hm = new HistoryManager();
 
         hm.CanUndo.Should().BeFalse();
         int c1 = hm.Commit("Test", CommitType.EventAdd, ref event1, null, false);
-        int c2 = hm.Commit("Ammend", CommitType.EventAdd, ref event2, null, true);
+        int c2 = hm.Commit("Amend", CommitType.EventAdd, ref event2, null, true);
         hm.CanUndo.Should().BeTrue();
         c1.Should().Be(c2);
 
-        // Get the commit and check the ammend worked
+        // Get the commit and check the amend worked
         var c = hm.Undo();
         ((EventCommit)c).Targets.Count.Should().Be(2);
     }
