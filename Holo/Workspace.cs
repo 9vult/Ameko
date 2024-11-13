@@ -86,6 +86,15 @@ public class Workspace : BindableBase
     /// Set the current selection
     /// </summary>
     /// <param name="primary">"Primary" selection (<see cref="SelectedEvent"/>)</param>
+    public void SetSelection(Event primary)
+    {
+        SetSelection(primary, [primary]);
+    }
+
+    /// <summary>
+    /// Set the current selection
+    /// </summary>
+    /// <param name="primary">"Primary" selection (<see cref="SelectedEvent"/>)</param>
     /// <param name="selection">Entire selection (<see cref="SelectedEventCollection"/>)</param>
     public void SetSelection(Event primary, IEnumerable<Event> selection)
     {

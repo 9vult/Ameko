@@ -36,18 +36,18 @@ public class HistoryManager : BindableBase
     /// <param name="type">Type of change</param>
     /// <param name="target">Target line</param>
     /// <param name="parentId">ID of the parent of the target</param>
-    /// <param name="ammend">Whether to ammend the previous commit or not</param>
+    /// <param name="amend">Whether to amend the previous commit or not</param>
     /// <returns>ID of the commit</returns>
-    /// <exception cref="InvalidOperationException">If an ammend is attempted to a non-Event commit</exception>
+    /// <exception cref="InvalidOperationException">If an amend is attempted to a non-Event commit</exception>
     public int Commit(
         string description,
         CommitType type,
         ref Event target,
         int? parentId,
-        bool ammend = false
+        bool amend = false
     )
     {
-        if (!ammend)
+        if (!amend)
         {
             var id = NextId;
             _history.Push(
@@ -87,7 +87,7 @@ public class HistoryManager : BindableBase
             return commit.Id;
         }
 
-        throw new InvalidOperationException("Cannot ammend an Event commit to a non-Event commit");
+        throw new InvalidOperationException("Cannot amend an Event commit to a non-Event commit");
     }
 
     /// <summary>
