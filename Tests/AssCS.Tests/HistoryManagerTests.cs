@@ -77,6 +77,20 @@ public class HistoryManagerTests
     }
 
     [Fact]
+    public void Event_Commit_Amend_Empty()
+    {
+        var hm = new HistoryManager();
+
+        Action amendToStyleCommit = () =>
+            hm.Commit("Invalid amend", CommitType.EventText, ref event1, null, true);
+
+        amendToStyleCommit
+            .Should()
+            .Throw<InvalidOperationException>()
+            .WithMessage("Cannot amend, no commits in the undo stack!");
+    }
+
+    [Fact]
     public void Undo()
     {
         var hm = new HistoryManager();
