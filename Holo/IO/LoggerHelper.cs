@@ -27,7 +27,7 @@ internal class LoggerHelper
         {
             Layout = layout,
             FileName = Path.Combine(
-                Directories.STATE_HOME,
+                Directories.StateHome,
                 "logs",
                 $"{DateTime.Now:yyyy-MM-dd}.log"
             ),
@@ -48,12 +48,10 @@ internal class LoggerHelper
     private class ObservableCollectionTarget(ObservableCollection<string> entries)
         : TargetWithLayout
     {
-        private readonly ObservableCollection<string> _entries = entries;
-
         protected override void Write(LogEventInfo logEvent)
         {
             string message = this.Layout.Render(logEvent);
-            _entries.Add(message);
+            entries.Add(message);
         }
     }
 }

@@ -11,7 +11,7 @@ namespace Holo.Models;
 internal record SolutionModel
 {
     [JsonIgnore]
-    internal const double CURRENT_API_VERSION = 1.0d;
+    internal const double CurrentApiVersion = 1.0d;
 
     public required double Version;
     public required string[] ReferencedDocuments;

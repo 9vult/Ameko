@@ -10,7 +10,7 @@ namespace Holo.Models;
 /// <param name="uri">The linked URI</param>
 public struct Link(int id, Workspace? workspace = null, Uri? uri = null)
 {
-    public int Id = id;
+    public readonly int Id = id;
     public Workspace? Workspace = workspace;
     public Uri? Uri = uri;
 
@@ -18,11 +18,11 @@ public struct Link(int id, Workspace? workspace = null, Uri? uri = null)
     /// Indicates whether the <see cref="Workspace"/>
     /// is (or can be) read from disk
     /// </summary>
-    public readonly bool IsSaved => Uri != null;
+    public readonly bool IsSaved => Uri is not null;
 
     /// <summary>
     /// Indicated whether the <see cref="Workspace"/>
     /// is currently loaded in the <see cref="Solution"/>
     /// </summary>
-    public readonly bool IsLoaded => Workspace != null;
+    public readonly bool IsLoaded => Workspace is not null;
 }
