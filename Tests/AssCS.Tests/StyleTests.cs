@@ -17,10 +17,10 @@ public class StyleTests
         s.Name.Should().Be("Default");
         s.FontFamily.Should().Be("Noto Serif");
         s.FontSize.Should().Be(69);
-        s.PrimaryColor.Should().Be(Color.FromRGB(0xFF, 0xFF, 0xFF));
-        s.SecondaryColor.Should().Be(Color.FromRGB(0x0, 0x0, 0x0));
-        s.OutlineColor.Should().Be(Color.FromRGB(0x1F, 0x29, 0x12));
-        s.ShadowColor.Should().Be(Color.FromRGBA(0x1F, 0x29, 0x12, 0xA0));
+        s.PrimaryColor.Should().Be(Color.FromRgb(0xFF, 0xFF, 0xFF));
+        s.SecondaryColor.Should().Be(Color.FromRgb(0x0, 0x0, 0x0));
+        s.OutlineColor.Should().Be(Color.FromRgb(0x1F, 0x29, 0x12));
+        s.ShadowColor.Should().Be(Color.FromRgba(0x1F, 0x29, 0x12, 0xA0));
         s.IsBold.Should().BeTrue();
         s.IsItalic.Should().BeFalse();
         s.IsUnderline.Should().BeFalse();

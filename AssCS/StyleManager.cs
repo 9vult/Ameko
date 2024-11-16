@@ -11,7 +11,7 @@ namespace AssCS;
 public class StyleManager : BindableBase
 {
     private readonly ObservableCollection<Style> _styles;
-    private int _id = 0;
+    private int _id;
 
     /// <summary>
     /// Number of styles
@@ -64,9 +64,7 @@ public class StyleManager : BindableBase
     public bool Remove(string name)
     {
         var style = _styles.FirstOrDefault(s => s.Name == name);
-        if (style is not null)
-            return _styles.Remove(style);
-        return false;
+        return style is not null && _styles.Remove(style);
     }
 
     /// <summary>
@@ -77,9 +75,7 @@ public class StyleManager : BindableBase
     public bool Remove(int id)
     {
         var style = _styles.FirstOrDefault(s => s.Id == id);
-        if (style is not null)
-            return _styles.Remove(style);
-        return false;
+        return style is not null && _styles.Remove(style);
     }
 
     /// <summary>
@@ -162,6 +158,6 @@ public class StyleManager : BindableBase
     public StyleManager()
     {
         _styles = [];
-        Styles = new(_styles);
+        Styles = new ReadOnlyObservableCollection<Style>(_styles);
     }
 }
