@@ -28,8 +28,8 @@ namespace Holo;
 /// </remarks>
 public class Solution : BindableBase
 {
-    private static readonly Logger logger = LogManager.GetCurrentClassLogger();
-    private static readonly JsonSerializerOptions jsonOptions = new() { IncludeFields = true };
+    private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+    private static readonly JsonSerializerOptions JsonOptions = new() { IncludeFields = true };
 
     private readonly RangeObservableCollection<Link> _referencedDocuments;
     private readonly RangeObservableCollection<Workspace> _loadedWorkspaces;
@@ -38,11 +38,11 @@ public class Solution : BindableBase
     private Uri? _savePath;
     private bool _isSaved;
 
-    private int _docId = 0;
-    private int _workingSpaceId = 0;
+    private int _docId;
+    private int _workingSpaceId;
 
-    private int _cps = 0;
-    private bool? _useSoftLinebreaks = null;
+    private int _cps;
+    private bool? _useSoftLinebreaks;
 
     /// <summary>
     /// All documents referenced by the solution
@@ -147,7 +147,7 @@ public class Solution : BindableBase
     /// <returns>The ID of the created workspace</returns>
     public int AddWorkspace()
     {
-        logger.Trace("Adding a new default workspace");
+        Logger.Trace("Adding a new default workspace");
         var space = new Workspace(new Document(true), NextId);
         var link = new Link(space.Id, space);
 
@@ -160,11 +160,11 @@ public class Solution : BindableBase
     /// <summary>
     /// Add a <see cref="Workspace"/> to the solution
     /// </summary>
-    /// <param name="space">Workspaceto add</param>
+    /// <param name="space">Workspace to add</param>
     /// <returns>ID of the document</returns>
     public int AddWorkspace(Workspace space)
     {
-        logger.Trace($"Adding workspace {space.Title}");
+        Logger.Trace($"Adding workspace {space.Title}");
         var link = new Link(space.Id, space, space.SavePath);
         _referencedDocuments.Add(link);
         _loadedWorkspaces.Add(space);
@@ -185,13 +185,13 @@ public class Solution : BindableBase
     /// </remarks>
     public bool RemoveWorkspace(int id)
     {
-        logger.Trace($"Removing workspace {id} from the solution");
+        Logger.Trace($"Removing workspace {id} from the solution");
         if (WorkingSpaceId == id)
         {
-            if (_loadedWorkspaces.Count > 1)
-                WorkingSpaceId = _loadedWorkspaces.First(w => w.Id != id).Id;
-            else
-                WorkingSpaceId = AddWorkspace();
+            WorkingSpaceId =
+                _loadedWorkspaces.Count > 1
+                    ? _loadedWorkspaces.First(w => w.Id != id).Id
+                    : AddWorkspace();
         }
         _loadedWorkspaces.RemoveAll(d => d.Id == id);
         return _referencedDocuments.RemoveAll(d => d.Id == id) != 0;
@@ -208,20 +208,20 @@ public class Solution : BindableBase
     /// </remarks>
     public int OpenDocument(int id)
     {
-        logger.Trace($"Opening referenced document {id}");
+        Logger.Trace($"Opening referenced document {id}");
         try
         {
-            var matches = _referencedDocuments.Where(l => l.Id == id);
-            if (!matches.Any())
+            var matches = _referencedDocuments.Where(l => l.Id == id).ToList();
+            if (matches.Count == 0)
             {
-                logger.Error($"Referenced document {id} was not found");
+                Logger.Error($"Referenced document {id} was not found");
                 return -1;
             }
 
             var link = matches.First();
             if (!link.IsSaved)
             {
-                logger.Error(
+                Logger.Error(
                     $"Referenced document {id} could not be opened because it does not exist on disk"
                 );
                 return -1;
@@ -236,7 +236,7 @@ public class Solution : BindableBase
         }
         catch (Exception ex)
         {
-            logger.Error(ex);
+            Logger.Error(ex);
             return -1;
         }
     }
@@ -245,7 +245,7 @@ public class Solution : BindableBase
     /// Close a document in the workspace
     /// </summary>
     /// <param name="id">ID of the document to close</param>
-    /// <param name="replaceIfLast">If the document should be replaced if its the last open</param>
+    /// <param name="replaceIfLast">If the document should be replaced if it's the last open</param>
     /// <returns><see langword="true"/> if the document was closed</returns>
     /// <remarks>
     /// <para>
@@ -260,15 +260,14 @@ public class Solution : BindableBase
     /// </remarks>
     public bool CloseDocument(int id, bool replaceIfLast = true)
     {
-        logger.Trace($"Closing referenced document {id}");
+        Logger.Trace($"Closing referenced document {id}");
 
-        if (WorkingSpaceId == id)
-        {
-            if (_loadedWorkspaces.Count > 1)
-                WorkingSpaceId = _loadedWorkspaces.First(w => w.Id != id).Id;
-            else if (replaceIfLast)
-                WorkingSpaceId = AddWorkspace();
-        }
+        if (WorkingSpaceId != id)
+            return _loadedWorkspaces.RemoveAll(d => d.Id == id) != 0;
+        if (_loadedWorkspaces.Count > 1)
+            WorkingSpaceId = _loadedWorkspaces.First(w => w.Id != id).Id;
+        else if (replaceIfLast)
+            WorkingSpaceId = AddWorkspace();
 
         return _loadedWorkspaces.RemoveAll(d => d.Id == id) != 0;
     }
@@ -298,7 +297,7 @@ public class Solution : BindableBase
     /// <returns><see langword="true"/> if saving was successful</returns>
     public bool Save(TextWriter writer, Uri savePath)
     {
-        logger.Info($"Saving solution {Title}");
+        Logger.Info($"Saving solution {Title}");
 
         var fp = savePath.LocalPath;
         var dir = Path.GetDirectoryName(fp) ?? string.Empty;
@@ -307,7 +306,7 @@ public class Solution : BindableBase
         {
             var model = new SolutionModel
             {
-                Version = SolutionModel.CURRENT_API_VERSION,
+                Version = SolutionModel.CurrentApiVersion,
                 ReferencedDocuments = _referencedDocuments
                     .Where(f => f.IsSaved)
                     .Select(f => Path.GetRelativePath(dir, f.Uri!.LocalPath))
@@ -317,18 +316,18 @@ public class Solution : BindableBase
                 UseSoftLinebreaks = _useSoftLinebreaks,
             };
 
-            var content = JsonSerializer.Serialize(model, jsonOptions);
+            var content = JsonSerializer.Serialize(model, JsonOptions);
             writer.Write(content);
             return true;
         }
         catch (JsonException je)
         {
-            logger.Error(je);
+            Logger.Error(je);
             return false;
         }
         catch (IOException ioe)
         {
-            logger.Error(ioe);
+            Logger.Error(ioe);
             return false;
         }
     }
@@ -357,7 +356,7 @@ public class Solution : BindableBase
         try
         {
             var model =
-                JsonSerializer.Deserialize<SolutionModel>(reader.ReadToEnd(), jsonOptions)
+                JsonSerializer.Deserialize<SolutionModel>(reader.ReadToEnd(), JsonOptions)
                 ?? throw new InvalidDataException("Solution model serialization failed");
 
             // If the solution has no referenced documents, initialize it with one
@@ -385,12 +384,12 @@ public class Solution : BindableBase
         }
         catch (JsonException je)
         {
-            logger.Error(je);
+            Logger.Error(je);
             return new Solution();
         }
         catch (IOException ioe)
         {
-            logger.Error(ioe);
+            Logger.Error(ioe);
             return new Solution();
         }
     }
@@ -404,20 +403,20 @@ public class Solution : BindableBase
     {
         _referencedDocuments = [];
         _loadedWorkspaces = [];
-        _styleManager = new();
+        _styleManager = new StyleManager();
 
-        ReferencedDocuments = new(_referencedDocuments);
-        LoadedWorkspaces = new(_loadedWorkspaces);
+        ReferencedDocuments = new ReadOnlyObservableCollection<Link>(_referencedDocuments);
+        LoadedWorkspaces = new ReadOnlyObservableCollection<Workspace>(_loadedWorkspaces);
 
-        if (!isEmpty)
-        {
-            var id = NextId;
-            var defaultWorkspace = new Workspace(new Document(true), id);
-            var defaultLink = new Link(id, defaultWorkspace, null);
+        if (isEmpty)
+            return;
 
-            _referencedDocuments.Add(defaultLink);
-            _loadedWorkspaces.Add(defaultWorkspace);
-            _workingSpaceId = id;
-        }
+        var id = NextId;
+        var defaultWorkspace = new Workspace(new Document(true), id);
+        var defaultLink = new Link(id, defaultWorkspace, null);
+
+        _referencedDocuments.Add(defaultLink);
+        _loadedWorkspaces.Add(defaultWorkspace);
+        _workingSpaceId = id;
     }
 }

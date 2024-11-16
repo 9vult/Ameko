@@ -16,7 +16,7 @@ namespace Holo;
 /// </remarks>
 public class Workspace : BindableBase
 {
-    private static readonly Logger logger = LogManager.GetCurrentClassLogger();
+    private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
     private readonly Document _document;
     private readonly int _id;
     private Uri? _savePath;
@@ -118,6 +118,6 @@ public class Workspace : BindableBase
 
         _selectedEvent = document.EventManager.Head;
         _selectedEventCollection = [_selectedEvent];
-        SelectedEventCollection = new(_selectedEventCollection);
+        SelectedEventCollection = new ReadOnlyObservableCollection<Event>(_selectedEventCollection);
     }
 }

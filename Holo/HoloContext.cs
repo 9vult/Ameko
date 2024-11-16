@@ -22,9 +22,9 @@ namespace Holo;
 /// </remarks>
 public class HoloContext
 {
+    // ReSharper disable once InconsistentNaming
     private static readonly Lazy<HoloContext> _instance = new(() => new HoloContext());
     private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-    private readonly ObservableCollection<string> _logEntries;
 
     /// <summary>
     /// Holo instance
@@ -39,11 +39,11 @@ public class HoloContext
 
     private HoloContext()
     {
-        _logEntries = [];
-        LogEntries = new(_logEntries);
+        ObservableCollection<string> logEntries = [];
+        LogEntries = new ReadOnlyObservableCollection<string>(logEntries);
 
         Directories.Create();
-        LoggerHelper.Initialize(_logEntries);
+        LoggerHelper.Initialize(logEntries);
 
         Logger.Info("Initializing Holo");
 
