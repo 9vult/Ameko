@@ -8,24 +8,25 @@ namespace AssCS;
 /// A style in a subtitle document
 /// </summary>
 /// <param name="id">ID of the style</param>
-public class Style(int id) : BindableBase
+public partial class Style(int id) : BindableBase
 {
-    private readonly int _id = id;
+    private const double Tolerance = 0.001;
+
     private string _name = "Default";
     private string _fontFamily = "Arial";
     private double _fontSize = 48.0d;
-    private Color _primaryColor = Color.FromRGB(0xFF, 0xFF, 0xFF);
-    private Color _secondaryColor = Color.FromRGB(0xFF, 0x0, 0x0);
-    private Color _outlineColor = Color.FromRGB(0x0, 0x0, 0x0);
-    private Color _shadowColor = Color.FromRGB(0x0, 0x0, 0x0);
-    private bool _isBold = false;
-    private bool _isItalic = false;
-    private bool _isUnderline = false;
-    private bool _isStrikethrough = false;
+    private Color _primaryColor = Color.FromRgb(0xFF, 0xFF, 0xFF);
+    private Color _secondaryColor = Color.FromRgb(0xFF, 0x0, 0x0);
+    private Color _outlineColor = Color.FromRgb(0x0, 0x0, 0x0);
+    private Color _shadowColor = Color.FromRgb(0x0, 0x0, 0x0);
+    private bool _isBold;
+    private bool _isItalic;
+    private bool _isUnderline;
+    private bool _isStrikethrough;
     private double _scaleX = 100.0d;
     private double _scaleY = 100.0d;
-    private double _spacing = 0.0d;
-    private double _angle = 0.0d;
+    private double _spacing;
+    private double _angle;
     private int _borderStyle = 1;
     private double _borderThickness = 2.0d;
     private double _shadowDistance = 2.0d;
@@ -36,7 +37,7 @@ public class Style(int id) : BindableBase
     /// <summary>
     /// Style ID
     /// </summary>
-    public int Id => _id;
+    public int Id => id;
 
     /// <summary>
     /// Name of the style
@@ -255,9 +256,7 @@ public class Style(int id) : BindableBase
     /// <exception cref="ArgumentException">If the data is malformed</exception>
     public static Style FromAss(int id, string data)
     {
-        var styleRegex =
-            @"Style:\ ([^,]*),([^,]*),([\d.]+),(&H[\da-fA-F]{8}&?),(&H[\da-fA-F]{8}&?),(&H[\da-fA-F]{8}&?),(&H[\da-fA-F]{8}&?),(-?[\d.]+),(-?[\d.]+),(-?[\d.]+),(-?[\d.]+),(-?[\d.]+),(-?[\d.]+),(-?[\d.]+),(-?[\d.]+),(-?[\d.]+),(-?[\d.]+),(-?[\d.]+),(-?[\d.]+),(-?[\d.]+),(-?[\d.]+),(-?[\d.]+),(-?[\d.]+)";
-        var match = Regex.Match(data, styleRegex);
+        var match = StyleRegex().Match(data);
         if (!match.Success)
             throw new ArgumentException($"Style {data} is invalid or malformed.");
 
@@ -309,7 +308,7 @@ public class Style(int id) : BindableBase
         return obj is Style style
             && _name == style._name
             && _fontFamily == style._fontFamily
-            && _fontSize == style._fontSize
+            && Math.Abs(_fontSize - style._fontSize) < Tolerance
             && EqualityComparer<Color>.Default.Equals(_primaryColor, style._primaryColor)
             && EqualityComparer<Color>.Default.Equals(_secondaryColor, style._secondaryColor)
             && EqualityComparer<Color>.Default.Equals(_outlineColor, style._outlineColor)
@@ -318,13 +317,13 @@ public class Style(int id) : BindableBase
             && _isItalic == style._isItalic
             && _isUnderline == style._isUnderline
             && _isStrikethrough == style._isStrikethrough
-            && _scaleX == style._scaleX
-            && _scaleY == style._scaleY
-            && _spacing == style._spacing
-            && _angle == style._angle
+            && Math.Abs(_scaleX - style._scaleX) < Tolerance
+            && Math.Abs(_scaleY - style._scaleY) < Tolerance
+            && Math.Abs(_spacing - style._spacing) < Tolerance
+            && Math.Abs(_angle - style._angle) < Tolerance
             && _borderStyle == style._borderStyle
-            && _borderThickness == style._borderThickness
-            && _shadowDistance == style._shadowDistance
+            && Math.Abs(_borderThickness - style._borderThickness) < Tolerance
+            && Math.Abs(_shadowDistance - style._shadowDistance) < Tolerance
             && _alignment == style._alignment
             && EqualityComparer<Margins>.Default.Equals(_margins, style._margins)
             && _encoding == style._encoding;
@@ -366,4 +365,9 @@ public class Style(int id) : BindableBase
     {
         return !(left == right);
     }
+
+    [GeneratedRegex(
+        @"Style:\ ([^,]*),([^,]*),([\d.]+),(&H[\da-fA-F]{8}&?),(&H[\da-fA-F]{8}&?),(&H[\da-fA-F]{8}&?),(&H[\da-fA-F]{8}&?),(-?[\d.]+),(-?[\d.]+),(-?[\d.]+),(-?[\d.]+),(-?[\d.]+),(-?[\d.]+),(-?[\d.]+),(-?[\d.]+),(-?[\d.]+),(-?[\d.]+),(-?[\d.]+),(-?[\d.]+),(-?[\d.]+),(-?[\d.]+),(-?[\d.]+),(-?[\d.]+)"
+    )]
+    private static partial Regex StyleRegex();
 }

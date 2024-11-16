@@ -17,42 +17,25 @@ namespace AssCS;
 public class ExtradataEntry(int id, int expiration, string key, string value)
     : IComparable<ExtradataEntry>
 {
-    private readonly int _id = id;
-    private int _expiration = expiration;
-    private string _key = key;
-    private string _value = value;
-
     /// <summary>
     /// ID of the entry
     /// </summary>
-    public int Id => _id;
+    public int Id => id;
 
     /// <summary>
     /// Expiration counter
     /// </summary>
-    public int Expiration
-    {
-        get => _expiration;
-        set => _expiration = value;
-    }
+    public int Expiration { get; set; } = expiration;
 
     /// <summary>
     /// Entry key
     /// </summary>
-    public string Key
-    {
-        get => _key;
-        set => _key = value;
-    }
+    public string Key { get; set; } = key;
 
     /// <summary>
     /// Base64-encoded value
     /// </summary>
-    public string Value
-    {
-        get => _value;
-        set => _value = value;
-    }
+    public string Value { get; set; } = value;
 
     public int CompareTo(ExtradataEntry? other)
     {

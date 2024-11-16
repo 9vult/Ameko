@@ -10,11 +10,10 @@ namespace AssCS;
 /// An event in a subtitle document
 /// </summary>
 /// <param name="id">ID of the event</param>
-public class Event(int id) : BindableBase, IEntry
+public partial class Event(int id) : BindableBase, IEntry
 {
-    private readonly int _id = id;
-    private bool _isComment = false;
-    private int _layer = 0;
+    private bool _isComment;
+    private int _layer;
     private Time _start = Time.FromSeconds(0);
     private Time _end = Time.FromSeconds(5);
     private string _style = "Default";
@@ -27,7 +26,7 @@ public class Event(int id) : BindableBase, IEntry
     /// <summary>
     /// Event ID
     /// </summary>
-    public int Id => _id;
+    public int Id => id;
 
     /// <summary>
     /// If the event is a comment
@@ -170,16 +169,15 @@ public class Event(int id) : BindableBase, IEntry
     /// <remarks>This function reverses <see cref="TransformAssToCode"/></remarks>
     public string TransformCodeToAss()
     {
-        var pattern = @"(\r\n|\r|\n)([\ |\t]*)";
-        return Regex.Replace(
-            Text,
-            pattern,
-            m =>
-            {
-                int spacesCount = m.Groups[2].Value.Length;
-                return $"--[[{spacesCount}]]";
-            }
-        );
+        return CodeToAssRegex()
+            .Replace(
+                Text,
+                m =>
+                {
+                    int spacesCount = m.Groups[2].Value.Length;
+                    return $"--[[{spacesCount}]]";
+                }
+            );
     }
 
     /// <summary>
@@ -191,16 +189,15 @@ public class Event(int id) : BindableBase, IEntry
     /// <remarks>This function reverses <see cref="TransformCodeToAss"/></remarks>
     public string TransformAssToCode()
     {
-        var pattern = @"--\[\[([0-9]+)\]\]";
-        return Regex.Replace(
-            Text,
-            pattern,
-            m =>
-            {
-                int spacesCount = int.Parse(m.Groups[1].Value);
-                return Environment.NewLine + new string(' ', spacesCount);
-            }
-        );
+        return AssToCodeRegex()
+            .Replace(
+                Text,
+                m =>
+                {
+                    int spacesCount = int.Parse(m.Groups[1].Value);
+                    return Environment.NewLine + new string(' ', spacesCount);
+                }
+            );
     }
 
     /// <summary>
@@ -211,8 +208,6 @@ public class Event(int id) : BindableBase, IEntry
     /// <returns><see langword="true"/> if the events collide</returns>
     public bool CollidesWith(Event other)
     {
-        if (other == null)
-            return false;
         return (Start < other.Start) ? (other.Start < End) : (Start < other.End);
     }
 
@@ -240,9 +235,7 @@ public class Event(int id) : BindableBase, IEntry
     /// <exception cref="ArgumentException">If the data is malformed</exception>
     public static Event FromAss(int id, string data)
     {
-        var eventRegex =
-            @"^(Comment|Dialogue):\ (\d+),(\d+:\d+:\d+.\d+),(\d+:\d+:\d+.\d+),([^,]*),([^,]*),(-?\d+),(-?\d+),(-?\d+),([^,]*),(.*)";
-        var match = Regex.Match(data, eventRegex);
+        var match = EventRegex().Match(data);
         if (!match.Success)
             throw new ArgumentException($"Event {data} is invalid or malformed.");
 
@@ -309,15 +302,15 @@ public class Event(int id) : BindableBase, IEntry
     /// <summary>
     /// Clone this event with a new ID
     /// </summary>
-    /// <param name="id">New ID</param>
+    /// <param name="eventId">New ID</param>
     /// <returns>Clone of the event</returns>
     /// <remarks>
     /// This method currently uses serialization
     /// as the clone method. This is subject to change.
     /// </remarks>
-    public Event Clone(int id)
+    public Event Clone(int eventId)
     {
-        return FromAss(id, AsAss());
+        return FromAss(eventId, AsAss());
     }
 
     #region Tags n stuff
@@ -337,12 +330,12 @@ public class Event(int id) : BindableBase, IEntry
 
         int drawingLevel = 0;
         string text = new(_text);
-        string work;
-        int endPlain;
 
         for (int len = text.Length, cur = 0; cur < len; )
         {
             // Override block
+            string work;
+            int endPlain;
             if (text[cur] == '{')
             {
                 int end = text.IndexOf('}', cur);
@@ -384,10 +377,9 @@ public class Event(int id) : BindableBase, IEntry
                         var block = new OverrideBlock(work);
                         block.ParseTags();
                         // Search for drawings
-                        foreach (var tag in block.Tags)
+                        foreach (var tag in block.Tags.Where(tag => tag.Name == "\\p"))
                         {
-                            if (tag.Name == "\\p")
-                                drawingLevel = tag.Parameters[0].GetInt();
+                            drawingLevel = tag.Parameters[0].GetInt();
                         }
                         blocks.Add(block);
                     }
@@ -543,8 +535,7 @@ public class Event(int id) : BindableBase, IEntry
             return [];
         if (!data.StartsWith("{="))
             return [];
-        var extraRegex = @"^\{(=\d+)+\}";
-        var match = Regex.Match(data, extraRegex);
+        var match = ExtradataRegex().Match(data);
         if (!match.Success)
             return [];
 
@@ -584,13 +575,13 @@ public class Event(int id) : BindableBase, IEntry
 
     private class ParsedEvent
     {
-        readonly Event Line;
-        List<Block> Blocks;
+        readonly Event _line;
+        List<Block> _blocks;
 
         public ParsedEvent(Event line)
         {
-            Line = line;
-            Blocks = Line.ParseTags();
+            _line = line;
+            _blocks = _line.ParseTags();
         }
 
         /// <summary>
@@ -602,21 +593,13 @@ public class Event(int id) : BindableBase, IEntry
         /// <returns>The tag, or <see langword="null"/> if not found</returns>
         public OverrideTag? FindTag(int blockn, string tagName, string alt)
         {
-            foreach (
-                var ovr in Blocks
-                    .GetRange(0, blockn + 1)
-                    .AsEnumerable()
-                    .Reverse()
-                    .OfType<OverrideBlock>()
-            )
-            {
-                foreach (var tag in ovr.Tags.AsEnumerable().Reverse())
-                {
-                    if (tag.Name == tagName || tag.Name == alt)
-                        return tag;
-                }
-            }
-            return null;
+            return _blocks
+                .GetRange(0, blockn + 1)
+                .AsEnumerable()
+                .Reverse()
+                .OfType<OverrideBlock>()
+                .SelectMany(ovr => ovr.Tags.AsEnumerable().Reverse())
+                .FirstOrDefault(tag => tag.Name == tagName || tag.Name == alt);
         }
 
         /// <summary>
@@ -628,24 +611,37 @@ public class Event(int id) : BindableBase, IEntry
         {
             int n = 0;
             bool inside = false;
-            for (var i = 0; i <= Line.Text.Length - 1; i++)
+            for (var i = 0; i <= _line.Text.Length - 1; i++)
             {
-                if (Line.Text[i] == '{')
+                switch (_line.Text[i])
                 {
-                    if (!inside && i > 0 && index >= 0)
-                        n++;
-                    inside = true;
-                }
-                else if (Line.Text[i] == '}' && inside)
-                {
-                    inside = false;
-                    if (index > 0 && (i + 1 == Line.Text.Length - 1 || Line.Text[i + 1] != '{'))
-                        n++;
-                }
-                else if (!inside)
-                {
-                    if (--index == 0)
-                        return n + ((i < Line.Text.Length - 1 && Line.Text[i + 1] == '{') ? 1 : 0);
+                    case '{':
+                        if (!inside && i > 0 && index >= 0)
+                            n++;
+                        inside = true;
+                        break;
+
+                    case '}' when inside:
+                        inside = false;
+                        if (
+                            index > 0
+                            && (i + 1 == _line.Text.Length - 1 || _line.Text[i + 1] != '{')
+                        )
+                            n++;
+                        break;
+
+                    default:
+                        if (!inside)
+                        {
+                            if (--index == 0)
+                                return n
+                                    + (
+                                        (i < _line.Text.Length - 1 && _line.Text[i + 1] == '{')
+                                            ? 1
+                                            : 0
+                                    );
+                        }
+                        break;
                 }
             }
             return n - (inside ? 1 : 0);
@@ -658,6 +654,7 @@ public class Event(int id) : BindableBase, IEntry
         /// <param name="value">New value</param>
         /// <param name="normPos">Normalized position</param>
         /// <param name="originPos">Original position</param>
+        /// <exception cref="ArgumentOutOfRangeException">If the <see cref="BlockType"/> is invalid</exception>
         /// <returns>Number of characters to shift the caret</returns>
         public int SetTag(string tag, string value, int normPos, int originPos)
         {
@@ -666,7 +663,7 @@ public class Event(int id) : BindableBase, IEntry
             OverrideBlock? ovr = null;
             while (blockn >= 0 && plain is null && ovr is null)
             {
-                Block block = Blocks[blockn];
+                Block block = _blocks[blockn];
                 switch (block.Type)
                 {
                     case BlockType.Plain:
@@ -677,11 +674,13 @@ public class Event(int id) : BindableBase, IEntry
                         break;
                     case BlockType.Comment:
                         --blockn;
-                        originPos = Line.Text.IndexOf('{', originPos);
+                        originPos = _line.Text.IndexOf('{', originPos);
                         break;
                     case BlockType.Override:
                         ovr = (OverrideBlock)block;
                         break;
+                    default:
+                        throw new ArgumentOutOfRangeException($"Invalid block type: {block.Type}");
                 }
             }
 
@@ -694,13 +693,13 @@ public class Event(int id) : BindableBase, IEntry
 
             if (plain is not null || blockn < 0)
             {
-                Line.Text = string.Concat(
-                    Line.Text.AsSpan(0, originPos),
+                _line.Text = string.Concat(
+                    _line.Text.AsSpan(0, originPos),
                     $"{{{insert}}}",
-                    Line.Text.AsSpan(originPos)
+                    _line.Text.AsSpan(originPos)
                 );
                 shift += 2;
-                Blocks = Line.ParseTags();
+                _blocks = _line.ParseTags();
             }
             else if (ovr is not null)
             {
@@ -711,32 +710,43 @@ public class Event(int id) : BindableBase, IEntry
                 for (var i = 0; i < ovr.Tags.Count; i++)
                 {
                     var name = ovr.Tags[i].Name;
-                    if (tag == name || alt == name)
+                    if (tag != name && alt != name)
+                        continue;
+
+                    shift -= (ovr.Tags[i].ToString()).Length;
+                    if (found)
                     {
-                        shift -= (ovr.Tags[i].ToString()).Length;
-                        if (found)
-                        {
-                            ovr.Tags.RemoveAt(i);
-                            i--;
-                        }
-                        else
-                        {
-                            ovr.Tags[i].Parameters[0].Set(value);
-                            found = true;
-                        }
+                        ovr.Tags.RemoveAt(i);
+                        i--;
+                    }
+                    else
+                    {
+                        ovr.Tags[i].Parameters[0].Set(value);
+                        found = true;
                     }
                 }
                 if (!found)
                     ovr.AddTag(insert);
 
-                Line.UpdateText(Blocks);
-            }
-            else
-            {
-                // ?
+                _line.UpdateText(_blocks);
             }
             return shift;
         }
     }
+
     #endregion
+
+    [GeneratedRegex(
+        @"^(Comment|Dialogue):\ (\d+),(\d+:\d+:\d+.\d+),(\d+:\d+:\d+.\d+),([^,]*),([^,]*),(-?\d+),(-?\d+),(-?\d+),([^,]*),(.*)"
+    )]
+    private static partial Regex EventRegex();
+
+    [GeneratedRegex(@"^\{(=\d+)+\}")]
+    private static partial Regex ExtradataRegex();
+
+    [GeneratedRegex(@"(\r\n|\r|\n)([\ |\t]*)")]
+    private static partial Regex CodeToAssRegex();
+
+    [GeneratedRegex(@"--\[\[([0-9]+)\]\]")]
+    private static partial Regex AssToCodeRegex();
 }

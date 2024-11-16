@@ -13,7 +13,7 @@ public class EventManager : BindableBase
     private readonly LinkedList<int> _chain;
     private readonly RangeObservableCollection<int> _currentIds;
     private readonly Dictionary<int, Link> _events;
-    private int _id = 0;
+    private int _id;
 
     /// <summary>
     /// Obtain the next available event ID for use in the document
@@ -88,9 +88,13 @@ public class EventManager : BindableBase
     /// <summary>
     /// The first event in the document
     /// </summary>
+    /// <exception cref="ArgumentNullException">If the head is <see langword="null"/></exception>
     public Event Head =>
         _chain.First is null
-            ? throw new ArgumentNullException("Cannot access Head event because it is null")
+            ? throw new ArgumentNullException(
+                nameof(Head),
+                "Cannot access Head event because it is null"
+            )
             : _events[_chain.First.Value].Event;
 
     /// <summary>
@@ -98,7 +102,10 @@ public class EventManager : BindableBase
     /// </summary>
     public Event Tail =>
         _chain.Last is null
-            ? throw new ArgumentNullException("Cannot access Tail event because it is null")
+            ? throw new ArgumentNullException(
+                nameof(Tail),
+                "Cannot access Tail event because it is null"
+            )
             : _events[_chain.Last.Value].Event;
 
     #region Basic Actions
@@ -136,7 +143,7 @@ public class EventManager : BindableBase
     /// <remarks>
     /// The events will be added in the order they are found in the list.
     /// </remarks>
-    public void AddAfter(int id, IEnumerable<Event> list)
+    public void AddAfter(int id, IList<Event> list)
     {
         if (!_events.ContainsKey(id))
             throw new ArgumentException(
@@ -201,7 +208,7 @@ public class EventManager : BindableBase
     /// </item>
     /// </list>
     /// </remarks>
-    public void AddBefore(int id, IEnumerable<Event> list, bool ascending)
+    public void AddBefore(int id, IList<Event> list, bool ascending)
     {
         if (!_events.ContainsKey(id))
             throw new ArgumentException(
@@ -263,7 +270,7 @@ public class EventManager : BindableBase
     /// The last event in the <paramref name="list"/> will become
     /// the new <see cref="Tail"/>.
     /// </remarks>
-    public void AddLast(IEnumerable<Event> list)
+    public void AddLast(IList<Event> list)
     {
         foreach (var e in list)
         {
@@ -313,7 +320,7 @@ public class EventManager : BindableBase
     /// </item>
     /// </list>
     /// </remarks>
-    public void AddFirst(IEnumerable<Event> list, bool ascending)
+    public void AddFirst(IList<Event> list, bool ascending)
     {
         // Add in ascending order: C←B←A
         if (ascending)
@@ -328,7 +335,7 @@ public class EventManager : BindableBase
         else
         {
             AddFirst(list.First());
-            AddAfter(list.First().Id, list.Skip(1));
+            AddAfter(list.First().Id, list.Skip(1).ToList());
         }
 
         _currentIds.AddRange(list.Select(el => el.Id));
@@ -423,7 +430,7 @@ public class EventManager : BindableBase
     /// </summary>
     /// <param name="list">IDs to remove</param>
     /// <returns><see langword="true"/> if all events were removed</returns>
-    public bool Remove(IEnumerable<int> list)
+    public bool Remove(IList<int> list)
     {
         if (!list.Any())
             return false;
@@ -431,9 +438,8 @@ public class EventManager : BindableBase
 
         foreach (var id in list)
         {
-            if (_events.TryGetValue(id, out Link link))
+            if (_events.Remove(id, out Link link))
             {
-                _events.Remove(id);
                 _chain.Remove(link.Node);
             }
             else
@@ -494,13 +500,9 @@ public class EventManager : BindableBase
     /// if the parent is the last in the document</returns>
     public Event? GetAfter(int id)
     {
-        if (_events.TryGetValue(id, out Link link))
-        {
-            if (link.Node.Next == null)
-                return null;
-            return _events[link.Node.Next.Value].Event;
-        }
-        return null;
+        if (!_events.TryGetValue(id, out Link link))
+            return null;
+        return link.Node.Next is not null ? _events[link.Node.Next.Value].Event : null;
     }
 
     /// <summary>
@@ -513,9 +515,9 @@ public class EventManager : BindableBase
     public bool TryGetAfter(int id, [MaybeNullWhen(false)] out Event @event)
     {
         if (
-            _events.TryGetValue(id, out var preceeding)
-            && preceeding.Node.Next is not null
-            && _events.TryGetValue(preceeding.Node.Next.Value, out var value)
+            _events.TryGetValue(id, out var preceding)
+            && preceding.Node.Next is not null
+            && _events.TryGetValue(preceding.Node.Next.Value, out var value)
         )
         {
             @event = value.Event;
@@ -534,13 +536,9 @@ public class EventManager : BindableBase
     /// if the child is the first in the document</returns>
     public Event? GetBefore(int id)
     {
-        if (_events.TryGetValue(id, out Link link))
-        {
-            if (link.Node.Previous == null)
-                return null;
-            return _events[link.Node.Previous.Value].Event;
-        }
-        return null;
+        if (!_events.TryGetValue(id, out Link link))
+            return null;
+        return link.Node.Previous is not null ? _events[link.Node.Previous.Value].Event : null;
     }
 
     /// <summary>
@@ -744,9 +742,10 @@ public class EventManager : BindableBase
         var afterFirst = GetAfter(a);
         var beforeFirst = GetBefore(a);
 
+        Event result;
         if (afterFirst is not null && afterFirst.Equals(second))
         {
-            var result = Event.FromEvent(NextId, first);
+            result = Event.FromEvent(NextId, first);
             result.Start = first.Start;
             result.End = second.End;
             result.Text = $"{first.Text}{newline}{second.Text}";
@@ -756,18 +755,18 @@ public class EventManager : BindableBase
             Remove(b);
             return result;
         }
-        else if (beforeFirst is not null && beforeFirst.Equals(second))
-        {
-            var result = Event.FromEvent(NextId, first);
-            result.Start = second.Start;
-            result.End = first.End;
-            result.Text = $"{second.Text}{newline}{first.Text}";
-            AddAfter(a, result);
-            Remove(a);
-            Remove(b);
-            return result;
-        }
-        return null;
+
+        if (beforeFirst is null || !beforeFirst.Equals(second))
+            return null;
+
+        result = Event.FromEvent(NextId, first);
+        result.Start = second.Start;
+        result.End = first.End;
+        result.Text = $"{second.Text}{newline}{first.Text}";
+        AddAfter(a, result);
+        Remove(a);
+        Remove(b);
+        return result;
     }
 
     #endregion Advanced Actions
@@ -797,12 +796,12 @@ public class EventManager : BindableBase
         _currentIds = [];
         _events = [];
 
-        CurrentIds = new(_currentIds);
+        CurrentIds = new ReadOnlyObservableCollection<int>(_currentIds);
     }
 
     private struct Link(LinkedListNode<int> node, Event e)
     {
-        public LinkedListNode<int> Node = node;
-        public Event Event = e;
+        public readonly LinkedListNode<int> Node = node;
+        public readonly Event Event = e;
     }
 }

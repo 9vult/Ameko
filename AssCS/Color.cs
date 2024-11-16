@@ -8,12 +8,12 @@ namespace AssCS;
 /// A color in a subtitle document, either as part of a
 /// <see cref="Style"/> or an <see cref="Overrides.Blocks.OverrideBlock"/>.
 /// </summary>
-public class Color : BindableBase
+public partial class Color : BindableBase
 {
-    private byte _red = 0x0;
-    private byte _green = 0x0;
-    private byte _blue = 0x0;
-    private byte _alpha = 0x0;
+    private byte _red;
+    private byte _green;
+    private byte _blue;
+    private byte _alpha;
 
     /// <summary>
     /// Red component
@@ -84,10 +84,8 @@ public class Color : BindableBase
     /// <exception cref="ArgumentException">If the data is malformed</exception>
     public static Color FromAss(string data)
     {
-        var rgbRegex = @"&H([\da-fA-F]{2})([\da-fA-F]{2})([\da-fA-F]{2})&?$";
-        var rgbaRegex = @"&H([\da-fA-F]{2})([\da-fA-F]{2})([\da-fA-F]{2})([\da-fA-F]{2})&?$";
-        var rgbMatch = Regex.Match(data, rgbRegex);
-        var rgbaMatch = Regex.Match(data, rgbaRegex);
+        var rgbMatch = RgbRegex().Match(data);
+        var rgbaMatch = RgbaRegex().Match(data);
         if (!rgbMatch.Success && !rgbaMatch.Success)
             throw new ArgumentException($"Color {data} is invalid or malformed.");
 
@@ -99,14 +97,13 @@ public class Color : BindableBase
                 _green = Convert.ToByte(rgbaMatch.Groups[3].Value, 16),
                 _red = Convert.ToByte(rgbaMatch.Groups[4].Value, 16),
             };
-        else
-            return new Color
-            {
-                _alpha = 0x0,
-                _blue = Convert.ToByte(rgbMatch.Groups[1].Value, 16),
-                _green = Convert.ToByte(rgbMatch.Groups[2].Value, 16),
-                _red = Convert.ToByte(rgbMatch.Groups[3].Value, 16),
-            };
+        return new Color
+        {
+            _alpha = 0x0,
+            _blue = Convert.ToByte(rgbMatch.Groups[1].Value, 16),
+            _green = Convert.ToByte(rgbMatch.Groups[2].Value, 16),
+            _red = Convert.ToByte(rgbMatch.Groups[3].Value, 16),
+        };
     }
 
     /// <summary>
@@ -117,7 +114,7 @@ public class Color : BindableBase
     /// <param name="blue">Blue value</param>
     /// <returns>Color object set to the values provided</returns>
     /// <remarks>The color will be fully opaque</remarks>
-    public static Color FromRGB(byte red, byte green, byte blue)
+    public static Color FromRgb(byte red, byte green, byte blue)
     {
         return new Color
         {
@@ -136,7 +133,7 @@ public class Color : BindableBase
     /// <param name="blue">Blue value</param>
     /// <param name="alpha">Alpha value</param>
     /// <returns>Color object set to the values provided</returns>
-    public static Color FromRGBA(byte red, byte green, byte blue, byte alpha)
+    public static Color FromRgba(byte red, byte green, byte blue, byte alpha)
     {
         return new Color
         {
@@ -207,4 +204,10 @@ public class Color : BindableBase
     }
 
     #endregion
+
+    [GeneratedRegex(@"&H([\da-fA-F]{2})([\da-fA-F]{2})([\da-fA-F]{2})&?$")]
+    private static partial Regex RgbRegex();
+
+    [GeneratedRegex(@"&H([\da-fA-F]{2})([\da-fA-F]{2})([\da-fA-F]{2})([\da-fA-F]{2})&?$")]
+    private static partial Regex RgbaRegex();
 }

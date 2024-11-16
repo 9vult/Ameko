@@ -11,7 +11,7 @@ namespace AssCS;
 public class ExtradataManager
 {
     private readonly List<ExtradataEntry> _extradata = [];
-    private int _id = 0;
+    private int _id;
 
     /// <summary>
     /// The next available extradata ID
@@ -35,10 +35,9 @@ public class ExtradataManager
     /// </remarks>
     public int Add(string key, string value)
     {
-        foreach (var ed in _extradata)
+        foreach (var ed in _extradata.Where(ed => ed.Key == key && ed.Value == value))
         {
-            if (ed.Key == key && ed.Value == value)
-                return ed.Id;
+            return ed.Id;
         }
 
         int id = NextId;
@@ -156,11 +155,11 @@ public class ExtradataManager
             usedIds = [.. usedKeys.Values];
 
             // Check for duplicated or missing keys
-            if (usedKeys.Count != line.LinkedExtradatas.Count)
-            {
-                line.LinkedExtradatas = usedKeys.Select(k => k.Value).ToList();
-                line.LinkedExtradatas.Sort();
-            }
+            if (usedKeys.Count == line.LinkedExtradatas.Count)
+                continue;
+
+            line.LinkedExtradatas = usedKeys.Select(k => k.Value).ToList();
+            line.LinkedExtradatas.Sort();
         }
 
         foreach (var e in _extradata)

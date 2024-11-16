@@ -31,9 +31,7 @@ public class ScriptInfoManager
     /// <returns>The <paramref name="key"/> value, or <see langword="null"/> if it does not exist</returns>
     public string? Get(string key)
     {
-        if (_data.TryGetValue(key, out var value))
-            return value;
-        return null;
+        return _data.GetValueOrDefault(key);
     }
 
     /// <summary>

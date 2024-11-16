@@ -1,6 +1,7 @@
 ﻿// SPDX-License-Identifier: MPL-2.0
 
 using System.Collections.ObjectModel;
+using System.Globalization;
 
 namespace AssCS;
 
@@ -33,7 +34,7 @@ public class GarbageManager
     /// <param name="value">Entry value</param>
     public void Set(string name, double value)
     {
-        var s = Convert.ToString(value);
+        var s = Convert.ToString(value, CultureInfo.InvariantCulture);
         _data[name] = new GarbageEntry(name, s);
     }
 
@@ -44,7 +45,7 @@ public class GarbageManager
     /// <param name="value">Entry value</param>
     public void Set(string name, decimal value)
     {
-        var s = Convert.ToString(value);
+        var s = Convert.ToString(value, CultureInfo.InvariantCulture);
         _data[name] = new GarbageEntry(name, s);
     }
 
@@ -141,7 +142,7 @@ public class GarbageManager
     /// <returns>Read-only collection of entries</returns>
     public ReadOnlyCollection<GarbageEntry> GetAll()
     {
-        return new(_data.Values.ToList());
+        return new ReadOnlyCollection<GarbageEntry>(_data.Values.ToList());
     }
 
     /// <summary>

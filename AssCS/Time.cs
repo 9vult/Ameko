@@ -89,14 +89,10 @@ public class Time : BindableBase, IComparable<Time>
             var splits = value.Split(':', '.');
             if (splits.Length != 4)
                 throw new ArgumentException($"Time: {value} is an invalid timecode.");
-            long millis = 0;
             int[] multiplier = [3600 * 1000, 60 * 1000, 1000, 10];
-            for (int i = 0; i < splits.Length; i++)
-            {
-                millis += Convert.ToInt64(splits[i]) * multiplier[i];
-            }
+            long millis = splits.Select((t, i) => Convert.ToInt64(t) * multiplier[i]).Sum();
             _local = TimeSpan.FromMilliseconds(millis);
-            RaisePropertyChanged(nameof(UpdatableText));
+            RaisePropertyChanged();
         }
     }
 
@@ -120,12 +116,8 @@ public class Time : BindableBase, IComparable<Time>
         var splits = data.Split(':', '.');
         if (splits.Length != 4)
             throw new ArgumentException($"Time: {data} is an invalid timecode.");
-        long millis = 0;
         int[] multiplier = [3600 * 1000, 60 * 1000, 1000, 10];
-        for (int i = 0; i < splits.Length; i++)
-        {
-            millis += Convert.ToInt64(splits[i]) * multiplier[i];
-        }
+        long millis = splits.Select((t, i) => Convert.ToInt64(t) * multiplier[i]).Sum();
         return FromMillis(millis);
     }
 
@@ -192,7 +184,7 @@ public class Time : BindableBase, IComparable<Time>
 
     public int CompareTo(Time? other)
     {
-        throw new NotImplementedException();
+        return other is null ? 1 : this.TotalMilliseconds.CompareTo(other.TotalMilliseconds);
     }
 
     public override bool Equals(object? obj)

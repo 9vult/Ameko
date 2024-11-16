@@ -1,5 +1,6 @@
 ﻿// SPDX-License-Identifier: MPL-2.0
 
+using System.Diagnostics.CodeAnalysis;
 using AssCS.History;
 
 namespace AssCS;
@@ -9,60 +10,48 @@ namespace AssCS;
 /// </summary>
 public class Document
 {
-    private AssVersion _version;
-    private readonly EventManager _eventManager = new();
-    private readonly StyleManager _styleManager = new();
-    private readonly HistoryManager _historyManager = new();
-    private readonly ExtradataManager _extradataManager = new();
-    private readonly ScriptInfoManager _scriptInfoManager = new();
-    private readonly GarbageManager _garbageManager = new();
-
     /// <summary>
     /// ASS version of the document
     /// </summary>
-    public AssVersion Version
-    {
-        get => _version;
-        internal set => _version = value;
-    }
+    public AssVersion Version { get; internal set; }
 
     /// <summary>
     /// The document's Event Manager
     /// </summary>
-    public EventManager EventManager => _eventManager;
+    public EventManager EventManager { get; } = new();
 
     /// <summary>
     /// The document's Style Manager
     /// </summary>
-    public StyleManager StyleManager => _styleManager;
+    public StyleManager StyleManager { get; } = new();
 
     /// <summary>
     /// The document's History Manager
     /// </summary>
-    public HistoryManager HistoryManager => _historyManager;
+    public HistoryManager HistoryManager { get; } = new();
 
     /// <summary>
     /// The document's Extradata Manager
     /// </summary>
-    public ExtradataManager ExtradataManager => _extradataManager;
+    public ExtradataManager ExtradataManager { get; } = new();
 
     /// <summary>
     /// The document's Script Info Manager
     /// </summary>
-    public ScriptInfoManager ScriptInfoManager => _scriptInfoManager;
+    public ScriptInfoManager ScriptInfoManager { get; } = new();
 
     /// <summary>
     /// The document's Aegisub Project Garbage Manager
     /// </summary>
-    public GarbageManager GarbageManager => _garbageManager;
+    public GarbageManager GarbageManager { get; } = new();
 
     /// <summary>
     /// Load the default state
     /// </summary>
     public void LoadDefault()
     {
-        _styleManager.LoadDefault();
-        _eventManager.LoadDefault();
+        StyleManager.LoadDefault();
+        EventManager.LoadDefault();
     }
 
     /// <summary>
@@ -72,7 +61,7 @@ public class Document
     /// <param name="version">ASS Version</param>
     public Document(bool initDefault, AssVersion version = AssVersion.V400P)
     {
-        _version = version;
+        Version = version;
 
         if (initDefault)
             LoadDefault();
@@ -82,6 +71,7 @@ public class Document
 /// <summary>
 /// ASS file version
 /// </summary>
+[SuppressMessage("ReSharper", "InconsistentNaming")]
 public enum AssVersion
 {
     /// <summary>
