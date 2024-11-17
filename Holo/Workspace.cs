@@ -96,8 +96,9 @@ public class Workspace : BindableBase
     /// </summary>
     /// <param name="primary">"Primary" selection (<see cref="SelectedEvent"/>)</param>
     /// <param name="selection">Entire selection (<see cref="SelectedEventCollection"/>)</param>
-    public void SetSelection(Event primary, IEnumerable<Event> selection)
+    public void SetSelection(Event primary, IList<Event> selection)
     {
+        Logger.Trace($"Setting selection to {primary.Id} (total: {selection.Count})");
         SelectedEvent = primary;
         _selectedEventCollection.ReplaceRange(selection);
     }
