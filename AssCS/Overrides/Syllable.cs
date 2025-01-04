@@ -21,7 +21,7 @@ public class Syllable
     /// <summary>
     /// Duration of the syllable in milliseconds
     /// </summary>
-    public long Duration { get; set; } = 0;
+    public long Duration { get; set; }
 
     /// <summary>
     /// Type of karaoke tag

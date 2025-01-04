@@ -146,9 +146,9 @@ public partial class AssParser : FileParser
     /// UU encoding.
     /// </para><para>
     /// Extradata entries encoded to either Aegisub Extradata spec will be
-    /// discared during parsing. This behavior is subject to change if the
+    /// discarded during parsing. This behavior is subject to change if the
     /// need for extradata interop between Aegisub and AssCS applications
-    /// arrises.
+    /// arises.
     /// </para>
     /// </remarks>
     private void ParseExtradata(string line, Document doc)
@@ -191,12 +191,12 @@ public partial class AssParser : FileParser
         return;
     }
 
-    private const string headerTemplate = @"^\[(.+)\]";
-    private const string extradataTemplate = @"^Data:\ *(\d+),([^,]+),(.)(.*)";
+    private const string HeaderTemplate = @"^\[(.+)\]";
+    private const string ExtradataTemplate = @"^Data:\ *(\d+),([^,]+),(.)(.*)";
 
-    [GeneratedRegex(headerTemplate)]
+    [GeneratedRegex(HeaderTemplate)]
     private static partial Regex HEADER_REGEX();
 
-    [GeneratedRegex(extradataTemplate)]
+    [GeneratedRegex(ExtradataTemplate)]
     private static partial Regex EXTRADATA_REGEX();
 }

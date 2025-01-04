@@ -126,11 +126,9 @@ public class Karaoke
         {
             if (pair.Key < len)
                 continue;
-            else
-            {
-                newSyl.OverrideTags[pair.Key - len] = pair.Value;
-                preSyl.OverrideTags.Remove(pair.Key);
-            }
+
+            newSyl.OverrideTags[pair.Key - len] = pair.Value;
+            preSyl.OverrideTags.Remove(pair.Key);
         }
     }
 
@@ -226,14 +224,14 @@ public class Karaoke
             var text = block.Text;
             switch (block.Type)
             {
-                case Blocks.BlockType.Plain:
+                case BlockType.Plain:
                     syl.Text += text;
                     break;
-                case Blocks.BlockType.Comment:
-                case Blocks.BlockType.Drawing:
+                case BlockType.Comment:
+                case BlockType.Drawing:
                     syl.OverrideTags[syl.Text.Length] += text;
                     break;
-                case Blocks.BlockType.Override:
+                case BlockType.Override:
                     var b = (OverrideBlock)block;
                     bool inTag = false;
 

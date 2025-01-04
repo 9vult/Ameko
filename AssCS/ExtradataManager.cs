@@ -1,6 +1,5 @@
 ﻿// SPDX-License-Identifier: MPL-2.0
 
-using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 
 namespace AssCS;

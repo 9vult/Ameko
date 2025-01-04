@@ -8,12 +8,12 @@ namespace AssCS.IO;
 /// Write an ass document as an ass file
 /// </summary>
 /// <param name="document">Document to write</param>
-/// <param name="consumer">Program or library requesting the write</param>
+/// <param name="consumer">Program or library requesting writes</param>
 public class AssWriter(Document document, ConsumerInfo consumer) : FileWriter
 {
-    private const string EVENT_FORMAT_V400P =
+    private const string EventFormatV400P =
         "Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text";
-    private const string STYLE_FORMAT_V400P =
+    private const string StyleFormatV400P =
         "Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, "
         + "BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding";
 
@@ -71,7 +71,7 @@ public class AssWriter(Document document, ConsumerInfo consumer) : FileWriter
             _ => "[V4+ Styles]",
         };
         writer.WriteLine(header);
-        writer.WriteLine(STYLE_FORMAT_V400P); // TODO: Style versioning
+        writer.WriteLine(StyleFormatV400P); // TODO: Style versioning
 
         foreach (var style in document.StyleManager.Styles)
         {
@@ -89,7 +89,7 @@ public class AssWriter(Document document, ConsumerInfo consumer) : FileWriter
     private void WriteEvents(TextWriter writer)
     {
         writer.WriteLine("[Events]");
-        writer.WriteLine(EVENT_FORMAT_V400P); // TODO: Event versioning
+        writer.WriteLine(EventFormatV400P); // TODO: Event versioning
 
         foreach (var @event in document.EventManager.Events)
         {

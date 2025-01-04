@@ -21,7 +21,6 @@ public partial class Event(int id) : BindableBase, IEntry
     private Margins _margins = new(20, 20, 20);
     private string _effect = string.Empty;
     private string _text = string.Empty;
-    private int _index;
 
     /// <summary>
     /// Event ID
@@ -121,11 +120,7 @@ public partial class Event(int id) : BindableBase, IEntry
     /// <summary>
     /// Row number in the document
     /// </summary>
-    public int Index
-    {
-        get => _index;
-        set => _index = value;
-    }
+    public int Index { get; set; }
 
     /// <summary>
     /// IDs of extradata linked to this event
@@ -229,7 +224,7 @@ public partial class Event(int id) : BindableBase, IEntry
     /// <summary>
     /// Initialize an event from an ass-formatted string
     /// </summary>
-    /// <param name="id">Id of the event to create</param>
+    /// <param name="id">ID of the event to create</param>
     /// <param name="data">Ass-formatted string</param>
     /// <returns>Event object represented by the string</returns>
     /// <exception cref="ArgumentException">If the data is malformed</exception>
@@ -462,8 +457,8 @@ public partial class Event(int id) : BindableBase, IEntry
             };
 
         ParsedEvent parsed = new ParsedEvent(this);
-        int blockn = parsed.BlockAt(normSelStart);
-        state = parsed.FindTag(blockn, tag, "")?.Parameters[0].GetBool() ?? state;
+        int blockN = parsed.BlockAt(normSelStart);
+        state = parsed.FindTag(blockN, tag, "")?.Parameters[0].GetBool() ?? state;
 
         int shift = parsed.SetTag(tag, state ? "0" : "1", normSelStart, selStart);
         if (selStart != selEnd)
@@ -502,15 +497,7 @@ public partial class Event(int id) : BindableBase, IEntry
     public override int GetHashCode()
     {
         var hash = new HashCode();
-        hash.Add(_isComment);
-        hash.Add(_layer);
-        hash.Add(_start);
-        hash.Add(_end);
-        hash.Add(_style);
-        hash.Add(_actor);
-        hash.Add(_margins);
-        hash.Add(_effect);
-        hash.Add(_text);
+        hash.Add(Id);
         return hash.ToHashCode();
     }
 
@@ -587,14 +574,14 @@ public partial class Event(int id) : BindableBase, IEntry
         /// <summary>
         /// Find the tag with the given name
         /// </summary>
-        /// <param name="blockn">Block number to check</param>
+        /// <param name="blockN">Block number to check</param>
         /// <param name="tagName">Name of the tag</param>
         /// <param name="alt">Alternate name for the tag</param>
         /// <returns>The tag, or <see langword="null"/> if not found</returns>
-        public OverrideTag? FindTag(int blockn, string tagName, string alt)
+        public OverrideTag? FindTag(int blockN, string tagName, string alt)
         {
             return _blocks
-                .GetRange(0, blockn + 1)
+                .GetRange(0, blockN + 1)
                 .AsEnumerable()
                 .Reverse()
                 .OfType<OverrideBlock>()
@@ -658,22 +645,22 @@ public partial class Event(int id) : BindableBase, IEntry
         /// <returns>Number of characters to shift the caret</returns>
         public int SetTag(string tag, string value, int normPos, int originPos)
         {
-            int blockn = BlockAt(normPos);
+            int blockN = BlockAt(normPos);
             PlainBlock? plain = null;
             OverrideBlock? ovr = null;
-            while (blockn >= 0 && plain is null && ovr is null)
+            while (blockN >= 0 && plain is null && ovr is null)
             {
-                Block block = _blocks[blockn];
+                Block block = _blocks[blockN];
                 switch (block.Type)
                 {
                     case BlockType.Plain:
                         plain = (PlainBlock)block;
                         break;
                     case BlockType.Drawing:
-                        --blockn;
+                        --blockN;
                         break;
                     case BlockType.Comment:
-                        --blockn;
+                        --blockN;
                         originPos = _line.Text.IndexOf('{', originPos);
                         break;
                     case BlockType.Override:
@@ -685,13 +672,13 @@ public partial class Event(int id) : BindableBase, IEntry
             }
 
             // If there is no suitable block, place it at the beginning of the line
-            if (blockn < 0)
+            if (blockN < 0)
                 originPos = 0;
 
             string insert = tag + value;
             int shift = insert.Length;
 
-            if (plain is not null || blockn < 0)
+            if (plain is not null || blockN < 0)
             {
                 _line.Text = string.Concat(
                     _line.Text.AsSpan(0, originPos),

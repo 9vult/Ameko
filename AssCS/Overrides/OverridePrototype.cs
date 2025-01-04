@@ -4,16 +4,13 @@ namespace AssCS.Overrides;
 
 public class OverridePrototype
 {
-    private readonly string _name;
-    private readonly List<OverridePrototypeParam> _parameters;
-
-    public string Name => _name;
-    public List<OverridePrototypeParam> Parameters => _parameters;
+    public string Name { get; }
+    public List<OverridePrototypeParam> Parameters { get; }
 
     public void AddParam(
         VariableType type,
         ParameterType classification = ParameterType.Normal,
-        Optional opt = Optional.NOT_OPTIONAL
+        Optional opt = Optional.NotOptional
     )
     {
         Parameters.Add(new OverridePrototypeParam(type, classification, opt));
@@ -21,19 +18,19 @@ public class OverridePrototype
 
     public OverridePrototype(string name, List<OverridePrototypeParam> paramList)
     {
-        _name = name;
-        _parameters = paramList;
+        Name = name;
+        Parameters = paramList;
     }
 
     public OverridePrototype(
         string name,
         VariableType type,
         ParameterType classification = ParameterType.Normal,
-        Optional opt = Optional.NOT_OPTIONAL
+        Optional opt = Optional.NotOptional
     )
     {
-        _name = name;
-        _parameters = [];
+        Name = name;
+        Parameters = [];
         AddParam(type, classification, opt);
     }
 
@@ -121,7 +118,7 @@ public class OverridePrototype
                     new OverridePrototypeParam(
                         VariableType.Int,
                         ParameterType.Normal,
-                        Optional.OPTIONAL_2
+                        Optional.Optional2
                     ),
                     new OverridePrototypeParam(VariableType.Text, ParameterType.Drawing),
                 ]
@@ -147,7 +144,7 @@ public class OverridePrototype
                     new OverridePrototypeParam(
                         VariableType.Int,
                         ParameterType.Normal,
-                        Optional.OPTIONAL_2
+                        Optional.Optional2
                     ),
                     new OverridePrototypeParam(VariableType.Text, ParameterType.Drawing),
                 ]
@@ -287,17 +284,17 @@ public class OverridePrototype
                     new OverridePrototypeParam(
                         VariableType.Int,
                         ParameterType.RelativeTimeStart,
-                        Optional.OPTIONAL_3 | Optional.OPTIONAL_4
+                        Optional.Optional3 | Optional.Optional4
                     ),
                     new OverridePrototypeParam(
                         VariableType.Int,
                         ParameterType.RelativeTimeStart,
-                        Optional.OPTIONAL_3 | Optional.OPTIONAL_4
+                        Optional.Optional3 | Optional.Optional4
                     ),
                     new OverridePrototypeParam(
                         VariableType.Float,
                         ParameterType.Normal,
-                        Optional.OPTIONAL_2 | Optional.OPTIONAL_4
+                        Optional.Optional2 | Optional.Optional4
                     ),
                     new OverridePrototypeParam(VariableType.Block),
                 ]
@@ -309,7 +306,7 @@ public class OverridePrototype
 public class OverridePrototypeParam(
     VariableType type,
     ParameterType classification = ParameterType.Normal,
-    Optional optional = Optional.NOT_OPTIONAL
+    Optional optional = Optional.NotOptional
 )
 {
     public Optional Optional { get; } = optional;
@@ -320,12 +317,12 @@ public class OverridePrototypeParam(
 [Flags]
 public enum Optional : uint
 {
-    NOT_OPTIONAL = 0xFF,
-    OPTIONAL_1 = 0x01,
-    OPTIONAL_2 = 0x02,
-    OPTIONAL_3 = 0x04,
-    OPTIONAL_4 = 0x08,
-    OPTIONAL_5 = 0x10,
-    OPTIONAL_6 = 0x20,
-    OPTIONAL_7 = 0x40,
+    NotOptional = 0xFF,
+    Optional1 = 0x01,
+    Optional2 = 0x02,
+    Optional3 = 0x04,
+    Optional4 = 0x08,
+    Optional5 = 0x10,
+    Optional6 = 0x20,
+    Optional7 = 0x40,
 }

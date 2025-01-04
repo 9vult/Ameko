@@ -37,12 +37,12 @@ public enum CommitType
     /// <summary>
     /// Events have been added
     /// </summary>
-    /// <remarks>
     EventAdd = 1 << 4,
 
     /// <summary>
     /// Events have been removed
     /// </summary>
+    /// <remarks>
     /// If the active event was removed, the active
     /// line should be updated before committing this change
     /// </remarks>

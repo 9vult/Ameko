@@ -52,6 +52,7 @@ internal static class StringEncoder
     /// Encode a string using UUEncoding
     /// </summary>
     /// <param name="input">String to encode</param>
+    /// <param name="linebreak">Whether to insert linebreaks</param>
     /// <returns>Encoded string</returns>
     public static string UUEncode(string input, bool linebreak)
     {

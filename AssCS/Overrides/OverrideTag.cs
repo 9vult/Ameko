@@ -4,25 +4,17 @@ namespace AssCS.Overrides;
 
 public class OverrideTag
 {
-    private bool _isValid = false;
-    private readonly List<OverrideParameter> _parameters = [];
-    private string _name;
-
-    public bool IsValid => _isValid;
-    public List<OverrideParameter> Parameters => _parameters;
-    public string Name
-    {
-        get => _name;
-        set => _name = value;
-    }
+    public bool IsValid { get; private set; }
+    public List<OverrideParameter> Parameters { get; } = [];
+    public string Name { get; set; }
 
     /// <summary>
     /// Clear out the tag
     /// </summary>
     public void Clear()
     {
-        _parameters.Clear();
-        _isValid = false;
+        Parameters.Clear();
+        IsValid = false;
     }
 
     /// <summary>
@@ -39,13 +31,13 @@ public class OverrideTag
             {
                 Name = p.Name;
                 ParseParameters(data[p.Name.Length..]);
-                _isValid = true;
+                IsValid = true;
                 return;
             }
         }
         // Garbage :poppo:
         Name = data;
-        _isValid = false;
+        IsValid = false;
     }
 
     /// <summary>
@@ -137,7 +129,7 @@ public class OverrideTag
     /// </summary>
     public OverrideTag()
     {
-        _name = string.Empty;
+        Name = string.Empty;
     }
 
     /// <summary>
@@ -146,7 +138,7 @@ public class OverrideTag
     /// <param name="data">Data to set</param>
     public OverrideTag(string data)
     {
-        _name = string.Empty;
+        Name = string.Empty;
         SetText(data);
     }
 
@@ -156,9 +148,9 @@ public class OverrideTag
     /// <param name="tag">Tag to clone</param>
     public OverrideTag(OverrideTag tag)
     {
-        _name = tag._name;
-        _parameters = new(tag._parameters);
-        _isValid = tag._isValid;
+        Name = tag.Name;
+        Parameters = [.. tag.Parameters];
+        IsValid = tag.IsValid;
     }
 
     public override string ToString()
