@@ -332,27 +332,7 @@ public partial class Style(int id) : BindableBase
     public override int GetHashCode()
     {
         var hash = new HashCode();
-        hash.Add(_name);
-        hash.Add(_fontFamily);
-        hash.Add(_fontSize);
-        hash.Add(_primaryColor);
-        hash.Add(_secondaryColor);
-        hash.Add(_outlineColor);
-        hash.Add(_shadowColor);
-        hash.Add(_isBold);
-        hash.Add(_isItalic);
-        hash.Add(_isUnderline);
-        hash.Add(_isStrikethrough);
-        hash.Add(_scaleX);
-        hash.Add(_scaleY);
-        hash.Add(_spacing);
-        hash.Add(_angle);
-        hash.Add(_borderStyle);
-        hash.Add(_borderThickness);
-        hash.Add(_shadowDistance);
-        hash.Add(_alignment);
-        hash.Add(_margins);
-        hash.Add(_encoding);
+        hash.Add(Id);
         return hash.ToHashCode();
     }
 

@@ -7,7 +7,7 @@ namespace AssCS.History;
 /// </summary>
 public class HistoryManager : BindableBase
 {
-    private int _nextId = 0;
+    private int _nextId;
     private readonly Stack<ICommit> _history = [];
     private readonly Stack<ICommit> _future = [];
 
@@ -30,7 +30,7 @@ public class HistoryManager : BindableBase
     /// Commit an event change to history
     /// </summary>
     /// <remarks>
-    /// Side-effect: Clears future stack
+    /// Side effect: Clears future stack
     /// </remarks>
     /// <param name="description">Short description of the change</param>
     /// <param name="type">Type of change</param>
@@ -97,7 +97,7 @@ public class HistoryManager : BindableBase
     /// Commit a style change to history
     /// </summary>
     /// <remarks>
-    /// Side-effect: Clears future stack
+    /// Side effect: Clears future stack
     /// </remarks>
     /// <param name="description"></param>
     /// <param name="type">Type of change</param>

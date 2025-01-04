@@ -20,7 +20,7 @@ public abstract class FileParser
     /// Parse a file into a <see cref="Document"/>
     /// </summary>
     /// <param name="filename">Path to the file to open</param>
-    /// <returns><see cref="Document"/> represented by the <paramref name="reader"/></returns>
+    /// <returns><see cref="Document"/> at the <paramref name="filename"/></returns>
     public Document Parse(string filename)
     {
         using var reader = new StreamReader(filename, encoding: Encoding.UTF8);

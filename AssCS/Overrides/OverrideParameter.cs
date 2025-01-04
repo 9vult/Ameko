@@ -1,6 +1,6 @@
 ﻿// SPDX-License-Identifier: MPL-2.0
 
-using System.Drawing;
+using System.Globalization;
 using AssCS.Overrides.Blocks;
 
 namespace AssCS.Overrides;
@@ -8,20 +8,18 @@ namespace AssCS.Overrides;
 public class OverrideParameter(VariableType type, ParameterType classification)
 {
     private OverrideBlock? _block;
-    private readonly VariableType _type = type;
-    private readonly ParameterType _classification = classification;
     private bool _isOmitted = true;
     private string _value = string.Empty;
 
     /// <summary>
     /// Type of variable in the parameter
     /// </summary>
-    public VariableType Type => _type;
+    public VariableType Type { get; } = type;
 
     /// <summary>
     /// Type of parameter
     /// </summary>
-    public ParameterType Classification => _classification;
+    public ParameterType Classification { get; } = classification;
 
     /// <summary>
     /// If the parameter is omitted
@@ -134,10 +132,11 @@ public class OverrideParameter(VariableType type, ParameterType classification)
     /// <param name="newValue">New value</param>
     public void Set(int newValue)
     {
-        if (Classification == ParameterType.Alpha)
-            Set($"&H{Math.Clamp(newValue, 0, 255):X2}&");
-        else
-            Set(Convert.ToString(newValue));
+        Set(
+            Classification == ParameterType.Alpha
+                ? $"&H{Math.Clamp(newValue, 0, 255):X2}&"
+                : Convert.ToString(newValue)
+        );
     }
 
     /// <summary>
@@ -146,7 +145,7 @@ public class OverrideParameter(VariableType type, ParameterType classification)
     /// <param name="newValue">New value</param>
     public void Set(double newValue)
     {
-        Set(Convert.ToString(newValue));
+        Set(Convert.ToString(newValue, CultureInfo.CurrentCulture));
     }
 
     /// <summary>

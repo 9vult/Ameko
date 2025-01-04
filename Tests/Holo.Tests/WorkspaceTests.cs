@@ -2,16 +2,15 @@
 
 using AssCS;
 using FluentAssertions;
-using Holo;
 
-namespace HoloTests;
+namespace Holo.Tests;
 
 public class WorkspaceTests
 {
     [Fact]
     public void SetSelection_Single()
     {
-        var wsp = new Workspace(new Document(true), 1, null);
+        var wsp = new Workspace(new Document(true), 1);
         var e = new Event(99);
         wsp.Document.EventManager.AddLast(e);
 
@@ -25,7 +24,7 @@ public class WorkspaceTests
     [Fact]
     public void SetSelection_Multiple()
     {
-        var wsp = new Workspace(new Document(true), 1, null);
+        var wsp = new Workspace(new Document(true), 1);
         var e1 = new Event(99);
         var e2 = new Event(100);
         wsp.Document.EventManager.AddLast(e1);

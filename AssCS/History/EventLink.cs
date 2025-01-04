@@ -18,7 +18,7 @@ public struct EventLink
     /// ID of the parent event, or <see langword="null"/> if there is no parent
     /// </summary>
     /// <remarks>
-    /// The parent event is the event preceeding the target event in the file.
+    /// The parent event is the event preceding the target event in the file.
     /// If the target event is the first event in the file, then the parent
     /// is <see langword="null"/>.
     /// </remarks>
@@ -28,7 +28,7 @@ public struct EventLink
     /// The target event
     /// </summary>
     /// <remarks>
-    /// This accessor automatically runs <see cref="Event.Clone"/>
+    /// This accessor automatically runs <see cref="Event.Clone()"/>
     /// on get and set to prevent pass-by-reference issues.
     /// </remarks>
     public Event Target

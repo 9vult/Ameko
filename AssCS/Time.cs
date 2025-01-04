@@ -6,7 +6,7 @@ namespace AssCS;
 /// A timestamp
 /// </summary>
 /// <remarks>
-/// This API supports millisecond percision, but note that
+/// This API supports millisecond precision, but note that
 /// precision will be dropped to centiseconds for export.
 /// </remarks>
 public class Time : BindableBase, IComparable<Time>
@@ -194,7 +194,7 @@ public class Time : BindableBase, IComparable<Time>
 
     public override int GetHashCode()
     {
-        return HashCode.Combine(_local.TotalMilliseconds);
+        return 1;
     }
 
     #region Operators

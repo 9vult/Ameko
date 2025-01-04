@@ -2,4 +2,4 @@
 
 namespace AssCS;
 
-public interface IEntry { }
+public interface IEntry;

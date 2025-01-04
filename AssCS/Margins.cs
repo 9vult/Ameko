@@ -51,7 +51,7 @@ public class Margins(int left, int right, int vertical) : BindableBase
 
     public override int GetHashCode()
     {
-        return HashCode.Combine(_left, _right, _vertical);
+        return 1;
     }
 
     public static bool operator ==(Margins? left, Margins? right)

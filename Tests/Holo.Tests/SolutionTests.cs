@@ -2,9 +2,8 @@
 
 using AssCS;
 using FluentAssertions;
-using Holo;
 
-namespace HoloTests;
+namespace Holo.Tests;
 
 public class SolutionTests
 {
