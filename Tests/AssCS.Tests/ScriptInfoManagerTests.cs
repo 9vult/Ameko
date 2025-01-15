@@ -1,6 +1,6 @@
 ﻿// SPDX-License-Identifier: MPL-2.0
 
-using FluentAssertions;
+using Shouldly;
 
 namespace AssCS.Tests;
 
@@ -12,7 +12,7 @@ public class ScriptInfoManagerTests
         var sim = new ScriptInfoManager();
         sim.LoadDefault();
 
-        sim.Count.Should().Be(15);
+        sim.Count.ShouldBe(15);
     }
 
     [Fact]
@@ -22,8 +22,8 @@ public class ScriptInfoManagerTests
         sim.Set("test", "testvalue");
         sim.Set("test2", "testvalue2");
 
-        sim.Get("test").Should().Be("testvalue");
-        sim.Get("test2").Should().Be("testvalue2");
+        sim.Get("test").ShouldBe("testvalue");
+        sim.Get("test2").ShouldBe("testvalue2");
     }
 
     [Fact]
@@ -33,7 +33,7 @@ public class ScriptInfoManagerTests
         sim.Set("test", "testvalue");
         sim.Set("test", "testvalue2");
 
-        sim.Get("test").Should().Be("testvalue2");
+        sim.Get("test").ShouldBe("testvalue2");
     }
 
     [Fact]
@@ -42,9 +42,9 @@ public class ScriptInfoManagerTests
         var sim = new ScriptInfoManager();
         sim.LoadDefault();
 
-        sim.Get("Title").Should().Be("Default File");
+        sim.Get("Title").ShouldBe("Default File");
         sim.Remove("Title");
-        sim.Get("Title").Should().BeNull();
+        sim.Get("Title").ShouldBeNull();
     }
 
     [Fact]
@@ -54,6 +54,6 @@ public class ScriptInfoManagerTests
         sim.LoadDefault();
 
         sim.Clear();
-        sim.Count.Should().Be(0);
+        sim.Count.ShouldBe(0);
     }
 }

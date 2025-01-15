@@ -1,7 +1,7 @@
 ﻿// SPDX-License-Identifier: MPL-2.0
 
 using AssCS.IO;
-using FluentAssertions;
+using Shouldly;
 
 namespace AssCS.Tests;
 
@@ -18,13 +18,13 @@ public class AssWriterTests
         var result = sw.ToString();
 
         // TODO: better tests
-        result.Contains("Aegisub Project Garbage").Should().BeTrue();
+        result.Contains("Aegisub Project Garbage").ShouldBeTrue();
 
         var recreation = new AssParser().Parse(new StringReader(result));
-        recreation.Should().NotBeNull();
-        recreation.StyleManager.Get("Test").Should().Be(CreateDoc().StyleManager.Get("Test"));
-        recreation.EventManager.Head.Should().Be(CreateDoc().EventManager.Head);
-        recreation.GarbageManager.GetAll().Count.Should().Be(1);
+        recreation.ShouldNotBeNull();
+        recreation.StyleManager.Get("Test").ShouldBe(CreateDoc().StyleManager.Get("Test"));
+        recreation.EventManager.Head.ShouldBe(CreateDoc().EventManager.Head);
+        recreation.GarbageManager.GetAll().Count.ShouldBe(1);
     }
 
     [Fact]
@@ -38,13 +38,13 @@ public class AssWriterTests
         var result = sw.ToString();
 
         // TODO: better tests
-        result.Contains("Aegisub Project Garbage").Should().BeFalse();
+        result.Contains("Aegisub Project Garbage").ShouldBeFalse();
 
         var recreation = new AssParser().Parse(new StringReader(result));
-        recreation.Should().NotBeNull();
-        recreation.StyleManager.Get("Test").Should().Be(CreateDoc().StyleManager.Get("Test"));
-        recreation.EventManager.Head.Should().Be(CreateDoc().EventManager.Head);
-        recreation.GarbageManager.GetAll().Count.Should().Be(0);
+        recreation.ShouldNotBeNull();
+        recreation.StyleManager.Get("Test").ShouldBe(CreateDoc().StyleManager.Get("Test"));
+        recreation.EventManager.Head.ShouldBe(CreateDoc().EventManager.Head);
+        recreation.GarbageManager.GetAll().Count.ShouldBe(0);
     }
 
     private static Document CreateDoc()

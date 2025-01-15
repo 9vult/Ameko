@@ -1,6 +1,6 @@
 ﻿// SPDX-License-Identifier: MPL-2.0
 
-using FluentAssertions;
+using Shouldly;
 
 namespace AssCS.Tests;
 
@@ -11,10 +11,10 @@ public class EventManagerTests
     {
         var em = new EventManager();
         em.AddFirst(new Event(1));
-        em.GetAfter(1).Should().BeNull();
+        em.GetAfter(1).ShouldBeNull();
 
         em.AddAfter(1, new Event(2));
-        em.GetAfter(1).Should().NotBeNull();
+        em.GetAfter(1).ShouldNotBeNull();
     }
 
     [Fact]
@@ -22,10 +22,10 @@ public class EventManagerTests
     {
         var em = new EventManager();
         em.AddFirst(new Event(1));
-        em.GetBefore(1).Should().BeNull();
+        em.GetBefore(1).ShouldBeNull();
 
         em.AddBefore(1, new Event(2));
-        em.GetBefore(1).Should().NotBeNull();
+        em.GetBefore(1).ShouldNotBeNull();
     }
 
     [Fact]
@@ -35,7 +35,7 @@ public class EventManagerTests
         em.AddFirst(new Event(1));
 
         em.AddAfter(1, [new Event(2), new Event(3), new Event(4)]);
-        em.Tail.Id.Should().Be(4);
+        em.Tail.Id.ShouldBe(4);
     }
 
     [Fact]
@@ -45,7 +45,7 @@ public class EventManagerTests
         em.AddFirst(new Event(1));
 
         em.AddBefore(1, [new Event(2), new Event(3), new Event(4)], true);
-        em.Head.Id.Should().Be(4);
+        em.Head.Id.ShouldBe(4);
     }
 
     [Fact]
@@ -55,7 +55,7 @@ public class EventManagerTests
         em.AddFirst(new Event(1));
 
         em.AddBefore(1, [new Event(2), new Event(3), new Event(4)], false);
-        em.Head.Id.Should().Be(2);
+        em.Head.Id.ShouldBe(2);
     }
 
     [Fact]
@@ -66,7 +66,7 @@ public class EventManagerTests
         em.AddBefore(1, [new Event(2), new Event(3), new Event(4)], false);
 
         em.AddLast(new Event(5));
-        em.Tail.Id.Should().Be(5);
+        em.Tail.Id.ShouldBe(5);
     }
 
     [Fact]
@@ -76,7 +76,7 @@ public class EventManagerTests
         em.AddFirst(new Event(1));
 
         em.AddFirst(new Event(2));
-        em.Head.Id.Should().Be(2);
+        em.Head.Id.ShouldBe(2);
     }
 
     [Fact]
@@ -86,7 +86,7 @@ public class EventManagerTests
         em.AddFirst(new Event(1));
 
         em.AddLast([new Event(2), new Event(3), new Event(4)]);
-        em.Tail.Id.Should().Be(4);
+        em.Tail.Id.ShouldBe(4);
     }
 
     [Fact]
@@ -96,7 +96,7 @@ public class EventManagerTests
         em.AddFirst(new Event(1));
 
         em.AddFirst([new Event(2), new Event(3), new Event(4)], true);
-        em.Head.Id.Should().Be(4);
+        em.Head.Id.ShouldBe(4);
     }
 
     [Fact]
@@ -106,7 +106,7 @@ public class EventManagerTests
         em.AddFirst(new Event(1));
 
         em.AddFirst([new Event(2), new Event(3), new Event(4)], false);
-        em.Head.Id.Should().Be(2);
+        em.Head.Id.ShouldBe(2);
     }
 
     [Fact]
@@ -120,14 +120,14 @@ public class EventManagerTests
         em.Replace(2, new Event(4));
 
         var resultA = em.TryGetAfter(1, out var after);
-        resultA.Should().BeTrue();
+        resultA.ShouldBeTrue();
         if (resultA)
-            after!.Id.Should().Be(4);
+            after!.Id.ShouldBe(4);
 
         var resultB = em.TryGetBefore(3, out var before);
-        resultB.Should().BeTrue();
+        resultB.ShouldBeTrue();
         if (resultB)
-            before!.Id.Should().Be(4);
+            before!.Id.ShouldBe(4);
     }
 
     [Fact]
@@ -141,9 +141,9 @@ public class EventManagerTests
         em.ReplaceInplace(eB);
 
         var result = em.TryGet(eA.Id, out var outA);
-        result.Should().BeTrue();
+        result.ShouldBeTrue();
         if (result)
-            outA!.Id.Should().Be(eB.Id);
+            outA!.Id.ShouldBe(eB.Id);
     }
 
     [Fact]
@@ -160,14 +160,14 @@ public class EventManagerTests
         em.ReplaceInplace([eB, eD]);
 
         var resultA = em.TryGet(eA.Id, out var outA);
-        resultA.Should().BeTrue();
+        resultA.ShouldBeTrue();
         if (resultA)
-            outA!.Id.Should().Be(eB.Id);
+            outA!.Id.ShouldBe(eB.Id);
 
         var resultB = em.TryGet(eC.Id, out var outC);
-        resultB.Should().BeTrue();
+        resultB.ShouldBeTrue();
         if (resultB)
-            outC!.Id.Should().Be(eD.Id);
+            outC!.Id.ShouldBe(eD.Id);
     }
 
     [Fact]
@@ -176,14 +176,14 @@ public class EventManagerTests
         var em = new EventManager();
         em.AddFirst([new Event(1), new Event(2), new Event(3)], false);
 
-        em.Count.Should().Be(3);
+        em.Count.ShouldBe(3);
         em.Remove(2);
-        em.Count.Should().Be(2);
+        em.Count.ShouldBe(2);
 
         var result = em.TryGetAfter(1, out var after);
-        result.Should().BeTrue();
+        result.ShouldBeTrue();
         if (result)
-            after!.Id.Should().Be(3);
+            after!.Id.ShouldBe(3);
     }
 
     [Fact]
@@ -192,11 +192,11 @@ public class EventManagerTests
         var em = new EventManager();
         em.AddFirst([new Event(1), new Event(2), new Event(3)], false);
 
-        em.Count.Should().Be(3);
+        em.Count.ShouldBe(3);
         em.Remove([1, 3]);
 
-        em.Count.Should().Be(1);
-        em.Head.Id.Should().Be(em.Tail.Id);
+        em.Count.ShouldBe(1);
+        em.Head.Id.ShouldBe(em.Tail.Id);
     }
 
     [Fact]
@@ -205,8 +205,8 @@ public class EventManagerTests
         var em = new EventManager();
         em.AddFirst(new Event(1));
 
-        em.Has(1).Should().BeTrue();
-        em.Has(2).Should().BeFalse();
+        em.Has(1).ShouldBeTrue();
+        em.Has(2).ShouldBeFalse();
     }
 
     [Fact]
@@ -224,9 +224,9 @@ public class EventManagerTests
 
         em.ChangeStyle("A", "C");
 
-        em.Get(1)!.Style.Should().Be("C");
-        em.Get(2)!.Style.Should().Be("B");
-        em.Get(3)!.Style.Should().Be("C");
+        em.Get(1).Style.ShouldBe("C");
+        em.Get(2).Style.ShouldBe("B");
+        em.Get(3).Style.ShouldBe("C");
     }
 
     [Fact]
@@ -237,12 +237,12 @@ public class EventManagerTests
         em.AddFirst(original);
 
         var dupe = em.Duplicate(original);
-        dupe.Id.Should().NotBe(original.Id);
+        dupe.Id.ShouldNotBe(original.Id);
 
         var result = em.TryGetAfter(original.Id, out var after);
-        result.Should().BeTrue();
+        result.ShouldBeTrue();
         if (result)
-            after!.Text.Should().Be(original.Text);
+            after!.Text.ShouldBe(original.Text);
     }
 
     [Fact]
@@ -253,7 +253,7 @@ public class EventManagerTests
         em.AddFirst(e1);
 
         var e2 = em.InsertBefore(e1);
-        (e2.End - e2.Start).TotalSeconds.Should().Be(5);
+        (e2.End - e2.Start).TotalSeconds.ShouldBe(5);
     }
 
     [Fact]
@@ -265,7 +265,7 @@ public class EventManagerTests
         em.AddFirst([e1, e2], false);
 
         var e3 = em.InsertBefore(e2);
-        (e3.End - e3.Start).TotalSeconds.Should().Be(3);
+        (e3.End - e3.Start).TotalSeconds.ShouldBe(3);
     }
 
     [Fact]
@@ -276,7 +276,7 @@ public class EventManagerTests
         em.AddFirst(e1);
 
         var e2 = em.InsertAfter(e1);
-        (e2.End - e2.Start).TotalSeconds.Should().Be(5);
+        (e2.End - e2.Start).TotalSeconds.ShouldBe(5);
     }
 
     [Fact]
@@ -288,7 +288,7 @@ public class EventManagerTests
         em.AddFirst([e1, e2], false);
 
         var e3 = em.InsertAfter(e1);
-        (e3.End - e3.Start).TotalSeconds.Should().Be(3);
+        (e3.End - e3.Start).TotalSeconds.ShouldBe(3);
     }
 
     [Fact]
@@ -305,15 +305,15 @@ public class EventManagerTests
 
         var result = em.Split(testEvent.Id).ToList();
 
-        result.Should().HaveCount(2);
-        result[0].End.TotalMilliseconds.Should().BeLessThan(result[1].End.TotalMilliseconds);
-        result[1].Start.Should().Be(result[0].End);
-        result.Last().End.Should().Be(testEvent.End);
+        result.Count.ShouldBe(2);
+        result[0].End.TotalMilliseconds.ShouldBeLessThan(result[1].End.TotalMilliseconds);
+        result[1].Start.ShouldBe(result[0].End);
+        result.Last().End.ShouldBe(testEvent.End);
 
         foreach (var e in result)
         {
-            em.TryGet(e.Id, out var addedEvent).Should().BeTrue();
-            addedEvent.Should().BeEquivalentTo(e);
+            em.TryGet(e.Id, out var addedEvent).ShouldBeTrue();
+            addedEvent.ShouldBeEquivalentTo(e);
         }
     }
 
@@ -331,10 +331,10 @@ public class EventManagerTests
 
         var result = em.Split(testEvent.Id).ToList();
 
-        result.Should().HaveCount(1);
-        result[0].Text.Should().Be("No newlines here");
-        result[0].Start.Should().Be(testEvent.Start);
-        result[0].End.Should().Be(testEvent.End);
+        result.Count.ShouldBe(1);
+        result[0].Text.ShouldBe("No newlines here");
+        result[0].Start.ShouldBe(testEvent.Start);
+        result[0].End.ShouldBe(testEvent.End);
     }
 
     [Fact]
@@ -343,7 +343,7 @@ public class EventManagerTests
         var em = new EventManager();
         var result = em.Split(999);
 
-        result.Should().BeEmpty();
+        result.ShouldBeEmpty();
     }
 
     [Fact]
@@ -359,7 +359,7 @@ public class EventManagerTests
         em.AddFirst(testEvent);
 
         var result = em.Split(testEvent.Id);
-        result.Should().BeEmpty();
+        result.ShouldBeEmpty();
     }
 
     [Fact]
@@ -383,10 +383,10 @@ public class EventManagerTests
 
         var result = em.Merge(eventA.Id, eventB.Id);
 
-        result.Should().NotBeNull();
-        result!.Text.Should().Be("Hello\\NWorld");
-        result.Start.Should().Be(eventA.Start);
-        result.End.Should().Be(eventB.End);
+        result.ShouldNotBeNull();
+        result.Text.ShouldBe("Hello\\NWorld");
+        result.Start.ShouldBe(eventA.Start);
+        result.End.ShouldBe(eventB.End);
     }
 
     [Fact]
@@ -410,10 +410,10 @@ public class EventManagerTests
 
         var result = em.Merge(eventB.Id, eventA.Id);
 
-        result.Should().NotBeNull();
-        result!.Text.Should().Be("Hello\\NWorld");
-        result.Start.Should().Be(eventA.Start);
-        result.End.Should().Be(eventB.End);
+        result.ShouldNotBeNull();
+        result.Text.ShouldBe("Hello\\NWorld");
+        result.Start.ShouldBe(eventA.Start);
+        result.End.ShouldBe(eventB.End);
     }
 
     [Fact]
@@ -437,10 +437,10 @@ public class EventManagerTests
 
         var result = em.Merge(eventA.Id, eventB.Id, true);
 
-        result.Should().NotBeNull();
-        result!.Text.Should().Be("Hello\\nWorld");
-        result.Start.Should().Be(eventA.Start);
-        result.End.Should().Be(eventB.End);
+        result.ShouldNotBeNull();
+        result.Text.ShouldBe("Hello\\nWorld");
+        result.Start.ShouldBe(eventA.Start);
+        result.End.ShouldBe(eventB.End);
     }
 
     [Fact]
@@ -471,7 +471,7 @@ public class EventManagerTests
 
         var result = em.Merge(eventA.Id, eventC.Id);
 
-        result.Should().BeNull();
+        result.ShouldBeNull();
     }
 
     [Fact]
@@ -480,7 +480,7 @@ public class EventManagerTests
         var em = new EventManager();
         var result = em.Merge(999, 1);
 
-        result.Should().BeNull();
+        result.ShouldBeNull();
     }
 
     [Fact]
@@ -504,7 +504,7 @@ public class EventManagerTests
 
         em.Merge(eventA.Id, eventB.Id);
 
-        em.TryGet(eventA.Id, out _).Should().BeFalse();
-        em.TryGet(eventB.Id, out _).Should().BeFalse();
+        em.TryGet(eventA.Id, out _).ShouldBeFalse();
+        em.TryGet(eventB.Id, out _).ShouldBeFalse();
     }
 }

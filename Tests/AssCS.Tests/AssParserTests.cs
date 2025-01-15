@@ -1,11 +1,11 @@
 ﻿// SPDX-License-Identifier: MPL-2.0
 
 using AssCS.IO;
-using FluentAssertions;
+using Shouldly;
 
 namespace AssCS.Tests;
 
-public class AssParserTests
+public class AssParserTestss
 {
     [Fact]
     public void Parse()
@@ -15,19 +15,19 @@ public class AssParserTests
 
         var doc = ap.Parse(tr);
 
-        doc.Should().NotBeNull();
-        doc.Version.Should().Be(AssVersion.V400P);
+        doc.ShouldNotBeNull();
+        doc.Version.ShouldBe(AssVersion.V400P);
 
-        doc.ScriptInfoManager.Get("Title").Should().Be("English (US)");
-        doc.GarbageManager.GetString("Video File").Should().Be("spicewolf_web_14.mkv");
-        doc.StyleManager.Styles.Count.Should().Be(2);
-        doc.EventManager.Count.Should().Be(7);
-        doc.ExtradataManager.Get().Count.Should().Be(0); // Because it's inline-encoded and therefore ignored
+        doc.ScriptInfoManager.Get("Title").ShouldBe("English (US)");
+        doc.GarbageManager.GetString("Video File").ShouldBe("spicewolf_web_14.mkv");
+        doc.StyleManager.Styles.Count.ShouldBe(2);
+        doc.EventManager.Count.ShouldBe(7);
+        doc.ExtradataManager.Get().Count.ShouldBe(0); // Because it's inline-encoded and therefore ignored
 
-        doc.EventManager.Head.Text.Should().Be("Is aught the matter?{Begin Volume 3}");
-        doc.EventManager.Head.Actor.Should().Be("Holo");
+        doc.EventManager.Head.Text.ShouldBe("Is aught the matter?{Begin Volume 3}");
+        doc.EventManager.Head.Actor.ShouldBe("Holo");
 
-        doc.StyleManager.Get("Default").FontFamily.Should().Be("Volkhov");
+        doc.StyleManager.Get("Default").FontFamily.ShouldBe("Volkhov");
     }
 
     // This file has been modified for brevity

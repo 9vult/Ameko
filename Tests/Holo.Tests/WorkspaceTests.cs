@@ -1,7 +1,7 @@
 ﻿// SPDX-License-Identifier: MPL-2.0
 
 using AssCS;
-using FluentAssertions;
+using Shouldly;
 
 namespace Holo.Tests;
 
@@ -16,9 +16,9 @@ public class WorkspaceTests
 
         wsp.SetSelection(e);
 
-        wsp.SelectedEvent.Should().Be(e);
-        wsp.SelectedEventCollection.Should().HaveCount(1);
-        wsp.SelectedEventCollection.Should().Contain(e);
+        wsp.SelectedEvent.ShouldBe(e);
+        wsp.SelectedEventCollection.Count.ShouldBe(1);
+        wsp.SelectedEventCollection.ShouldContain(e);
     }
 
     [Fact]
@@ -32,9 +32,9 @@ public class WorkspaceTests
 
         wsp.SetSelection(e1, [e1, e2]);
 
-        wsp.SelectedEvent.Should().Be(e1);
-        wsp.SelectedEventCollection.Should().HaveCount(2);
-        wsp.SelectedEventCollection.Should().Contain(e1);
-        wsp.SelectedEventCollection.Should().Contain(e2);
+        wsp.SelectedEvent.ShouldBe(e1);
+        wsp.SelectedEventCollection.Count.ShouldBe(2);
+        wsp.SelectedEventCollection.ShouldContain(e1);
+        wsp.SelectedEventCollection.ShouldContain(e2);
     }
 }
