@@ -1,6 +1,6 @@
 ﻿// SPDX-License-Identifier: MPL-2.0
 
-using FluentAssertions;
+using Shouldly;
 
 namespace AssCS.Tests;
 
@@ -12,7 +12,7 @@ public class GarbageManagerTests
         var gm = new GarbageManager();
         gm.Set("test", "test");
 
-        gm.GetString("test").Should().Be("test");
+        gm.GetString("test").ShouldBe("test");
     }
 
     [Fact]
@@ -21,7 +21,7 @@ public class GarbageManagerTests
         var gm = new GarbageManager();
         gm.Set("test", 1.5d);
 
-        gm.GetDouble("test").Should().Be(1.5d);
+        gm.GetDouble("test").ShouldBe(1.5d);
     }
 
     [Fact]
@@ -30,7 +30,7 @@ public class GarbageManagerTests
         var gm = new GarbageManager();
         gm.Set("test", 1.5m);
 
-        gm.GetDecimal("test").Should().Be(1.5m);
+        gm.GetDecimal("test").ShouldBe(1.5m);
     }
 
     [Fact]
@@ -39,7 +39,7 @@ public class GarbageManagerTests
         var gm = new GarbageManager();
         gm.Set("test", 1);
 
-        gm.GetInt("test").Should().Be(1);
+        gm.GetInt("test").ShouldBe(1);
     }
 
     [Fact]
@@ -48,7 +48,7 @@ public class GarbageManagerTests
         var gm = new GarbageManager();
         gm.Set("test", true);
 
-        gm.GetBool("test").Should().BeTrue();
+        gm.GetBool("test").ShouldBeTrue();
     }
 
     [Fact]
@@ -57,7 +57,7 @@ public class GarbageManagerTests
         var gm = new GarbageManager();
         gm.LoadDefault();
 
-        gm.Count.Should().Be(6);
+        gm.Count.ShouldBe(6);
     }
 
     [Fact]
@@ -67,16 +67,16 @@ public class GarbageManagerTests
         gm.LoadDefault();
         gm.Clear();
 
-        gm.Count.Should().Be(0);
+        gm.Count.ShouldBe(0);
     }
 
     [Fact]
     public void Contains()
     {
         var gm = new GarbageManager();
-        gm.Contains("test").Should().BeFalse();
+        gm.Contains("test").ShouldBeFalse();
 
         gm.Set("test", "test");
-        gm.Contains("test").Should().BeTrue();
+        gm.Contains("test").ShouldBeTrue();
     }
 }

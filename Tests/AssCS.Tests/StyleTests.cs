@@ -1,6 +1,6 @@
 ﻿// SPDX-License-Identifier: MPL-2.0
 
-using FluentAssertions;
+using Shouldly;
 
 namespace AssCS.Tests;
 
@@ -14,27 +14,27 @@ public class StyleTests
     {
         Style s = Style.FromAss(1, BasicStyle);
 
-        s.Name.Should().Be("Default");
-        s.FontFamily.Should().Be("Noto Serif");
-        s.FontSize.Should().Be(69);
-        s.PrimaryColor.Should().Be(Color.FromRgb(0xFF, 0xFF, 0xFF));
-        s.SecondaryColor.Should().Be(Color.FromRgb(0x0, 0x0, 0x0));
-        s.OutlineColor.Should().Be(Color.FromRgb(0x1F, 0x29, 0x12));
-        s.ShadowColor.Should().Be(Color.FromRgba(0x1F, 0x29, 0x12, 0xA0));
-        s.IsBold.Should().BeTrue();
-        s.IsItalic.Should().BeFalse();
-        s.IsUnderline.Should().BeFalse();
-        s.IsStrikethrough.Should().BeFalse();
-        s.ScaleX.Should().Be(100);
-        s.ScaleY.Should().Be(100);
-        s.Spacing.Should().Be(0);
-        s.Angle.Should().Be(0);
-        s.BorderStyle.Should().Be(1);
-        s.BorderThickness.Should().Be(4.4d);
-        s.ShadowDistance.Should().Be(2.2d);
-        s.Alignment.Should().Be(2);
-        s.Margins.Should().Be(new Margins(275, 275, 60));
-        s.Encoding.Should().Be(1);
+        s.Name.ShouldBe("Default");
+        s.FontFamily.ShouldBe("Noto Serif");
+        s.FontSize.ShouldBe(69);
+        s.PrimaryColor.ShouldBe(Color.FromRgb(0xFF, 0xFF, 0xFF));
+        s.SecondaryColor.ShouldBe(Color.FromRgb(0x0, 0x0, 0x0));
+        s.OutlineColor.ShouldBe(Color.FromRgb(0x1F, 0x29, 0x12));
+        s.ShadowColor.ShouldBe(Color.FromRgba(0x1F, 0x29, 0x12, 0xA0));
+        s.IsBold.ShouldBeTrue();
+        s.IsItalic.ShouldBeFalse();
+        s.IsUnderline.ShouldBeFalse();
+        s.IsStrikethrough.ShouldBeFalse();
+        s.ScaleX.ShouldBe(100);
+        s.ScaleY.ShouldBe(100);
+        s.Spacing.ShouldBe(0);
+        s.Angle.ShouldBe(0);
+        s.BorderStyle.ShouldBe(1);
+        s.BorderThickness.ShouldBe(4.4d);
+        s.ShadowDistance.ShouldBe(2.2d);
+        s.Alignment.ShouldBe(2);
+        s.Margins.ShouldBe(new Margins(275, 275, 60));
+        s.Encoding.ShouldBe(1);
     }
 
     [Fact]
@@ -42,7 +42,7 @@ public class StyleTests
     {
         Action action = () => Style.FromAss(1, BasicStyle.Replace(',', 'A'));
 
-        action.Should().Throw<ArgumentException>();
+        action.ShouldThrow<ArgumentException>();
     }
 
     [Fact]
@@ -50,7 +50,7 @@ public class StyleTests
     {
         Style s = Style.FromAss(1, BasicStyle);
 
-        s.AsAss().Should().Be(BasicStyle);
+        s.AsAss().ShouldBe(BasicStyle);
     }
 
     [Fact]
@@ -59,7 +59,7 @@ public class StyleTests
         Style s1 = Style.FromAss(1, BasicStyle);
         Style s2 = s1.Clone();
 
-        s2.Should().Be(s1);
+        s2.ShouldBe(s1);
     }
 
     [Fact]
@@ -68,7 +68,7 @@ public class StyleTests
         var style1 = new Style(1) { Name = "TestStyle" };
         var style2 = new Style(1) { Name = "TestStyle" };
 
-        style1.Should().Be(style2);
+        style1.ShouldBe(style2);
     }
 
     [Fact]
@@ -77,6 +77,6 @@ public class StyleTests
         var style1 = new Style(1) { Name = "StyleA" };
         var style2 = new Style(2) { Name = "StyleB" };
 
-        style1.Should().NotBe(style2);
+        style1.ShouldNotBe(style2);
     }
 }

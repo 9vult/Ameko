@@ -1,7 +1,7 @@
 ﻿// SPDX-License-Identifier: MPL-2.0
 
 using AssCS.IO;
-using FluentAssertions;
+using Shouldly;
 
 namespace AssCS.Tests;
 
@@ -16,9 +16,9 @@ public class TxtWriterTests
         var sw = new StringWriter();
         tw.Write(sw);
         var lines = sw.ToString().Split('\n');
-        lines.Length.Should().Be(4 + 1); // Empty line at the end, so +1
-        lines[1].Should().StartWith("Joe: ");
-        lines[2].Should().StartWith("# Joe: ");
+        lines.Length.ShouldBe(4 + 1); // Empty line at the end, so +1
+        lines[1].ShouldStartWith("Joe: ");
+        lines[2].ShouldStartWith("# Joe: ");
     }
 
     [Fact]
@@ -30,9 +30,9 @@ public class TxtWriterTests
         var sw = new StringWriter();
         tw.Write(sw);
         var lines = sw.ToString().Split('\n');
-        lines.Length.Should().Be(3 + 1);
-        lines[1].Should().StartWith("Joe: ");
-        lines[2].Should().StartWith("Tim: ");
+        lines.Length.ShouldBe(3 + 1);
+        lines[1].ShouldStartWith("Joe: ");
+        lines[2].ShouldStartWith("Tim: ");
     }
 
     [Fact]
@@ -44,9 +44,9 @@ public class TxtWriterTests
         var sw = new StringWriter();
         tw.Write(sw);
         var lines = sw.ToString().Split('\n');
-        lines.Length.Should().Be(4 + 1);
-        lines[1].Should().StartWith("Mama");
-        lines[2].Should().StartWith("# Mama");
+        lines.Length.ShouldBe(4 + 1);
+        lines[1].ShouldStartWith("Mama");
+        lines[2].ShouldStartWith("# Mama");
     }
 
     [Fact]
@@ -58,9 +58,9 @@ public class TxtWriterTests
         var sw = new StringWriter();
         tw.Write(sw);
         var lines = sw.ToString().Split('\n');
-        lines.Length.Should().Be(3 + 1);
-        lines[1].Should().StartWith("Mama");
-        lines[2].Should().StartWith("Bits SO COOL");
+        lines.Length.ShouldBe(3 + 1);
+        lines[1].ShouldStartWith("Mama");
+        lines[2].ShouldStartWith("Bits SO COOL");
     }
 
     [Fact]
@@ -69,7 +69,7 @@ public class TxtWriterTests
         var input = @"This is the first line.\NThis is the second line.";
         var expected = @"This is the first line. This is the second line.";
 
-        TxtWriter.StripNewlines(input).Should().Be(expected);
+        TxtWriter.StripNewlines(input).ShouldBe(expected);
     }
 
     [Fact]
@@ -78,7 +78,7 @@ public class TxtWriterTests
         var input = @"This is the first line. \NThis is the second line.";
         var expected = @"This is the first line. This is the second line.";
 
-        TxtWriter.StripNewlines(input).Should().Be(expected);
+        TxtWriter.StripNewlines(input).ShouldBe(expected);
     }
 
     [Fact]
@@ -87,7 +87,7 @@ public class TxtWriterTests
         var input = @"This is the first line.\N This is the second line.";
         var expected = @"This is the first line. This is the second line.";
 
-        TxtWriter.StripNewlines(input).Should().Be(expected);
+        TxtWriter.StripNewlines(input).ShouldBe(expected);
     }
 
     [Fact]
@@ -96,7 +96,7 @@ public class TxtWriterTests
         var input = @"This is the first line.    \N  This is the second line.";
         var expected = @"This is the first line. This is the second line.";
 
-        TxtWriter.StripNewlines(input).Should().Be(expected);
+        TxtWriter.StripNewlines(input).ShouldBe(expected);
     }
 
     [Fact]
@@ -105,7 +105,7 @@ public class TxtWriterTests
         var input = @"This is the first line.\nThis is the second line.";
         var expected = @"This is the first line. This is the second line.";
 
-        TxtWriter.StripNewlines(input).Should().Be(expected);
+        TxtWriter.StripNewlines(input).ShouldBe(expected);
     }
 
     [Fact]
@@ -114,7 +114,7 @@ public class TxtWriterTests
         var input = @"This is the first line. \nThis is the second line.";
         var expected = @"This is the first line. This is the second line.";
 
-        TxtWriter.StripNewlines(input).Should().Be(expected);
+        TxtWriter.StripNewlines(input).ShouldBe(expected);
     }
 
     [Fact]
@@ -123,7 +123,7 @@ public class TxtWriterTests
         var input = @"This is the first line.\n This is the second line.";
         var expected = @"This is the first line. This is the second line.";
 
-        TxtWriter.StripNewlines(input).Should().Be(expected);
+        TxtWriter.StripNewlines(input).ShouldBe(expected);
     }
 
     [Fact]
@@ -132,7 +132,7 @@ public class TxtWriterTests
         var input = @"This is the first line.    \n  This is the second line.";
         var expected = @"This is the first line. This is the second line.";
 
-        TxtWriter.StripNewlines(input).Should().Be(expected);
+        TxtWriter.StripNewlines(input).ShouldBe(expected);
     }
 
     private static Document CreateDoc()

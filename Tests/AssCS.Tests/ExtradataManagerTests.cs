@@ -1,6 +1,6 @@
 ﻿// SPDX-License-Identifier: MPL-2.0
 
-using FluentAssertions;
+using Shouldly;
 
 namespace AssCS.Tests;
 

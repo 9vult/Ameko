@@ -1,7 +1,7 @@
 ﻿// SPDX-License-Identifier: MPL-2.0
 
 using AssCS.History;
-using FluentAssertions;
+using Shouldly;
 
 namespace AssCS.Tests;
 
@@ -19,12 +19,12 @@ public class HistoryManagerTests
 
         hm.Commit(message, CommitType.EventAdd, ref event1, null, false);
 
-        hm.CanUndo.Should().BeTrue();
-        hm.CanRedo.Should().BeFalse();
+        hm.CanUndo.ShouldBeTrue();
+        hm.CanRedo.ShouldBeFalse();
 
         var lastCommit = hm.Undo();
-        lastCommit.Should().BeOfType<EventCommit>();
-        lastCommit.Message.Should().Be(message);
+        lastCommit.ShouldBeOfType<EventCommit>();
+        lastCommit.Message.ShouldBe(message);
     }
 
     [Fact]
@@ -35,12 +35,12 @@ public class HistoryManagerTests
 
         hm.Commit(message, CommitType.StyleAdd, ref style1);
 
-        hm.CanUndo.Should().BeTrue();
-        hm.CanRedo.Should().BeFalse();
+        hm.CanUndo.ShouldBeTrue();
+        hm.CanRedo.ShouldBeFalse();
 
         var lastCommit = hm.Undo();
-        lastCommit.Should().BeOfType<StyleCommit>();
-        lastCommit.Message.Should().Be(message);
+        lastCommit.ShouldBeOfType<StyleCommit>();
+        lastCommit.Message.ShouldBe(message);
     }
 
     [Fact]
@@ -53,12 +53,12 @@ public class HistoryManagerTests
 
         hm.Commit(amended, CommitType.EventAdd, ref event2, null, true);
 
-        hm.CanUndo.Should().BeTrue();
-        hm.CanRedo.Should().BeFalse();
+        hm.CanUndo.ShouldBeTrue();
+        hm.CanRedo.ShouldBeFalse();
 
         var lastCommit = (EventCommit)hm.Undo();
-        lastCommit.Message.Should().Be($"{initial};{amended}");
-        lastCommit.Targets.Should().HaveCount(2);
+        lastCommit.Message.ShouldBe($"{initial};{amended}");
+        lastCommit.Targets.Count.ShouldBe(2);
     }
 
     [Fact]
@@ -71,9 +71,8 @@ public class HistoryManagerTests
             hm.Commit("Invalid amend", CommitType.EventText, ref event1, null, true);
 
         amendToStyleCommit
-            .Should()
-            .Throw<InvalidOperationException>()
-            .WithMessage("Cannot amend an Event commit to a non-Event commit");
+            .ShouldThrow<InvalidOperationException>()
+            .Message.ShouldBe("Cannot amend an Event commit to a non-Event commit");
     }
 
     [Fact]
@@ -85,9 +84,8 @@ public class HistoryManagerTests
             hm.Commit("Invalid amend", CommitType.EventText, ref event1, null, true);
 
         amendToStyleCommit
-            .Should()
-            .Throw<InvalidOperationException>()
-            .WithMessage("Cannot amend, no commits in the undo stack!");
+            .ShouldThrow<InvalidOperationException>()
+            .Message.ShouldBe("Cannot amend, no commits in the undo stack!");
     }
 
     [Fact]
@@ -97,10 +95,10 @@ public class HistoryManagerTests
         hm.Commit("Test", CommitType.EventAdd, ref event1, null, false);
         var c = hm.Undo();
 
-        c.Should().NotBeNull();
-        c.Should().BeOfType<EventCommit>();
-        hm.CanUndo.Should().Be(false);
-        hm.CanRedo.Should().Be(true);
+        c.ShouldNotBeNull();
+        c.ShouldBeOfType<EventCommit>();
+        hm.CanUndo.ShouldBe(false);
+        hm.CanRedo.ShouldBe(true);
     }
 
     [Fact]
@@ -111,9 +109,8 @@ public class HistoryManagerTests
         Action undoAction = () => hm.Undo();
 
         undoAction
-            .Should()
-            .Throw<InvalidOperationException>()
-            .WithMessage("Cannot undo, no commits in the undo stack!");
+            .ShouldThrow<InvalidOperationException>()
+            .Message.ShouldBe("Cannot undo, no commits in the undo stack!");
     }
 
     [Fact]
@@ -124,12 +121,12 @@ public class HistoryManagerTests
         var cU = hm.Undo();
         var cR = hm.Redo();
 
-        cR.Should().NotBeNull();
-        cR.Should().BeOfType<EventCommit>();
-        hm.CanRedo.Should().Be(false);
-        hm.CanUndo.Should().Be(true);
+        cR.ShouldNotBeNull();
+        cR.ShouldBeOfType<EventCommit>();
+        hm.CanRedo.ShouldBe(false);
+        hm.CanUndo.ShouldBe(true);
 
-        cU.Should().BeSameAs(cR);
+        cU.ShouldBeSameAs(cR);
     }
 
     [Fact]
@@ -140,8 +137,7 @@ public class HistoryManagerTests
         Action redoAction = () => hm.Redo();
 
         redoAction
-            .Should()
-            .Throw<InvalidOperationException>()
-            .WithMessage("Cannot redo, no commits in the redo stack!");
+            .ShouldThrow<InvalidOperationException>()
+            .Message.ShouldBe("Cannot redo, no commits in the redo stack!");
     }
 }

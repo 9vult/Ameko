@@ -1,6 +1,6 @@
 ﻿// SPDX-License-Identifier: MPL-2.0
 
-using FluentAssertions;
+using Shouldly;
 
 namespace AssCS.Tests;
 
@@ -11,7 +11,7 @@ public class TimeTests
     {
         var t = Time.FromAss("0:02:10.57");
 
-        t.Should().Be(Time.FromMillis(130570));
+        t.ShouldBe(Time.FromMillis(130570));
     }
 
     [Fact]
@@ -20,9 +20,8 @@ public class TimeTests
         Action action = () => Time.FromAss("0:02:10;57");
 
         action
-            .Should()
-            .Throw<ArgumentException>()
-            .WithMessage("Time: 0:02:10;57 is an invalid timecode.");
+            .ShouldThrow<ArgumentException>()
+            .Message.ShouldBe("Time: 0:02:10;57 is an invalid timecode.");
     }
 
     [Fact]
@@ -30,7 +29,7 @@ public class TimeTests
     {
         Time t = Time.FromMillis(130570);
 
-        t.AsAss().Should().Be("0:02:10.57");
+        t.AsAss().ShouldBe("0:02:10.57");
     }
 
     [Fact]
@@ -38,7 +37,7 @@ public class TimeTests
     {
         Time t = new() { UpdatableText = "0:02:10.57" };
 
-        t.UpdatableText.Should().Be("0:02:10.57");
+        t.UpdatableText.ShouldBe("0:02:10.57");
     }
 
     [Fact]
@@ -49,8 +48,7 @@ public class TimeTests
         Action action = () => t.UpdatableText = "0:02:10;57";
 
         action
-            .Should()
-            .Throw<ArgumentException>()
-            .WithMessage("Time: 0:02:10;57 is an invalid timecode.");
+            .ShouldThrow<ArgumentException>()
+            .Message.ShouldBe("Time: 0:02:10;57 is an invalid timecode.");
     }
 }

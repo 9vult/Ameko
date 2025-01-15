@@ -1,6 +1,6 @@
 ﻿// SPDX-License-Identifier: MPL-2.0
 
-using FluentAssertions;
+using Shouldly;
 
 namespace AssCS.Tests;
 
@@ -16,15 +16,15 @@ public class EventTests
     {
         Event e = Event.FromAss(1, BasicEvent);
 
-        e.IsComment.Should().BeFalse();
-        e.Layer.Should().Be(0);
-        e.Start.Should().Be(Time.FromMillis(130570)); // 2:10.57
-        e.End.Should().Be(Time.FromMillis(133510)); // 2:13.51
-        e.Style.Should().Be("Default");
-        e.Actor.Should().Be("Heiter");
-        e.Margins.Should().Be(new Margins(0, 0, 0));
-        e.Effect.Should().Be(string.Empty);
-        e.Text.Should().Be("It's the victorious return of the heroes' party.");
+        e.IsComment.ShouldBeFalse();
+        e.Layer.ShouldBe(0);
+        e.Start.ShouldBe(Time.FromMillis(130570)); // 2:10.57
+        e.End.ShouldBe(Time.FromMillis(133510)); // 2:13.51
+        e.Style.ShouldBe("Default");
+        e.Actor.ShouldBe("Heiter");
+        e.Margins.ShouldBe(new Margins(0, 0, 0));
+        e.Effect.ShouldBe(string.Empty);
+        e.Text.ShouldBe("It's the victorious return of the heroes' party.");
     }
 
     [Fact]
@@ -32,7 +32,7 @@ public class EventTests
     {
         Action action = () => Event.FromAss(1, BasicEvent.Replace(',', 'Q'));
 
-        action.Should().Throw<ArgumentException>();
+        action.ShouldThrow<ArgumentException>();
     }
 
     [Fact]
@@ -40,7 +40,7 @@ public class EventTests
     {
         Event e = Event.FromAss(1, BasicEvent);
 
-        e.AsAss().Should().Be(BasicEvent);
+        e.AsAss().ShouldBe(BasicEvent);
     }
 
     [Fact]
@@ -49,7 +49,7 @@ public class EventTests
         Event e = Event.FromAss(1, TagEvent);
         e.StripTags();
 
-        e.Text.Should().Be("You're bald, there's no point in fussing.");
+        e.Text.ShouldBe("You're bald, there's no point in fussing.");
     }
 
     [Fact]
@@ -58,7 +58,7 @@ public class EventTests
         Event e1 = Event.FromAss(1, BasicEvent);
         Event e2 = e1.Clone();
 
-        e2.Should().Be(e1);
+        e2.ShouldBe(e1);
     }
 
     [Fact]
@@ -68,25 +68,25 @@ public class EventTests
         Event e2 = new Event(2) { Start = Time.FromSeconds(2.5), End = Time.FromSeconds(7.5) };
         Event e3 = new Event(3) { Start = Time.FromSeconds(10), End = Time.FromSeconds(15) };
 
-        e1.CollidesWith(e2).Should().BeTrue();
-        e2.CollidesWith(e1).Should().BeTrue();
+        e1.CollidesWith(e2).ShouldBeTrue();
+        e2.CollidesWith(e1).ShouldBeTrue();
 
-        e1.CollidesWith(e3).Should().BeFalse();
-        e2.CollidesWith(e3).Should().BeFalse();
+        e1.CollidesWith(e3).ShouldBeFalse();
+        e2.CollidesWith(e3).ShouldBeFalse();
     }
 
     [Fact]
     public void TransformCodeToAss()
     {
         var evt = new Event(1) { Text = "Line1\n  Line2" };
-        evt.TransformCodeToAss().Should().Contain("--[[2]]");
+        evt.TransformCodeToAss().ShouldContain("--[[2]]");
     }
 
     [Fact]
     public void TransformAssToCode()
     {
         var evt = new Event(1) { Text = "Line1--[[2]]Line2" };
-        evt.TransformAssToCode().Should().Contain(Environment.NewLine + "  Line2");
+        evt.TransformAssToCode().ShouldContain(Environment.NewLine + "  Line2");
     }
 
     #region Cps & Line Width
@@ -101,7 +101,7 @@ public class EventTests
             Text = "The quick brown fox jumps over the lazy dog",
         };
 
-        e.Cps.Should().Be(35);
+        e.Cps.ShouldBe(35);
     }
 
     [Fact]
@@ -114,7 +114,7 @@ public class EventTests
             Text = "The quick brown fox\\Njumps over the lazy dog",
         };
 
-        e.Cps.Should().Be(35);
+        e.Cps.ShouldBe(35);
     }
 
     [Fact]
@@ -128,7 +128,7 @@ public class EventTests
                 "The quick {\\i1}brown{\\i0} fox{it could be an artic fox} jumps over the lazy dog",
         };
 
-        e.Cps.Should().Be(35);
+        e.Cps.ShouldBe(35);
     }
 
     [Fact]
@@ -141,7 +141,7 @@ public class EventTests
             Text = "The quick brown fox jumps over the lazy dog",
         };
 
-        e.MaxLineWidth.Should().Be(35);
+        e.MaxLineWidth.ShouldBe(35);
     }
 
     [Fact]
@@ -155,7 +155,7 @@ public class EventTests
                 "The quick {\\i1}brown{\\i0} fox{it could be an artic fox} jumps over the lazy dog",
         };
 
-        e.MaxLineWidth.Should().Be(35);
+        e.MaxLineWidth.ShouldBe(35);
     }
 
     [Fact]
@@ -168,7 +168,7 @@ public class EventTests
             Text = "The quick brown fox\\Njumps over the lazy dog",
         };
 
-        e.MaxLineWidth.Should().Be(19);
+        e.MaxLineWidth.ShouldBe(19);
     }
 
     [Fact]
@@ -182,7 +182,7 @@ public class EventTests
                 "The quick {\\i1}brown{\\i0} fox{it could be an artic fox}\\Njumps over the lazy dog",
         };
 
-        e.MaxLineWidth.Should().Be(19);
+        e.MaxLineWidth.ShouldBe(19);
     }
 
     #endregion Cps & Line Width
@@ -194,7 +194,7 @@ public class EventTests
     {
         Event e = Event.FromAss(1, TagEvent);
 
-        e.GetStrippedText().Should().Be("You're bald, there's no point in fussing.");
+        e.GetStrippedText().ShouldBe("You're bald, there's no point in fussing.");
     }
 
     [Fact]
@@ -202,7 +202,7 @@ public class EventTests
     {
         Event e = new Event(1);
 
-        e.GetStrippedText().Should().Be(string.Empty);
+        e.GetStrippedText().ShouldBe(string.Empty);
     }
 
     [Fact]
@@ -210,7 +210,7 @@ public class EventTests
     {
         Event e = new Event(1) { Text = "{\\q2}" };
 
-        e.GetStrippedText().Should().Be(string.Empty);
+        e.GetStrippedText().ShouldBe(string.Empty);
     }
 
     [Fact]
@@ -218,7 +218,7 @@ public class EventTests
     {
         Event e = new Event(1) { Text = "{\\q2}A" };
 
-        e.GetStrippedText().Should().Be("A");
+        e.GetStrippedText().ShouldBe("A");
     }
 
     [Fact]
@@ -226,7 +226,7 @@ public class EventTests
     {
         Event e = new Event(1) { Text = "A{\\q2}" };
 
-        e.GetStrippedText().Should().Be("A");
+        e.GetStrippedText().ShouldBe("A");
     }
 
     #endregion GetStrippedText
@@ -241,7 +241,7 @@ public class EventTests
 
         e.ToggleTag("\\i", s, 12, 16); // Inside the tag
 
-        e.Text.Should().Be("You're {\\i0}bald{\\i1}, there's no point in fussing.");
+        e.Text.ShouldBe("You're {\\i0}bald{\\i1}, there's no point in fussing.");
     }
 
     [Fact]
@@ -252,7 +252,7 @@ public class EventTests
 
         e.ToggleTag("\\b", s, 12, 16); // Inside the tag
 
-        e.Text.Should().Be("You're {\\i1\\b1}bald{\\i0\\b0}, there's no point in fussing.");
+        e.Text.ShouldBe("You're {\\i1\\b1}bald{\\i0\\b0}, there's no point in fussing.");
     }
 
     [Fact]
@@ -263,7 +263,7 @@ public class EventTests
 
         e.ToggleTag("\\i", s, 0, 0);
 
-        e.Text.Should().Be("{\\i1}It's the victorious return of the heroes' party.");
+        e.Text.ShouldBe("{\\i1}It's the victorious return of the heroes' party.");
     }
 
     #endregion ToggleTag

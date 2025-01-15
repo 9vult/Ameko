@@ -1,6 +1,6 @@
 ﻿// SPDX-License-Identifier: MPL-2.0
 
-using FluentAssertions;
+using Shouldly;
 
 namespace AssCS.Tests;
 
@@ -14,7 +14,7 @@ public class StyleManagerTests
 
         sm.Add(s1);
 
-        sm.Styles.Contains(s1).Should().BeTrue();
+        sm.Styles.Contains(s1).ShouldBeTrue();
     }
 
     [Fact]
@@ -26,7 +26,7 @@ public class StyleManagerTests
         sm.Add(s1);
         Action action = () => sm.Add(s2);
 
-        action.Should().Throw<ArgumentException>();
+        action.ShouldThrow<ArgumentException>();
     }
 
     [Fact]
@@ -36,7 +36,7 @@ public class StyleManagerTests
         var s1 = new Style(1) { Name = "Style1" };
         sm.Add(s1);
 
-        sm.Remove("Style1").Should().BeTrue();
+        sm.Remove("Style1").ShouldBeTrue();
     }
 
     [Fact]
@@ -46,7 +46,7 @@ public class StyleManagerTests
         var s1 = new Style(1) { Name = "Style1" };
         sm.Add(s1);
 
-        sm.Remove(1).Should().BeTrue();
+        sm.Remove(1).ShouldBeTrue();
     }
 
     [Fact]
@@ -54,7 +54,7 @@ public class StyleManagerTests
     {
         var sm = new StyleManager();
 
-        sm.Remove("Style1").Should().BeFalse();
+        sm.Remove("Style1").ShouldBeFalse();
     }
 
     [Fact]
@@ -62,7 +62,7 @@ public class StyleManagerTests
     {
         var sm = new StyleManager();
 
-        sm.Remove(1).Should().BeFalse();
+        sm.Remove(1).ShouldBeFalse();
     }
 
     [Fact]
@@ -75,7 +75,7 @@ public class StyleManagerTests
         var s2 = new Style(2) { Name = "Style1", FontFamily = "Comic Sans MS" };
         sm.AddOrReplace(s2);
 
-        sm.Get("Style1").Id.Should().Be(2);
+        sm.Get("Style1").Id.ShouldBe(2);
     }
 
     [Fact]
@@ -85,7 +85,7 @@ public class StyleManagerTests
         var s1 = new Style(1);
         sm.Add(s1);
 
-        sm.Get("Default").Should().BeSameAs(s1);
+        sm.Get("Default").ShouldBeSameAs(s1);
     }
 
     [Fact]
@@ -95,7 +95,7 @@ public class StyleManagerTests
         var s1 = new Style(1);
         sm.Add(s1);
 
-        sm.Get(1).Should().BeSameAs(s1);
+        sm.Get(1).ShouldBeSameAs(s1);
     }
 
     [Fact]
@@ -104,7 +104,7 @@ public class StyleManagerTests
         var sm = new StyleManager();
 
         Action action = () => sm.Get("Default");
-        action.Should().Throw<ArgumentException>();
+        action.ShouldThrow<ArgumentException>();
     }
 
     [Fact]
@@ -113,7 +113,7 @@ public class StyleManagerTests
         var sm = new StyleManager();
 
         Action action = () => sm.Get(1);
-        action.Should().Throw<ArgumentException>();
+        action.ShouldThrow<ArgumentException>();
     }
 
     [Fact]
@@ -124,8 +124,8 @@ public class StyleManagerTests
         sm.Add(s1);
 
         var result = sm.TryGet("Default", out var style);
-        result.Should().BeTrue();
-        style.Should().BeSameAs(s1);
+        result.ShouldBeTrue();
+        style.ShouldBeSameAs(s1);
     }
 
     [Fact]
@@ -136,8 +136,8 @@ public class StyleManagerTests
         sm.Add(s1);
 
         var result = sm.TryGet(1, out var style);
-        result.Should().BeTrue();
-        style.Should().BeSameAs(s1);
+        result.ShouldBeTrue();
+        style.ShouldBeSameAs(s1);
     }
 
     [Fact]
@@ -146,8 +146,8 @@ public class StyleManagerTests
         var sm = new StyleManager();
 
         var result = sm.TryGet("Default", out var style);
-        result.Should().BeFalse();
-        style.Should().BeNull();
+        result.ShouldBeFalse();
+        style.ShouldBeNull();
     }
 
     [Fact]
@@ -156,7 +156,7 @@ public class StyleManagerTests
         var sm = new StyleManager();
 
         var result = sm.TryGet(1, out var style);
-        result.Should().BeFalse();
-        style.Should().BeNull();
+        result.ShouldBeFalse();
+        style.ShouldBeNull();
     }
 }
