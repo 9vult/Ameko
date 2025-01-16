@@ -27,6 +27,16 @@ public class HistoryManager : BindableBase
     public bool CanRedo => _future.Count > 0;
 
     /// <summary>
+    /// The ID of the most recent commit, used for coalescing
+    /// </summary>
+    public int LastId { get; private set; } = -1;
+
+    /// <summary>
+    /// The type of the most recent commit, used for coalescing
+    /// </summary>
+    public CommitType LastCommitType { get; private set; }
+
+    /// <summary>
     /// Commit an event change to history
     /// </summary>
     /// <remarks>
@@ -73,24 +83,23 @@ public class HistoryManager : BindableBase
 
         if (!CanUndo)
             throw new InvalidOperationException("Cannot amend, no commits in the undo stack!");
-
-        if (_history.Peek() is EventCommit commit)
-        {
-            commit.Message += ";" + description;
-            commit.Targets.Add(
-                new EventLink
-                {
-                    ParentId = parentId,
-                    Target = target,
-                    Type = type,
-                }
+        if (_history.Peek() is not EventCommit commit)
+            throw new InvalidOperationException(
+                "Cannot amend an Event commit to a non-Event commit"
             );
-            _future.Clear();
-            NotifyAbilitiesChanged();
-            return commit.Id;
-        }
 
-        throw new InvalidOperationException("Cannot amend an Event commit to a non-Event commit");
+        commit.Message += ";" + description;
+        commit.Targets.Add(
+            new EventLink
+            {
+                ParentId = parentId,
+                Target = target,
+                Type = type,
+            }
+        );
+        _future.Clear();
+        NotifyAbilitiesChanged();
+        return commit.Id;
     }
 
     /// <summary>

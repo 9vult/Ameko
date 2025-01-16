@@ -98,7 +98,15 @@ public class Workspace : BindableBase
     /// <param name="selection">Entire selection (<see cref="SelectedEventCollection"/>)</param>
     public void SetSelection(Event primary, IList<Event> selection)
     {
+        // See: SubsEditBox::SetSelectedRows
+        // https://github.com/arch1t3cht/Aegisub/blob/b2a0b098215d7028ba26f1bf728731fc585f2b99/src/subs_edit_box.cpp#L476
         Logger.Trace($"Setting selection to {primary.Id} (total: {selection.Count})");
+
+        foreach (var e in _selectedEventCollection)
+        {
+            // TODO: _commitId = _document.HistoryManager.Commit()
+        }
+
         SelectedEvent = primary;
         _selectedEventCollection.ReplaceRange(selection);
     }
