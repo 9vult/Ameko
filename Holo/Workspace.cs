@@ -2,6 +2,7 @@
 
 using System.Collections.ObjectModel;
 using AssCS;
+using AssCS.History;
 using NLog;
 
 namespace Holo;
@@ -86,9 +87,10 @@ public class Workspace : BindableBase
     /// Set the current selection
     /// </summary>
     /// <param name="primary">"Primary" selection (<see cref="SelectedEvent"/>)</param>
-    public void SetSelection(Event primary)
+    /// <param name="changeType">Type of change resulting in selection update</param>
+    public void SetSelection(Event primary, CommitType changeType)
     {
-        SetSelection(primary, [primary]);
+        SetSelection(primary, [primary], changeType);
     }
 
     /// <summary>
@@ -96,15 +98,20 @@ public class Workspace : BindableBase
     /// </summary>
     /// <param name="primary">"Primary" selection (<see cref="SelectedEvent"/>)</param>
     /// <param name="selection">Entire selection (<see cref="SelectedEventCollection"/>)</param>
-    public void SetSelection(Event primary, IList<Event> selection)
+    /// <param name="changeType">Type of change resulting in selection update</param>
+    public void SetSelection(Event primary, IList<Event> selection, CommitType changeType)
     {
         // See: SubsEditBox::SetSelectedRows
         // https://github.com/arch1t3cht/Aegisub/blob/b2a0b098215d7028ba26f1bf728731fc585f2b99/src/subs_edit_box.cpp#L476
         Logger.Trace($"Setting selection to {primary.Id} (total: {selection.Count})");
 
+        bool amend = false; // TODO: Determine what to do with amend
+        // TODO: Determine how to best include descriptions here
         foreach (var e in _selectedEventCollection)
         {
-            // TODO: _commitId = _document.HistoryManager.Commit()
+            var parent = _document.EventManager.GetBefore(e.Id);
+            _document.HistoryManager.Commit("", changeType, e, parent?.Id, amend);
+            amend = true;
         }
 
         SelectedEvent = primary;

@@ -17,7 +17,7 @@ public class HistoryManagerTests
         var hm = new HistoryManager();
         var message = "Added event";
 
-        hm.Commit(message, CommitType.EventAdd, ref event1, null, false);
+        hm.Commit(message, CommitType.EventAdd, event1, null, false);
 
         hm.CanUndo.ShouldBeTrue();
         hm.CanRedo.ShouldBeFalse();
@@ -33,7 +33,7 @@ public class HistoryManagerTests
         var hm = new HistoryManager();
         var message = "Added style";
 
-        hm.Commit(message, CommitType.StyleAdd, ref style1);
+        hm.Commit(message, CommitType.StyleAdd, style1);
 
         hm.CanUndo.ShouldBeTrue();
         hm.CanRedo.ShouldBeFalse();
@@ -49,9 +49,9 @@ public class HistoryManagerTests
         var hm = new HistoryManager();
         var initial = "Added event";
         var amended = "Amended event";
-        hm.Commit(initial, CommitType.EventAdd, ref event1, null, false);
+        hm.Commit(initial, CommitType.EventAdd, event1, null, false);
 
-        hm.Commit(amended, CommitType.EventAdd, ref event2, null, true);
+        hm.Commit(amended, CommitType.EventAdd, event2, null, true);
 
         hm.CanUndo.ShouldBeTrue();
         hm.CanRedo.ShouldBeFalse();
@@ -65,10 +65,10 @@ public class HistoryManagerTests
     public void Event_Commit_Amend_Invalid()
     {
         var hm = new HistoryManager();
-        hm.Commit("Added style", CommitType.StyleAdd, ref style1);
+        hm.Commit("Added style", CommitType.StyleAdd, style1);
 
         Action amendToStyleCommit = () =>
-            hm.Commit("Invalid amend", CommitType.EventText, ref event1, null, true);
+            hm.Commit("Invalid amend", CommitType.EventText, event1, null, true);
 
         amendToStyleCommit
             .ShouldThrow<InvalidOperationException>()
@@ -81,7 +81,7 @@ public class HistoryManagerTests
         var hm = new HistoryManager();
 
         Action amendToStyleCommit = () =>
-            hm.Commit("Invalid amend", CommitType.EventText, ref event1, null, true);
+            hm.Commit("Invalid amend", CommitType.EventText, event1, null, true);
 
         amendToStyleCommit
             .ShouldThrow<InvalidOperationException>()
@@ -92,7 +92,7 @@ public class HistoryManagerTests
     public void Undo()
     {
         var hm = new HistoryManager();
-        hm.Commit("Test", CommitType.EventAdd, ref event1, null, false);
+        hm.Commit("Test", CommitType.EventAdd, event1, null, false);
         var c = hm.Undo();
 
         c.ShouldNotBeNull();
@@ -117,7 +117,7 @@ public class HistoryManagerTests
     public void Redo()
     {
         var hm = new HistoryManager();
-        hm.Commit("Test", CommitType.EventAdd, ref event1, null, false);
+        hm.Commit("Test", CommitType.EventAdd, event1, null, false);
         var cU = hm.Undo();
         var cR = hm.Redo();
 

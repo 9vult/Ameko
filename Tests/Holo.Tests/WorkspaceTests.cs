@@ -1,6 +1,7 @@
 ﻿// SPDX-License-Identifier: MPL-2.0
 
 using AssCS;
+using AssCS.History;
 using Shouldly;
 
 namespace Holo.Tests;
@@ -14,7 +15,7 @@ public class WorkspaceTests
         var e = new Event(99);
         wsp.Document.EventManager.AddLast(e);
 
-        wsp.SetSelection(e);
+        wsp.SetSelection(e, CommitType.EventAdd);
 
         wsp.SelectedEvent.ShouldBe(e);
         wsp.SelectedEventCollection.Count.ShouldBe(1);
@@ -30,7 +31,7 @@ public class WorkspaceTests
         wsp.Document.EventManager.AddLast(e1);
         wsp.Document.EventManager.AddLast(e2);
 
-        wsp.SetSelection(e1, [e1, e2]);
+        wsp.SetSelection(e1, [e1, e2], CommitType.EventAdd);
 
         wsp.SelectedEvent.ShouldBe(e1);
         wsp.SelectedEventCollection.Count.ShouldBe(2);

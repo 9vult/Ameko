@@ -52,7 +52,7 @@ public class HistoryManager : BindableBase
     public int Commit(
         string description,
         CommitType type,
-        ref Event target,
+        Event target,
         int? parentId,
         bool amend = false
     )
@@ -112,7 +112,7 @@ public class HistoryManager : BindableBase
     /// <param name="type">Type of change</param>
     /// <param name="target">Target style</param>
     /// <returns>ID of the commit</returns>
-    public int Commit(string description, CommitType type, ref Style target)
+    public int Commit(string description, CommitType type, Style target)
     {
         var id = NextId;
         _history.Push(
