@@ -82,4 +82,9 @@ public enum CommitType
     /// A style has been removed
     /// </summary>
     StyleRemove = 1 << 11,
+
+    /// <summary>
+    /// A history operation has occured
+    /// </summary>
+    TimeMachine = 1 << 12,
 }
