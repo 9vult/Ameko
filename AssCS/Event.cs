@@ -482,7 +482,25 @@ public partial class Event(int id) : BindableBase, IEntry
 
     public override bool Equals(object? obj)
     {
-        return obj is Event @event
+        return obj is Event @event && Id == @event.Id && IsCongruentWith(@event);
+    }
+
+    public override int GetHashCode()
+    {
+        var hash = new HashCode();
+        hash.Add(Id);
+        return hash.ToHashCode();
+    }
+
+    /// <summary>
+    /// Checks equality of non-<see cref="Id"/> fields
+    /// </summary>
+    /// <param name="obj">Event to check</param>
+    /// <returns><see langword="true"/> if,
+    /// excluding the <see cref="Id"/>, <paramref name="obj"/> is equal.</returns>
+    public bool IsCongruentWith(Event? obj)
+    {
+        return obj is { } @event
             && _isComment == @event._isComment
             && _layer == @event._layer
             && _start == @event._start
@@ -492,13 +510,6 @@ public partial class Event(int id) : BindableBase, IEntry
             && _margins == @event._margins
             && _effect == @event._effect
             && _text == @event._text;
-    }
-
-    public override int GetHashCode()
-    {
-        var hash = new HashCode();
-        hash.Add(Id);
-        return hash.ToHashCode();
     }
 
     public static bool operator ==(Event? left, Event? right)

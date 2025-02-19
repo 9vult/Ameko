@@ -305,28 +305,7 @@ public partial class Style(int id) : BindableBase
 
     public override bool Equals(object? obj)
     {
-        return obj is Style style
-            && _name == style._name
-            && _fontFamily == style._fontFamily
-            && Math.Abs(_fontSize - style._fontSize) < Tolerance
-            && EqualityComparer<Color>.Default.Equals(_primaryColor, style._primaryColor)
-            && EqualityComparer<Color>.Default.Equals(_secondaryColor, style._secondaryColor)
-            && EqualityComparer<Color>.Default.Equals(_outlineColor, style._outlineColor)
-            && EqualityComparer<Color>.Default.Equals(_shadowColor, style._shadowColor)
-            && _isBold == style._isBold
-            && _isItalic == style._isItalic
-            && _isUnderline == style._isUnderline
-            && _isStrikethrough == style._isStrikethrough
-            && Math.Abs(_scaleX - style._scaleX) < Tolerance
-            && Math.Abs(_scaleY - style._scaleY) < Tolerance
-            && Math.Abs(_spacing - style._spacing) < Tolerance
-            && Math.Abs(_angle - style._angle) < Tolerance
-            && _borderStyle == style._borderStyle
-            && Math.Abs(_borderThickness - style._borderThickness) < Tolerance
-            && Math.Abs(_shadowDistance - style._shadowDistance) < Tolerance
-            && _alignment == style._alignment
-            && EqualityComparer<Margins>.Default.Equals(_margins, style._margins)
-            && _encoding == style._encoding;
+        return obj is Style style && Id == style.Id && IsCongruentWith(style);
     }
 
     public override int GetHashCode()
@@ -334,6 +313,38 @@ public partial class Style(int id) : BindableBase
         var hash = new HashCode();
         hash.Add(Id);
         return hash.ToHashCode();
+    }
+
+    /// <summary>
+    /// Checks equality of non-<see cref="Id"/> fields
+    /// </summary>
+    /// <param name="obj">Style to check</param>
+    /// <returns><see langword="true"/> if,
+    /// excluding the <see cref="Id"/>, <paramref name="obj"/> is equal.</returns>
+    public bool IsCongruentWith(Style? obj)
+    {
+        return obj != null
+            && _name == obj._name
+            && _fontFamily == obj._fontFamily
+            && Math.Abs(_fontSize - obj._fontSize) < Tolerance
+            && EqualityComparer<Color>.Default.Equals(_primaryColor, obj._primaryColor)
+            && EqualityComparer<Color>.Default.Equals(_secondaryColor, obj._secondaryColor)
+            && EqualityComparer<Color>.Default.Equals(_outlineColor, obj._outlineColor)
+            && EqualityComparer<Color>.Default.Equals(_shadowColor, obj._shadowColor)
+            && _isBold == obj._isBold
+            && _isItalic == obj._isItalic
+            && _isUnderline == obj._isUnderline
+            && _isStrikethrough == obj._isStrikethrough
+            && Math.Abs(_scaleX - obj._scaleX) < Tolerance
+            && Math.Abs(_scaleY - obj._scaleY) < Tolerance
+            && Math.Abs(_spacing - obj._spacing) < Tolerance
+            && Math.Abs(_angle - obj._angle) < Tolerance
+            && _borderStyle == obj._borderStyle
+            && Math.Abs(_borderThickness - obj._borderThickness) < Tolerance
+            && Math.Abs(_shadowDistance - obj._shadowDistance) < Tolerance
+            && _alignment == obj._alignment
+            && EqualityComparer<Margins>.Default.Equals(_margins, obj._margins)
+            && _encoding == obj._encoding;
     }
 
     public static bool operator ==(Style? left, Style? right)
