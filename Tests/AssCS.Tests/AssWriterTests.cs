@@ -22,8 +22,11 @@ public class AssWriterTests
 
         var recreation = new AssParser().Parse(new StringReader(result));
         recreation.ShouldNotBeNull();
-        recreation.StyleManager.Get("Test").ShouldBe(CreateDoc().StyleManager.Get("Test"));
-        recreation.EventManager.Head.ShouldBe(CreateDoc().EventManager.Head);
+        recreation
+            .StyleManager.Get("Test")
+            .IsCongruentWith(CreateDoc().StyleManager.Get("Test"))
+            .ShouldBeTrue();
+        recreation.EventManager.Head.IsCongruentWith(CreateDoc().EventManager.Head).ShouldBeTrue();
         recreation.GarbageManager.GetAll().Count.ShouldBe(1);
     }
 
@@ -42,8 +45,11 @@ public class AssWriterTests
 
         var recreation = new AssParser().Parse(new StringReader(result));
         recreation.ShouldNotBeNull();
-        recreation.StyleManager.Get("Test").ShouldBe(CreateDoc().StyleManager.Get("Test"));
-        recreation.EventManager.Head.ShouldBe(CreateDoc().EventManager.Head);
+        recreation
+            .StyleManager.Get("Test")
+            .IsCongruentWith(CreateDoc().StyleManager.Get("Test"))
+            .ShouldBeTrue();
+        recreation.EventManager.Head.IsCongruentWith(CreateDoc().EventManager.Head).ShouldBeTrue();
         recreation.GarbageManager.GetAll().Count.ShouldBe(0);
     }
 
