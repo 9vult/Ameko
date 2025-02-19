@@ -108,7 +108,7 @@ public class Workspace : BindableBase
         bool amend =
             _document.HistoryManager.CanUndo
             && _document.HistoryManager.LastCommitType == changeType
-            && _document.HistoryManager.LastCommitTime.AddSeconds(30) < DateTimeOffset.Now; // TODO: Add an option for this
+            && _document.HistoryManager.LastCommitTime.AddSeconds(30) > DateTimeOffset.Now; // TODO: Add an option for this
 
         // TODO: Determine how to best include descriptions here
         foreach (var e in _selectedEventCollection)

@@ -77,6 +77,9 @@ public class HistoryManager : BindableBase
                     ],
                 }
             );
+
+            LastCommitTime = DateTimeOffset.Now;
+            LastCommitType = type;
             _future.Clear();
             NotifyAbilitiesChanged();
 
@@ -99,6 +102,9 @@ public class HistoryManager : BindableBase
                 Type = type,
             }
         );
+
+        LastCommitTime = DateTimeOffset.Now;
+        LastCommitType = type;
         _future.Clear();
         NotifyAbilitiesChanged();
         return commit.Id;
@@ -126,6 +132,9 @@ public class HistoryManager : BindableBase
                 Type = type,
             }
         );
+
+        LastCommitTime = DateTimeOffset.Now;
+        LastCommitType = type;
         _future.Clear();
         NotifyAbilitiesChanged();
         return id;
@@ -146,6 +155,9 @@ public class HistoryManager : BindableBase
             throw new InvalidOperationException("Cannot undo, no commits in the undo stack!");
         var commit = _history.Pop();
         _future.Push(commit);
+
+        LastCommitTime = DateTimeOffset.Now;
+        LastCommitType = CommitType.TimeMachine;
         NotifyAbilitiesChanged();
         return commit;
     }
@@ -165,16 +177,18 @@ public class HistoryManager : BindableBase
             throw new InvalidOperationException("Cannot redo, no commits in the redo stack!");
         var commit = _future.Pop();
         _history.Push(commit);
+
+        LastCommitTime = DateTimeOffset.Now;
+        LastCommitType = CommitType.TimeMachine;
         NotifyAbilitiesChanged();
         return commit;
     }
 
     /// <summary>
-    /// Raise property changed events for undo/redo abilities. Also sets the commit time.
+    /// Raise property changed events for undo/redo abilities.
     /// </summary>
     private void NotifyAbilitiesChanged()
     {
-        LastCommitTime = DateTimeOffset.Now;
         RaisePropertyChanged(nameof(CanUndo));
         RaisePropertyChanged(nameof(CanRedo));
     }
