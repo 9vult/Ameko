@@ -105,7 +105,11 @@ public class Workspace : BindableBase
         // https://github.com/arch1t3cht/Aegisub/blob/b2a0b098215d7028ba26f1bf728731fc585f2b99/src/subs_edit_box.cpp#L476
         Logger.Trace($"Setting selection to {primary.Id} (total: {selection.Count})");
 
-        bool amend = false; // TODO: Determine what to do with amend
+        bool amend =
+            _document.HistoryManager.CanUndo
+            && _document.HistoryManager.LastCommitType == changeType
+            && _document.HistoryManager.LastCommitTime.AddSeconds(30) < DateTimeOffset.Now; // TODO: Add an option for this
+
         // TODO: Determine how to best include descriptions here
         foreach (var e in _selectedEventCollection)
         {

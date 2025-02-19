@@ -35,6 +35,7 @@ public class HistoryManager : BindableBase
     /// The type of the most recent commit, used for coalescing
     /// </summary>
     public CommitType LastCommitType { get; private set; }
+    public DateTimeOffset LastCommitTime { get; private set; }
 
     /// <summary>
     /// Commit an event change to history
@@ -78,6 +79,7 @@ public class HistoryManager : BindableBase
             );
             _future.Clear();
             NotifyAbilitiesChanged();
+
             return id;
         }
 
@@ -168,10 +170,11 @@ public class HistoryManager : BindableBase
     }
 
     /// <summary>
-    /// Raise property changed events for undo/redo abilities
+    /// Raise property changed events for undo/redo abilities. Also sets the commit time.
     /// </summary>
     private void NotifyAbilitiesChanged()
     {
+        LastCommitTime = DateTimeOffset.Now;
         RaisePropertyChanged(nameof(CanUndo));
         RaisePropertyChanged(nameof(CanRedo));
     }
