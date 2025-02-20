@@ -1,6 +1,7 @@
 ﻿// SPDX-License-Identifier: MPL-2.0
 
 using System.Collections.ObjectModel;
+using AssCS;
 using Holo.IO;
 using NLog;
 
@@ -20,11 +21,13 @@ namespace Holo;
 /// to use.
 /// </para>
 /// </remarks>
-public class HoloContext
+public class HoloContext : BindableBase
 {
     // ReSharper disable once InconsistentNaming
     private static readonly Lazy<HoloContext> _instance = new(() => new HoloContext());
     private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
+    private Solution _solution;
 
     /// <summary>
     /// Holo instance
@@ -37,6 +40,20 @@ public class HoloContext
     /// </summary>
     public ReadOnlyObservableCollection<string> LogEntries { get; }
 
+    /// <summary>
+    /// The currently-loaded solution
+    /// </summary>
+    public Solution Solution
+    {
+        get => _solution;
+        set => SetProperty(ref _solution, value);
+    }
+
+    /// <summary>
+    /// Application-level configuration options
+    /// </summary>
+    public Configuration Configuration { get; init; }
+
     private HoloContext()
     {
         ObservableCollection<string> logEntries = [];
@@ -46,6 +63,11 @@ public class HoloContext
         LoggerHelper.Initialize(logEntries);
 
         Logger.Info("Initializing Holo");
+
+        Configuration = Configuration.Parse(Paths.Configuration);
+        Configuration.Save();
+
+        _solution = new Solution();
 
         Logger.Info("Initialization complete");
     }
