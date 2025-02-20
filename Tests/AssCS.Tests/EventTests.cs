@@ -118,6 +118,58 @@ public class EventTests
     }
 
     [Fact]
+    public void Cps_Random_Backslash()
+    {
+        Event e = new Event(1)
+        {
+            Start = Time.FromSeconds(0),
+            End = Time.FromSeconds(1),
+            Text = "The quick brown fox\\Njumps \\over the lazy dog",
+        };
+
+        e.Cps.ShouldBe(35);
+    }
+
+    [Fact]
+    public void Cps_Floating_Newline()
+    {
+        Event e = new Event(1)
+        {
+            Start = Time.FromSeconds(0),
+            End = Time.FromSeconds(1),
+            Text = "The quick brown fox \\N jumps over the lazy dog",
+        };
+
+        e.Cps.ShouldBe(35);
+    }
+
+    [Fact]
+    public void Cps_Hard_Space()
+    {
+        Event e = new Event(1)
+        {
+            Start = Time.FromSeconds(0),
+            End = Time.FromSeconds(1),
+            Text = "The quick brown fox\\hjumps over the lazy dog",
+        };
+
+        e.Cps.ShouldBe(35);
+    }
+
+    [Fact]
+    public void Cps_Terminating_Newline()
+    {
+        Event e = new Event(1)
+        {
+            Start = Time.FromSeconds(0),
+            End = Time.FromSeconds(1),
+            Text = "The quick brown fox jumps over the lazy dog\\N",
+        };
+
+        e.Cps.ShouldBe(35);
+    }
+
+    [Fact]
     public void Cps_Tags()
     {
         Event e = new Event(1)
@@ -129,6 +181,73 @@ public class EventTests
         };
 
         e.Cps.ShouldBe(35);
+    }
+
+    [Fact]
+    public void Cps_Kanji()
+    {
+        Event e = new Event(1)
+        {
+            Start = Time.FromSeconds(0),
+            End = Time.FromSeconds(1),
+            Text = "この番組は、ご覧のスポンサーの提供でお送りします。",
+        };
+
+        e.Cps.ShouldBe(23);
+    }
+
+    [Fact]
+    public void Cps_Decomposed_Hangul()
+    {
+        Event e1 = new Event(1)
+        {
+            Start = Time.FromSeconds(0),
+            End = Time.FromSeconds(1),
+            Text = "\u1100\u1161\u11a8", // 각
+        };
+
+        Event e2 = new Event(2)
+        {
+            Start = Time.FromSeconds(0),
+            End = Time.FromSeconds(1),
+            Text = "\uac01", // 각
+        };
+
+        e1.Cps.ShouldBe(e2.Cps);
+    }
+
+    [Fact]
+    public void Cps_Ffi_Ligature()
+    {
+        Event e1 = new Event(1)
+        {
+            Start = Time.FromSeconds(0),
+            End = Time.FromSeconds(1),
+            Text = "ﬃ",
+        };
+
+        Event e2 = new Event(2)
+        {
+            Start = Time.FromSeconds(0),
+            End = Time.FromSeconds(1),
+            Text = "ffi",
+        };
+
+        e1.Cps.ShouldNotBe(e2.Cps);
+    }
+
+    [Fact]
+    public void Cps_Multilingual()
+    {
+        Event e = new Event(1)
+        {
+            Start = Time.FromSeconds(0),
+            End = Time.FromSeconds(1),
+            Text =
+                "He said, \"Hello world!\"\\N彼は「おはよう世界！」と言いました。\\nОн сказал: «Здравствуй, мир!»",
+        };
+
+        e.Cps.ShouldBe(51);
     }
 
     [Fact]
@@ -183,6 +302,59 @@ public class EventTests
         };
 
         e.MaxLineWidth.ShouldBe(19);
+    }
+
+    [Fact]
+    public void MaxLineWidth_Kanji()
+    {
+        Event e = new Event(1)
+        {
+            Start = Time.FromSeconds(0),
+            End = Time.FromSeconds(1),
+            Text = "この番組は、\\nご覧のスポンサーの提供でお送りします。",
+        };
+
+        e.MaxLineWidth.ShouldBe(19);
+    }
+
+    [Fact]
+    public void MaxLineWidth_Decomposed_Hangul()
+    {
+        Event e = new Event(1)
+        {
+            Start = Time.FromSeconds(0),
+            End = Time.FromSeconds(1),
+            Text = "\u1100\u1161\u11a8\\N\uac01", // 각 \n 각
+        };
+
+        e.MaxLineWidth.ShouldBe(1);
+    }
+
+    [Fact]
+    public void MaxLineWidth_Ffi_Ligature()
+    {
+        Event e = new Event(1)
+        {
+            Start = Time.FromSeconds(0),
+            End = Time.FromSeconds(1),
+            Text = "ﬃ\\Nffi",
+        };
+
+        e.MaxLineWidth.ShouldBe(3);
+    }
+
+    [Fact]
+    public void MaxLineWidth_Multilingual()
+    {
+        Event e = new Event(1)
+        {
+            Start = Time.FromSeconds(0),
+            End = Time.FromSeconds(1),
+            Text =
+                "He said, \"Hello world!\"\\N彼は「おはよう世界！」と言いました。\\nОн сказал: «Здравствуй, мир!»",
+        };
+
+        e.MaxLineWidth.ShouldBe(26);
     }
 
     #endregion Cps & Line Width
