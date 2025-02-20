@@ -16,6 +16,6 @@ internal record SolutionModel
     public required double Version;
     public required string[] ReferencedDocuments;
     public required string[] Styles;
-    public required int Cps;
+    public required int? Cps;
     public required bool? UseSoftLinebreaks;
 }
