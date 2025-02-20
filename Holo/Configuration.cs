@@ -143,7 +143,7 @@ public class Configuration : BindableBase
     /// <param name="reader">Reader to read the configuration from</param>
     /// <param name="filePath">Path to the configuration file</param>
     /// <returns><see cref="Configuration"/> object</returns>
-    public static Configuration Parse(TextReader reader, Uri filePath)
+    public static Configuration Parse(TextReader reader, Uri? filePath)
     {
         try
         {
@@ -172,7 +172,7 @@ public class Configuration : BindableBase
         }
     }
 
-    internal Configuration()
+    public Configuration()
     {
         Cps = 18;
         UseSoftLinebreaks = false;
