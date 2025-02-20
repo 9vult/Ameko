@@ -41,7 +41,7 @@ public class Solution : BindableBase
     private int _docId;
     private int _workingSpaceId;
 
-    private int _cps;
+    private int? _cps;
     private bool? _useSoftLinebreaks;
 
     /// <summary>
@@ -100,7 +100,7 @@ public class Solution : BindableBase
     /// <summary>
     /// Workspace-scoped characters-per-second threshold
     /// </summary>
-    public int Cps
+    public int? Cps
     {
         get => _cps;
         set
