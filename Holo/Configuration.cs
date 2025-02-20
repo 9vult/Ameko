@@ -187,8 +187,12 @@ public class Configuration : BindableBase
     /// <param name="reader">Reader to read the configuration from</param>
     /// <param name="filePath">Path to the configuration file</param>
     /// <returns><see cref="Configuration"/> object</returns>
+    /// <remarks>Returns the default configuration if <paramref name="reader"/> is empty.</remarks>
     public static Configuration Parse(TextReader reader, Uri? filePath)
     {
+        if (reader.Peek() == -1)
+            return new Configuration();
+
         try
         {
             var model =
