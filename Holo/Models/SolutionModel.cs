@@ -17,5 +17,7 @@ internal record SolutionModel
     public required string[] ReferencedDocuments;
     public required string[] Styles;
     public required int? Cps;
+    public required bool? CpsIncludesWhitespace;
+    public required bool? CpsIncludesPunctuation;
     public required bool? UseSoftLinebreaks;
 }

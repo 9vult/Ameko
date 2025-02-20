@@ -28,9 +28,13 @@ public class Configuration : BindableBase
     private static readonly JsonSerializerOptions JsonOptions = new() { IncludeFields = true };
 
     private int _cps;
+    private bool _cpsIncludesWhitespace;
+    private bool _cpsIncludesPunctuation;
     private bool _autosaveEnabled;
     private int _autosaveInterval;
     private bool _useSoftLinebreaks;
+    private bool _lineWidthIncludesWhitespace;
+    private bool _lineWidthIncludesPunctuation;
 
     /// <summary>
     /// Characters-per-second threshold
@@ -40,6 +44,24 @@ public class Configuration : BindableBase
     {
         get => _cps;
         set => SetProperty(ref _cps, value);
+    }
+
+    /// <summary>
+    /// If whitespace should be included in <see cref="Event.Cps"/> calculation
+    /// </summary>
+    public bool CpsIncludesWhitespace
+    {
+        get => _cpsIncludesWhitespace;
+        set => SetProperty(ref _cpsIncludesWhitespace, value);
+    }
+
+    /// <summary>
+    /// If punctuation should be included in <see cref="Event.Cps"/> calculation
+    /// </summary>
+    public bool CpsIncludesPunctuation
+    {
+        get => _cpsIncludesPunctuation;
+        set => SetProperty(ref _cpsIncludesPunctuation, value);
     }
 
     /// <summary>
@@ -68,6 +90,24 @@ public class Configuration : BindableBase
     {
         get => _autosaveInterval;
         set => SetProperty(ref _autosaveInterval, value);
+    }
+
+    /// <summary>
+    /// If whitespace should be included in <see cref="Event.MaxLineWidth"/> calculation
+    /// </summary>
+    public bool LineWidthIncludesWhitespace
+    {
+        get => _lineWidthIncludesWhitespace;
+        set => SetProperty(ref _lineWidthIncludesWhitespace, value);
+    }
+
+    /// <summary>
+    /// If punctuation should be included in <see cref="Event.MaxLineWidth"/> calculation
+    /// </summary>
+    public bool LineWidthIncludesPunctuation
+    {
+        get => _lineWidthIncludesPunctuation;
+        set => SetProperty(ref _lineWidthIncludesPunctuation, value);
     }
 
     public Uri? SavePath { get; init; }
@@ -105,9 +145,13 @@ public class Configuration : BindableBase
             {
                 Version = ConfigurationModel.CurrentApiVersion,
                 Cps = _cps,
+                CpsIncludesWhitespace = _cpsIncludesWhitespace,
+                CpsIncludesPunctuation = _cpsIncludesPunctuation,
                 UseSoftLinebreaks = _useSoftLinebreaks,
                 AutosaveEnabled = _autosaveEnabled,
                 AutosaveInterval = _autosaveInterval,
+                LineWidthIncludesWhitespace = _lineWidthIncludesWhitespace,
+                LineWidthIncludesPunctuation = _lineWidthIncludesPunctuation,
             };
 
             var content = JsonSerializer.Serialize(model, JsonOptions);
@@ -155,9 +199,13 @@ public class Configuration : BindableBase
             {
                 SavePath = filePath,
                 Cps = model.Cps,
+                CpsIncludesWhitespace = model.CpsIncludesWhitespace,
+                CpsIncludesPunctuation = model.CpsIncludesPunctuation,
                 UseSoftLinebreaks = model.UseSoftLinebreaks,
                 AutosaveEnabled = model.AutosaveEnabled,
                 AutosaveInterval = model.AutosaveInterval,
+                LineWidthIncludesWhitespace = model.LineWidthIncludesWhitespace,
+                LineWidthIncludesPunctuation = model.LineWidthIncludesPunctuation,
             };
         }
         catch (JsonException je)
