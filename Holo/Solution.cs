@@ -42,6 +42,8 @@ public class Solution : BindableBase
     private int _workingSpaceId;
 
     private int? _cps;
+    private bool? _cpsIncludesWhitespace;
+    private bool? _cpsIncludesPunctuation;
     private bool? _useSoftLinebreaks;
 
     /// <summary>
@@ -106,6 +108,32 @@ public class Solution : BindableBase
         set
         {
             SetProperty(ref _cps, value);
+            IsSaved = false;
+        }
+    }
+
+    /// <summary>
+    /// If whitespace should be included in <see cref="Event.Cps"/> calculation
+    /// </summary>
+    public bool? CpsIncludesWhitespace
+    {
+        get => _cpsIncludesWhitespace;
+        set
+        {
+            SetProperty(ref _cpsIncludesWhitespace, value);
+            IsSaved = false;
+        }
+    }
+
+    /// <summary>
+    /// If punctuation should be included in <see cref="Event.Cps"/> calculation
+    /// </summary>
+    public bool? CpsIncludesPunctuation
+    {
+        get => _cpsIncludesPunctuation;
+        set
+        {
+            SetProperty(ref _cpsIncludesPunctuation, value);
             IsSaved = false;
         }
     }
@@ -313,6 +341,8 @@ public class Solution : BindableBase
                     .ToArray(),
                 Styles = _styleManager.Styles.Select(s => s.AsAss()).ToArray(),
                 Cps = _cps,
+                CpsIncludesWhitespace = _cpsIncludesWhitespace,
+                CpsIncludesPunctuation = _cpsIncludesPunctuation,
                 UseSoftLinebreaks = _useSoftLinebreaks,
             };
 
@@ -371,6 +401,8 @@ public class Solution : BindableBase
                 ))
             );
             sln._cps = model.Cps;
+            sln._cpsIncludesWhitespace = model.CpsIncludesWhitespace;
+            sln._cpsIncludesPunctuation = model.CpsIncludesPunctuation;
             sln._useSoftLinebreaks = model.UseSoftLinebreaks;
 
             model

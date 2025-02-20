@@ -11,7 +11,11 @@ internal record ConfigurationModel
 
     public required double Version;
     public required int Cps;
+    public required bool CpsIncludesWhitespace;
+    public required bool CpsIncludesPunctuation;
     public required bool UseSoftLinebreaks;
     public required bool AutosaveEnabled;
     public required int AutosaveInterval;
+    public required bool LineWidthIncludesWhitespace;
+    public required bool LineWidthIncludesPunctuation;
 }
