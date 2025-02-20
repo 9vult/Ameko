@@ -1,5 +1,7 @@
 ﻿// SPDX-License-Identifier: MPL-2.0
 
+using System.Globalization;
+using System.Text;
 using System.Text.RegularExpressions;
 using AssCS.Overrides;
 using AssCS.Overrides.Blocks;
@@ -127,6 +129,7 @@ public partial class Event(int id) : BindableBase, IEntry
     /// </summary>
     public List<int> LinkedExtradatas { get; set; } = [];
 
+    // TODO: Implement configuration
     /// <summary>
     /// Characters per second
     /// </summary>
@@ -138,23 +141,62 @@ public partial class Event(int id) : BindableBase, IEntry
             var secs = (End - Start).TotalSeconds;
             if (secs == 0)
                 return 0;
-            var text = GetStrippedText()
-                .Replace("\\N", string.Empty)
-                .Replace("\\n", string.Empty)
-                .Replace(" ", string.Empty);
-            return Math.Round(text.Length / (End - Start).TotalSeconds);
+
+            var input = NewlineHardSpaceRegex().Replace(GetStrippedText(), string.Empty);
+            if (string.IsNullOrWhiteSpace(input))
+                return 0;
+            var charCount = 0;
+
+            var tee = StringInfo.GetTextElementEnumerator(input);
+            while (tee.MoveNext())
+            {
+                var element = tee.GetTextElement();
+                if (true)
+                    if (Char.IsWhiteSpace(element[0]))
+                        continue;
+                if (true)
+                    if (Char.IsPunctuation(element[0]))
+                        continue;
+                charCount++;
+            }
+            return Math.Round(charCount / secs);
         }
     }
 
+    // TODO: Implement configuration
     /// <summary>
     /// Length (in characters) of the longest line in the event
     /// </summary>
-    public int MaxLineWidth =>
-        GetStrippedText()
-            .Replace(" ", string.Empty)
-            .Split(["\\N", "\\n"], StringSplitOptions.None)
-            .Select(l => l.Length)
-            .Max();
+    public int MaxLineWidth
+    {
+        get
+        {
+            var lines = GetStrippedText().Split(["\\N", "\\n"], StringSplitOptions.None);
+            return lines
+                .Select(line =>
+                {
+                    var input = NewlineHardSpaceRegex().Replace(line, string.Empty);
+                    if (string.IsNullOrWhiteSpace(input))
+                        return 0;
+                    var charCount = 0;
+
+                    var tee = StringInfo.GetTextElementEnumerator(input);
+                    while (tee.MoveNext())
+                    {
+                        var element = tee.GetTextElement();
+                        if (true)
+                            if (Char.IsWhiteSpace(element[0]))
+                                continue;
+                        if (false)
+                            if (Char.IsPunctuation(element[0]))
+                                continue;
+                        charCount++;
+                    }
+                    return charCount;
+                })
+                .Max();
+        }
+    }
 
     /// <summary>
     /// Make inline Lua code snippets ass-compliant
@@ -747,4 +789,10 @@ public partial class Event(int id) : BindableBase, IEntry
 
     [GeneratedRegex(@"--\[\[([0-9]+)\]\]")]
     private static partial Regex AssToCodeRegex();
+
+    [GeneratedRegex(@"[\p{L}\p{N}]")]
+    private static partial Regex CpsRegex();
+
+    [GeneratedRegex(@"\\[Nnh]")]
+    private static partial Regex NewlineHardSpaceRegex();
 }
