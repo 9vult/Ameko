@@ -5,6 +5,10 @@ using NLog;
 
 namespace Holo.DependencyControl.Models;
 
+/// <summary>
+/// A repository is a collection of <see cref="Module"/>s
+/// and <see cref="Repositories"/> for use in Dependency Control
+/// </summary>
 public record Repository
 {
     /// <summary>
