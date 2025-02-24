@@ -67,7 +67,7 @@ public record Module
     public required string Url { get; set; }
 
     /// <summary>
-    /// Automatic property
+    /// Name of repository (automatic)
     /// </summary>
     public string? Repository { get; set; }
 }

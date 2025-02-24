@@ -1,5 +1,7 @@
 ﻿// SPDX-License-Identifier: MPL-2.0
 
+using System.Collections.Frozen;
+using System.Collections.ObjectModel;
 using System.Text.Json;
 using NLog;
 
@@ -34,13 +36,13 @@ public record Repository
     /// <summary>
     /// Modules hosted by this repository
     /// </summary>
-    public required List<Module> Modules { get; init; }
+    public required FrozenSet<Module> Modules { get; init; }
 
     /// <summary>
     /// Repositories hoisted by this repository
     /// </summary>
     /// <remarks>Repository json URLs</remarks>
-    public required List<string> Repositories { get; init; }
+    public required FrozenSet<string> Repositories { get; init; }
 
     /// <summary>
     /// Automatic property
