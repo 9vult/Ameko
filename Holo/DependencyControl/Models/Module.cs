@@ -2,6 +2,9 @@
 
 namespace Holo.DependencyControl.Models;
 
+/// <summary>
+/// A Module is an entry in a <see cref="Repository"/> for a <see cref="Scripting.HoloScript"/>
+/// </summary>
 public record Module
 {
     /// <summary>
