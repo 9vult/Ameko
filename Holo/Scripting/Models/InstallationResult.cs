@@ -1,6 +1,6 @@
 ﻿// SPDX-License-Identifier: MPL-2.0
 
-namespace Holo.DependencyControl.Models;
+namespace Holo.Scripting.Models;
 
 /// <summary>
 /// Dependency Control installation results

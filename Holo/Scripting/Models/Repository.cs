@@ -1,11 +1,10 @@
 ﻿// SPDX-License-Identifier: MPL-2.0
 
 using System.Collections.Frozen;
-using System.Collections.ObjectModel;
 using System.Text.Json;
 using NLog;
 
-namespace Holo.DependencyControl.Models;
+namespace Holo.Scripting.Models;
 
 /// <summary>
 /// A repository is a collection of <see cref="Module"/>s

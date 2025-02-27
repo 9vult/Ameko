@@ -1,12 +1,13 @@
 ﻿// SPDX-License-Identifier: MPL-2.0
 
 using System.Collections.ObjectModel;
+using System.IO.Abstractions;
 using System.Text.Json;
-using Holo.DependencyControl.Models;
 using Holo.IO;
+using Holo.Scripting.Models;
 using NLog;
 
-namespace Holo.DependencyControl;
+namespace Holo.Scripting;
 
 /// <summary>
 /// Dependency Control manages <see cref="Repository"/>s and <see cref="Module"/>s
@@ -19,6 +20,7 @@ public class DependencyControl
         Path.Combine(Directories.DataHome, "scripts")
     );
 
+    private IFileSystem _fileSystem;
     private Repository? _baseRepository;
     private readonly Dictionary<string, Repository> _repositoryMap;
     private readonly Dictionary<string, Module> _moduleMap;
@@ -44,9 +46,9 @@ public class DependencyControl
 
     #region Modules
 
-    public static bool IsModuleInstalled(string qualifiedName)
+    public bool IsModuleInstalled(string qualifiedName)
     {
-        return File.Exists(ModulePath(qualifiedName));
+        return _fileSystem.File.Exists(ModulePath(qualifiedName));
     }
 
     /// <summary>
@@ -83,7 +85,7 @@ public class DependencyControl
         try
         {
             await using var stream = await client.GetStreamAsync(module.Url);
-            await using var fs = new FileStream(
+            await using var fs = _fileSystem.FileStream.New(
                 ModulePath(module.QualifiedName),
                 FileMode.OpenOrCreate
             );
@@ -122,7 +124,7 @@ public class DependencyControl
 
         try
         {
-            File.Delete(ModulePath(module.QualifiedName));
+            _fileSystem.File.Delete(ModulePath(module.QualifiedName));
             Logger.Info($"Successfully uninstalled module {module.QualifiedName}");
             return InstallationResult.Success;
         }
@@ -157,7 +159,7 @@ public class DependencyControl
     /// </summary>
     /// <param name="qualifiedName">Qualified name of the module</param>
     /// <returns>The filepath, ending in <c>.cs</c></returns>
-    private static string ModulePath(string qualifiedName)
+    public static string ModulePath(string qualifiedName)
     {
         return Path.Combine(ModulesRoot.LocalPath, $"{qualifiedName}.cs");
     }
@@ -240,8 +242,19 @@ public class DependencyControl
 
     #endregion Repositories
 
+    /// <summary>
+    /// Instantiate a Dependency Control instance
+    /// </summary>
     public DependencyControl()
+        : this(new FileSystem()) { }
+
+    /// <summary>
+    /// Instantiate a Dependency Control instance
+    /// </summary>
+    /// <param name="fileSystem">FileSystem to use</param>
+    public DependencyControl(IFileSystem fileSystem)
     {
+        _fileSystem = fileSystem;
         _repositoryMap = [];
         _moduleMap = [];
         _repositories = [];
