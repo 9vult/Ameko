@@ -1,6 +1,6 @@
 ﻿// SPDX-License-Identifier: MPL-2.0
 
-namespace Holo.DependencyControl.Models;
+namespace Holo.Scripting.Models;
 
 /// <summary>
 /// A Module is an entry in a <see cref="Repository"/> for a <see cref="Scripting.HoloScript"/>
