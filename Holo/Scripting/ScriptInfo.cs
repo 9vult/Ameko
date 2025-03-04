@@ -10,7 +10,7 @@ public readonly struct ScriptInfo
     /// <summary>
     /// Name of the script
     /// </summary>
-    public required string FriendlyName { get; init; }
+    public required string DisplayName { get; init; }
 
     /// <summary>
     /// Uniquely identifying name
