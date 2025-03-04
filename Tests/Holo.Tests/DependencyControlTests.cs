@@ -2,6 +2,7 @@
 
 using System.IO.Abstractions.TestingHelpers;
 using Holo.Scripting;
+using Holo.Scripting.Models;
 using Shouldly;
 
 namespace Holo.Tests;
@@ -31,5 +32,13 @@ public class DependencyControlTests
         var dc = new DependencyControl(fileSystem);
 
         dc.IsModuleInstalled("author.test").ShouldBeFalse();
+    }
+
+    [Fact]
+    public void ModulePath()
+    {
+        const string moduleName = "author.test";
+        var path = DependencyControl.ModulePath(moduleName);
+        path.ShouldEndWith($"{moduleName}.cs");
     }
 }
