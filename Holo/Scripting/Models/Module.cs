@@ -1,5 +1,7 @@
 ﻿// SPDX-License-Identifier: MPL-2.0
 
+using System.Collections.Frozen;
+
 namespace Holo.Scripting.Models;
 
 /// <summary>
@@ -53,7 +55,7 @@ public record Module
     /// <summary>
     /// List of qualified module names this module depends on
     /// </summary>
-    public required List<string> Dependencies { get; init; }
+    public required FrozenSet<string> Dependencies { get; init; }
 
     /// <summary>
     /// List of tags for categorization

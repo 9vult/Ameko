@@ -16,4 +16,10 @@ public readonly struct ExecutionResult
     /// An optional message providing additional details about the script's execution result
     /// </summary>
     public string? Message { get; init; }
+
+    /// <summary>
+    /// Generic success result for convenience
+    /// </summary>
+    public static ExecutionResult Success =>
+        new ExecutionResult { Status = ExecutionStatus.Success };
 }
