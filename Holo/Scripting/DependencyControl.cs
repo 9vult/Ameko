@@ -20,7 +20,12 @@ public class DependencyControl
         Path.Combine(Directories.DataHome, "scripts")
     );
 
-    private IFileSystem _fileSystem;
+    /// <summary>
+    /// The filesystem being used
+    /// </summary>
+    /// <summary>This allows for filesystem mocking to be used in tests</summary>
+    private readonly IFileSystem _fileSystem;
+
     private Repository? _baseRepository;
     private readonly Dictionary<string, Repository> _repositoryMap;
     private readonly Dictionary<string, Module> _moduleMap;
