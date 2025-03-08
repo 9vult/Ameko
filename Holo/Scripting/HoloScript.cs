@@ -12,13 +12,13 @@ public abstract class HoloScript
     /// <summary>
     /// Basic script information
     /// </summary>
-    public ScriptInfo Info { get; init; }
+    public virtual ScriptInfo Info { get; init; }
 
     /// <summary>
     /// Script entry point
     /// </summary>
     /// <returns>Result of script execution</returns>
-    public abstract Task<ExecutionResult> Execute();
+    public abstract Task<ExecutionResult> ExecuteAsync();
 
     /// <summary>
     /// Entry point for exported methods
@@ -27,12 +27,12 @@ public abstract class HoloScript
     /// <returns>Result of script execution</returns>
     /// <remarks>
     /// <para><b>You MUST override this method if your script uses exported methods!</b></para>
-    /// <para>The default implementation calls <see cref="Execute()"/>, ignoring the <paramref name="methodName"/>.</para>
+    /// <para>The default implementation calls <see cref="ExecuteAsync"/>, ignoring the <paramref name="methodName"/>.</para>
     /// </remarks>
-    public virtual Task<ExecutionResult> Execute(string methodName)
+    public virtual async Task<ExecutionResult> ExecuteAsync(string methodName)
     {
         Logger.Info($"Ignoring method {methodName} and executing normally");
-        return Execute();
+        return await ExecuteAsync();
     }
 
     // ReSharper disable once MemberCanBePrivate.Global

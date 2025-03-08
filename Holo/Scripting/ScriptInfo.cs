@@ -41,7 +41,7 @@ public readonly struct ScriptInfo
     /// </summary>
     /// <remarks>
     /// <para>Method qualified names must follow the format <c>[scriptQName].funcName</c>. The funcName must not contain full stops.</para>
-    /// <para>The method qualified name (after the last full stop) will be passed to <see cref="HoloScript.Execute(string)"/></para>
+    /// <para>The method qualified name (after the last full stop) will be passed to <see cref="HoloScript.ExecuteAsync(string)"/></para>
     /// </remarks>
     public required string[] Exports { get; init; }
 
