@@ -23,8 +23,14 @@ public class DependencyControl
     /// <summary>
     /// The filesystem being used
     /// </summary>
-    /// <summary>This allows for filesystem mocking to be used in tests</summary>
+    /// <remarks>This allows for filesystem mocking to be used in tests</remarks>
     private readonly IFileSystem _fileSystem;
+
+    /// <summary>
+    /// The HttpClient being used
+    /// </summary>
+    /// <remarks>This allows for client mocking to be used in tests</remarks>
+    private readonly HttpClient _httpClient;
 
     private Repository? _baseRepository;
     private readonly Dictionary<string, Repository> _repositoryMap;
@@ -33,6 +39,11 @@ public class DependencyControl
     private readonly ObservableCollection<Module> _moduleStore;
 
     private readonly ObservableCollection<Module> _installedModules;
+
+    /// <summary>
+    /// Base repository URL
+    /// </summary>
+    public const string BaseRepositoryUrl = "https://dc.ameko.moe/base.json";
 
     /// <summary>
     /// List of available repositories
@@ -86,14 +97,12 @@ public class DependencyControl
                 return depResult; // Cascade failures
         }
 
-        using var client = new HttpClient();
         try
         {
-            await using var stream = await client.GetStreamAsync(module.Url);
-            await using var fs = _fileSystem.FileStream.New(
-                ModulePath(module.QualifiedName),
-                FileMode.OpenOrCreate
-            );
+            var path = ModulePath(module.QualifiedName);
+            _fileSystem.Directory.CreateDirectory(path); // Create module directory if it doesn't exist
+            await using var stream = await _httpClient.GetStreamAsync(module.Url);
+            await using var fs = _fileSystem.FileStream.New(path, FileMode.OpenOrCreate);
             await stream.CopyToAsync(fs);
             _installedModules.Add(module);
             Logger.Info($"Successfully installed module {module.QualifiedName}");
@@ -184,7 +193,7 @@ public class DependencyControl
 
         foreach (string url in repository.Repositories)
         {
-            var repo = await Repository.Build(url);
+            var repo = await Repository.Build(url, _httpClient);
             if (repo is null)
             {
                 Logger.Warn($"Unable to build repository {url}");
@@ -230,7 +239,7 @@ public class DependencyControl
     {
         foreach (var url in repoUrls)
         {
-            var repo = await Repository.Build(url);
+            var repo = await Repository.Build(url, _httpClient);
             if (repo is not null)
                 await GatherRepositories(repo);
         }
@@ -240,9 +249,14 @@ public class DependencyControl
     /// <summary>
     /// Set up the base repository
     /// </summary>
-    private async Task SetUpBaseRepository()
+    public async Task SetUpBaseRepository()
     {
-        _baseRepository = await Repository.Build("");
+        _baseRepository = await Repository.Build(BaseRepositoryUrl, _httpClient);
+        if (_baseRepository is not null)
+        {
+            await GatherRepositories(_baseRepository);
+            GatherModules();
+        }
     }
 
     #endregion Repositories
@@ -250,16 +264,26 @@ public class DependencyControl
     /// <summary>
     /// Instantiate a Dependency Control instance
     /// </summary>
+    /// <remarks>
+    /// This constructor does not set up the base repository.
+    /// <see cref="SetUpBaseRepository"/> should be called following construction
+    /// </remarks>
     public DependencyControl()
-        : this(new FileSystem()) { }
+        : this(new FileSystem(), new HttpClient()) { }
 
     /// <summary>
     /// Instantiate a Dependency Control instance
     /// </summary>
     /// <param name="fileSystem">FileSystem to use</param>
-    public DependencyControl(IFileSystem fileSystem)
+    /// <param name="httpClient">HttpClient to use</param>
+    /// <remarks>
+    /// This constructor does not set up the base repository.
+    /// <see cref="SetUpBaseRepository"/> should be called following construction
+    /// </remarks>
+    public DependencyControl(IFileSystem fileSystem, HttpClient httpClient)
     {
         _fileSystem = fileSystem;
+        _httpClient = httpClient;
         _repositoryMap = [];
         _moduleMap = [];
         _repositories = [];
@@ -271,7 +295,5 @@ public class DependencyControl
         ModuleStore = new ReadOnlyObservableCollection<Module>(_moduleStore);
 
         InstalledModules = new ReadOnlyObservableCollection<Module>(_installedModules);
-
-        _ = SetUpBaseRepository();
     }
 }
