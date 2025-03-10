@@ -1,7 +1,9 @@
 ﻿// SPDX-License-Identifier: MPL-2.0
 
 using System.Collections.Frozen;
+using System.Collections.Immutable;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using NLog;
 
 namespace Holo.Scripting.Models;
@@ -35,12 +37,14 @@ public record Repository
     /// <summary>
     /// Modules hosted by this repository
     /// </summary>
+    [JsonIgnore]
     public required FrozenSet<Module> Modules { get; init; }
 
     /// <summary>
     /// Repositories hoisted by this repository
     /// </summary>
     /// <remarks>Repository json URLs</remarks>
+    [JsonIgnore]
     public required FrozenSet<string> Repositories { get; init; }
 
     /// <summary>
@@ -57,10 +61,10 @@ public record Repository
     /// Build a repository
     /// </summary>
     /// <param name="url">Url to download repository data from</param>
+    /// <param name="client">HttpClient to use</param>
     /// <returns><see cref="Repository"/> object, or <see langword="null"/> on failure</returns>
-    public static async Task<Repository?> Build(string url)
+    public static async Task<Repository?> Build(string url, HttpClient client)
     {
-        using HttpClient client = new HttpClient();
         try
         {
             string content = await client.GetStringAsync(url);
@@ -100,4 +104,22 @@ public record Repository
             return null;
         }
     }
+
+    #region Serialization fields
+
+    [JsonPropertyName("Repositories")]
+    public HashSet<string> SerializationRepositories
+    {
+        get => Repositories.ToHashSet();
+        init => Repositories = value.ToFrozenSet();
+    }
+
+    [JsonPropertyName("Modules")]
+    public HashSet<Module> SerializationModules
+    {
+        get => Modules.ToHashSet();
+        init => Modules = value.ToFrozenSet();
+    }
+
+    #endregion Serialization fields
 }
