@@ -1,6 +1,7 @@
 ﻿// SPDX-License-Identifier: MPL-2.0
 
 using System.Collections.Frozen;
+using System.Text.Json.Serialization;
 
 namespace Holo.Scripting.Models;
 
@@ -55,12 +56,14 @@ public record Module
     /// <summary>
     /// List of qualified module names this module depends on
     /// </summary>
+    [JsonIgnore]
     public required FrozenSet<string> Dependencies { get; init; }
 
     /// <summary>
     /// List of tags for categorization
     /// </summary>
-    public required List<string> Tags { get; init; }
+    [JsonIgnore]
+    public required FrozenSet<string> Tags { get; init; }
 
     /// <summary>
     /// URL to download
@@ -72,4 +75,22 @@ public record Module
     /// Name of repository (automatic)
     /// </summary>
     public string? Repository { get; set; }
+
+    #region Serialization fields
+
+    [JsonPropertyName("Dependencies")]
+    public HashSet<string> SerializationDependencies
+    {
+        get => Dependencies.ToHashSet();
+        init => Dependencies = value.ToFrozenSet();
+    }
+
+    [JsonPropertyName("Tags")]
+    public HashSet<string> SerializationTags
+    {
+        get => Tags.ToHashSet();
+        init => Tags = value.ToFrozenSet();
+    }
+
+    #endregion Serialization fields
 }
