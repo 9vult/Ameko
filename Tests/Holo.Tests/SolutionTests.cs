@@ -102,10 +102,7 @@ public class SolutionTests
     [Fact]
     public void Parse()
     {
-        const string input =
-            "{\"Version\":1,\"ReferencedDocuments\":[],\"Styles\":[],\"Cps\":21,\"UseSoftLinebreaks\":null}";
-
-        var sr = new StringReader(input);
+        var sr = new StringReader(ExampleSolution);
         var sln = Solution.Parse(sr, new Uri("file:///test.asln"));
 
         sln.Cps.ShouldBe(21);
@@ -113,4 +110,16 @@ public class SolutionTests
         sln.ReferencedDocuments.Count.ShouldBe(1);
         sln.StyleManager.Styles.Count.ShouldBe(0);
     }
+
+    private const string ExampleSolution = """
+         {
+             "Version": 1,
+             "ReferencedDocuments": [],
+             "Styles": [],
+             "Cps": 21,
+             "CpsIncludesWhitespace": null,
+             "CpsIncludesPunctuation": null,
+             "UseSoftLinebreaks": null
+         }
+        """;
 }

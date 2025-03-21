@@ -29,10 +29,7 @@ public class ConfigurationTests
     [Fact]
     public void Parse()
     {
-        const string input =
-            "{\"Version\":1,\"Cps\":12,\"UseSoftLinebreaks\":true,\"AutosaveEnabled\":false,\"AutosaveInterval\":120}";
-
-        var sr = new StringReader(input);
+        var sr = new StringReader(ExampleConfiguration);
         var cfg = Configuration.Parse(sr, null);
 
         cfg.Cps.ShouldBe(12);
@@ -40,4 +37,18 @@ public class ConfigurationTests
         cfg.AutosaveEnabled.ShouldBe(false);
         cfg.AutosaveInterval.ShouldBe(120);
     }
+
+    private const string ExampleConfiguration = """
+        {
+            "Version": 1,
+            "Cps": 12,
+            "CpsIncludesWhitespace": false,
+            "CpsIncludesPunctuation": false,
+            "UseSoftLinebreaks": true,
+            "AutosaveEnabled": false,
+            "AutosaveInterval": 120,
+            "LineWidthIncludesWhitespace": true,
+            "LineWidthIncludesPunctuation": true
+        }
+        """;
 }
