@@ -1,0 +1,5 @@
+# C# and axaml files
+[{*.cs, *.axaml}]
+
+insert_final_newline = true
+file_header_template = SPDX-License-Identifier: GPL-3.0-only
