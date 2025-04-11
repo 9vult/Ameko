@@ -5,16 +5,17 @@
         xmlns:vm="using:Ameko.ViewModels"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:windows="clr-namespace:Ameko.ViewModels.Windows"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-        x:Class="Ameko.Views.MainWindow"
-        x:DataType="vm:MainWindowViewModel"
+        x:Class="Ameko.Views.Windows.MainWindow"
+        x:DataType="windows:MainWindowViewModel"
         Icon="/Assets/avalonia-logo.ico"
         Title="Ameko">
 
     <Design.DataContext>
         <!-- This only sets the DataContext for the previewer in an IDE,
              to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
-        <vm:MainWindowViewModel/>
+        <windows:MainWindowViewModel/>
     </Design.DataContext>
 
     <TextBlock Text="{Binding Greeting}" HorizontalAlignment="Center" VerticalAlignment="Center"/>

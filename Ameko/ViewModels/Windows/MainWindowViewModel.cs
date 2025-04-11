@@ -2,7 +2,7 @@
 
 using Ameko.Services;
 
-namespace Ameko.ViewModels;
+namespace Ameko.ViewModels.Windows;
 
 public partial class MainWindowViewModel : ViewModelBase
 {

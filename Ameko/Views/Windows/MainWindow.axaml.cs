@@ -2,7 +2,7 @@
 
 using Avalonia.Controls;
 
-namespace Ameko.Views;
+namespace Ameko.Views.Windows;
 
 public partial class MainWindow : Window
 {
