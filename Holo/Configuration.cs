@@ -177,6 +177,9 @@ public class Configuration : BindableBase
     /// <returns><see cref="Configuration"/> object</returns>
     public static Configuration Parse(Uri filePath)
     {
+        if (!File.Exists(filePath.LocalPath))
+            return new Configuration { SavePath = filePath };
+
         using var reader = new StreamReader(filePath.LocalPath);
         return Parse(reader, filePath);
     }
@@ -191,7 +194,7 @@ public class Configuration : BindableBase
     public static Configuration Parse(TextReader reader, Uri? filePath)
     {
         if (reader.Peek() == -1)
-            return new Configuration();
+            return new Configuration { SavePath = filePath };
 
         try
         {
