@@ -34,9 +34,9 @@ internal class LoggerHelper
         };
         var collectionTarget = new ObservableCollectionTarget(logEntries) { Layout = layout };
 
-        config.AddTarget(consoleTarget);
-        config.AddTarget(fileTarget);
-        config.AddTarget(collectionTarget);
+        config.AddTarget("console", consoleTarget);
+        config.AddTarget("file", fileTarget);
+        config.AddTarget("collection", collectionTarget);
 
         config.AddRuleForAllLevels(consoleTarget);
         config.AddRuleForAllLevels(fileTarget);
