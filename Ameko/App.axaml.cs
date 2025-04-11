@@ -2,12 +2,14 @@
 
 using System.Linq;
 using Ameko.ViewModels;
+using Ameko.ViewModels.Windows;
 using Ameko.Views;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core;
 using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
+using MainWindow = Ameko.Views.Windows.MainWindow;
 
 namespace Ameko;
 
