@@ -67,5 +67,86 @@ namespace Ameko.I18N {
                 return ResourceManager.GetString("LogWindow_Title", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to _Edit.
+        /// </summary>
+        public static string Menu_Edit {
+            get {
+                return ResourceManager.GetString("Menu_Edit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to _File.
+        /// </summary>
+        public static string Menu_File {
+            get {
+                return ResourceManager.GetString("Menu_File", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to _Help.
+        /// </summary>
+        public static string Menu_Help {
+            get {
+                return ResourceManager.GetString("Menu_Help", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to _Logs.
+        /// </summary>
+        public static string Menu_Help_Logs {
+            get {
+                return ResourceManager.GetString("Menu_Help_Logs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to _Layouts.
+        /// </summary>
+        public static string Menu_Layouts {
+            get {
+                return ResourceManager.GetString("Menu_Layouts", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Scri_pts.
+        /// </summary>
+        public static string Menu_Scripts {
+            get {
+                return ResourceManager.GetString("Menu_Scripts", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to _Subtitle.
+        /// </summary>
+        public static string Menu_Subtitle {
+            get {
+                return ResourceManager.GetString("Menu_Subtitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to _Timing.
+        /// </summary>
+        public static string Menu_Timing {
+            get {
+                return ResourceManager.GetString("Menu_Timing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to _Video.
+        /// </summary>
+        public static string Menu_Video {
+            get {
+                return ResourceManager.GetString("Menu_Video", resourceCulture);
+            }
+        }
     }
 }

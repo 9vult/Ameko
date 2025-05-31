@@ -1,0 +1,41 @@
+<!-- SPDX-License-Identifier: GPL-3.0-only -->
+
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:i18n="clr-namespace:Ameko.I18N"
+             xmlns:icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:vm="clr-namespace:Ameko.ViewModels.Windows"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Ameko.Views.Controls.MenuStrip"
+             x:DataType="vm:MainWindowViewModel">
+    <Menu>
+        <MenuItem Header="{x:Static i18n:Resources.Menu_File}">
+            
+        </MenuItem>
+        <MenuItem Header="{x:Static i18n:Resources.Menu_Edit}">
+            
+        </MenuItem>
+        <MenuItem Header="{x:Static i18n:Resources.Menu_Subtitle}">
+            
+        </MenuItem>
+        <MenuItem Header="{x:Static i18n:Resources.Menu_Timing}">
+            
+        </MenuItem>
+        <MenuItem Header="{x:Static i18n:Resources.Menu_Video}">
+            
+        </MenuItem>
+        <MenuItem Header="{x:Static i18n:Resources.Menu_Scripts}">
+            
+        </MenuItem>
+        <MenuItem Header="{x:Static i18n:Resources.Menu_Layouts}">
+            
+        </MenuItem>
+        <MenuItem Header="{x:Static i18n:Resources.Menu_Help}">
+            <MenuItem Header="{x:Static i18n:Resources.Menu_Help_Logs}"
+                      Icon="{icons:MaterialIconExt Kind=FormatListGroup}"
+                      Command="{Binding ShowLogWindowCommand}" />
+        </MenuItem>
+    </Menu>
+</UserControl>

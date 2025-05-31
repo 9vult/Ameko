@@ -2,6 +2,7 @@
 
 using System.Globalization;
 using System.Linq;
+using Ameko.Services;
 using Ameko.ViewModels;
 using Ameko.ViewModels.Windows;
 using Ameko.Views;
@@ -10,6 +11,7 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core;
 using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
+using Holo;
 using MainWindow = Ameko.Views.Windows.MainWindow;
 
 namespace Ameko;
@@ -24,6 +26,7 @@ public partial class App : Application
     public override void OnFrameworkInitializationCompleted()
     {
         I18N.Resources.Culture = new CultureInfo("en-US"); // TODO: Learn how to set this dynamically
+        _ = HoloContext.Instance; // Force Holo to load (mostly for logging) TODO: Find a better way to do this
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {

@@ -21,4 +21,31 @@
     <data name="LogWindow_Title" xml:space="preserve">
         <value>Ameko Logs</value>
     </data>
+    <data name="Menu_File" xml:space="preserve">
+        <value>_File</value>
+    </data>
+    <data name="Menu_Edit" xml:space="preserve">
+        <value>_Edit</value>
+    </data>
+    <data name="Menu_Subtitle" xml:space="preserve">
+        <value>_Subtitle</value>
+    </data>
+    <data name="Menu_Timing" xml:space="preserve">
+        <value>_Timing</value>
+    </data>
+    <data name="Menu_Video" xml:space="preserve">
+        <value>_Video</value>
+    </data>
+    <data name="Menu_Scripts" xml:space="preserve">
+        <value>Scri_pts</value>
+    </data>
+    <data name="Menu_Layouts" xml:space="preserve">
+        <value>_Layouts</value>
+    </data>
+    <data name="Menu_Help" xml:space="preserve">
+        <value>_Help</value>
+    </data>
+    <data name="Menu_Help_Logs" xml:space="preserve">
+        <value>_Logs</value>
+    </data>
 </root>

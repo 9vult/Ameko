@@ -12,9 +12,11 @@
         Width="600"
         Height="400"
         Topmost="True"
+        Icon="/Assets/Ameko-Simplified-BG-64.ico"
         Title="{x:Static i18n:Resources.LogWindow_Title}">
 
     <ListBox Name="LogList"
-             ItemsSource="{Binding LogEntries}" />
+             ItemsSource="{Binding LogEntries}"
+             FontFamily="{StaticResource MartianMonoFont}"/>
 
 </Window>

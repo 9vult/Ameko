@@ -10,7 +10,7 @@ namespace Holo.IO;
 /// <summary>
 /// Manages the logger
 /// </summary>
-internal class LoggerHelper
+internal static class LoggerHelper
 {
     /// <summary>
     /// Set up the logger
@@ -50,7 +50,7 @@ internal class LoggerHelper
     {
         protected override void Write(LogEventInfo logEvent)
         {
-            string message = this.Layout.Render(logEvent);
+            var message = Layout.Render(logEvent);
             entries.Add(message);
         }
     }
