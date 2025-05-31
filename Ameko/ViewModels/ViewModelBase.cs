@@ -1,7 +1,7 @@
 ﻿// SPDX-License-Identifier: GPL-3.0-only
 
-using CommunityToolkit.Mvvm.ComponentModel;
+using ReactiveUI;
 
 namespace Ameko.ViewModels;
 
-public class ViewModelBase : ObservableObject { }
+public class ViewModelBase : ReactiveObject { }
