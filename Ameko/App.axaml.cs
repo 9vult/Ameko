@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
+using System.Globalization;
 using System.Linq;
 using Ameko.ViewModels;
 using Ameko.ViewModels.Windows;
@@ -22,6 +23,8 @@ public partial class App : Application
 
     public override void OnFrameworkInitializationCompleted()
     {
+        I18N.Resources.Culture = new CultureInfo("en-US"); // TODO: Learn how to set this dynamically
+
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
             // Avoid duplicate validations from both Avalonia and the CommunityToolkit.
