@@ -1,9 +1,12 @@
 ﻿// SPDX-License-Identifier: GPL-3.0-only
 
+using System.Collections.ObjectModel;
+using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Windows.Input;
 using Ameko.Services;
+using Ameko.ViewModels.Controls;
 using Holo;
 using ReactiveUI;
 
@@ -19,6 +22,8 @@ public partial class MainWindowViewModel : ViewModelBase
     public ICommand ShowLogWindowCommand { get; }
     #endregion
 
+    private readonly ObservableCollection<TabItemViewModel> _tabItems;
+
     public Solution Solution
     {
         get => HoloContext.Instance.Solution;
@@ -28,6 +33,12 @@ public partial class MainWindowViewModel : ViewModelBase
             this.RaisePropertyChanged();
         }
     }
+
+    /// <summary>
+    /// Read-only collection of tab items
+    /// </summary>
+    /// <remarks>Each tab item represents a <see cref="Workspace"/></remarks>
+    public ReadOnlyObservableCollection<TabItemViewModel> TabItems { get; }
 
     public string Greeting { get; } = $"Welcome to Ameko {VersionService.FullLabel}!";
 
@@ -40,5 +51,10 @@ public partial class MainWindowViewModel : ViewModelBase
         #region Commands
         ShowLogWindowCommand = CreateShowLogWindowCommand();
         #endregion
+
+        _tabItems = new ObservableCollection<TabItemViewModel>(
+            Solution.LoadedWorkspaces.Select(w => new TabItemViewModel("item", w)).ToList()
+        );
+        TabItems = new ReadOnlyObservableCollection<TabItemViewModel>(_tabItems);
     }
 }
