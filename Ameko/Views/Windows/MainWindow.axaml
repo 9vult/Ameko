@@ -20,6 +20,7 @@
 
     <DockPanel>
         <c:MenuStrip DockPanel.Dock="Top" />
+        <c:SolutionExplorer DockPanel.Dock="Left" />
         <TextBlock Text="{Binding Greeting}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
     </DockPanel>
 
