@@ -161,9 +161,9 @@ namespace Ameko.I18N {
         /// <summary>
         ///   Looks up a localized string similar to Tools.
         /// </summary>
-        public static string ToolPanel_Header {
+        public static string Toolbox_Header {
             get {
-                return ResourceManager.GetString("ToolPanel_Header", resourceCulture);
+                return ResourceManager.GetString("Toolbox_Header", resourceCulture);
             }
         }
     }

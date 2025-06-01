@@ -20,11 +20,11 @@
             </DockPanel>
         </TabItem>
         
-        <TabItem Name="ToolPanelTabItem"
+        <TabItem Name="ToolboxTabItem"
                  Header="{icons:MaterialIconExt Kind=Tools}">
             <DockPanel Width="125">
                 <TextBlock DockPanel.Dock="Top"
-                           Text="{x:Static i18n:Resources.ToolPanel_Header}" />
+                           Text="{x:Static i18n:Resources.Toolbox_Header}" />
         
             </DockPanel>
         </TabItem>
