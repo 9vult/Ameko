@@ -3,7 +3,10 @@
 using System.Reactive;
 using System.Reactive.Disposables;
 using Ameko.ViewModels.Windows;
+using Avalonia;
 using Avalonia.ReactiveUI;
+using Avalonia.Styling;
+using Holo;
 using NLog;
 using ReactiveUI;
 

@@ -4,10 +4,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              x:Class="Ameko.App"
-             xmlns:local="using:Ameko"
-             RequestedThemeVariant="Default">
-             <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
-
+             xmlns:local="using:Ameko">
     <Application.DataTemplates>
         <local:ViewLocator/>
     </Application.DataTemplates>
