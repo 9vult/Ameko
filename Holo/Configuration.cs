@@ -2,6 +2,7 @@
 
 using System.Runtime.CompilerServices;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using AssCS;
 using Holo.Models;
 using NLog;
@@ -22,10 +23,14 @@ namespace Holo;
 /// <see cref="Save()"/> is automatically called when an option is changed.
 /// </para>
 /// </remarks>
-public class Configuration : BindableBase
+public partial class Configuration : BindableBase
 {
     private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-    private static readonly JsonSerializerOptions JsonOptions = new() { IncludeFields = true };
+    private static readonly JsonSerializerOptions JsonOptions = new()
+    {
+        IncludeFields = true,
+        Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) },
+    };
 
     private int _cps;
     private bool _cpsIncludesWhitespace;
@@ -35,6 +40,7 @@ public class Configuration : BindableBase
     private bool _useSoftLinebreaks;
     private bool _lineWidthIncludesWhitespace;
     private bool _lineWidthIncludesPunctuation;
+    private Theme _theme;
 
     /// <summary>
     /// Characters-per-second threshold
@@ -110,6 +116,12 @@ public class Configuration : BindableBase
         set => SetProperty(ref _lineWidthIncludesPunctuation, value);
     }
 
+    public Theme Theme
+    {
+        get => _theme;
+        set => SetProperty(ref _theme, value);
+    }
+
     public Uri? SavePath { get; init; }
 
     /// <summary>
@@ -152,6 +164,7 @@ public class Configuration : BindableBase
                 AutosaveInterval = _autosaveInterval,
                 LineWidthIncludesWhitespace = _lineWidthIncludesWhitespace,
                 LineWidthIncludesPunctuation = _lineWidthIncludesPunctuation,
+                Theme = _theme,
             };
 
             var content = JsonSerializer.Serialize(model, JsonOptions);
@@ -205,14 +218,15 @@ public class Configuration : BindableBase
             return new Configuration
             {
                 SavePath = filePath,
-                Cps = model.Cps,
-                CpsIncludesWhitespace = model.CpsIncludesWhitespace,
-                CpsIncludesPunctuation = model.CpsIncludesPunctuation,
-                UseSoftLinebreaks = model.UseSoftLinebreaks,
-                AutosaveEnabled = model.AutosaveEnabled,
-                AutosaveInterval = model.AutosaveInterval,
-                LineWidthIncludesWhitespace = model.LineWidthIncludesWhitespace,
-                LineWidthIncludesPunctuation = model.LineWidthIncludesPunctuation,
+                _cps = model.Cps,
+                _cpsIncludesWhitespace = model.CpsIncludesWhitespace,
+                _cpsIncludesPunctuation = model.CpsIncludesPunctuation,
+                _useSoftLinebreaks = model.UseSoftLinebreaks,
+                _autosaveEnabled = model.AutosaveEnabled,
+                _autosaveInterval = model.AutosaveInterval,
+                _lineWidthIncludesWhitespace = model.LineWidthIncludesWhitespace,
+                _lineWidthIncludesPunctuation = model.LineWidthIncludesPunctuation,
+                _theme = model.Theme,
             };
         }
         catch (JsonException je)
