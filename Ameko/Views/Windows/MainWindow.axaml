@@ -12,7 +12,7 @@
         x:Class="Ameko.Views.Windows.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         Icon="/Assets/Ameko-Simplified-BG-64.ico"
-        Title="Ameko">
+        Title="{Binding WindowTitle}">
 
     <Design.DataContext>
         <!-- This only sets the DataContext for the previewer in an IDE,
@@ -23,7 +23,6 @@
     <DockPanel>
         <c:MenuStrip DockPanel.Dock="Top" />
         <c:SolutionExplorer DockPanel.Dock="Left" />
-        <TextBlock DockPanel.Dock="Bottom" Text="{Binding Greeting}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
         
         <TabControl ItemsSource="{Binding TabItems}"
                     TabStripPlacement="Bottom">

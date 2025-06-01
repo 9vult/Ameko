@@ -10,5 +10,44 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Ameko.Views.Controls.TabItemEventsArea"
              x:DataType="vm:TabItemViewModel">
-    Subtitle Grid
+    <DataGrid Name="EventsGrid"
+              IsReadOnly="True"
+              CanUserResizeColumns="True"
+              CanUserReorderColumns="False"
+              SelectionMode="Extended"
+              VerticalScrollBarVisibility="Auto"
+              ItemsSource="{Binding Workspace.Document.EventManager.Events}"
+              SelectedItem="{Binding Workspace.SelectedEvent}">
+        <DataGrid.Columns>
+            <DataGridTextColumn Header="ID"
+                                Binding="{Binding Id}"
+                                IsVisible="False"
+                                CanUserResize="False" />
+            <DataGridTextColumn Header="#"
+                                Binding="{Binding Index}"
+                                CanUserResize="False" />
+            <DataGridTextColumn Header="{x:Static i18n:Resources.EventsGrid_Header_Start}"
+                                Binding="{Binding Start.UpdatableText}"
+                                CanUserResize="False" />
+            <DataGridTextColumn Header="{x:Static i18n:Resources.EventsGrid_Header_End}"
+                                Binding="{Binding End.UpdatableText}"
+                                CanUserResize="False" />
+            <DataGridTextColumn Header="{x:Static i18n:Resources.EventsGrid_Header_Cps}"
+                                Binding="{Binding Cps}"
+                                CanUserResize="False">
+                
+            </DataGridTextColumn>
+            <DataGridTextColumn Header="{x:Static i18n:Resources.EventsGrid_Header_Style}"
+                                Binding="{Binding Style}" />
+			<DataGridTextColumn Header="{x:Static i18n:Resources.EventsGrid_Header_Actor}"
+			                    Binding="{Binding Actor}"
+			                    IsVisible="{Binding Workspace.DisplayActorsColumn}" />
+			<DataGridTextColumn Header="{x:Static i18n:Resources.EventsGrid_Header_Effect}"
+			                    Binding="{Binding Effect}"
+			                    IsVisible="{Binding Workspace.DisplayEffectsColumn}" />
+			<DataGridTextColumn Header="{x:Static i18n:Resources.EventsGrid_Header_Content}"
+			                    Binding="{Binding Text}" />
+        </DataGrid.Columns>
+    </DataGrid>
+              
 </UserControl>

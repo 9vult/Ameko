@@ -52,6 +52,27 @@
         <value>Solution Explorer</value>
     </data>
     <data name="Toolbox_Header" xml:space="preserve">
-        <value>Tools</value>
+        <value>Toolbox</value>
+    </data>
+    <data name="EventsGrid_Header_Start" xml:space="preserve">
+        <value>Start</value>
+    </data>
+    <data name="EventsGrid_Header_End" xml:space="preserve">
+        <value>End</value>
+    </data>
+    <data name="EventsGrid_Header_Cps" xml:space="preserve">
+        <value>CPS</value>
+    </data>
+    <data name="EventsGrid_Header_Style" xml:space="preserve">
+        <value>Style</value>
+    </data>
+    <data name="EventsGrid_Header_Actor" xml:space="preserve">
+        <value>Actor</value>
+    </data>
+    <data name="EventsGrid_Header_Effect" xml:space="preserve">
+        <value>Effect</value>
+    </data>
+    <data name="EventsGrid_Header_Content" xml:space="preserve">
+        <value>Content</value>
     </data>
 </root>

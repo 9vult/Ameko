@@ -24,6 +24,14 @@ public partial class MainWindowViewModel : ViewModelBase
 
     private readonly ObservableCollection<TabItemViewModel> _tabItems;
 
+    /// <summary>
+    /// Window title
+    /// </summary>
+    public string WindowTitle { get; } = $"Ameko {VersionService.FullLabel}";
+
+    /// <summary>
+    /// Currently-open <see cref="Solution"/>
+    /// </summary>
     public Solution Solution
     {
         get => HoloContext.Instance.Solution;
@@ -39,8 +47,6 @@ public partial class MainWindowViewModel : ViewModelBase
     /// </summary>
     /// <remarks>Each tab item represents a <see cref="Workspace"/></remarks>
     public ReadOnlyObservableCollection<TabItemViewModel> TabItems { get; }
-
-    public string Greeting { get; } = $"Welcome to Ameko {VersionService.FullLabel}!";
 
     public MainWindowViewModel()
     {
