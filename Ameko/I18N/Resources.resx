@@ -51,7 +51,7 @@
     <data name="SolutionExplorer_Header" xml:space="preserve">
         <value>Solution Explorer</value>
     </data>
-    <data name="ToolPanel_Header" xml:space="preserve">
+    <data name="Toolbox_Header" xml:space="preserve">
         <value>Tools</value>
     </data>
 </root>
