@@ -60,6 +60,69 @@ namespace Ameko.I18N {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Actor.
+        /// </summary>
+        public static string EventsGrid_Header_Actor {
+            get {
+                return ResourceManager.GetString("EventsGrid_Header_Actor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Content.
+        /// </summary>
+        public static string EventsGrid_Header_Content {
+            get {
+                return ResourceManager.GetString("EventsGrid_Header_Content", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to CPS.
+        /// </summary>
+        public static string EventsGrid_Header_Cps {
+            get {
+                return ResourceManager.GetString("EventsGrid_Header_Cps", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Effect.
+        /// </summary>
+        public static string EventsGrid_Header_Effect {
+            get {
+                return ResourceManager.GetString("EventsGrid_Header_Effect", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to End.
+        /// </summary>
+        public static string EventsGrid_Header_End {
+            get {
+                return ResourceManager.GetString("EventsGrid_Header_End", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Start.
+        /// </summary>
+        public static string EventsGrid_Header_Start {
+            get {
+                return ResourceManager.GetString("EventsGrid_Header_Start", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Style.
+        /// </summary>
+        public static string EventsGrid_Header_Style {
+            get {
+                return ResourceManager.GetString("EventsGrid_Header_Style", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Ameko Logs.
         /// </summary>
         public static string LogWindow_Title {
@@ -159,7 +222,7 @@ namespace Ameko.I18N {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Tools.
+        ///   Looks up a localized string similar to Toolbox.
         /// </summary>
         public static string Toolbox_Header {
             get {

@@ -83,6 +83,17 @@ public class Workspace : BindableBase
     /// </summary>
     public ReadOnlyObservableCollection<Event> SelectedEventCollection { get; }
 
+    // TODO: May need to raise property changed here - Or move to EventManager under a different name
+    /// <summary>
+    /// Whether the Actors column in the events grid should be displayed
+    /// </summary>
+    public bool DisplayActorsColumn => _document.EventManager.Actors.Count > 0;
+
+    /// <summary>
+    /// Whether the Effects column in the events grid should be displayed
+    /// </summary>
+    public bool DisplayEffectsColumn => _document.EventManager.Effects.Count > 0;
+
     /// <summary>
     /// Set the current selection
     /// </summary>
