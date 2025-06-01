@@ -148,5 +148,23 @@ namespace Ameko.I18N {
                 return ResourceManager.GetString("Menu_Video", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Solution Explorer.
+        /// </summary>
+        public static string SolutionExplorer_Header {
+            get {
+                return ResourceManager.GetString("SolutionExplorer_Header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tools.
+        /// </summary>
+        public static string ToolPanel_Header {
+            get {
+                return ResourceManager.GetString("ToolPanel_Header", resourceCulture);
+            }
+        }
     }
 }

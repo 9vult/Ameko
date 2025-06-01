@@ -1,0 +1,32 @@
+<!-- SPDX-License-Identifier: GPL-3.0-only -->
+
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:i18n="clr-namespace:Ameko.I18N"
+             xmlns:icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:vm="clr-namespace:Ameko.ViewModels.Windows"
+             mc:Ignorable="d" d:DesignWidth="125" d:DesignHeight="450"
+             x:Class="Ameko.Views.Controls.SolutionExplorer"
+             x:DataType="vm:MainWindowViewModel">
+    <TabControl Width="125" TabStripPlacement="Bottom">
+        <TabItem Name="SolutionExplorerTabItem"
+                 Header="{icons:MaterialIconExt Kind=PlaylistStar}">
+            <DockPanel Width="125">
+                <TextBlock DockPanel.Dock="Top"
+                           Text="{x:Static i18n:Resources.SolutionExplorer_Header}" />
+                
+            </DockPanel>
+        </TabItem>
+        
+        <TabItem Name="ToolPanelTabItem"
+                 Header="{icons:MaterialIconExt Kind=Tools}">
+            <DockPanel Width="125">
+                <TextBlock DockPanel.Dock="Top"
+                           Text="{x:Static i18n:Resources.ToolPanel_Header}" />
+        
+            </DockPanel>
+        </TabItem>
+    </TabControl>
+</UserControl>
