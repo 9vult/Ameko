@@ -48,6 +48,42 @@
 			<DataGridTextColumn Header="{x:Static i18n:Resources.EventsGrid_Header_Content}"
 			                    Binding="{Binding Text}" />
         </DataGrid.Columns>
+	    <DataGrid.ContextMenu>
+		    <ContextMenu>
+			    <MenuItem Header="{x:Static i18n:Resources.EventsGrid_Menu_Duplicate}"
+			              Icon="{icons:MaterialIconExt Kind=ContentDuplicate}"
+			              Command="{Binding DuplicateEventsCommand}" />
+			    <MenuItem Header="{x:Static i18n:Resources.EventsGrid_Menu_MergeLines}"
+			              Icon="{icons:MaterialIconExt Kind=CallMerge}"
+			              Command="{Binding MergeEventsCommand}" />
+			    <MenuItem Header="{x:Static i18n:Resources.EventsGrid_Menu_SplitLine}"
+			              Icon="{icons:MaterialIconExt Kind=CallSplit}"
+			              Command="{Binding SplitEventsCommand}" />
+			    <Separator />
+			    <MenuItem Header="{x:Static i18n:Resources.EventsGrid_Menu_InsertBefore}"
+			              Icon="{icons:MaterialIconExt Kind=ArrowCollapseUp}"
+			              Command="{Binding InsertEventBeforeCommand}" />
+			    <MenuItem Header="{x:Static i18n:Resources.EventsGrid_Menu_InsertAfter}"
+			              Icon="{icons:MaterialIconExt Kind=ArrowCollapseDown}"
+			              Command="{Binding InsertEventAfterCommand}" />
+			    <Separator />
+			    <MenuItem Header="{x:Static i18n:Resources.EventsGrid_Menu_Copy}"
+			              Icon="{icons:MaterialIconExt Kind=ContentCopy}"
+			              Command="{Binding CopyEventsCommand}" />
+			    <MenuItem Header="{x:Static i18n:Resources.EventsGrid_Menu_Cut}"
+			              Icon="{icons:MaterialIconExt Kind=ContentCut}"
+			              Command="{Binding CutEventsCommand}" />
+			    <MenuItem Header="{x:Static i18n:Resources.EventsGrid_Menu_Paste}"
+			              Icon="{icons:MaterialIconExt Kind=ContentPaste}"
+			              Command="{Binding PasteEventsCommand}" />
+			    <MenuItem Header="{x:Static i18n:Resources.EventsGrid_Menu_PasteOver}"
+			              Icon="{icons:MaterialIconExt Kind=ClipboardEditOutline}" />
+			    <Separator />
+			    <MenuItem Header="{x:Static i18n:Resources.EventsGrid_Menu_Delete}"
+			              Icon="{icons:MaterialIconExt Kind=TrashCanOutline}"
+			              Command="{Binding DeleteEventsCommand}" />
+		    </ContextMenu>
+	    </DataGrid.ContextMenu>
     </DataGrid>
               
 </UserControl>
