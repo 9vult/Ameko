@@ -78,6 +78,15 @@ namespace Ameko.I18N {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Edit the current style.
+        /// </summary>
+        public static string Editor_EditStyle_ToolTip {
+            get {
+                return ResourceManager.GetString("Editor_EditStyle_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Effect for this line.
         /// </summary>
         public static string Editor_EffectAcBox_ToolTip {
@@ -92,6 +101,15 @@ namespace Ameko.I18N {
         public static string Editor_EffectAcBox_Watermark {
             get {
                 return ResourceManager.GetString("Editor_EffectAcBox_Watermark", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to End time.
+        /// </summary>
+        public static string Editor_EndBox_ToolTip {
+            get {
+                return ResourceManager.GetString("Editor_EndBox_ToolTip", resourceCulture);
             }
         }
         
@@ -114,11 +132,74 @@ namespace Ameko.I18N {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Layer.
+        /// </summary>
+        public static string Editor_LayerUpDown_ToolTip {
+            get {
+                return ResourceManager.GetString("Editor_LayerUpDown_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Left Margin (0 is style default).
+        /// </summary>
+        public static string Editor_MarginLeft_ToolTip {
+            get {
+                return ResourceManager.GetString("Editor_MarginLeft_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Right Margin (0 is style default).
+        /// </summary>
+        public static string Editor_MarginRight_ToolTip {
+            get {
+                return ResourceManager.GetString("Editor_MarginRight_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Vertical Margin (0 is style default).
+        /// </summary>
+        public static string Editor_MarginVertical_ToolTip {
+            get {
+                return ResourceManager.GetString("Editor_MarginVertical_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Maximum width of this line.
         /// </summary>
         public static string Editor_MaxLineWidth_ToolTip {
             get {
                 return ResourceManager.GetString("Editor_MaxLineWidth_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Move to the next line, creating a new one if needed.
+        /// </summary>
+        public static string Editor_NextOrCreate_ToolTip {
+            get {
+                return ResourceManager.GetString("Editor_NextOrCreate_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Set Font \fn at cursor position.
+        /// </summary>
+        public static string Editor_SetFont_ToolTip {
+            get {
+                return ResourceManager.GetString("Editor_SetFont_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Start time.
+        /// </summary>
+        public static string Editor_StartBox_ToolTip {
+            get {
+                return ResourceManager.GetString("Editor_StartBox_ToolTip", resourceCulture);
             }
         }
         
@@ -132,11 +213,38 @@ namespace Ameko.I18N {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Edit the current style.
+        ///   Looks up a localized string similar to Toggle Bold \b at cursor position.
         /// </summary>
-        public static string Editor_StyleEditButton_ToolTip {
+        public static string Editor_ToggleBold_ToolTip {
             get {
-                return ResourceManager.GetString("Editor_StyleEditButton_ToolTip", resourceCulture);
+                return ResourceManager.GetString("Editor_ToggleBold_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Toggle Italics \i at cursor position.
+        /// </summary>
+        public static string Editor_ToggleItalics_ToolTip {
+            get {
+                return ResourceManager.GetString("Editor_ToggleItalics_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Toggle Strikethrough \s at cursor position.
+        /// </summary>
+        public static string Editor_ToggleStrikethrough_ToolTip {
+            get {
+                return ResourceManager.GetString("Editor_ToggleStrikethrough_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Toggle Underline \u at cursor position.
+        /// </summary>
+        public static string Editor_ToggleUnderline_ToolTip {
+            get {
+                return ResourceManager.GetString("Editor_ToggleUnderline_ToolTip", resourceCulture);
             }
         }
         
