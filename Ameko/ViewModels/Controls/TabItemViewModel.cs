@@ -9,12 +9,15 @@ namespace Ameko.ViewModels.Controls;
 public partial class TabItemViewModel : ViewModelBase
 {
     #region Interactions
+
     public Interaction<TabItemViewModel, string?> CopyEvents { get; }
     public Interaction<TabItemViewModel, string?> CutEvents { get; }
     public Interaction<TabItemViewModel, string[]?> PasteEvents { get; }
+
     #endregion
 
     #region Commands
+
     public ICommand CopyEventsCommand { get; }
     public ICommand CutEventsCommand { get; }
     public ICommand PasteEventsCommand { get; }
@@ -27,11 +30,27 @@ public partial class TabItemViewModel : ViewModelBase
     public ICommand SplitEventsCommand { get; }
     public ICommand DeleteEventsCommand { get; }
     public ICommand GetOrCreateAfterCommand { get; }
+    public ICommand ToggleTagCommand { get; }
+
     #endregion
 
     private readonly Workspace _workspace;
+    private int _editBoxSelectionStart;
+    private int _editBoxSelectionEnd;
 
     public Workspace Workspace => _workspace;
+
+    public int EditBoxSelectionStart
+    {
+        get => _editBoxSelectionStart;
+        set => this.RaiseAndSetIfChanged(ref _editBoxSelectionStart, value);
+    }
+
+    public int EditBoxSelectionEnd
+    {
+        get => _editBoxSelectionEnd;
+        set => this.RaiseAndSetIfChanged(ref _editBoxSelectionEnd, value);
+    }
 
     public TabItemViewModel(string title, Workspace workspace)
     {
@@ -53,6 +72,7 @@ public partial class TabItemViewModel : ViewModelBase
         SplitEventsCommand = CreateSplitEventsCommand();
         DeleteEventsCommand = CreateDeleteEventsCommand();
         GetOrCreateAfterCommand = CreateGetOrCreateAfterCommand();
+        ToggleTagCommand = CreateToggleTagCommand();
         #endregion
 
         _workspace = workspace;

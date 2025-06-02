@@ -233,4 +233,27 @@ public partial class TabItemViewModel : ViewModelBase
             Workspace.SelectionManager.Select(nextEvent);
         });
     }
+
+    /// <summary>
+    /// Toggle an ass tag
+    /// </summary>
+    private ReactiveCommand<string, Unit> CreateToggleTagCommand()
+    {
+        return ReactiveCommand.Create(
+            (string tag) =>
+            {
+                var @event = Workspace.SelectionManager.ActiveEvent;
+                Workspace.Document.StyleManager.TryGet(@event.Style, out var style);
+
+                var shift = @event.ToggleTag(
+                    tag,
+                    style,
+                    EditBoxSelectionStart,
+                    EditBoxSelectionEnd
+                );
+                EditBoxSelectionStart += shift;
+                EditBoxSelectionEnd += shift;
+            }
+        );
+    }
 }
