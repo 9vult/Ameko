@@ -3,7 +3,6 @@
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive;
-using System.Reactive.Linq;
 using System.Windows.Input;
 using Ameko.Services;
 using Ameko.ViewModels.Controls;

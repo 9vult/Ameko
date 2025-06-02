@@ -116,6 +116,9 @@ public partial class Configuration : BindableBase
         set => SetProperty(ref _lineWidthIncludesPunctuation, value);
     }
 
+    /// <summary>
+    /// Display theme to use
+    /// </summary>
     public Theme Theme
     {
         get => _theme;

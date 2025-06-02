@@ -75,4 +75,34 @@
     <data name="EventsGrid_Header_Content" xml:space="preserve">
         <value>Content</value>
     </data>
+    <data name="EventsGrid_Menu_Duplicate" xml:space="preserve">
+        <value>Duplicate</value>
+    </data>
+    <data name="EventsGrid_Menu_MergeLines" xml:space="preserve">
+        <value>Merge Lines</value>
+    </data>
+    <data name="EventsGrid_Menu_SplitLine" xml:space="preserve">
+        <value>Split Line</value>
+    </data>
+    <data name="EventsGrid_Menu_InsertBefore" xml:space="preserve">
+        <value>Insert Before</value>
+    </data>
+    <data name="EventsGrid_Menu_InsertAfter" xml:space="preserve">
+        <value>Insert After</value>
+    </data>
+    <data name="EventsGrid_Menu_Copy" xml:space="preserve">
+        <value>Copy</value>
+    </data>
+    <data name="EventsGrid_Menu_Paste" xml:space="preserve">
+        <value>Paste</value>
+    </data>
+    <data name="EventsGrid_Menu_PasteOver" xml:space="preserve">
+        <value>Paste Over...</value>
+    </data>
+    <data name="EventsGrid_Menu_Delete" xml:space="preserve">
+        <value>Delete</value>
+    </data>
+    <data name="EventsGrid_Menu_Cut" xml:space="preserve">
+        <value>Cut</value>
+    </data>
 </root>

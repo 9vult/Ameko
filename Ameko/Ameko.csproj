@@ -51,6 +51,9 @@
       <Compile Update="ViewModels\Windows\MainWindowViewModel.Commands.cs">
         <DependentUpon>MainWindowViewModel.cs</DependentUpon>
       </Compile>
+      <Compile Update="ViewModels\Controls\TabItemViewModel.Commands.cs">
+        <DependentUpon>TabItemViewModel.cs</DependentUpon>
+      </Compile>
     </ItemGroup>
 
     <ItemGroup>

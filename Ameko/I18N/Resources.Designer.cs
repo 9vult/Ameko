@@ -123,6 +123,96 @@ namespace Ameko.I18N {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Copy.
+        /// </summary>
+        public static string EventsGrid_Menu_Copy {
+            get {
+                return ResourceManager.GetString("EventsGrid_Menu_Copy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cut.
+        /// </summary>
+        public static string EventsGrid_Menu_Cut {
+            get {
+                return ResourceManager.GetString("EventsGrid_Menu_Cut", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete.
+        /// </summary>
+        public static string EventsGrid_Menu_Delete {
+            get {
+                return ResourceManager.GetString("EventsGrid_Menu_Delete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Duplicate.
+        /// </summary>
+        public static string EventsGrid_Menu_Duplicate {
+            get {
+                return ResourceManager.GetString("EventsGrid_Menu_Duplicate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Insert After.
+        /// </summary>
+        public static string EventsGrid_Menu_InsertAfter {
+            get {
+                return ResourceManager.GetString("EventsGrid_Menu_InsertAfter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Insert Before.
+        /// </summary>
+        public static string EventsGrid_Menu_InsertBefore {
+            get {
+                return ResourceManager.GetString("EventsGrid_Menu_InsertBefore", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Merge Lines.
+        /// </summary>
+        public static string EventsGrid_Menu_MergeLines {
+            get {
+                return ResourceManager.GetString("EventsGrid_Menu_MergeLines", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Paste.
+        /// </summary>
+        public static string EventsGrid_Menu_Paste {
+            get {
+                return ResourceManager.GetString("EventsGrid_Menu_Paste", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Paste Over....
+        /// </summary>
+        public static string EventsGrid_Menu_PasteOver {
+            get {
+                return ResourceManager.GetString("EventsGrid_Menu_PasteOver", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Split Line.
+        /// </summary>
+        public static string EventsGrid_Menu_SplitLine {
+            get {
+                return ResourceManager.GetString("EventsGrid_Menu_SplitLine", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Ameko Logs.
         /// </summary>
         public static string LogWindow_Title {
