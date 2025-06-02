@@ -105,4 +105,31 @@
     <data name="EventsGrid_Menu_Cut" xml:space="preserve">
         <value>Cut</value>
     </data>
+    <data name="Editor_IsComment_Label" xml:space="preserve">
+        <value>Comment</value>
+    </data>
+    <data name="Editor_IsComment_ToolTip" xml:space="preserve">
+        <value>Mark this line as a comment</value>
+    </data>
+    <data name="Editor_StyleBox_ToolTip" xml:space="preserve">
+        <value>Style for this line</value>
+    </data>
+    <data name="Editor_StyleEditButton_ToolTip" xml:space="preserve">
+        <value>Edit the current style</value>
+    </data>
+    <data name="Editor_ActorAcBox_Watermark" xml:space="preserve">
+        <value>Actor</value>
+    </data>
+    <data name="Editor_ActorAcBox_ToolTip" xml:space="preserve">
+        <value>Actor for this line</value>
+    </data>
+    <data name="Editor_EffectAcBox_Watermark" xml:space="preserve">
+        <value>Effect</value>
+    </data>
+    <data name="Editor_EffectAcBox_ToolTip" xml:space="preserve">
+        <value>Effect for this line</value>
+    </data>
+    <data name="Editor_MaxLineWidth_ToolTip" xml:space="preserve">
+        <value>Maximum width of this line</value>
+    </data>
 </root>
