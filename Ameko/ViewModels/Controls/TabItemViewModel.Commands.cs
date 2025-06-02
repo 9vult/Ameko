@@ -214,4 +214,23 @@ public partial class TabItemViewModel : ViewModelBase
             selectionManager.Select(newEvents.Last());
         });
     }
+
+    /// <summary>
+    /// Get or Create the next event in the document
+    /// </summary>
+    private ReactiveCommand<Unit, Unit> CreateGetOrCreateAfterCommand()
+    {
+        return ReactiveCommand.Create(() =>
+        {
+            var initialCount = Workspace.Document.EventManager.Count;
+            var nextEvent = Workspace.Document.EventManager.GetOrCreateAfter(
+                Workspace.SelectionManager.ActiveEvent.Id
+            );
+            if (Workspace.Document.EventManager.Count != initialCount)
+            {
+                Workspace.Commit(nextEvent, CommitType.EventAdd);
+            }
+            Workspace.SelectionManager.Select(nextEvent);
+        });
+    }
 }

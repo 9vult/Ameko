@@ -78,7 +78,7 @@ public class Workspace : BindableBase
     /// <summary>
     /// Commit a change
     /// </summary>
-    /// <param name="active">Active event (<see cref="ActiveEvent"/>)</param>
+    /// <param name="active">Active event (<see cref="SelectionManager.ActiveEvent"/>)</param>
     /// <param name="changeType">Type of change</param>
     public void Commit(Event active, CommitType changeType)
     {
@@ -88,7 +88,7 @@ public class Workspace : BindableBase
     /// <summary>
     /// Commit a change
     /// </summary>
-    /// <param name="selection">Entire selection (<see cref="SelectedEventCollection"/>)</param>
+    /// <param name="selection">Entire selection (<see cref="SelectionManager.SelectedEventCollection"/>)</param>
     /// <param name="changeType">Type of change</param>
     public void Commit(IList<Event> selection, CommitType changeType)
     {

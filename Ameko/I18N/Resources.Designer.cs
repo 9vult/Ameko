@@ -204,7 +204,7 @@ namespace Ameko.I18N {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Split Line.
+        ///   Looks up a localized string similar to Split Lines.
         /// </summary>
         public static string EventsGrid_Menu_SplitLine {
             get {
