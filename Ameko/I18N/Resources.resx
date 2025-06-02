@@ -82,7 +82,7 @@
         <value>Merge Lines</value>
     </data>
     <data name="EventsGrid_Menu_SplitLine" xml:space="preserve">
-        <value>Split Line</value>
+        <value>Split Lines</value>
     </data>
     <data name="EventsGrid_Menu_InsertBefore" xml:space="preserve">
         <value>Insert Before</value>

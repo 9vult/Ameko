@@ -305,6 +305,7 @@ public class EventManagerTests
 
         var result = em.Split(testEvent.Id).ToList();
 
+        em.TryGet(testEvent.Id, out _).ShouldBeFalse();
         result.Count.ShouldBe(2);
         result[0].End.TotalMilliseconds.ShouldBeLessThan(result[1].End.TotalMilliseconds);
         result[1].Start.ShouldBe(result[0].End);
@@ -331,6 +332,7 @@ public class EventManagerTests
 
         var result = em.Split(testEvent.Id).ToList();
 
+        em.TryGet(testEvent.Id, out _).ShouldBeFalse();
         result.Count.ShouldBe(1);
         result[0].Text.ShouldBe("No newlines here");
         result[0].Start.ShouldBe(testEvent.Start);
