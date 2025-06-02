@@ -746,12 +746,14 @@ public class EventManager : BindableBase
 
             newEvent.Text = segment;
             newEvent.Start = Time.FromTime(rollingTime);
-            newEvent.End = Time.FromMillis(
-                Math.Min(
-                    Convert.ToInt64((goalTime - @event.Start).TotalMilliseconds * ratio),
-                    goalTime.TotalMilliseconds
-                )
-            );
+            newEvent.End =
+                rollingTime
+                + Time.FromMillis(
+                    Math.Min(
+                        Convert.ToInt64((goalTime - @event.Start).TotalMilliseconds * ratio),
+                        goalTime.TotalMilliseconds
+                    )
+                );
 
             AddAfter(previous.Id, newEvent);
             result.Add(newEvent);
