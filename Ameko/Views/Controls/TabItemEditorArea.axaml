@@ -5,19 +5,79 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:i18n="clr-namespace:Ameko.I18N"
+             xmlns:assCs="clr-namespace:AssCS;assembly=AssCS"
+             xmlns:converters="clr-namespace:Ameko.Converters"
              xmlns:icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              xmlns:vm="clr-namespace:Ameko.ViewModels.Controls"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Ameko.Views.Controls.TabItemEditorArea"
              x:DataType="vm:TabItemViewModel">
+    <UserControl.Resources>
+        <converters:StyleNameConverter x:Key="StyleNameConverter" />
+    </UserControl.Resources>
     <Grid Name="EditorPanel"
           RowDefinitions="Auto, Auto, *">
-        <TextBox Grid.Row="2"
-                 Name="EditBox"
+        <Grid Grid.Row="0"
+              ColumnDefinitions="Auto, *, Auto, *, *, Auto">
+            <CheckBox Name="CommentCheckBox"
+                      Grid.Column="0"
+                      Margin="2"
+                      IsChecked="{Binding Workspace.SelectionManager.ActiveEvent.IsComment}"
+                      Content="{x:Static i18n:Resources.Editor_IsComment_Label}"
+                      ToolTip.Tip="{x:Static i18n:Resources.Editor_IsComment_ToolTip}"
+                      IsCheckedChanged="AnyControl_EventMetaChanged"/>
+            <ComboBox Name="StyleList" 
+                      Grid.Column="1"
+                      Margin="2"
+                      ItemsSource="{Binding Workspace.Document.StyleManager.Styles}"
+                      SelectedItem="{Binding Workspace.SelectionManager.ActiveEvent.Style, Converter={StaticResource StyleNameConverter}}"
+                      ToolTip.Tip="{x:Static i18n:Resources.Editor_StyleBox_ToolTip}"
+                      SelectionChanged="AnyControl_EventMetaChanged">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate x:DataType="assCs:Style">
+                        <TextBlock Text="{Binding Name}" />
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+            <Button Name="EditStyleButton"
+                    Grid.Column="2"
+                    Margin="2"
+                    Padding="0"
+                    ToolTip.Tip="{x:Static i18n:Resources.Editor_StyleEditButton_ToolTip}"
+                    Content="{icons:MaterialIconExt Kind=TagEditOutline}" />
+            <AutoCompleteBox Name="ActorAcBox"
+                             Grid.Column="3"
+                             Margin="2"
+                             Text="{Binding Workspace.SelectionManager.ActiveEvent.Actor}"
+                             ItemsSource="{Binding Workspace.Document.EventManager.Actors}"
+                             FilterMode="Contains"
+                             Watermark="{x:Static i18n:Resources.Editor_ActorAcBox_Watermark}"
+                             ToolTip.Tip="{x:Static i18n:Resources.Editor_ActorAcBox_ToolTip}"
+                             SelectionChanged="AnyControl_EventMetaChanged" />
+            <AutoCompleteBox Name="EffectAcBox"
+                             Grid.Column="4"
+                             Margin="2"
+                             Text="{Binding Workspace.SelectionManager.ActiveEvent.Effect}"
+                             ItemsSource="{Binding Workspace.Document.EventManager.Effects}"
+                             FilterMode="Contains"
+                             Watermark="{x:Static i18n:Resources.Editor_EffectAcBox_Watermark}"
+                             ToolTip.Tip="{x:Static i18n:Resources.Editor_EffectAcBox_ToolTip}"
+                             SelectionChanged="AnyControl_EventMetaChanged" />
+            <TextBlock Name="MaxLineWidthBox"
+                       Grid.Column="5"
+                       Margin="2"
+                       IsTabStop="False"
+                       VerticalAlignment="Center"
+                       FontFamily="{StaticResource MartianMonoFont}"
+                       Text="{Binding Workspace.SelectionManager.ActiveEvent.MaxLineWidth}"
+                       ToolTip.Tip="{x:Static i18n:Resources.Editor_MaxLineWidth_ToolTip}" />
+        </Grid>
+        <TextBox Name="EditBox"
+                 Grid.Row="2"
                  Text="{Binding Workspace.SelectionManager.ActiveEvent.Text}"
                  Margin="2 1"
                  FontFamily="{StaticResource MartianMonoFont}"
-                 TextWrapping="NoWrap"
+                 TextWrapping="Wrap"
                  IsUndoEnabled="False"
                  KeyDown="EditBox_OnKeyDown"
                  TextChanged="EditBox_OnTextChanged"/>

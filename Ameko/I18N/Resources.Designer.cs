@@ -60,6 +60,87 @@ namespace Ameko.I18N {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Actor for this line.
+        /// </summary>
+        public static string Editor_ActorAcBox_ToolTip {
+            get {
+                return ResourceManager.GetString("Editor_ActorAcBox_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Actor.
+        /// </summary>
+        public static string Editor_ActorAcBox_Watermark {
+            get {
+                return ResourceManager.GetString("Editor_ActorAcBox_Watermark", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Effect for this line.
+        /// </summary>
+        public static string Editor_EffectAcBox_ToolTip {
+            get {
+                return ResourceManager.GetString("Editor_EffectAcBox_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Effect.
+        /// </summary>
+        public static string Editor_EffectAcBox_Watermark {
+            get {
+                return ResourceManager.GetString("Editor_EffectAcBox_Watermark", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Comment.
+        /// </summary>
+        public static string Editor_IsComment_Label {
+            get {
+                return ResourceManager.GetString("Editor_IsComment_Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mark this line as a comment.
+        /// </summary>
+        public static string Editor_IsComment_ToolTip {
+            get {
+                return ResourceManager.GetString("Editor_IsComment_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Maximum width of this line.
+        /// </summary>
+        public static string Editor_MaxLineWidth_ToolTip {
+            get {
+                return ResourceManager.GetString("Editor_MaxLineWidth_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Style for this line.
+        /// </summary>
+        public static string Editor_StyleBox_ToolTip {
+            get {
+                return ResourceManager.GetString("Editor_StyleBox_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit the current style.
+        /// </summary>
+        public static string Editor_StyleEditButton_ToolTip {
+            get {
+                return ResourceManager.GetString("Editor_StyleEditButton_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Actor.
         /// </summary>
         public static string EventsGrid_Header_Actor {
