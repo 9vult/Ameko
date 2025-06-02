@@ -26,13 +26,13 @@ I would strongly recommend using either Visual Studio or Jetbrains Rider for dev
 
 - As a prerequisite, ensure all NuGet packages are installed.
 - To build, either click the `Build` button in your IDE, or run `dotnet build` in the project root directory.
-- The final output for debugging and running is the `Ameko.Desktop` project
+- The final output for debugging and running is the `Ameko` project
 - Holo and Ameko follow XDG directory guidelines
 
-- Ameko uses `.NET 8.0`
+- Ameko uses `.NET 9.0`
 
 <h2 align="center">Licensing</h1>
 
-- Ameko and Ameko platform projects (Ameko.Desktop, etc) are licensed under the GNU GPL v3 license.
+- The Ameko application is licensed under the GNU GPL v3 license.
 - Libraries developed for Ameko are licensed under the Mozilla Public License 2.0.
 - For more information, see the LICENSE files.
