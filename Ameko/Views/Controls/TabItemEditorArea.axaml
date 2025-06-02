@@ -19,6 +19,7 @@
                  FontFamily="{StaticResource MartianMonoFont}"
                  TextWrapping="NoWrap"
                  IsUndoEnabled="False"
-                 KeyDown="EditBox_OnKeyDown"/>
+                 KeyDown="EditBox_OnKeyDown"
+                 TextChanged="EditBox_OnTextChanged"/>
     </Grid>
 </UserControl>

@@ -3,6 +3,7 @@
 using System;
 using System.Reactive;
 using Ameko.ViewModels.Controls;
+using AssCS.History;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.ReactiveUI;
@@ -48,5 +49,14 @@ public partial class TabItemEditorArea : ReactiveUserControl<TabItemViewModel>
     public TabItemEditorArea()
     {
         InitializeComponent();
+    }
+
+    private void EditBox_OnTextChanged(object? sender, TextChangedEventArgs e)
+    {
+        // TODO: This doesn't differentiate between user input and program input
+        ViewModel?.Workspace.Commit(
+            ViewModel.Workspace.SelectionManager.SelectedEventCollection,
+            CommitType.EventText
+        );
     }
 }
