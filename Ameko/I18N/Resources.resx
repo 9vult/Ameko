@@ -114,7 +114,7 @@
     <data name="Editor_StyleBox_ToolTip" xml:space="preserve">
         <value>Style for this line</value>
     </data>
-    <data name="Editor_StyleEditButton_ToolTip" xml:space="preserve">
+    <data name="Editor_EditStyle_ToolTip" xml:space="preserve">
         <value>Edit the current style</value>
     </data>
     <data name="Editor_ActorAcBox_Watermark" xml:space="preserve">
@@ -131,5 +131,41 @@
     </data>
     <data name="Editor_MaxLineWidth_ToolTip" xml:space="preserve">
         <value>Maximum width of this line</value>
+    </data>
+    <data name="Editor_LayerUpDown_ToolTip" xml:space="preserve">
+        <value>Layer</value>
+    </data>
+    <data name="Editor_StartBox_ToolTip" xml:space="preserve">
+        <value>Start time</value>
+    </data>
+    <data name="Editor_EndBox_ToolTip" xml:space="preserve">
+        <value>End time</value>
+    </data>
+    <data name="Editor_MarginLeft_ToolTip" xml:space="preserve">
+        <value>Left Margin (0 is style default)</value>
+    </data>
+    <data name="Editor_MarginRight_ToolTip" xml:space="preserve">
+        <value>Right Margin (0 is style default)</value>
+    </data>
+    <data name="Editor_MarginVertical_ToolTip" xml:space="preserve">
+        <value>Vertical Margin (0 is style default)</value>
+    </data>
+    <data name="Editor_ToggleBold_ToolTip" xml:space="preserve">
+        <value>Toggle Bold \b at cursor position</value>
+    </data>
+    <data name="Editor_ToggleItalics_ToolTip" xml:space="preserve">
+        <value>Toggle Italics \i at cursor position</value>
+    </data>
+    <data name="Editor_ToggleUnderline_ToolTip" xml:space="preserve">
+        <value>Toggle Underline \u at cursor position</value>
+    </data>
+    <data name="Editor_ToggleStrikethrough_ToolTip" xml:space="preserve">
+        <value>Toggle Strikethrough \s at cursor position</value>
+    </data>
+    <data name="Editor_SetFont_ToolTip" xml:space="preserve">
+        <value>Set Font \fn at cursor position</value>
+    </data>
+    <data name="Editor_NextOrCreate_ToolTip" xml:space="preserve">
+        <value>Move to the next line, creating a new one if needed</value>
     </data>
 </root>

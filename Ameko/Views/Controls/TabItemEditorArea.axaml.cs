@@ -68,4 +68,12 @@ public partial class TabItemEditorArea : ReactiveUserControl<TabItemViewModel>
             CommitType.EventMeta
         );
     }
+
+    private void AnyControl_EventTimeChanged(object? sender, TextChangedEventArgs e)
+    {
+        ViewModel?.Workspace.Commit(
+            ViewModel.Workspace.SelectionManager.SelectedEventCollection,
+            CommitType.EventTime
+        );
+    }
 }
