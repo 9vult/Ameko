@@ -590,6 +590,33 @@ public class EventManager : BindableBase
         return after;
     }
 
+    /// <summary>
+    /// Get the event before an event, creating it if needed
+    /// </summary>
+    /// <param name="id">ID of the child event</param>
+    /// <returns>The event before the child</returns>
+    public Event GetOrCreateBefore(int id)
+    {
+        if (TryGetBefore(id, out var before))
+            return before;
+
+        // Create a new event
+        if (!TryGet(id, out var @event))
+            throw new ArgumentOutOfRangeException(nameof(id));
+
+        before = new Event(NextId)
+        {
+            Style = @event.Style,
+            Start = Time.FromTime(@event.Start),
+            End = Time.FromMillis(
+                Math.Max(0, (@event.Start - Time.FromSeconds(5)).TotalMilliseconds)
+            ),
+        };
+
+        AddFirst(before);
+        return before;
+    }
+
     #endregion Getters
     #region Advanced Actions
 
