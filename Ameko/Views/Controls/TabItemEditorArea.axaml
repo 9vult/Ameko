@@ -10,5 +10,15 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Ameko.Views.Controls.TabItemEditorArea"
              x:DataType="vm:TabItemViewModel">
-    Editor Area
+    <Grid Name="EditorPanel"
+          RowDefinitions="Auto, Auto, *">
+        <TextBox Grid.Row="2"
+                 Name="EditBox"
+                 Text="{Binding Workspace.SelectionManager.ActiveEvent.Text}"
+                 Margin="2 1"
+                 FontFamily="{StaticResource MartianMonoFont}"
+                 TextWrapping="NoWrap"
+                 IsUndoEnabled="False"
+                 KeyDown="EditBox_OnKeyDown"/>
+    </Grid>
 </UserControl>

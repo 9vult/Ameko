@@ -26,18 +26,12 @@ public partial class TabItemViewModel : ViewModelBase
     public ICommand MergeEventsCommand { get; }
     public ICommand SplitEventsCommand { get; }
     public ICommand DeleteEventsCommand { get; }
+    public ICommand GetOrCreateAfterCommand { get; }
     #endregion
 
-    private string _title;
     private readonly Workspace _workspace;
 
     public Workspace Workspace => _workspace;
-
-    public string Title
-    {
-        get => _title;
-        set => this.RaiseAndSetIfChanged(ref _title, value);
-    }
 
     public TabItemViewModel(string title, Workspace workspace)
     {
@@ -58,9 +52,9 @@ public partial class TabItemViewModel : ViewModelBase
         MergeEventsCommand = CreateMergeEventsCommand();
         SplitEventsCommand = CreateSplitEventsCommand();
         DeleteEventsCommand = CreateDeleteEventsCommand();
+        GetOrCreateAfterCommand = CreateGetOrCreateAfterCommand();
         #endregion
 
-        _title = title;
         _workspace = workspace;
     }
 }
