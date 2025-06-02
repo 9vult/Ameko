@@ -69,8 +69,12 @@ public partial class TabItemViewModel : ViewModelBase
                 events.Add(@event);
             }
 
-            Workspace.Document.EventManager.AddAfter(Workspace.SelectedEvent.Id, events);
-            Workspace.SetSelection(events.Last(), events, CommitType.EventAdd);
+            Workspace.Document.EventManager.AddAfter(
+                Workspace.SelectionManager.ActiveEvent.Id,
+                events
+            );
+            Workspace.Commit(events, CommitType.EventAdd);
+            Workspace.SelectionManager.Select(events.Last());
         });
     }
 
@@ -83,7 +87,7 @@ public partial class TabItemViewModel : ViewModelBase
     {
         return ReactiveCommand.Create(() =>
         {
-            var selection = Workspace.SelectedEventCollection;
+            var selection = Workspace.SelectionManager.SelectedEventCollection;
             if (selection.Count == 0)
                 return;
 
@@ -91,7 +95,8 @@ public partial class TabItemViewModel : ViewModelBase
                 .Select(@event => Workspace.Document.EventManager.Duplicate(@event))
                 .ToList();
 
-            Workspace.SetSelection(events.Last(), events, CommitType.EventAdd);
+            Workspace.Commit(events, CommitType.EventAdd);
+            Workspace.SelectionManager.Select(events.Last());
         });
     }
 
@@ -102,8 +107,11 @@ public partial class TabItemViewModel : ViewModelBase
     {
         return ReactiveCommand.Create(() =>
         {
-            var @event = Workspace.Document.EventManager.InsertBefore(Workspace.SelectedEvent);
-            Workspace.SetSelection(@event, CommitType.EventAdd);
+            var @event = Workspace.Document.EventManager.InsertBefore(
+                Workspace.SelectionManager.ActiveEvent
+            );
+            Workspace.Commit(@event, CommitType.EventAdd);
+            Workspace.SelectionManager.Select(@event);
         });
     }
 
@@ -114,8 +122,11 @@ public partial class TabItemViewModel : ViewModelBase
     {
         return ReactiveCommand.Create(() =>
         {
-            var @event = Workspace.Document.EventManager.InsertAfter(Workspace.SelectedEvent);
-            Workspace.SetSelection(@event, CommitType.EventAdd);
+            var @event = Workspace.Document.EventManager.InsertAfter(
+                Workspace.SelectionManager.ActiveEvent
+            );
+            Workspace.Commit(@event, CommitType.EventAdd);
+            Workspace.SelectionManager.Select(@event);
         });
     }
 
@@ -127,24 +138,26 @@ public partial class TabItemViewModel : ViewModelBase
         return ReactiveCommand.Create(() =>
         {
             var eventManager = Workspace.Document.EventManager;
+            var selectionManager = Workspace.SelectionManager;
 
-            if (Workspace.SelectedEventCollection.Count > 1)
+            if (selectionManager.SelectedEventCollection.Count > 1)
             {
                 // Remove all but the primary selection
                 eventManager.Remove(
-                    Workspace
-                        .SelectedEventCollection.Where(e => e.Id != Workspace.SelectedEvent.Id)
+                    selectionManager
+                        .SelectedEventCollection.Where(e => e.Id != selectionManager.ActiveEvent.Id)
                         .Select(e => e.Id)
                         .ToList()
                 );
             }
             // Get or create the next event to select
             var nextEvent =
-                eventManager.GetBefore(Workspace.SelectedEvent.Id)
-                ?? eventManager.GetOrCreateAfter(Workspace.SelectedEvent.Id);
+                eventManager.GetBefore(selectionManager.ActiveEvent.Id)
+                ?? eventManager.GetOrCreateAfter(selectionManager.ActiveEvent.Id);
 
-            eventManager.Remove(Workspace.SelectedEvent.Id);
-            Workspace.SetSelection(nextEvent, CommitType.EventRemove);
+            eventManager.Remove(selectionManager.ActiveEvent.Id);
+            Workspace.Commit(nextEvent, CommitType.EventRemove);
+            selectionManager.Select(nextEvent);
         });
     }
 
@@ -155,19 +168,24 @@ public partial class TabItemViewModel : ViewModelBase
     {
         return ReactiveCommand.Create(() =>
         {
-            if (Workspace.SelectedEventCollection.Count != 2)
+            var selectionManager = Workspace.SelectionManager;
+
+            if (selectionManager.SelectedEventCollection.Count != 2)
                 return;
 
             var useSoftBreaks =
                 HoloContext.Instance.Solution.UseSoftLinebreaks
                 ?? HoloContext.Instance.Configuration.UseSoftLinebreaks;
 
-            var one = Workspace.SelectedEventCollection[0];
-            var two = Workspace.SelectedEventCollection[1];
+            var one = selectionManager.SelectedEventCollection[0];
+            var two = selectionManager.SelectedEventCollection[1];
 
             var newEvent = Workspace.Document.EventManager.Merge(one.Id, two.Id, useSoftBreaks);
-            if (newEvent is not null)
-                Workspace.SetSelection(newEvent, CommitType.EventAdd | CommitType.EventRemove);
+            if (newEvent is null)
+                return;
+
+            Workspace.Commit(newEvent, CommitType.EventAdd | CommitType.EventRemove);
+            selectionManager.Select(newEvent);
         });
     }
 
@@ -178,20 +196,19 @@ public partial class TabItemViewModel : ViewModelBase
     {
         return ReactiveCommand.Create(() =>
         {
-            if (Workspace.SelectedEventCollection.Count == 0)
+            var selectionManager = Workspace.SelectionManager;
+
+            if (selectionManager.SelectedEventCollection.Count == 0)
                 return;
 
             var newEvents = new List<Event>();
-            foreach (var @event in Workspace.SelectedEventCollection)
+            foreach (var @event in selectionManager.SelectedEventCollection)
             {
                 Workspace.Document.EventManager.Split(@event.Id);
             }
 
-            Workspace.SetSelection(
-                newEvents.Last(),
-                newEvents,
-                CommitType.EventAdd | CommitType.EventRemove
-            );
+            Workspace.Commit(newEvents, CommitType.EventAdd | CommitType.EventRemove);
+            selectionManager.Select(newEvents.Last());
         });
     }
 }
