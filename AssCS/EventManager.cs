@@ -2,6 +2,7 @@
 
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
+using AssCS.Utilities;
 
 namespace AssCS;
 
@@ -564,6 +565,31 @@ public class EventManager : BindableBase
         return false;
     }
 
+    /// <summary>
+    /// Get the event after an event, creating it if needed
+    /// </summary>
+    /// <param name="id">ID of the parent event</param>
+    /// <returns>The event after the parent</returns>
+    public Event GetOrCreateAfter(int id)
+    {
+        if (TryGetAfter(id, out var after))
+            return after;
+
+        // Create a new event
+        if (!TryGet(id, out var @event))
+            throw new ArgumentOutOfRangeException(nameof(id));
+
+        after = new Event(NextId)
+        {
+            Style = @event.Style,
+            Start = Time.FromTime(@event.End),
+            End = @event.End + Time.FromSeconds(5),
+        };
+
+        AddLast(after);
+        return after;
+    }
+
     #endregion Getters
     #region Advanced Actions
 
@@ -671,48 +697,34 @@ public class EventManager : BindableBase
     /// <returns>List of events created by the split</returns>
     public IEnumerable<Event> Split(int id)
     {
-        if (!TryGet(id, out var e))
-            return [];
-        if (string.IsNullOrEmpty(e.Text))
+        if (!TryGet(id, out var @event) || string.IsNullOrEmpty(@event.Text))
             return [];
 
-        string[] delims = ["\\N", "\\n"];
-        var segments = e.Text.Split(delims, StringSplitOptions.None);
+        string[] delimiters = ["\\N", "\\n"];
+        var segments = @event.Text.Split(delimiters, StringSplitOptions.None);
         if (segments.Length == 0)
             return [];
 
         List<Event> result = [];
 
-        var rollingTime = e.Start;
-        var goalTime = e.End;
+        var rollingTime = @event.Start;
+        var goalTime = @event.End;
 
-        Event previous = e;
+        var previous = @event;
         foreach (var segment in segments)
         {
-            var newEvent = Event.FromEvent(NextId, e);
+            var newEvent = Event.FromEvent(NextId, @event);
             var ratio =
-                segment.Length
-                / (double)
-                    e
-                        .Text.Replace(
-                            @"\N",
-                            string.Empty,
-                            true,
-                            System.Globalization.CultureInfo.InvariantCulture
-                        )
-                        .Length;
+                segment.Length / (double)@event.Text.ReplaceMany(delimiters, string.Empty).Length;
 
             newEvent.Text = segment;
             newEvent.Start = Time.FromTime(rollingTime);
-            newEvent.End =
-                rollingTime
-                + Time.FromMillis(
-                    Convert.ToInt64(
-                        (goalTime.TotalMilliseconds - e.Start.TotalMilliseconds) * ratio
-                    )
-                );
-            if (newEvent.End > goalTime)
-                newEvent.End = Time.FromTime(goalTime);
+            newEvent.End = Time.FromMillis(
+                Math.Min(
+                    Convert.ToInt64((goalTime - @event.Start).TotalMilliseconds * ratio),
+                    goalTime.TotalMilliseconds
+                )
+            );
 
             AddAfter(previous.Id, newEvent);
             result.Add(newEvent);
