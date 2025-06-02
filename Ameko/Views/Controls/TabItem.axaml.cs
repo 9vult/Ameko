@@ -19,7 +19,7 @@ public partial class TabItem : ReactiveUserControl<TabItemViewModel>
     private async Task DoCopyEventsAsync(IInteractionContext<TabItemViewModel, string?> interaction)
     {
         var window = TopLevel.GetTopLevel(this);
-        var selection = interaction.Input.Workspace.SelectedEventCollection;
+        var selection = interaction.Input.Workspace.SelectionManager.SelectedEventCollection;
         if (window is null || selection.Count == 0)
         {
             interaction.SetOutput(string.Empty);
@@ -38,24 +38,26 @@ public partial class TabItem : ReactiveUserControl<TabItemViewModel>
         // Do the cutting part
         var workspace = interaction.Input.Workspace;
         var eventManager = workspace.Document.EventManager;
+        var selectionManager = workspace.SelectionManager;
 
-        if (workspace.SelectedEventCollection.Count > 1)
+        if (selectionManager.SelectedEventCollection.Count > 1)
         {
             // Remove all but the primary selection
             eventManager.Remove(
-                workspace
-                    .SelectedEventCollection.Where(e => e.Id != workspace.SelectedEvent.Id)
+                selectionManager
+                    .SelectedEventCollection.Where(e => e.Id != selectionManager.ActiveEvent.Id)
                     .Select(e => e.Id)
                     .ToList()
             );
         }
         // Get or create the next event to select
         var nextEvent =
-            eventManager.GetBefore(workspace.SelectedEvent.Id)
-            ?? eventManager.GetOrCreateAfter(workspace.SelectedEvent.Id);
+            eventManager.GetBefore(selectionManager.ActiveEvent.Id)
+            ?? eventManager.GetOrCreateAfter(selectionManager.ActiveEvent.Id);
 
-        eventManager.Remove(workspace.SelectedEvent.Id);
-        workspace.SetSelection(nextEvent, CommitType.EventRemove);
+        eventManager.Remove(selectionManager.ActiveEvent.Id);
+        workspace.Commit(nextEvent, CommitType.EventRemove);
+        selectionManager.Select(nextEvent);
     }
 
     private async Task DoPasteEventsAsync(

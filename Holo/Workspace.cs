@@ -20,11 +20,9 @@ public class Workspace : BindableBase
     private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
     private readonly Document _document;
     private readonly int _id;
+    private readonly SelectionManager _selectionManager;
     private Uri? _savePath;
     private bool _isSaved;
-
-    private Event _selectedEvent;
-    private readonly RangeObservableCollection<Event> _selectedEventCollection;
 
     /// <summary>
     /// The ass document in the workspace
@@ -35,6 +33,8 @@ public class Workspace : BindableBase
     /// The ID of the workspace
     /// </summary>
     public int Id => _id;
+
+    public SelectionManager SelectionManager => _selectionManager;
 
     /// <summary>
     /// The path the <see cref="Document"/> is saved to,
@@ -64,25 +64,6 @@ public class Workspace : BindableBase
             ? $"{(IsSaved ? '*' : string.Empty)}{Path.GetFileNameWithoutExtension(SavePath.LocalPath)}"
             : $"New {Id}";
 
-    /// <summary>
-    /// The currently-selected event
-    /// </summary>
-    /// <remarks>
-    /// If there are multiple selected events, then <see cref="SelectedEvent"/>
-    /// will be the "primary" selected event. <see cref="SelectedEventCollection"/>
-    /// will contain the entire selection.
-    /// </remarks>
-    public Event SelectedEvent
-    {
-        get => _selectedEvent;
-        private set => SetProperty(ref _selectedEvent, value);
-    }
-
-    /// <summary>
-    /// Collection of currently-selected events
-    /// </summary>
-    public ReadOnlyObservableCollection<Event> SelectedEventCollection { get; }
-
     // TODO: May need to raise property changed here - Or move to EventManager under a different name
     /// <summary>
     /// Whether the Actors column in the events grid should be displayed
@@ -95,42 +76,37 @@ public class Workspace : BindableBase
     public bool DisplayEffectsColumn => _document.EventManager.Effects.Count > 0;
 
     /// <summary>
-    /// Set the current selection
+    /// Commit a change
     /// </summary>
-    /// <param name="primary">"Primary" selection (<see cref="SelectedEvent"/>)</param>
-    /// <param name="changeType">Type of change resulting in selection update</param>
-    public void SetSelection(Event primary, CommitType changeType)
+    /// <param name="active">Active event (<see cref="ActiveEvent"/>)</param>
+    /// <param name="changeType">Type of change</param>
+    public void Commit(Event active, CommitType changeType)
     {
-        SetSelection(primary, [primary], changeType);
+        Commit([active], changeType);
     }
 
     /// <summary>
-    /// Set the current selection
+    /// Commit a change
     /// </summary>
-    /// <param name="primary">"Primary" selection (<see cref="SelectedEvent"/>)</param>
     /// <param name="selection">Entire selection (<see cref="SelectedEventCollection"/>)</param>
-    /// <param name="changeType">Type of change resulting in selection update</param>
-    public void SetSelection(Event primary, IList<Event> selection, CommitType changeType)
+    /// <param name="changeType">Type of change</param>
+    public void Commit(IList<Event> selection, CommitType changeType)
     {
         // See: SubsEditBox::SetSelectedRows
         // https://github.com/arch1t3cht/Aegisub/blob/b2a0b098215d7028ba26f1bf728731fc585f2b99/src/subs_edit_box.cpp#L476
-        Logger.Trace($"Setting selection to {primary.Id} (total: {selection.Count})");
 
-        bool amend =
+        var amend =
             _document.HistoryManager.CanUndo
             && _document.HistoryManager.LastCommitType == changeType
             && _document.HistoryManager.LastCommitTime.AddSeconds(30) > DateTimeOffset.Now; // TODO: Add an option for this
 
         // TODO: Determine how to best include descriptions here
-        foreach (var e in _selectedEventCollection)
+        foreach (var e in selection)
         {
             var parent = _document.EventManager.GetBefore(e.Id);
             _document.HistoryManager.Commit("", changeType, e, parent?.Id, amend);
             amend = true;
         }
-
-        SelectedEvent = primary;
-        _selectedEventCollection.ReplaceRange(selection);
     }
 
     /// <summary>
@@ -147,8 +123,6 @@ public class Workspace : BindableBase
         _savePath = savePath;
         IsSaved = true;
 
-        _selectedEvent = document.EventManager.Head;
-        _selectedEventCollection = [_selectedEvent];
-        SelectedEventCollection = new ReadOnlyObservableCollection<Event>(_selectedEventCollection);
+        _selectionManager = new SelectionManager(Document.EventManager.Head);
     }
 }
