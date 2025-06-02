@@ -760,6 +760,8 @@ public class EventManager : BindableBase
             previous = newEvent;
             rollingTime = newEvent.End;
         }
+
+        Remove(@event.Id);
         return result;
     }
 

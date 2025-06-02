@@ -204,8 +204,11 @@ public partial class TabItemViewModel : ViewModelBase
             var newEvents = new List<Event>();
             foreach (var @event in selectionManager.SelectedEventCollection)
             {
-                Workspace.Document.EventManager.Split(@event.Id);
+                newEvents.AddRange(Workspace.Document.EventManager.Split(@event.Id));
             }
+
+            if (newEvents.Count == 0)
+                return;
 
             Workspace.Commit(newEvents, CommitType.EventAdd | CommitType.EventRemove);
             selectionManager.Select(newEvents.Last());
