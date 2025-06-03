@@ -13,4 +13,3 @@ public partial class MenuStrip : UserControl
         InitializeComponent();
     }
 }
-

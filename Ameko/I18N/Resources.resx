@@ -231,4 +231,16 @@
     <data name="Menu_About" xml:space="preserve">
         <value>_About Ameko...</value>
     </data>
+    <data name="AboutWindow_Title" xml:space="preserve">
+        <value>About Ameko</value>
+    </data>
+    <data name="AboutWindow_GeneralTab" xml:space="preserve">
+        <value>General Information</value>
+    </data>
+    <data name="AboutWindow_AssetsTab" xml:space="preserve">
+        <value>Assets</value>
+    </data>
+    <data name="AboutWindow_LibrariesTab" xml:space="preserve">
+        <value>Libraries</value>
+    </data>
 </root>

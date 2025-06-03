@@ -15,10 +15,12 @@ public partial class MainWindowViewModel : ViewModelBase
 {
     #region Interactions
     public Interaction<LogWindowViewModel, Unit> ShowLogWindow { get; }
+    public Interaction<AboutWindowViewModel, Unit> ShowAboutWindow { get; }
     #endregion
 
     #region Commands
     public ICommand ShowLogWindowCommand { get; }
+    public ICommand ShowAboutWindowCommand { get; }
     #endregion
 
     private readonly ObservableCollection<TabItemViewModel> _tabItems;
@@ -51,10 +53,12 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         #region Interactions
         ShowLogWindow = new Interaction<LogWindowViewModel, Unit>();
+        ShowAboutWindow = new Interaction<AboutWindowViewModel, Unit>();
         #endregion
 
         #region Commands
         ShowLogWindowCommand = CreateShowLogWindowCommand();
+        ShowAboutWindowCommand = CreateShowAboutWindowCommand();
         #endregion
 
         _tabItems = new ObservableCollection<TabItemViewModel>(

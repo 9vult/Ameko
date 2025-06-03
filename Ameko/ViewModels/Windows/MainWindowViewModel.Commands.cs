@@ -10,7 +10,7 @@ namespace Ameko.ViewModels.Windows;
 public partial class MainWindowViewModel : ViewModelBase
 {
     /// <summary>
-    /// Command for displaying the <see cref="LogWindow"/>
+    /// Display the <see cref="LogWindow"/>
     /// </summary>
     private ReactiveCommand<Unit, Unit> CreateShowLogWindowCommand()
     {
@@ -18,6 +18,19 @@ public partial class MainWindowViewModel : ViewModelBase
         {
             var vm = new LogWindowViewModel();
             await ShowLogWindow.Handle(vm);
+        });
+    }
+
+    /// <summary>
+    /// Display the <see cref="AboutWindow"/>
+    /// </summary>
+    /// <returns></returns>
+    private ReactiveCommand<Unit, Unit> CreateShowAboutWindowCommand()
+    {
+        return ReactiveCommand.CreateFromTask(async () =>
+        {
+            var vm = new AboutWindowViewModel();
+            await ShowAboutWindow.Handle(vm);
         });
     }
 }
