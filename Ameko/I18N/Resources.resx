@@ -45,8 +45,8 @@
     <data name="Menu_Help" xml:space="preserve">
         <value>_Help</value>
     </data>
-    <data name="Menu_Help_Logs" xml:space="preserve">
-        <value>_Logs</value>
+    <data name="Menu_ShowLogs" xml:space="preserve">
+        <value>Show _Logs...</value>
     </data>
     <data name="SolutionExplorer_Header" xml:space="preserve">
         <value>Solution Explorer</value>
@@ -167,5 +167,68 @@
     </data>
     <data name="Editor_NextOrCreate_ToolTip" xml:space="preserve">
         <value>Move to the next line, creating a new one if needed</value>
+    </data>
+    <data name="Menu_New" xml:space="preserve">
+        <value>_New</value>
+    </data>
+    <data name="Menu_OpenSubtitle" xml:space="preserve">
+        <value>_Open Subtitle...</value>
+    </data>
+    <data name="Menu_SaveSubtitle" xml:space="preserve">
+        <value>_Save Subtitle...</value>
+    </data>
+    <data name="Menu_SaveSubtitleAs" xml:space="preserve">
+        <value>Save Subtitle _As...</value>
+    </data>
+    <data name="Menu_ExportSubtitles" xml:space="preserve">
+        <value>_Export Subtitles...</value>
+    </data>
+    <data name="Menu_OpenSolution" xml:space="preserve">
+        <value>Open _Solution...</value>
+    </data>
+    <data name="Menu_SaveSolution" xml:space="preserve">
+        <value>Save So_lution...</value>
+    </data>
+    <data name="Menu_Quit" xml:space="preserve">
+        <value>_Quit</value>
+    </data>
+    <data name="Menu_Undo" xml:space="preserve">
+        <value>_Undo</value>
+    </data>
+    <data name="Menu_Redo" xml:space="preserve">
+        <value>_Redo</value>
+    </data>
+    <data name="Menu_Search" xml:space="preserve">
+        <value>_Search...</value>
+    </data>
+    <data name="Menu_StylesManager" xml:space="preserve">
+        <value>_Styles Manager...</value>
+    </data>
+    <data name="Menu_ScriptProperties" xml:space="preserve">
+        <value>Script _Properties...</value>
+    </data>
+    <data name="Menu_Solution" xml:space="preserve">
+        <value>So_lution</value>
+    </data>
+    <data name="Menu_SolutionConfig" xml:space="preserve">
+        <value>_Configuration...</value>
+    </data>
+    <data name="Menu_ShiftTimes" xml:space="preserve">
+        <value>S_hift Times...</value>
+    </data>
+    <data name="Menu_OpenVideo" xml:space="preserve">
+        <value>_Open Video...</value>
+    </data>
+    <data name="Menu_JumpTo" xml:space="preserve">
+        <value>_Jump To...</value>
+    </data>
+    <data name="Menu_Configuration" xml:space="preserve">
+        <value>_Configuration...</value>
+    </data>
+    <data name="Menu_Keybinds" xml:space="preserve">
+        <value>_Keybinds...</value>
+    </data>
+    <data name="Menu_About" xml:space="preserve">
+        <value>_About Ameko...</value>
     </data>
 </root>

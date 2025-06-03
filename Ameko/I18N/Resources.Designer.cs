@@ -411,11 +411,38 @@ namespace Ameko.I18N {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to _About Ameko....
+        /// </summary>
+        public static string Menu_About {
+            get {
+                return ResourceManager.GetString("Menu_About", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to _Configuration....
+        /// </summary>
+        public static string Menu_Configuration {
+            get {
+                return ResourceManager.GetString("Menu_Configuration", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to _Edit.
         /// </summary>
         public static string Menu_Edit {
             get {
                 return ResourceManager.GetString("Menu_Edit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to _Export Subtitles....
+        /// </summary>
+        public static string Menu_ExportSubtitles {
+            get {
+                return ResourceManager.GetString("Menu_ExportSubtitles", resourceCulture);
             }
         }
         
@@ -438,11 +465,20 @@ namespace Ameko.I18N {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to _Logs.
+        ///   Looks up a localized string similar to _Jump To....
         /// </summary>
-        public static string Menu_Help_Logs {
+        public static string Menu_JumpTo {
             get {
-                return ResourceManager.GetString("Menu_Help_Logs", resourceCulture);
+                return ResourceManager.GetString("Menu_JumpTo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to _Keybinds....
+        /// </summary>
+        public static string Menu_Keybinds {
+            get {
+                return ResourceManager.GetString("Menu_Keybinds", resourceCulture);
             }
         }
         
@@ -456,11 +492,155 @@ namespace Ameko.I18N {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to _New.
+        /// </summary>
+        public static string Menu_New {
+            get {
+                return ResourceManager.GetString("Menu_New", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Open _Solution....
+        /// </summary>
+        public static string Menu_OpenSolution {
+            get {
+                return ResourceManager.GetString("Menu_OpenSolution", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to _Open Subtitle....
+        /// </summary>
+        public static string Menu_OpenSubtitle {
+            get {
+                return ResourceManager.GetString("Menu_OpenSubtitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to _Open Video....
+        /// </summary>
+        public static string Menu_OpenVideo {
+            get {
+                return ResourceManager.GetString("Menu_OpenVideo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to _Quit.
+        /// </summary>
+        public static string Menu_Quit {
+            get {
+                return ResourceManager.GetString("Menu_Quit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to _Redo.
+        /// </summary>
+        public static string Menu_Redo {
+            get {
+                return ResourceManager.GetString("Menu_Redo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Save So_lution....
+        /// </summary>
+        public static string Menu_SaveSolution {
+            get {
+                return ResourceManager.GetString("Menu_SaveSolution", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to _Save Subtitle....
+        /// </summary>
+        public static string Menu_SaveSubtitle {
+            get {
+                return ResourceManager.GetString("Menu_SaveSubtitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Save Subtitle _As....
+        /// </summary>
+        public static string Menu_SaveSubtitleAs {
+            get {
+                return ResourceManager.GetString("Menu_SaveSubtitleAs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Script _Properties....
+        /// </summary>
+        public static string Menu_ScriptProperties {
+            get {
+                return ResourceManager.GetString("Menu_ScriptProperties", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Scri_pts.
         /// </summary>
         public static string Menu_Scripts {
             get {
                 return ResourceManager.GetString("Menu_Scripts", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to _Search....
+        /// </summary>
+        public static string Menu_Search {
+            get {
+                return ResourceManager.GetString("Menu_Search", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to S_hift Times....
+        /// </summary>
+        public static string Menu_ShiftTimes {
+            get {
+                return ResourceManager.GetString("Menu_ShiftTimes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Show _Logs....
+        /// </summary>
+        public static string Menu_ShowLogs {
+            get {
+                return ResourceManager.GetString("Menu_ShowLogs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to So_lution.
+        /// </summary>
+        public static string Menu_Solution {
+            get {
+                return ResourceManager.GetString("Menu_Solution", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to _Configuration....
+        /// </summary>
+        public static string Menu_SolutionConfig {
+            get {
+                return ResourceManager.GetString("Menu_SolutionConfig", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to _Styles Manager....
+        /// </summary>
+        public static string Menu_StylesManager {
+            get {
+                return ResourceManager.GetString("Menu_StylesManager", resourceCulture);
             }
         }
         
@@ -479,6 +659,15 @@ namespace Ameko.I18N {
         public static string Menu_Timing {
             get {
                 return ResourceManager.GetString("Menu_Timing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to _Undo.
+        /// </summary>
+        public static string Menu_Undo {
+            get {
+                return ResourceManager.GetString("Menu_Undo", resourceCulture);
             }
         }
         
