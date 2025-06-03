@@ -60,6 +60,42 @@ namespace Ameko.I18N {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Assets.
+        /// </summary>
+        public static string AboutWindow_AssetsTab {
+            get {
+                return ResourceManager.GetString("AboutWindow_AssetsTab", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to General Information.
+        /// </summary>
+        public static string AboutWindow_GeneralTab {
+            get {
+                return ResourceManager.GetString("AboutWindow_GeneralTab", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Libraries.
+        /// </summary>
+        public static string AboutWindow_LibrariesTab {
+            get {
+                return ResourceManager.GetString("AboutWindow_LibrariesTab", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to About Ameko.
+        /// </summary>
+        public static string AboutWindow_Title {
+            get {
+                return ResourceManager.GetString("AboutWindow_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Actor for this line.
         /// </summary>
         public static string Editor_ActorAcBox_ToolTip {

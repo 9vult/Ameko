@@ -4,11 +4,11 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 
-namespace Ameko.Views.Controls;
+namespace Ameko.Views.Windows;
 
-public partial class TabItemVideoArea : UserControl
+public partial class AboutWindow : Window
 {
-    public TabItemVideoArea()
+    public AboutWindow()
     {
         InitializeComponent();
     }

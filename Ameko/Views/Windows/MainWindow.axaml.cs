@@ -2,6 +2,7 @@
 
 using System.Reactive;
 using System.Reactive.Disposables;
+using System.Threading.Tasks;
 using Ameko.ViewModels.Windows;
 using Avalonia;
 using Avalonia.ReactiveUI;
@@ -24,6 +25,16 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         interaction.SetOutput(Unit.Default);
     }
 
+    private async Task DoShowAboutWindowAsync(
+        IInteractionContext<AboutWindowViewModel, Unit> interaction
+    )
+    {
+        Log.Trace("Displaying About Window");
+        var window = new AboutWindow() { DataContext = interaction.Input };
+        await window.ShowDialog(this);
+        interaction.SetOutput(Unit.Default);
+    }
+
     public MainWindow()
     {
         Log.Info("Initializing Main Window...");
@@ -34,6 +45,7 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
             if (ViewModel is not null)
             {
                 ViewModel.ShowLogWindow.RegisterHandler(DoShowLogWindow);
+                ViewModel.ShowAboutWindow.RegisterHandler(DoShowAboutWindowAsync);
             }
 
             Disposable.Create(() => { }).DisposeWith(disposables);
