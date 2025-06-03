@@ -94,7 +94,7 @@
                      ToolTip.Tip="{x:Static i18n:Resources.Editor_StartBox_ToolTip}"
                      TextChanged="AnyControl_EventTimeChanged" />
             <TextBox Name="EndBox"
-                     Grid.Column="1"
+                     Grid.Column="2"
                      Margin="2"
                      AcceptsReturn="False"
                      AcceptsTab="False"

@@ -1,14 +1,19 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 using System;
+using System.Collections.Generic;
 using System.Reactive;
+using System.Reactive.Disposables;
+using Ameko.Services;
 using Ameko.ViewModels.Controls;
 using AssCS.History;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.ReactiveUI;
 using Holo;
+using ReactiveUI;
 
 namespace Ameko.Views.Controls;
 
@@ -47,11 +52,6 @@ public partial class TabItemEditorArea : ReactiveUserControl<TabItemViewModel>
         }
     }
 
-    public TabItemEditorArea()
-    {
-        InitializeComponent();
-    }
-
     // TODO: These don't differentiate between user input and program input
     private void EditBox_OnTextChanged(object? sender, TextChangedEventArgs e)
     {
@@ -75,5 +75,37 @@ public partial class TabItemEditorArea : ReactiveUserControl<TabItemViewModel>
             ViewModel.Workspace.SelectionManager.SelectedEventCollection,
             CommitType.EventTime
         );
+    }
+
+    public TabItemEditorArea()
+    {
+        InitializeComponent();
+        var previousVMs = new List<TabItemViewModel>();
+
+        this.WhenActivated(disposables =>
+        {
+            this.GetObservable(ViewModelProperty)
+                .WhereNotNull()
+                .Subscribe(vm =>
+                {
+                    // TODO: Keybinds
+
+                    if (previousVMs.Contains(vm))
+                        return;
+                    previousVMs.Add(vm);
+
+                    StartBox.AddHandler(
+                        KeyDownEvent,
+                        Extras.PreKeyDownEventHandler,
+                        RoutingStrategies.Tunnel
+                    );
+                    EndBox.AddHandler(
+                        KeyDownEvent,
+                        Extras.PreKeyDownEventHandler,
+                        RoutingStrategies.Tunnel
+                    );
+                })
+                .DisposeWith(disposables);
+        });
     }
 }
