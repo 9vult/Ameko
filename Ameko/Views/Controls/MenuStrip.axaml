@@ -12,30 +12,71 @@
              x:DataType="vm:MainWindowViewModel">
     <Menu>
         <MenuItem Header="{x:Static i18n:Resources.Menu_File}">
-            
+            <MenuItem Header="{x:Static i18n:Resources.Menu_New}"
+                      Icon="{icons:MaterialIconExt Kind=FileDocumentOutline}"/>
+            <Separator />
+            <MenuItem Header="{x:Static i18n:Resources.Menu_OpenSubtitle}"
+                      Icon="{icons:MaterialIconExt Kind=FolderOpenOutline}" />
+            <MenuItem Header="{x:Static i18n:Resources.Menu_SaveSubtitle}"
+                      Icon="{icons:MaterialIconExt Kind=ContentSaveOutline}" />
+            <MenuItem Header="{x:Static i18n:Resources.Menu_SaveSubtitleAs}"
+                      Icon="{icons:MaterialIconExt Kind=ContentSavePlusOutline}" />
+            <Separator />
+            <MenuItem Header="{x:Static i18n:Resources.Menu_ExportSubtitles}"
+                      Icon="{icons:MaterialIconExt Kind=FileExportOutline}" />
+            <Separator />
+            <MenuItem Header="{x:Static i18n:Resources.Menu_OpenSolution}"
+                      Icon="{icons:MaterialIconExt Kind=ArchiveArrowUpOutline}" />
+            <MenuItem Header="{x:Static i18n:Resources.Menu_SaveSolution}"
+                      Icon="{icons:MaterialIconExt Kind=ArchiveArrowDownOutline}" />
+            <Separator />
+            <MenuItem Header="{x:Static i18n:Resources.Menu_Quit}"
+                      Icon="{icons:MaterialIconExt Kind=ExitRun}" />
         </MenuItem>
         <MenuItem Header="{x:Static i18n:Resources.Menu_Edit}">
-            
+            <MenuItem Header="{x:Static i18n:Resources.Menu_Undo}"
+                      Icon="{icons:MaterialIconExt Kind=Undo}" />
+            <MenuItem Header="{x:Static i18n:Resources.Menu_Redo}"
+                      Icon="{icons:MaterialIconExt Kind=Redo}" />
+            <Separator />
+            <MenuItem Header="{x:Static i18n:Resources.Menu_Search}"
+                      Icon="{icons:MaterialIconExt Kind=TextSearch}"/>
         </MenuItem>
         <MenuItem Header="{x:Static i18n:Resources.Menu_Subtitle}">
-            
+            <MenuItem Header="{x:Static i18n:Resources.Menu_StylesManager}"
+                      Icon="{icons:MaterialIconExt Kind=PaletteOutline}" />
+            <Separator />
+            <MenuItem Header="{x:Static i18n:Resources.Menu_ScriptProperties}"
+                      Icon="{icons:MaterialIconExt Kind=ListBoxOutline}" />
+        </MenuItem>
+        <MenuItem Header="{x:Static i18n:Resources.Menu_Solution}">
+            <MenuItem Header="{x:Static i18n:Resources.Menu_SolutionConfig}"
+                      Icon="{icons:MaterialIconExt Kind=ArchiveCogOutline}" />
         </MenuItem>
         <MenuItem Header="{x:Static i18n:Resources.Menu_Timing}">
-            
+            <MenuItem Header="{x:Static i18n:Resources.Menu_ShiftTimes}"
+                      Icon="{icons:MaterialIconExt Kind=SwapHorizontal}" />
         </MenuItem>
         <MenuItem Header="{x:Static i18n:Resources.Menu_Video}">
-            
+            <MenuItem Header="{x:Static i18n:Resources.Menu_OpenVideo}"
+                      Icon="{icons:MaterialIconExt Kind=MovieOpenPlus}" />
+            <Separator />
+            <MenuItem Header="{x:Static i18n:Resources.Menu_JumpTo}"
+                      Icon="{icons:MaterialIconExt Kind=BullseyeArrow}" />
         </MenuItem>
-        <MenuItem Header="{x:Static i18n:Resources.Menu_Scripts}">
-            
-        </MenuItem>
-        <MenuItem Header="{x:Static i18n:Resources.Menu_Layouts}">
-            
-        </MenuItem>
+        <MenuItem Header="{x:Static i18n:Resources.Menu_Scripts}" />
+        <MenuItem Header="{x:Static i18n:Resources.Menu_Layouts}" />
         <MenuItem Header="{x:Static i18n:Resources.Menu_Help}">
-            <MenuItem Header="{x:Static i18n:Resources.Menu_Help_Logs}"
+            <MenuItem Header="{x:Static i18n:Resources.Menu_Configuration}"
+                      Icon="{icons:MaterialIconExt Kind=CogOutline}" />
+            <MenuItem Header="{x:Static i18n:Resources.Menu_Keybinds}"
+                      Icon="{icons:MaterialIconExt Kind=Keyboard}" />
+            <Separator />
+            <MenuItem Header="{x:Static i18n:Resources.Menu_ShowLogs}"
                       Icon="{icons:MaterialIconExt Kind=FormatListGroup}"
                       Command="{Binding ShowLogWindowCommand}" />
+            <MenuItem Header="{x:Static i18n:Resources.Menu_About}"
+                      Icon="{icons:MaterialIconExt Kind=InformationVariantCircleOutline}" />
         </MenuItem>
     </Menu>
 </UserControl>
