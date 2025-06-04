@@ -10,9 +10,20 @@ namespace Holo.Models;
 /// <param name="uri">The linked URI</param>
 public struct Link(int id, Workspace? workspace = null, Uri? uri = null)
 {
-    public readonly int Id = id;
-    public Workspace? Workspace = workspace;
-    public Uri? Uri = uri;
+    /// <summary>
+    /// ID of the Link
+    /// </summary>
+    public int Id { get; } = id;
+
+    /// <summary>
+    /// Linked workspace
+    /// </summary>
+    public Workspace? Workspace { get; set; } = workspace;
+
+    /// <summary>
+    /// Save location URI
+    /// </summary>
+    public Uri? Uri { get; set; } = uri;
 
     /// <summary>
     /// Indicates whether the <see cref="Workspace"/>
@@ -25,4 +36,12 @@ public struct Link(int id, Workspace? workspace = null, Uri? uri = null)
     /// is currently loaded in the <see cref="Solution"/>
     /// </summary>
     public readonly bool IsLoaded => Workspace is not null;
+
+    /// <summary>
+    /// Title of the link
+    /// </summary>
+    public readonly string Title =>
+        Workspace is not null ? Workspace.Title
+        : Uri is not null ? Path.GetFileNameWithoutExtension(Uri.LocalPath)
+        : "Untitled";
 }

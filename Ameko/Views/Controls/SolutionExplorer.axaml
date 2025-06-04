@@ -16,7 +16,24 @@
             <DockPanel Width="125">
                 <TextBlock DockPanel.Dock="Top"
                            Text="{x:Static i18n:Resources.SolutionExplorer_Header}" />
-                
+                <ListBox ItemsSource="{Binding Solution.ReferencedDocuments}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <ListBoxItem Content="{Binding Title}">
+                                <ListBoxItem.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="{x:Static i18n:Resources.SolutionExplorer_ContextMenu_Open}"
+                                                  Icon="{icons:MaterialIconExt Kind=FolderOpenOutline}" />
+                                        <Separator />
+                                        <MenuItem Header="{x:Static i18n:Resources.SolutionExplorer_ContextMenu_Remove}"
+                                                  Icon="{icons:MaterialIconExt Kind=TrashCanOutline}"
+                                                  CommandParameter="{Binding Id}"/>
+                                    </ContextMenu>
+                                </ListBoxItem.ContextMenu>
+                            </ListBoxItem>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
             </DockPanel>
         </TabItem>
         

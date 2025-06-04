@@ -717,6 +717,24 @@ namespace Ameko.I18N {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Open.
+        /// </summary>
+        public static string SolutionExplorer_ContextMenu_Open {
+            get {
+                return ResourceManager.GetString("SolutionExplorer_ContextMenu_Open", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remove from Workspace.
+        /// </summary>
+        public static string SolutionExplorer_ContextMenu_Remove {
+            get {
+                return ResourceManager.GetString("SolutionExplorer_ContextMenu_Remove", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Solution Explorer.
         /// </summary>
         public static string SolutionExplorer_Header {
