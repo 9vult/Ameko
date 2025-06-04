@@ -52,7 +52,7 @@ public partial class TabItemViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _editBoxSelectionEnd, value);
     }
 
-    public TabItemViewModel(string title, Workspace workspace)
+    public TabItemViewModel(Workspace workspace)
     {
         #region Interactions
         CopyEvents = new Interaction<TabItemViewModel, string?>();

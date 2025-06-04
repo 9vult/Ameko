@@ -2,6 +2,7 @@
 
 using System.Reactive;
 using System.Reactive.Linq;
+using Ameko.ViewModels.Controls;
 using Ameko.Views.Windows;
 using ReactiveUI;
 
@@ -9,6 +10,18 @@ namespace Ameko.ViewModels.Windows;
 
 public partial class MainWindowViewModel : ViewModelBase
 {
+    /// <summary>
+    /// Create a new file
+    /// </summary>
+    private ReactiveCommand<Unit, Unit> CreateNewCommand()
+    {
+        return ReactiveCommand.Create(() =>
+        {
+            var wsp = Solution.AddWorkspace();
+            Solution.WorkingSpace = wsp;
+        });
+    }
+
     /// <summary>
     /// Display the <see cref="LogWindow"/>
     /// </summary>

@@ -13,7 +13,8 @@
     <Menu>
         <MenuItem Header="{x:Static i18n:Resources.Menu_File}">
             <MenuItem Header="{x:Static i18n:Resources.Menu_New}"
-                      Icon="{icons:MaterialIconExt Kind=FileDocumentOutline}"/>
+                      Icon="{icons:MaterialIconExt Kind=FileDocumentOutline}"
+                      Command="{Binding NewCommand}"/>
             <Separator />
             <MenuItem Header="{x:Static i18n:Resources.Menu_OpenSubtitle}"
                       Icon="{icons:MaterialIconExt Kind=FolderOpenOutline}" />
