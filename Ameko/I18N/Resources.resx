@@ -243,4 +243,10 @@
     <data name="AboutWindow_LibrariesTab" xml:space="preserve">
         <value>Libraries</value>
     </data>
+    <data name="SolutionExplorer_ContextMenu_Remove" xml:space="preserve">
+        <value>Remove from Workspace</value>
+    </data>
+    <data name="SolutionExplorer_ContextMenu_Open" xml:space="preserve">
+        <value>Open</value>
+    </data>
 </root>
