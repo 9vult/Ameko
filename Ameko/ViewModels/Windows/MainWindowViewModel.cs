@@ -19,11 +19,13 @@ public partial class MainWindowViewModel : ViewModelBase
     #endregion
 
     #region Commands
+    // File
+    public ICommand NewCommand { get; }
+
+    // Help
     public ICommand ShowLogWindowCommand { get; }
     public ICommand ShowAboutWindowCommand { get; }
     #endregion
-
-    private readonly ObservableCollection<TabItemViewModel> _tabItems;
 
     /// <summary>
     /// Window title
@@ -43,12 +45,6 @@ public partial class MainWindowViewModel : ViewModelBase
         }
     }
 
-    /// <summary>
-    /// Read-only collection of tab items
-    /// </summary>
-    /// <remarks>Each tab item represents a <see cref="Workspace"/></remarks>
-    public ReadOnlyObservableCollection<TabItemViewModel> TabItems { get; }
-
     public MainWindowViewModel()
     {
         #region Interactions
@@ -57,13 +53,11 @@ public partial class MainWindowViewModel : ViewModelBase
         #endregion
 
         #region Commands
+        // File
+        NewCommand = CreateNewCommand();
+        // Help
         ShowLogWindowCommand = CreateShowLogWindowCommand();
         ShowAboutWindowCommand = CreateShowAboutWindowCommand();
         #endregion
-
-        _tabItems = new ObservableCollection<TabItemViewModel>(
-            Solution.LoadedWorkspaces.Select(w => new TabItemViewModel("item", w)).ToList()
-        );
-        TabItems = new ReadOnlyObservableCollection<TabItemViewModel>(_tabItems);
     }
 }

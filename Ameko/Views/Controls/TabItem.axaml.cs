@@ -10,6 +10,7 @@ using AssCS.History;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.ReactiveUI;
+using Holo;
 using ReactiveUI;
 
 namespace Ameko.Views.Controls;
@@ -85,6 +86,17 @@ public partial class TabItem : ReactiveUserControl<TabItemViewModel>
     {
         InitializeComponent();
         List<TabItemViewModel> previousVMs = [];
+
+        PropertyChanged += (_, e) =>
+        {
+            if (e.Property != DataContextProperty)
+                return;
+
+            if (e.NewValue is Workspace workspace)
+            {
+                DataContext = new TabItemViewModel(workspace);
+            }
+        };
 
         this.WhenActivated(
             (CompositeDisposable disposables) =>

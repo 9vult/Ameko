@@ -19,7 +19,7 @@ public class SolutionTests
     public void AddWorkspace_New()
     {
         var sln = new Solution();
-        int workspaceId = sln.AddWorkspace();
+        var workspaceId = sln.AddWorkspace().Id;
 
         sln.LoadedWorkspaces.ShouldContain(w => w.Id == workspaceId);
         sln.WorkingSpaceId.ShouldBe(workspaceId);
@@ -30,7 +30,7 @@ public class SolutionTests
     {
         var sln = new Solution();
         var workspace = new Workspace(new Document(true), 123);
-        int workspaceId = sln.AddWorkspace(workspace);
+        var workspaceId = sln.AddWorkspace(workspace).Id;
 
         sln.LoadedWorkspaces.ShouldContain(w => w.Id == workspaceId);
         sln.WorkingSpaceId.ShouldBe(workspaceId);
@@ -40,7 +40,7 @@ public class SolutionTests
     public void RemoveWorkspace_Exists()
     {
         var sln = new Solution();
-        var workspaceId = sln.AddWorkspace();
+        var workspaceId = sln.AddWorkspace().Id;
 
         var result = sln.RemoveWorkspace(workspaceId);
 
@@ -61,7 +61,7 @@ public class SolutionTests
     public void OpenDocument_NotExists()
     {
         var sln = new Solution();
-        int result = sln.OpenDocument(999);
+        var result = sln.OpenDocument(999);
 
         result.ShouldBe(-1);
     }
@@ -70,9 +70,9 @@ public class SolutionTests
     public void CloseDocument_Exists()
     {
         var sln = new Solution();
-        int docId = sln.AddWorkspace();
+        var docId = sln.AddWorkspace().Id;
 
-        bool result = sln.CloseDocument(docId);
+        var result = sln.CloseDocument(docId);
 
         result.ShouldBeTrue();
         sln.LoadedWorkspaces.ShouldNotContain(d => d.Id == docId);
@@ -82,7 +82,7 @@ public class SolutionTests
     public void CloseDocument_NotExists()
     {
         var sln = new Solution();
-        bool result = sln.CloseDocument(999);
+        var result = sln.CloseDocument(999);
 
         result.ShouldBeFalse();
     }
@@ -93,7 +93,7 @@ public class SolutionTests
         var sln = new Solution { SavePath = new Uri("file:///test.asln") };
 
         var writer = new StringWriter();
-        bool result = sln.Save(writer, sln.SavePath);
+        var result = sln.Save(writer, sln.SavePath);
 
         result.ShouldBeTrue();
         writer.ToString().ShouldNotBeNullOrEmpty();

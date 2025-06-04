@@ -39,7 +39,7 @@ public class Solution : BindableBase
     private bool _isSaved;
 
     private int _docId;
-    private int _workingSpaceId;
+    private Workspace _workingSpace;
 
     private int? _cps;
     private bool? _cpsIncludesWhitespace;
@@ -88,16 +88,20 @@ public class Solution : BindableBase
     /// <summary>
     /// The currently-selected workspace ID
     /// </summary>
-    public int WorkingSpaceId
-    {
-        get => _workingSpaceId;
-        set => SetProperty(ref _workingSpaceId, value);
-    }
+    public int WorkingSpaceId => _workingSpace.Id;
 
     /// <summary>
     /// The currently-loaded workspace
     /// </summary>
-    public Workspace? WorkingSpace => _loadedWorkspaces.First(f => f.Id == _workingSpaceId);
+    public Workspace WorkingSpace
+    {
+        get => _workingSpace;
+        set
+        {
+            SetProperty(ref _workingSpace, value);
+            RaisePropertyChanged(nameof(WorkingSpaceId));
+        }
+    }
 
     /// <summary>
     /// Workspace-scoped characters-per-second threshold
@@ -169,11 +173,17 @@ public class Solution : BindableBase
         return _loadedWorkspaces.FirstOrDefault(f => f.Id == id);
     }
 
+    public void SetWorkingSpace(int id)
+    {
+        var result = _loadedWorkspaces.FirstOrDefault(f => f.Id == id);
+        WorkingSpace = result ?? throw new ArgumentOutOfRangeException(nameof(id));
+    }
+
     /// <summary>
     /// Add a blank <see cref="Workspace"/> to the solution
     /// </summary>
-    /// <returns>The ID of the created workspace</returns>
-    public int AddWorkspace()
+    /// <returns>The created workspace</returns>
+    public Workspace AddWorkspace()
     {
         Logger.Trace("Adding a new default workspace");
         var space = new Workspace(new Document(true), NextId);
@@ -181,8 +191,8 @@ public class Solution : BindableBase
 
         _referencedDocuments.Add(link);
         _loadedWorkspaces.Add(space);
-        WorkingSpaceId = space.Id;
-        return space.Id;
+        WorkingSpace = space;
+        return space;
     }
 
     /// <summary>
@@ -190,14 +200,14 @@ public class Solution : BindableBase
     /// </summary>
     /// <param name="space">Workspace to add</param>
     /// <returns>ID of the document</returns>
-    public int AddWorkspace(Workspace space)
+    public Workspace AddWorkspace(Workspace space)
     {
         Logger.Trace($"Adding workspace {space.Title}");
         var link = new Link(space.Id, space, space.SavePath);
         _referencedDocuments.Add(link);
         _loadedWorkspaces.Add(space);
-        WorkingSpaceId = space.Id;
-        return space.Id;
+        WorkingSpace = space;
+        return space;
     }
 
     /// <summary>
@@ -216,9 +226,9 @@ public class Solution : BindableBase
         Logger.Trace($"Removing workspace {id} from the solution");
         if (WorkingSpaceId == id)
         {
-            WorkingSpaceId =
+            WorkingSpace =
                 _loadedWorkspaces.Count > 1
-                    ? _loadedWorkspaces.First(w => w.Id != id).Id
+                    ? _loadedWorkspaces.First(w => w.Id != id)
                     : AddWorkspace();
         }
         _loadedWorkspaces.RemoveAll(d => d.Id == id);
@@ -226,7 +236,7 @@ public class Solution : BindableBase
     }
 
     /// <summary>
-    /// Open a document in the workspace
+    /// Open a document in the solution
     /// </summary>
     /// <param name="id">ID of the document to open</param>
     /// <returns>ID of the document or -1 on failure</returns>
@@ -259,7 +269,7 @@ public class Solution : BindableBase
 
             link.Workspace = new Workspace(doc, id, link.Uri);
             _loadedWorkspaces.Add(link.Workspace);
-            WorkingSpaceId = id;
+            WorkingSpace = GetWorkspace(id)!;
             return id;
         }
         catch (Exception ex)
@@ -293,9 +303,9 @@ public class Solution : BindableBase
         if (WorkingSpaceId != id)
             return _loadedWorkspaces.RemoveAll(d => d.Id == id) != 0;
         if (_loadedWorkspaces.Count > 1)
-            WorkingSpaceId = _loadedWorkspaces.First(w => w.Id != id).Id;
+            WorkingSpace = _loadedWorkspaces.First(w => w.Id != id);
         else if (replaceIfLast)
-            WorkingSpaceId = AddWorkspace();
+            WorkingSpace = AddWorkspace();
 
         return _loadedWorkspaces.RemoveAll(d => d.Id == id) != 0;
     }
@@ -410,7 +420,7 @@ public class Solution : BindableBase
                 .ToList()
                 .ForEach(sln._styleManager.Add);
 
-            sln.WorkingSpaceId = sln._referencedDocuments.First().Id;
+            sln.WorkingSpace = sln._referencedDocuments.First().Workspace!;
             sln.IsSaved = true;
             return sln;
         }
@@ -449,6 +459,6 @@ public class Solution : BindableBase
 
         _referencedDocuments.Add(defaultLink);
         _loadedWorkspaces.Add(defaultWorkspace);
-        _workingSpaceId = id;
+        _workingSpace = defaultWorkspace;
     }
 }
