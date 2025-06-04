@@ -39,6 +39,7 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         return ReactiveCommand.CreateFromTask(async () =>
         {
+            Log.Info("Preparing to open subtitles");
             var uris = await OpenSubtitle.Handle(Unit.Default);
 
             Workspace? latest = null;
@@ -54,6 +55,7 @@ public partial class MainWindowViewModel : ViewModelBase
 
                 latest = Solution.AddWorkspace(doc, uri);
                 latest.IsSaved = true;
+                Log.Info($"Opened subtitle file {latest.Title}");
             }
 
             if (latest is not null)
@@ -98,12 +100,14 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         return ReactiveCommand.CreateFromTask(async () =>
         {
+            Log.Trace($"Closing tab {Solution.WorkingSpace.Title}");
             if (Solution.WorkingSpace.IsSaved)
             {
                 Solution.CloseDocument(Solution.WorkingSpaceId);
                 return;
             }
 
+            Log.Trace($"Displaying message box because {Solution.WorkingSpace.Title} is not saved");
             var box = MessageBoxManager.GetMessageBoxStandard(
                 title: I18N.Resources.MsgBox_Save_Title,
                 text: string.Format(I18N.Resources.MsgBox_Save_Body, Solution.WorkingSpace.Title),
@@ -116,7 +120,10 @@ public partial class MainWindowViewModel : ViewModelBase
                 case ButtonResult.Yes:
                     var saved = await IoService.SaveSubtitle(SaveSubtitleAs, Solution.WorkingSpace);
                     if (!saved)
+                    {
+                        Log.Info("Tab close operation aborted");
                         return;
+                    }
                     Solution.CloseDocument(Solution.WorkingSpaceId);
                     return;
                 case ButtonResult.No:
@@ -140,6 +147,7 @@ public partial class MainWindowViewModel : ViewModelBase
                 is IClassicDesktopStyleApplicationLifetime desktop
             )
             {
+                Log.Info("Shutting down...");
                 desktop.Shutdown();
             }
         });

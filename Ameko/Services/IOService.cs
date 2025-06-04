@@ -5,12 +5,15 @@ using System.Reactive.Linq;
 using System.Threading.Tasks;
 using AssCS.IO;
 using Holo;
+using NLog;
 using ReactiveUI;
 
 namespace Ameko.Services;
 
 public static class IoService
 {
+    private static readonly Logger Log = LogManager.GetCurrentClassLogger();
+
     /// <summary>
     /// Save a subtitle file, displaying a SaveFileDialog if needed
     /// </summary>
@@ -22,15 +25,20 @@ public static class IoService
         Workspace wsp
     )
     {
+        Log.Info($"Preparing to save subtitle file {wsp.Title}");
         var uri = wsp.SavePath ?? await interaction.Handle(wsp.Title);
 
         if (uri is null)
+        {
+            Log.Info("Save operation cancelled");
             return false;
+        }
 
         var writer = new AssWriter(wsp.Document, ConsumerService.AmekoInfo);
         writer.Write(uri.LocalPath);
         wsp.SavePath = uri;
         wsp.IsSaved = true;
+        Log.Info($"Saved subtitle file {wsp.Title}");
         return true;
     }
 
@@ -45,15 +53,20 @@ public static class IoService
         Workspace wsp
     )
     {
+        Log.Info($"Preparing to save subtitle file {wsp.Title}");
         var uri = await interaction.Handle(wsp.Title);
 
         if (uri is null)
+        {
+            Log.Info("Save operation cancelled");
             return false;
+        }
 
         var writer = new AssWriter(wsp.Document, ConsumerService.AmekoInfo);
         writer.Write(uri.LocalPath);
         wsp.SavePath = uri;
         wsp.IsSaved = true;
+        Log.Info($"Saved subtitle file {wsp.Title}");
         return true;
     }
 
@@ -68,13 +81,18 @@ public static class IoService
         Workspace wsp
     )
     {
+        Log.Info($"Preparing to export subtitle file {wsp.Title}");
         var uri = await interaction.Handle(wsp.Title);
 
         if (uri is null)
+        {
+            Log.Info("Export operation cancelled");
             return false;
+        }
 
         var writer = new TxtWriter(wsp.Document, ConsumerService.AmekoInfo);
         writer.Write(uri.LocalPath, true);
+        Log.Info($"Exported {wsp.Title}");
         return true;
     }
 }

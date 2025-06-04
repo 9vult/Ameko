@@ -5,12 +5,15 @@ using System.Reactive;
 using System.Windows.Input;
 using Ameko.Services;
 using Holo;
+using NLog;
 using ReactiveUI;
 
 namespace Ameko.ViewModels.Windows;
 
 public partial class MainWindowViewModel : ViewModelBase
 {
+    private static readonly Logger Log = LogManager.GetCurrentClassLogger();
+
     #region Interactions
     // File
     public Interaction<Unit, Uri[]> OpenSubtitle { get; }
