@@ -37,6 +37,17 @@ public class SolutionTests
     }
 
     [Fact]
+    public void AddWorkspace_FromExistingDocument()
+    {
+        var sln = new Solution();
+        var document = new Document(true);
+        var workspaceId = sln.AddWorkspace(document, new Uri("file:///test.ass")).Id;
+
+        sln.LoadedWorkspaces.ShouldContain(w => w.Id == workspaceId);
+        sln.WorkingSpaceId.ShouldBe(workspaceId);
+    }
+
+    [Fact]
     public void RemoveWorkspace_Exists()
     {
         var sln = new Solution();
