@@ -501,6 +501,24 @@ namespace Ameko.I18N {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Close Solutio_n.
+        /// </summary>
+        public static string Menu_CloseSolution {
+            get {
+                return ResourceManager.GetString("Menu_CloseSolution", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to _Close Tab.
+        /// </summary>
+        public static string Menu_CloseTab {
+            get {
+                return ResourceManager.GetString("Menu_CloseTab", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to _Configuration....
         /// </summary>
         public static string Menu_Configuration {

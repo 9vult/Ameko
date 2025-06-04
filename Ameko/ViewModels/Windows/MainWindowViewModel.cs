@@ -29,6 +29,7 @@ public partial class MainWindowViewModel : ViewModelBase
     public ICommand SaveSubtitleCommand { get; }
     public ICommand SaveSubtitleAsCommand { get; }
     public ICommand ExportSubtitleCommand { get; }
+    public ICommand QuitCommand { get; }
 
     // Help
     public ICommand ShowLogWindowCommand { get; }
@@ -72,6 +73,7 @@ public partial class MainWindowViewModel : ViewModelBase
         SaveSubtitleCommand = CreateSaveSubtitleCommand();
         SaveSubtitleAsCommand = CreateSaveSubtitleAsCommand();
         ExportSubtitleCommand = CreateExportSubtitleCommand();
+        QuitCommand = CreateQuitCommand();
         // Help
         ShowLogWindowCommand = CreateShowLogWindowCommand();
         ShowAboutWindowCommand = CreateShowAboutWindowCommand();

@@ -264,4 +264,10 @@
     <data name="FileDialog_FileType_Text" xml:space="preserve">
         <value>Text Files</value>
     </data>
+    <data name="Menu_CloseTab" xml:space="preserve">
+        <value>_Close Tab</value>
+    </data>
+    <data name="Menu_CloseSolution" xml:space="preserve">
+        <value>Close Solutio_n</value>
+    </data>
 </root>
