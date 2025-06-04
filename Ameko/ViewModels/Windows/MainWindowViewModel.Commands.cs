@@ -12,6 +12,8 @@ using AssCS.IO;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Holo;
+using MsBox.Avalonia;
+using MsBox.Avalonia.Enums;
 using ReactiveUI;
 
 namespace Ameko.ViewModels.Windows;
@@ -66,16 +68,7 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         return ReactiveCommand.CreateFromTask(async () =>
         {
-            var wsp = Solution.WorkingSpace;
-            var uri = wsp.SavePath ?? await SaveSubtitleAs.Handle(wsp.Title);
-
-            if (uri is null)
-                return;
-
-            var writer = new AssWriter(wsp.Document, ConsumerService.AmekoInfo);
-            writer.Write(uri.LocalPath);
-            wsp.SavePath = uri;
-            wsp.IsSaved = true;
+            _ = await IoService.SaveSubtitle(SaveSubtitleAs, Solution.WorkingSpace);
         });
     }
 
@@ -86,16 +79,7 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         return ReactiveCommand.CreateFromTask(async () =>
         {
-            var wsp = Solution.WorkingSpace;
-            var uri = await SaveSubtitleAs.Handle(wsp.Title);
-
-            if (uri is null)
-                return;
-
-            var writer = new AssWriter(wsp.Document, ConsumerService.AmekoInfo);
-            writer.Write(uri.LocalPath);
-            wsp.SavePath = uri;
-            wsp.IsSaved = true;
+            _ = await IoService.SaveSubtitleAs(SaveSubtitleAs, Solution.WorkingSpace);
         });
     }
 
@@ -106,21 +90,48 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         return ReactiveCommand.CreateFromTask(async () =>
         {
-            var wsp = Solution.WorkingSpace;
-            var uri = await ExportSubtitle.Handle(wsp.Title);
+            _ = await IoService.ExportSubtitle(ExportSubtitle, Solution.WorkingSpace);
+        });
+    }
 
-            if (uri is null)
+    private ReactiveCommand<Unit, Unit> CreateCloseTabCommand()
+    {
+        return ReactiveCommand.CreateFromTask(async () =>
+        {
+            if (Solution.WorkingSpace.IsSaved)
+            {
+                Solution.CloseDocument(Solution.WorkingSpaceId);
                 return;
+            }
 
-            var writer = new TxtWriter(wsp.Document, ConsumerService.AmekoInfo);
-            writer.Write(uri.LocalPath, true);
+            var box = MessageBoxManager.GetMessageBoxStandard(
+                title: I18N.Resources.MsgBox_Save_Title,
+                text: string.Format(I18N.Resources.MsgBox_Save_Body, Solution.WorkingSpace.Title),
+                ButtonEnum.YesNoCancel
+            );
+            var boxResult = await box.ShowAsync();
+
+            switch (boxResult)
+            {
+                case ButtonResult.Yes:
+                    var saved = await IoService.SaveSubtitle(SaveSubtitleAs, Solution.WorkingSpace);
+                    if (!saved)
+                        return;
+                    Solution.CloseDocument(Solution.WorkingSpaceId);
+                    return;
+                case ButtonResult.No:
+                    Solution.CloseDocument(Solution.WorkingSpaceId);
+                    return;
+                default:
+                    return;
+            }
         });
     }
 
     /// <summary>
     /// Quit the application
     /// </summary>
-    private ReactiveCommand<Unit, Unit> CreateQuitCommand()
+    private static ReactiveCommand<Unit, Unit> CreateQuitCommand()
     {
         return ReactiveCommand.Create(() =>
         {

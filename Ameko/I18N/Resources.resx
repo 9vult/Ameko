@@ -270,4 +270,13 @@
     <data name="Menu_CloseSolution" xml:space="preserve">
         <value>Close Solutio_n</value>
     </data>
+    <data name="MsgBox_Save_Title" xml:space="preserve">
+        <value>Save work?</value>
+    </data>
+    <data name="MsgBox_Save_Body" xml:space="preserve">
+        <value>%s contains unsaved work. Do you want to save?</value>
+    </data>
+    <data name="Tab_CloseButton_ToolTip" xml:space="preserve">
+        <value>Close Tab</value>
+    </data>
 </root>
