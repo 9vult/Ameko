@@ -9,6 +9,8 @@ using Ameko.ViewModels.Controls;
 using Ameko.Views.Windows;
 using AssCS;
 using AssCS.IO;
+using Avalonia;
+using Avalonia.Controls.ApplicationLifetimes;
 using Holo;
 using ReactiveUI;
 
@@ -112,6 +114,23 @@ public partial class MainWindowViewModel : ViewModelBase
 
             var writer = new TxtWriter(wsp.Document, ConsumerService.AmekoInfo);
             writer.Write(uri.LocalPath, true);
+        });
+    }
+
+    /// <summary>
+    /// Quit the application
+    /// </summary>
+    private ReactiveCommand<Unit, Unit> CreateQuitCommand()
+    {
+        return ReactiveCommand.Create(() =>
+        {
+            if (
+                Application.Current?.ApplicationLifetime
+                is IClassicDesktopStyleApplicationLifetime desktop
+            )
+            {
+                desktop.Shutdown();
+            }
         });
     }
 

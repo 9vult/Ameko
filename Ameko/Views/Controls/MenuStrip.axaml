@@ -35,8 +35,14 @@
             <MenuItem Header="{x:Static i18n:Resources.Menu_SaveSolution}"
                       Icon="{icons:MaterialIconExt Kind=ArchiveArrowDownOutline}" />
             <Separator />
+            <MenuItem Header="{x:Static i18n:Resources.Menu_CloseTab}"
+                      Icon="{icons:MaterialIconExt Kind=TabRemove}" />
+            <MenuItem Header="{x:Static i18n:Resources.Menu_CloseSolution}"
+                      Icon="{icons:MaterialIconExt Kind=ArchiveRemoveOutline}" />
+            <Separator />
             <MenuItem Header="{x:Static i18n:Resources.Menu_Quit}"
-                      Icon="{icons:MaterialIconExt Kind=ExitRun}" />
+                      Icon="{icons:MaterialIconExt Kind=ExitRun}"
+                      Command="{Binding QuitCommand}"/>
         </MenuItem>
         <MenuItem Header="{x:Static i18n:Resources.Menu_Edit}">
             <MenuItem Header="{x:Static i18n:Resources.Menu_Undo}"
