@@ -38,7 +38,7 @@ public class Solution : BindableBase
     private Uri? _savePath;
     private bool _isSaved;
 
-    private int _docId;
+    private int _docId = 1;
     private Workspace _workingSpace;
 
     private int? _cps;
