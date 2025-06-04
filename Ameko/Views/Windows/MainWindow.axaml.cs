@@ -1,10 +1,13 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
+using System;
+using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Threading.Tasks;
 using Ameko.ViewModels.Windows;
 using Avalonia;
+using Avalonia.Platform.Storage;
 using Avalonia.ReactiveUI;
 using Avalonia.Styling;
 using Holo;
@@ -16,6 +19,30 @@ namespace Ameko.Views.Windows;
 public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
 {
     private static readonly Logger Log = LogManager.GetCurrentClassLogger();
+
+    private async Task DoShowOpenSubtitleDialog(IInteractionContext<Unit, Uri[]> interaction)
+    {
+        var files = await StorageProvider.OpenFilePickerAsync(
+            new FilePickerOpenOptions
+            {
+                Title = I18N.Resources.OpenFileDialog_Subtitle_Title,
+                AllowMultiple = true,
+                FileTypeFilter =
+                [
+                    new FilePickerFileType(I18N.Resources.OpenFileDialog_Subtitle_FileType)
+                    {
+                        Patterns = ["*.ass"],
+                    },
+                ],
+            }
+        );
+        if (files.Count > 0)
+        {
+            interaction.SetOutput(files.Select(f => f.Path).ToArray());
+            return;
+        }
+        interaction.SetOutput([]);
+    }
 
     private static void DoShowLogWindow(IInteractionContext<LogWindowViewModel, Unit> interaction)
     {
@@ -44,6 +71,9 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         {
             if (ViewModel is not null)
             {
+                // File
+                ViewModel.OpenSubtitle.RegisterHandler(DoShowOpenSubtitleDialog);
+                // Help
                 ViewModel.ShowLogWindow.RegisterHandler(DoShowLogWindow);
                 ViewModel.ShowAboutWindow.RegisterHandler(DoShowAboutWindowAsync);
             }

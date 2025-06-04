@@ -1,11 +1,9 @@
 ﻿// SPDX-License-Identifier: GPL-3.0-only
 
-using System.Collections.ObjectModel;
-using System.Linq;
+using System;
 using System.Reactive;
 using System.Windows.Input;
 using Ameko.Services;
-using Ameko.ViewModels.Controls;
 using Holo;
 using ReactiveUI;
 
@@ -14,6 +12,10 @@ namespace Ameko.ViewModels.Windows;
 public partial class MainWindowViewModel : ViewModelBase
 {
     #region Interactions
+    // File
+    public Interaction<Unit, Uri[]> OpenSubtitle { get; }
+
+    // Help
     public Interaction<LogWindowViewModel, Unit> ShowLogWindow { get; }
     public Interaction<AboutWindowViewModel, Unit> ShowAboutWindow { get; }
     #endregion
@@ -21,6 +23,7 @@ public partial class MainWindowViewModel : ViewModelBase
     #region Commands
     // File
     public ICommand NewCommand { get; }
+    public ICommand OpenSubtitleCommand { get; }
 
     // Help
     public ICommand ShowLogWindowCommand { get; }
@@ -48,6 +51,9 @@ public partial class MainWindowViewModel : ViewModelBase
     public MainWindowViewModel()
     {
         #region Interactions
+        // File
+        OpenSubtitle = new Interaction<Unit, Uri[]>();
+        // Help
         ShowLogWindow = new Interaction<LogWindowViewModel, Unit>();
         ShowAboutWindow = new Interaction<AboutWindowViewModel, Unit>();
         #endregion
@@ -55,6 +61,7 @@ public partial class MainWindowViewModel : ViewModelBase
         #region Commands
         // File
         NewCommand = CreateNewCommand();
+        OpenSubtitleCommand = CreateOpenSubtitleCommand();
         // Help
         ShowLogWindowCommand = CreateShowLogWindowCommand();
         ShowAboutWindowCommand = CreateShowAboutWindowCommand();

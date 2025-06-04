@@ -17,7 +17,8 @@
                       Command="{Binding NewCommand}"/>
             <Separator />
             <MenuItem Header="{x:Static i18n:Resources.Menu_OpenSubtitle}"
-                      Icon="{icons:MaterialIconExt Kind=FolderOpenOutline}" />
+                      Icon="{icons:MaterialIconExt Kind=FolderOpenOutline}"
+                      Command="{Binding OpenSubtitleCommand}"/>
             <MenuItem Header="{x:Static i18n:Resources.Menu_SaveSubtitle}"
                       Icon="{icons:MaterialIconExt Kind=ContentSaveOutline}" />
             <MenuItem Header="{x:Static i18n:Resources.Menu_SaveSubtitleAs}"

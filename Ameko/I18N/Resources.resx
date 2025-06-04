@@ -249,4 +249,10 @@
     <data name="SolutionExplorer_ContextMenu_Open" xml:space="preserve">
         <value>Open</value>
     </data>
+    <data name="OpenFileDialog_Subtitle_Title" xml:space="preserve">
+        <value>Open Subtitle File</value>
+    </data>
+    <data name="OpenFileDialog_Subtitle_FileType" xml:space="preserve">
+        <value>ASS Files</value>
+    </data>
 </root>
