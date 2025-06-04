@@ -37,7 +37,7 @@
             <TabControl.ItemTemplate>
                 <DataTemplate DataType="{x:Type holo:Workspace}">
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="{Binding DisplayTitle}" />
+                        <TextBlock Text="{Binding DisplayTitle, Mode=OneWay}" />
                         <Button Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).CloseTabCommand, FallbackValue=.}"
                                 ToolTip.Tip="{x:Static i18n:Resources.Tab_CloseButton_ToolTip}">
                             <icons:MaterialIconExt Kind="CloseBox" />

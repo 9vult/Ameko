@@ -274,7 +274,7 @@
         <value>Save work?</value>
     </data>
     <data name="MsgBox_Save_Body" xml:space="preserve">
-        <value>%s contains unsaved work. Do you want to save?</value>
+        <value>{0} contains unsaved work. Do you want to save?</value>
     </data>
     <data name="Tab_CloseButton_ToolTip" xml:space="preserve">
         <value>Close Tab</value>

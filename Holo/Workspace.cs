@@ -56,7 +56,11 @@ public class Workspace : BindableBase
     public bool IsSaved
     {
         get => _isSaved;
-        set => SetProperty(ref _isSaved, value);
+        set
+        {
+            SetProperty(ref _isSaved, value);
+            RaisePropertyChanged(nameof(DisplayTitle));
+        }
     }
 
     /// <summary>
@@ -71,8 +75,8 @@ public class Workspace : BindableBase
     /// <remarks>Title is prefixed with <c>*</c> if there are unsaved changes</remarks>
     public string DisplayTitle =>
         SavePath is not null
-            ? $"{(IsSaved ? '*' : string.Empty)}{Path.GetFileNameWithoutExtension(SavePath.LocalPath)}"
-            : $"New {Id}";
+            ? $"{(!IsSaved ? '*' : string.Empty)}{Path.GetFileNameWithoutExtension(SavePath.LocalPath)}"
+            : $"{(!IsSaved ? '*' : string.Empty)}New {Id}";
 
     // TODO: May need to raise property changed here - Or move to EventManager under a different name
     /// <summary>
@@ -117,6 +121,7 @@ public class Workspace : BindableBase
             _document.HistoryManager.Commit("", changeType, e, parent?.Id, amend);
             amend = true;
         }
+        IsSaved = false;
     }
 
     /// <summary>
