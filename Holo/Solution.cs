@@ -199,7 +199,7 @@ public class Solution : BindableBase
     /// Add a <see cref="Workspace"/> to the solution
     /// </summary>
     /// <param name="space">Workspace to add</param>
-    /// <returns>ID of the document</returns>
+    /// <returns>The workspace</returns>
     public Workspace AddWorkspace(Workspace space)
     {
         Logger.Trace($"Adding workspace {space.Title}");
@@ -208,6 +208,18 @@ public class Solution : BindableBase
         _loadedWorkspaces.Add(space);
         WorkingSpace = space;
         return space;
+    }
+
+    /// <summary>
+    /// Use a <see cref="Document"/> to add a <see cref="Workspace"/> to the solution
+    /// </summary>
+    /// <param name="document">Document to add</param>
+    /// <param name="savePath">Path the document is saved at</param>
+    /// <returns>The created workspace</returns>
+    public Workspace AddWorkspace(Document document, Uri savePath)
+    {
+        var wsp = new Workspace(document, NextId, savePath);
+        return AddWorkspace(wsp);
     }
 
     /// <summary>

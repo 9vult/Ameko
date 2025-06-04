@@ -717,6 +717,24 @@ namespace Ameko.I18N {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to ASS Files.
+        /// </summary>
+        public static string OpenFileDialog_Subtitle_FileType {
+            get {
+                return ResourceManager.GetString("OpenFileDialog_Subtitle_FileType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Open Subtitle File.
+        /// </summary>
+        public static string OpenFileDialog_Subtitle_Title {
+            get {
+                return ResourceManager.GetString("OpenFileDialog_Subtitle_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Open.
         /// </summary>
         public static string SolutionExplorer_ContextMenu_Open {
