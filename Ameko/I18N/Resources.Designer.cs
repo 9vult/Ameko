@@ -780,6 +780,24 @@ namespace Ameko.I18N {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to %s contains unsaved work. Do you want to save?.
+        /// </summary>
+        public static string MsgBox_Save_Body {
+            get {
+                return ResourceManager.GetString("MsgBox_Save_Body", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Save work?.
+        /// </summary>
+        public static string MsgBox_Save_Title {
+            get {
+                return ResourceManager.GetString("MsgBox_Save_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Open.
         /// </summary>
         public static string SolutionExplorer_ContextMenu_Open {
@@ -803,6 +821,15 @@ namespace Ameko.I18N {
         public static string SolutionExplorer_Header {
             get {
                 return ResourceManager.GetString("SolutionExplorer_Header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Close Tab.
+        /// </summary>
+        public static string Tab_CloseButton_ToolTip {
+            get {
+                return ResourceManager.GetString("Tab_CloseButton_ToolTip", resourceCulture);
             }
         }
         

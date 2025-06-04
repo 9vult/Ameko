@@ -14,17 +14,17 @@
         <MenuItem Header="{x:Static i18n:Resources.Menu_File}">
             <MenuItem Header="{x:Static i18n:Resources.Menu_New}"
                       Icon="{icons:MaterialIconExt Kind=FileDocumentOutline}"
-                      Command="{Binding NewCommand}"/>
+                      Command="{Binding NewCommand}" />
             <Separator />
             <MenuItem Header="{x:Static i18n:Resources.Menu_OpenSubtitle}"
                       Icon="{icons:MaterialIconExt Kind=FolderOpenOutline}"
-                      Command="{Binding OpenSubtitleCommand}"/>
+                      Command="{Binding OpenSubtitleCommand}" />
             <MenuItem Header="{x:Static i18n:Resources.Menu_SaveSubtitle}"
                       Icon="{icons:MaterialIconExt Kind=ContentSaveOutline}"
-                      Command="{Binding SaveSubtitleCommand}"/>
+                      Command="{Binding SaveSubtitleCommand}" />
             <MenuItem Header="{x:Static i18n:Resources.Menu_SaveSubtitleAs}"
                       Icon="{icons:MaterialIconExt Kind=ContentSavePlusOutline}"
-                      Command="{Binding SaveSubtitleAsCommand}"/>
+                      Command="{Binding SaveSubtitleAsCommand}" />
             <Separator />
             <MenuItem Header="{x:Static i18n:Resources.Menu_ExportSubtitles}"
                       Icon="{icons:MaterialIconExt Kind=FileExportOutline}"
@@ -36,13 +36,14 @@
                       Icon="{icons:MaterialIconExt Kind=ArchiveArrowDownOutline}" />
             <Separator />
             <MenuItem Header="{x:Static i18n:Resources.Menu_CloseTab}"
-                      Icon="{icons:MaterialIconExt Kind=TabRemove}" />
+                      Icon="{icons:MaterialIconExt Kind=TabRemove}"
+                      Command="{Binding CloseTabCommand}" />
             <MenuItem Header="{x:Static i18n:Resources.Menu_CloseSolution}"
                       Icon="{icons:MaterialIconExt Kind=ArchiveRemoveOutline}" />
             <Separator />
             <MenuItem Header="{x:Static i18n:Resources.Menu_Quit}"
                       Icon="{icons:MaterialIconExt Kind=ExitRun}"
-                      Command="{Binding QuitCommand}"/>
+                      Command="{Binding QuitCommand}" />
         </MenuItem>
         <MenuItem Header="{x:Static i18n:Resources.Menu_Edit}">
             <MenuItem Header="{x:Static i18n:Resources.Menu_Undo}"
@@ -88,7 +89,7 @@
                       Command="{Binding ShowLogWindowCommand}" />
             <MenuItem Header="{x:Static i18n:Resources.Menu_About}"
                       Icon="{icons:MaterialIconExt Kind=InformationVariantCircleOutline}"
-                      Command="{Binding ShowAboutWindowCommand}"/>
+                      Command="{Binding ShowAboutWindowCommand}" />
         </MenuItem>
     </Menu>
 </UserControl>
