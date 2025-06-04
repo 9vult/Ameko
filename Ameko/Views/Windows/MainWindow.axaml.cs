@@ -1,12 +1,14 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 using System;
+using System.IO;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Threading.Tasks;
 using Ameko.ViewModels.Windows;
 using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 using Avalonia.ReactiveUI;
 using Avalonia.Styling;
@@ -25,13 +27,17 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         var files = await StorageProvider.OpenFilePickerAsync(
             new FilePickerOpenOptions
             {
-                Title = I18N.Resources.OpenFileDialog_Subtitle_Title,
+                Title = I18N.Resources.FileDialog_OpenSubtitle_Title,
                 AllowMultiple = true,
                 FileTypeFilter =
                 [
-                    new FilePickerFileType(I18N.Resources.OpenFileDialog_Subtitle_FileType)
+                    new FilePickerFileType(I18N.Resources.FileDialog_FileType_Ass)
                     {
                         Patterns = ["*.ass"],
+                    },
+                    new FilePickerFileType(I18N.Resources.FileDialog_FileType_Text)
+                    {
+                        Patterns = ["*.txt"],
                     },
                 ],
             }
@@ -42,6 +48,68 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
             return;
         }
         interaction.SetOutput([]);
+    }
+
+    private async Task DoShowSaveSubtitleAsDialogAsync(
+        IInteractionContext<string, Uri?> interaction
+    )
+    {
+        var file = await StorageProvider.SaveFilePickerAsync(
+            new FilePickerSaveOptions
+            {
+                Title = I18N.Resources.FileDialog_SaveSubtitle_Title,
+                FileTypeChoices =
+                [
+                    new FilePickerFileType(I18N.Resources.FileDialog_FileType_Ass)
+                    {
+                        Patterns = ["*.ass"],
+                    },
+                ],
+                SuggestedFileName = interaction.Input,
+            }
+        );
+
+        if (file is not null)
+        {
+            var path = file.Path;
+            if (!Path.HasExtension(path.LocalPath))
+                path = new Uri(Path.ChangeExtension(path.LocalPath, ".ass"));
+
+            interaction.SetOutput(path);
+            return;
+        }
+        interaction.SetOutput(null);
+    }
+
+    private async Task DoShowExportSubtitleDialogAsync(
+        IInteractionContext<string, Uri?> interaction
+    )
+    {
+        var file = await StorageProvider.SaveFilePickerAsync(
+            new FilePickerSaveOptions
+            {
+                Title = I18N.Resources.FileDialog_ExportSubtitle_Title,
+                FileTypeChoices =
+                [
+                    new FilePickerFileType(I18N.Resources.FileDialog_FileType_Text)
+                    {
+                        Patterns = ["*.txt"],
+                    },
+                ],
+                SuggestedFileName = interaction.Input,
+            }
+        );
+
+        if (file is not null)
+        {
+            var path = file.Path;
+            if (!Path.HasExtension(path.LocalPath))
+                path = new Uri(Path.ChangeExtension(path.LocalPath, ".txt"));
+
+            interaction.SetOutput(path);
+            return;
+        }
+        interaction.SetOutput(null);
     }
 
     private static void DoShowLogWindow(IInteractionContext<LogWindowViewModel, Unit> interaction)
@@ -73,6 +141,8 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
             {
                 // File
                 ViewModel.OpenSubtitle.RegisterHandler(DoShowOpenSubtitleDialog);
+                ViewModel.SaveSubtitleAs.RegisterHandler(DoShowSaveSubtitleAsDialogAsync);
+                ViewModel.ExportSubtitle.RegisterHandler(DoShowExportSubtitleDialogAsync);
                 // Help
                 ViewModel.ShowLogWindow.RegisterHandler(DoShowLogWindow);
                 ViewModel.ShowAboutWindow.RegisterHandler(DoShowAboutWindowAsync);

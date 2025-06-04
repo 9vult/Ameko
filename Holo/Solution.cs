@@ -202,7 +202,7 @@ public class Solution : BindableBase
     /// <returns>The workspace</returns>
     public Workspace AddWorkspace(Workspace space)
     {
-        Logger.Trace($"Adding workspace {space.Title}");
+        Logger.Trace($"Adding workspace {space.DisplayTitle}");
         var link = new Link(space.Id, space, space.SavePath);
         _referencedDocuments.Add(link);
         _loadedWorkspaces.Add(space);

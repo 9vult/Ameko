@@ -20,12 +20,15 @@
                       Icon="{icons:MaterialIconExt Kind=FolderOpenOutline}"
                       Command="{Binding OpenSubtitleCommand}"/>
             <MenuItem Header="{x:Static i18n:Resources.Menu_SaveSubtitle}"
-                      Icon="{icons:MaterialIconExt Kind=ContentSaveOutline}" />
+                      Icon="{icons:MaterialIconExt Kind=ContentSaveOutline}"
+                      Command="{Binding SaveSubtitleCommand}"/>
             <MenuItem Header="{x:Static i18n:Resources.Menu_SaveSubtitleAs}"
-                      Icon="{icons:MaterialIconExt Kind=ContentSavePlusOutline}" />
+                      Icon="{icons:MaterialIconExt Kind=ContentSavePlusOutline}"
+                      Command="{Binding SaveSubtitleAsCommand}"/>
             <Separator />
             <MenuItem Header="{x:Static i18n:Resources.Menu_ExportSubtitles}"
-                      Icon="{icons:MaterialIconExt Kind=FileExportOutline}" />
+                      Icon="{icons:MaterialIconExt Kind=FileExportOutline}"
+                      Command="{Binding ExportSubtitleCommand}"/>
             <Separator />
             <MenuItem Header="{x:Static i18n:Resources.Menu_OpenSolution}"
                       Icon="{icons:MaterialIconExt Kind=ArchiveArrowUpOutline}" />

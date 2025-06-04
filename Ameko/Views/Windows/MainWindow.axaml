@@ -30,13 +30,14 @@
         <c:MenuStrip DockPanel.Dock="Top" />
         <c:SolutionExplorer DockPanel.Dock="Left" />
         
-        <TabControl ItemsSource="{Binding Solution.LoadedWorkspaces}"
+        <TabControl Name="WorkspaceTabControl"
+                    ItemsSource="{Binding Solution.LoadedWorkspaces}"
                     SelectedItem="{Binding Solution.WorkingSpace}"
                     TabStripPlacement="Bottom">
             <TabControl.ItemTemplate>
                 <DataTemplate DataType="{x:Type holo:Workspace}">
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="{Binding Title}" />
+                        <TextBlock Text="{Binding DisplayTitle}" />
                         <Button>
                             <icons:MaterialIconExt Kind="CloseBox" />
                             <Button.Styles>

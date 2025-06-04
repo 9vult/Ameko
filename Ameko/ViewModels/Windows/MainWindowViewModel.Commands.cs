@@ -1,9 +1,13 @@
 ﻿// SPDX-License-Identifier: GPL-3.0-only
 
+using System;
+using System.IO;
 using System.Reactive;
 using System.Reactive.Linq;
+using Ameko.Services;
 using Ameko.ViewModels.Controls;
 using Ameko.Views.Windows;
+using AssCS;
 using AssCS.IO;
 using Holo;
 using ReactiveUI;
@@ -25,7 +29,7 @@ public partial class MainWindowViewModel : ViewModelBase
     }
 
     /// <summary>
-    /// Create a new file
+    /// Display the Open Subtitle dialog
     /// </summary>
     private ReactiveCommand<Unit, Unit> CreateOpenSubtitleCommand()
     {
@@ -37,12 +41,77 @@ public partial class MainWindowViewModel : ViewModelBase
 
             foreach (var uri in uris)
             {
-                var doc = new AssParser().Parse(uri.LocalPath);
+                var doc = Path.GetExtension(uri.LocalPath) switch
+                {
+                    ".ass" => new AssParser().Parse(uri.LocalPath),
+                    ".txt" => new TxtParser().Parse(uri.LocalPath),
+                    _ => throw new ArgumentOutOfRangeException(),
+                };
+
                 latest = Solution.AddWorkspace(doc, uri);
+                latest.IsSaved = true;
             }
 
             if (latest is not null)
                 Solution.WorkingSpace = latest;
+        });
+    }
+
+    /// <summary>
+    /// Display either the Save Subtitle or Save Subtitle As dialog
+    /// </summary>
+    private ReactiveCommand<Unit, Unit> CreateSaveSubtitleCommand()
+    {
+        return ReactiveCommand.CreateFromTask(async () =>
+        {
+            var wsp = Solution.WorkingSpace;
+            var uri = wsp.SavePath ?? await SaveSubtitleAs.Handle(wsp.Title);
+
+            if (uri is null)
+                return;
+
+            var writer = new AssWriter(wsp.Document, ConsumerService.AmekoInfo);
+            writer.Write(uri.LocalPath);
+            wsp.SavePath = uri;
+            wsp.IsSaved = true;
+        });
+    }
+
+    /// <summary>
+    /// Display the Save Subtitle As dialog
+    /// </summary>
+    private ReactiveCommand<Unit, Unit> CreateSaveSubtitleAsCommand()
+    {
+        return ReactiveCommand.CreateFromTask(async () =>
+        {
+            var wsp = Solution.WorkingSpace;
+            var uri = await SaveSubtitleAs.Handle(wsp.Title);
+
+            if (uri is null)
+                return;
+
+            var writer = new AssWriter(wsp.Document, ConsumerService.AmekoInfo);
+            writer.Write(uri.LocalPath);
+            wsp.SavePath = uri;
+            wsp.IsSaved = true;
+        });
+    }
+
+    /// <summary>
+    /// Display the Save As dialog for exporting
+    /// </summary>
+    private ReactiveCommand<Unit, Unit> CreateExportSubtitleCommand()
+    {
+        return ReactiveCommand.CreateFromTask(async () =>
+        {
+            var wsp = Solution.WorkingSpace;
+            var uri = await ExportSubtitle.Handle(wsp.Title);
+
+            if (uri is null)
+                return;
+
+            var writer = new TxtWriter(wsp.Document, ConsumerService.AmekoInfo);
+            writer.Write(uri.LocalPath, true);
         });
     }
 

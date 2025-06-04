@@ -41,7 +41,7 @@ public struct Link(int id, Workspace? workspace = null, Uri? uri = null)
     /// Title of the link
     /// </summary>
     public readonly string Title =>
-        Workspace is not null ? Workspace.Title
+        Workspace is not null ? Workspace.DisplayTitle
         : Uri is not null ? Path.GetFileNameWithoutExtension(Uri.LocalPath)
         : "Untitled";
 }

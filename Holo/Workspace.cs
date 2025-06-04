@@ -43,7 +43,11 @@ public class Workspace : BindableBase
     public Uri? SavePath
     {
         get => _savePath;
-        set => SetProperty(ref _savePath, value);
+        set
+        {
+            SetProperty(ref _savePath, value);
+            RaisePropertyChanged(nameof(DisplayTitle));
+        }
     }
 
     /// <summary>
@@ -52,14 +56,20 @@ public class Workspace : BindableBase
     public bool IsSaved
     {
         get => _isSaved;
-        private set => SetProperty(ref _isSaved, value);
+        set => SetProperty(ref _isSaved, value);
     }
+
+    /// <summary>
+    /// Title of this workspace
+    /// </summary>
+    public string Title =>
+        SavePath is not null ? Path.GetFileNameWithoutExtension(SavePath.LocalPath) : $"New {Id}";
 
     /// <summary>
     /// Title to display in the GUI
     /// </summary>
     /// <remarks>Title is prefixed with <c>*</c> if there are unsaved changes</remarks>
-    public string Title =>
+    public string DisplayTitle =>
         SavePath is not null
             ? $"{(IsSaved ? '*' : string.Empty)}{Path.GetFileNameWithoutExtension(SavePath.LocalPath)}"
             : $"New {Id}";

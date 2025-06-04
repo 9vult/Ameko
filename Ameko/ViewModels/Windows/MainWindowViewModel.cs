@@ -14,6 +14,8 @@ public partial class MainWindowViewModel : ViewModelBase
     #region Interactions
     // File
     public Interaction<Unit, Uri[]> OpenSubtitle { get; }
+    public Interaction<string, Uri?> SaveSubtitleAs { get; }
+    public Interaction<string, Uri?> ExportSubtitle { get; }
 
     // Help
     public Interaction<LogWindowViewModel, Unit> ShowLogWindow { get; }
@@ -24,6 +26,9 @@ public partial class MainWindowViewModel : ViewModelBase
     // File
     public ICommand NewCommand { get; }
     public ICommand OpenSubtitleCommand { get; }
+    public ICommand SaveSubtitleCommand { get; }
+    public ICommand SaveSubtitleAsCommand { get; }
+    public ICommand ExportSubtitleCommand { get; }
 
     // Help
     public ICommand ShowLogWindowCommand { get; }
@@ -53,6 +58,8 @@ public partial class MainWindowViewModel : ViewModelBase
         #region Interactions
         // File
         OpenSubtitle = new Interaction<Unit, Uri[]>();
+        SaveSubtitleAs = new Interaction<string, Uri?>();
+        ExportSubtitle = new Interaction<string, Uri?>();
         // Help
         ShowLogWindow = new Interaction<LogWindowViewModel, Unit>();
         ShowAboutWindow = new Interaction<AboutWindowViewModel, Unit>();
@@ -62,6 +69,9 @@ public partial class MainWindowViewModel : ViewModelBase
         // File
         NewCommand = CreateNewCommand();
         OpenSubtitleCommand = CreateOpenSubtitleCommand();
+        SaveSubtitleCommand = CreateSaveSubtitleCommand();
+        SaveSubtitleAsCommand = CreateSaveSubtitleAsCommand();
+        ExportSubtitleCommand = CreateExportSubtitleCommand();
         // Help
         ShowLogWindowCommand = CreateShowLogWindowCommand();
         ShowAboutWindowCommand = CreateShowAboutWindowCommand();
