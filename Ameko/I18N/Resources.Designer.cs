@@ -438,6 +438,51 @@ namespace Ameko.I18N {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Export Subtitle File.
+        /// </summary>
+        public static string FileDialog_ExportSubtitle_Title {
+            get {
+                return ResourceManager.GetString("FileDialog_ExportSubtitle_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ASS Files.
+        /// </summary>
+        public static string FileDialog_FileType_Ass {
+            get {
+                return ResourceManager.GetString("FileDialog_FileType_Ass", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Text Files.
+        /// </summary>
+        public static string FileDialog_FileType_Text {
+            get {
+                return ResourceManager.GetString("FileDialog_FileType_Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Open Subtitle File.
+        /// </summary>
+        public static string FileDialog_OpenSubtitle_Title {
+            get {
+                return ResourceManager.GetString("FileDialog_OpenSubtitle_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Save Subtitle File.
+        /// </summary>
+        public static string FileDialog_SaveSubtitle_Title {
+            get {
+                return ResourceManager.GetString("FileDialog_SaveSubtitle_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Ameko Logs.
         /// </summary>
         public static string LogWindow_Title {
@@ -713,24 +758,6 @@ namespace Ameko.I18N {
         public static string Menu_Video {
             get {
                 return ResourceManager.GetString("Menu_Video", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to ASS Files.
-        /// </summary>
-        public static string OpenFileDialog_Subtitle_FileType {
-            get {
-                return ResourceManager.GetString("OpenFileDialog_Subtitle_FileType", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Open Subtitle File.
-        /// </summary>
-        public static string OpenFileDialog_Subtitle_Title {
-            get {
-                return ResourceManager.GetString("OpenFileDialog_Subtitle_Title", resourceCulture);
             }
         }
         

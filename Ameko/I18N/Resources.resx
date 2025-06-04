@@ -249,10 +249,19 @@
     <data name="SolutionExplorer_ContextMenu_Open" xml:space="preserve">
         <value>Open</value>
     </data>
-    <data name="OpenFileDialog_Subtitle_Title" xml:space="preserve">
+    <data name="FileDialog_OpenSubtitle_Title" xml:space="preserve">
         <value>Open Subtitle File</value>
     </data>
-    <data name="OpenFileDialog_Subtitle_FileType" xml:space="preserve">
+    <data name="FileDialog_FileType_Ass" xml:space="preserve">
         <value>ASS Files</value>
+    </data>
+    <data name="FileDialog_SaveSubtitle_Title" xml:space="preserve">
+        <value>Save Subtitle File</value>
+    </data>
+    <data name="FileDialog_ExportSubtitle_Title" xml:space="preserve">
+        <value>Export Subtitle File</value>
+    </data>
+    <data name="FileDialog_FileType_Text" xml:space="preserve">
+        <value>Text Files</value>
     </data>
 </root>
