@@ -780,7 +780,7 @@ namespace Ameko.I18N {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to %s contains unsaved work. Do you want to save?.
+        ///   Looks up a localized string similar to {0} contains unsaved work. Do you want to save?.
         /// </summary>
         public static string MsgBox_Save_Body {
             get {
