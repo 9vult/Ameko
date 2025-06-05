@@ -42,25 +42,16 @@ public partial class MainWindowViewModel : ViewModelBase
     // Help
     public ICommand ShowLogWindowCommand { get; }
     public ICommand ShowAboutWindowCommand { get; }
+
+    // Other
+    public ICommand RemoveDocumentFromSolutionCommand { get; }
+    public ICommand RemoveDirectoryFromSolutionCommand { get; }
     #endregion
 
     /// <summary>
     /// Window title
     /// </summary>
     public string WindowTitle { get; } = $"Ameko {VersionService.FullLabel}";
-
-    /// <summary>
-    /// Currently-open <see cref="Solution"/>
-    /// </summary>
-    public Solution Solutionnnn
-    {
-        get => HoloContext.Instance.Solution;
-        set
-        {
-            HoloContext.Instance.Solution = value;
-            this.RaisePropertyChanged();
-        }
-    }
 
     public HoloContext Context => HoloContext.Instance;
 
@@ -92,6 +83,9 @@ public partial class MainWindowViewModel : ViewModelBase
         // Help
         ShowLogWindowCommand = CreateShowLogWindowCommand();
         ShowAboutWindowCommand = CreateShowAboutWindowCommand();
+        // Other
+        RemoveDocumentFromSolutionCommand = CreateRemoveDocumentFromSolutionCommand();
+        RemoveDirectoryFromSolutionCommand = CreateRemoveDirectoryFromSolutionCommand();
         #endregion
     }
 }

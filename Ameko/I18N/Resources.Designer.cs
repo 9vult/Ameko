@@ -807,6 +807,42 @@ namespace Ameko.I18N {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Are you sure you want to remove this directory from the solution?.
+        /// </summary>
+        public static string MsgBox_RemoveDirectory_Body {
+            get {
+                return ResourceManager.GetString("MsgBox_RemoveDirectory_Body", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remove Directory?.
+        /// </summary>
+        public static string MsgBox_RemoveDirectory_Title {
+            get {
+                return ResourceManager.GetString("MsgBox_RemoveDirectory_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Are you sure you want to remove this document from the solution?.
+        /// </summary>
+        public static string MsgBox_RemoveDocument_Body {
+            get {
+                return ResourceManager.GetString("MsgBox_RemoveDocument_Body", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remove Document?.
+        /// </summary>
+        public static string MsgBox_RemoveDocument_Title {
+            get {
+                return ResourceManager.GetString("MsgBox_RemoveDocument_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {0} contains unsaved work. Do you want to save?.
         /// </summary>
         public static string MsgBox_Save_Body {

@@ -188,7 +188,6 @@ public partial class MainWindowViewModel : ViewModelBase
     /// <summary>
     /// Display the <see cref="AboutWindow"/>
     /// </summary>
-    /// <returns></returns>
     private ReactiveCommand<Unit, Unit> CreateShowAboutWindowCommand()
     {
         return ReactiveCommand.CreateFromTask(async () =>
@@ -196,5 +195,55 @@ public partial class MainWindowViewModel : ViewModelBase
             var vm = new AboutWindowViewModel();
             await ShowAboutWindow.Handle(vm);
         });
+    }
+
+    /// <summary>
+    /// Remove workspace from the solution
+    /// </summary>
+    private ReactiveCommand<int, Unit> CreateRemoveDocumentFromSolutionCommand()
+    {
+        return ReactiveCommand.CreateFromTask(
+            async (int id) =>
+            {
+                Log.Trace($"Displaying message to confirm removal of document {id} from solution");
+
+                var box = MessageBoxManager.GetMessageBoxStandard(
+                    title: I18N.Resources.MsgBox_RemoveDocument_Title,
+                    text: I18N.Resources.MsgBox_RemoveDocument_Title,
+                    ButtonEnum.YesNo
+                );
+                var boxResult = await box.ShowAsync();
+
+                if (boxResult == ButtonResult.Yes)
+                {
+                    Context.Solution.RemoveWorkspace(id);
+                }
+            }
+        );
+    }
+
+    /// <summary>
+    /// Remove directory from the solution
+    /// </summary>
+    private ReactiveCommand<int, Unit> CreateRemoveDirectoryFromSolutionCommand()
+    {
+        return ReactiveCommand.CreateFromTask(
+            async (int id) =>
+            {
+                Log.Trace($"Displaying message to confirm removal of directory {id} from solution");
+
+                var box = MessageBoxManager.GetMessageBoxStandard(
+                    title: I18N.Resources.MsgBox_RemoveDirectory_Title,
+                    text: I18N.Resources.MsgBox_RemoveDirectory_Body,
+                    ButtonEnum.YesNo
+                );
+                var boxResult = await box.ShowAsync();
+
+                if (boxResult == ButtonResult.Yes)
+                {
+                    Context.Solution.RemoveDirectory(id);
+                }
+            }
+        );
     }
 }
