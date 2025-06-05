@@ -118,7 +118,7 @@ public class SolutionTests
 
         sln.Cps.ShouldBe(21);
         sln.UseSoftLinebreaks.ShouldBeNull();
-        sln.ReferencedDocuments.Count.ShouldBe(1);
+        sln.ReferencedItems.Count.ShouldBe(1);
         sln.StyleManager.Styles.Count.ShouldBe(0);
     }
 
