@@ -8,7 +8,7 @@ namespace Holo.Models;
 /// <summary>
 /// Represents an item in a <see cref="Solution"/>.
 /// </summary>
-public class SolutionItem : BindableBase
+public abstract class SolutionItem : BindableBase
 {
     private string? _name;
 
@@ -55,19 +55,29 @@ public class SolutionItem : BindableBase
     /// <summary>
     /// The type of this item.
     /// </summary>
-    public SolutionItemType Type { get; init; }
+    public virtual SolutionItemType Type => SolutionItemType.Unknown;
 
     /// <summary>
     /// Display title for the item.
     /// </summary>
-    public string Title =>
+    public virtual string Title => "Untitled Item";
+}
+
+public class DocumentItem : SolutionItem
+{
+    public override SolutionItemType Type => SolutionItemType.Document;
+
+    public override string Title =>
         Name
-        ?? Type switch
-        {
-            SolutionItemType.Document => IsLoaded ? Workspace!.Title
+        ?? (
+            IsLoaded ? Workspace!.Title
             : IsSavedToFileSystem ? Path.GetFileNameWithoutExtension(Uri!.LocalPath)
-            : $"New {Id}",
-            SolutionItemType.Directory => "Untitled Directory",
-            _ => "Untitled Item",
-        };
+            : $"New {Id}"
+        );
+}
+
+public class DirectoryItem : SolutionItem
+{
+    public override SolutionItemType Type => SolutionItemType.Directory;
+    public override string Title => Name ?? "Untitled Directory";
 }

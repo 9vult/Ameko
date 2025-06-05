@@ -16,9 +16,9 @@
             <DockPanel Width="125">
                 <TextBlock DockPanel.Dock="Top"
                            Text="{x:Static i18n:Resources.SolutionExplorer_Header}" />
-                <ListBox ItemsSource="{Binding Context.Solution.ReferencedItems}">
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
+                <TreeView ItemsSource="{Binding Context.Solution.ReferencedItems}">
+                    <TreeView.ItemTemplate>
+                        <TreeDataTemplate ItemsSource="{Binding Children}">
                             <TextBlock Text="{Binding Title}">
                                 <TextBlock.ContextMenu>
                                     <ContextMenu>
@@ -31,9 +31,9 @@
                                     </ContextMenu>
                                 </TextBlock.ContextMenu>
                             </TextBlock>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
+                        </TreeDataTemplate>
+                    </TreeView.ItemTemplate>
+                </TreeView>
             </DockPanel>
         </TabItem>
         
