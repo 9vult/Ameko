@@ -31,8 +31,8 @@
         <c:SolutionExplorer DockPanel.Dock="Left" />
         
         <TabControl Name="WorkspaceTabControl"
-                    ItemsSource="{Binding Solution.LoadedWorkspaces}"
-                    SelectedItem="{Binding Solution.WorkingSpace}"
+                    ItemsSource="{Binding Context.Solution.LoadedWorkspaces}"
+                    SelectedItem="{Binding Context.Solution.WorkingSpace}"
                     TabStripPlacement="Bottom">
             <TabControl.ItemTemplate>
                 <DataTemplate DataType="{x:Type holo:Workspace}">

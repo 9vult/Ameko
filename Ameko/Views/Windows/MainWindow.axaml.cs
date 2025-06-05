@@ -22,7 +22,7 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
 {
     private static readonly Logger Log = LogManager.GetCurrentClassLogger();
 
-    private async Task DoShowOpenSubtitleDialog(IInteractionContext<Unit, Uri[]> interaction)
+    private async Task DoShowOpenSubtitleDialogAsync(IInteractionContext<Unit, Uri[]> interaction)
     {
         var files = await StorageProvider.OpenFilePickerAsync(
             new FilePickerOpenOptions
@@ -112,6 +112,61 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         interaction.SetOutput(null);
     }
 
+    private async Task DoShowOpenSolutionDialogAsync(IInteractionContext<Unit, Uri?> interaction)
+    {
+        var files = await StorageProvider.OpenFilePickerAsync(
+            new FilePickerOpenOptions
+            {
+                Title = I18N.Resources.FileDialog_OpenSolution_Title,
+                AllowMultiple = false,
+                FileTypeFilter =
+                [
+                    new FilePickerFileType(I18N.Resources.FileDialog_FileType_Solution)
+                    {
+                        Patterns = ["*.asln"],
+                    },
+                ],
+            }
+        );
+        if (files.Count > 0)
+        {
+            interaction.SetOutput(files[0].Path);
+            return;
+        }
+        interaction.SetOutput(null);
+    }
+
+    private async Task DoShowSaveSolutionAsDialogAsync(
+        IInteractionContext<string, Uri?> interaction
+    )
+    {
+        var file = await StorageProvider.SaveFilePickerAsync(
+            new FilePickerSaveOptions
+            {
+                Title = I18N.Resources.FileDialog_SaveSolution_Title,
+                FileTypeChoices =
+                [
+                    new FilePickerFileType(I18N.Resources.FileDialog_FileType_Solution)
+                    {
+                        Patterns = ["*.asln"],
+                    },
+                ],
+                SuggestedFileName = interaction.Input,
+            }
+        );
+
+        if (file is not null)
+        {
+            var path = file.Path;
+            if (!Path.HasExtension(path.LocalPath))
+                path = new Uri(Path.ChangeExtension(path.LocalPath, ".asln"));
+
+            interaction.SetOutput(path);
+            return;
+        }
+        interaction.SetOutput(null);
+    }
+
     private static void DoShowLogWindow(IInteractionContext<LogWindowViewModel, Unit> interaction)
     {
         Log.Trace("Displaying Log Window");
@@ -140,9 +195,11 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
             if (ViewModel is not null)
             {
                 // File
-                ViewModel.OpenSubtitle.RegisterHandler(DoShowOpenSubtitleDialog);
+                ViewModel.OpenSubtitle.RegisterHandler(DoShowOpenSubtitleDialogAsync);
                 ViewModel.SaveSubtitleAs.RegisterHandler(DoShowSaveSubtitleAsDialogAsync);
                 ViewModel.ExportSubtitle.RegisterHandler(DoShowExportSubtitleDialogAsync);
+                ViewModel.OpenSolution.RegisterHandler(DoShowOpenSolutionDialogAsync);
+                ViewModel.SaveSolutionAs.RegisterHandler(DoShowSaveSolutionAsDialogAsync);
                 // Help
                 ViewModel.ShowLogWindow.RegisterHandler(DoShowLogWindow);
                 ViewModel.ShowAboutWindow.RegisterHandler(DoShowAboutWindowAsync);

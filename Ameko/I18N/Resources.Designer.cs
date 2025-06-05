@@ -456,6 +456,15 @@ namespace Ameko.I18N {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Ameko Solution Files.
+        /// </summary>
+        public static string FileDialog_FileType_Solution {
+            get {
+                return ResourceManager.GetString("FileDialog_FileType_Solution", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Text Files.
         /// </summary>
         public static string FileDialog_FileType_Text {
@@ -465,11 +474,29 @@ namespace Ameko.I18N {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Open Solution File.
+        /// </summary>
+        public static string FileDialog_OpenSolution_Title {
+            get {
+                return ResourceManager.GetString("FileDialog_OpenSolution_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Open Subtitle File.
         /// </summary>
         public static string FileDialog_OpenSubtitle_Title {
             get {
                 return ResourceManager.GetString("FileDialog_OpenSubtitle_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Save Solution File.
+        /// </summary>
+        public static string FileDialog_SaveSolution_Title {
+            get {
+                return ResourceManager.GetString("FileDialog_SaveSolution_Title", resourceCulture);
             }
         }
         

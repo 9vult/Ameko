@@ -19,6 +19,8 @@ public partial class MainWindowViewModel : ViewModelBase
     public Interaction<Unit, Uri[]> OpenSubtitle { get; }
     public Interaction<string, Uri?> SaveSubtitleAs { get; }
     public Interaction<string, Uri?> ExportSubtitle { get; }
+    public Interaction<Unit, Uri?> OpenSolution { get; }
+    public Interaction<string, Uri?> SaveSolutionAs { get; }
 
     // Help
     public Interaction<LogWindowViewModel, Unit> ShowLogWindow { get; }
@@ -32,6 +34,8 @@ public partial class MainWindowViewModel : ViewModelBase
     public ICommand SaveSubtitleCommand { get; }
     public ICommand SaveSubtitleAsCommand { get; }
     public ICommand ExportSubtitleCommand { get; }
+    public ICommand OpenSolutionCommand { get; }
+    public ICommand SaveSolutionCommand { get; }
     public ICommand CloseTabCommand { get; }
     public ICommand QuitCommand { get; }
 
@@ -48,7 +52,7 @@ public partial class MainWindowViewModel : ViewModelBase
     /// <summary>
     /// Currently-open <see cref="Solution"/>
     /// </summary>
-    public Solution Solution
+    public Solution Solutionnnn
     {
         get => HoloContext.Instance.Solution;
         set
@@ -58,6 +62,8 @@ public partial class MainWindowViewModel : ViewModelBase
         }
     }
 
+    public HoloContext Context => HoloContext.Instance;
+
     public MainWindowViewModel()
     {
         #region Interactions
@@ -65,6 +71,8 @@ public partial class MainWindowViewModel : ViewModelBase
         OpenSubtitle = new Interaction<Unit, Uri[]>();
         SaveSubtitleAs = new Interaction<string, Uri?>();
         ExportSubtitle = new Interaction<string, Uri?>();
+        OpenSolution = new Interaction<Unit, Uri?>();
+        SaveSolutionAs = new Interaction<string, Uri?>();
         // Help
         ShowLogWindow = new Interaction<LogWindowViewModel, Unit>();
         ShowAboutWindow = new Interaction<AboutWindowViewModel, Unit>();
@@ -77,6 +85,8 @@ public partial class MainWindowViewModel : ViewModelBase
         SaveSubtitleCommand = CreateSaveSubtitleCommand();
         SaveSubtitleAsCommand = CreateSaveSubtitleAsCommand();
         ExportSubtitleCommand = CreateExportSubtitleCommand();
+        OpenSolutionCommand = CreateOpenSolutionCommand();
+        SaveSolutionCommand = CreateSaveSolutionCommand();
         CloseTabCommand = CreateCloseTabCommand();
         QuitCommand = CreateQuitCommand();
         // Help
