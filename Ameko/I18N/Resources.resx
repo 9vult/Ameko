@@ -288,4 +288,16 @@
     <data name="FileDialog_SaveSolution_Title" xml:space="preserve">
         <value>Save Solution File</value>
     </data>
+    <data name="MsgBox_RemoveDocument_Title" xml:space="preserve">
+        <value>Remove Document?</value>
+    </data>
+    <data name="MsgBox_RemoveDocument_Body" xml:space="preserve">
+        <value>Are you sure you want to remove this document from the solution?</value>
+    </data>
+    <data name="MsgBox_RemoveDirectory_Title" xml:space="preserve">
+        <value>Remove Directory?</value>
+    </data>
+    <data name="MsgBox_RemoveDirectory_Body" xml:space="preserve">
+        <value>Are you sure you want to remove this directory from the solution?</value>
+    </data>
 </root>

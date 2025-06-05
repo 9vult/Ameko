@@ -30,7 +30,8 @@
                                         <Separator />
                                         <MenuItem Header="{x:Static i18n:Resources.SolutionExplorer_ContextMenu_Remove}"
                                                   Icon="{icons:MaterialIconExt Kind=TrashCanOutline}"
-                                                  CommandParameter="{Binding Id}"/>
+                                                  CommandParameter="{Binding Id}"
+                                                  Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).RemoveDocumentFromSolutionCommand, FallbackValue=.}" />
                                     </ContextMenu>
                                 </TextBlock.ContextMenu>
                             </TextBlock>
@@ -43,7 +44,8 @@
                                     <ContextMenu>
                                         <MenuItem Header="{x:Static i18n:Resources.SolutionExplorer_ContextMenu_Remove}"
                                                   Icon="{icons:MaterialIconExt Kind=TrashCanOutline}"
-                                                  CommandParameter="{Binding Id}"/>
+                                                  CommandParameter="{Binding Id}"
+                                                  Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).RemoveDirectoryFromSolutionCommand, FallbackValue=.}" />
                                     </ContextMenu>
                                 </TextBlock.ContextMenu>
                             </TextBlock>
