@@ -266,6 +266,19 @@ public class Solution : BindableBase
     }
 
     /// <summary>
+    /// Remove a directory from the <see cref="ReferencedItems"/>
+    /// </summary>
+    /// <param name="id">ID of the directory</param>
+    /// <returns><see langword="true"/> is successfully removed</returns>
+    /// <remarks>Removing a directory will remove all subdirectories and documents!</remarks>
+    public bool RemoveDirectory(int id)
+    {
+        Logger.Trace($"Removing directory with id: {id}");
+        var dir = FindItemById(id);
+        return dir?.Type == SolutionItemType.Directory && RemoveItemById(id);
+    }
+
+    /// <summary>
     /// Remove a <see cref="Workspace"/> from the solution
     /// </summary>
     /// <param name="id">ID of the workspace to remove</param>
