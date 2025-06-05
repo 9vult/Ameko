@@ -14,7 +14,7 @@ internal record SolutionModel
     internal const double CurrentApiVersion = 1.0d;
 
     public required double Version;
-    public required string[] ReferencedDocuments;
+    public required SolutionItemModel[] ReferencedDocuments;
     public required string[] Styles;
     public required int? Cps;
     public required bool? CpsIncludesWhitespace;

@@ -31,7 +31,7 @@ public class Solution : BindableBase
     private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
     private static readonly JsonSerializerOptions JsonOptions = new() { IncludeFields = true };
 
-    private readonly RangeObservableCollection<Link> _referencedDocuments;
+    private readonly RangeObservableCollection<SolutionItem> _referencedItems;
     private readonly RangeObservableCollection<Workspace> _loadedWorkspaces;
     private readonly StyleManager _styleManager;
 
@@ -47,9 +47,9 @@ public class Solution : BindableBase
     private bool? _useSoftLinebreaks;
 
     /// <summary>
-    /// All documents referenced by the solution
+    /// All items referenced by the solution
     /// </summary>
-    public ReadOnlyObservableCollection<Link> ReferencedDocuments { get; }
+    public ReadOnlyObservableCollection<SolutionItem> ReferencedItems { get; }
 
     /// <summary>
     /// Currently-open workspaces
@@ -173,69 +173,112 @@ public class Solution : BindableBase
         return _loadedWorkspaces.FirstOrDefault(f => f.Id == id);
     }
 
-    public void SetWorkingSpace(int id)
-    {
-        var result = _loadedWorkspaces.FirstOrDefault(f => f.Id == id);
-        WorkingSpace = result ?? throw new ArgumentOutOfRangeException(nameof(id));
-    }
-
     /// <summary>
-    /// Add a blank <see cref="Workspace"/> to the solution
+    /// Add a new, empty <see cref="Workspace"/> to the solution, and open it
     /// </summary>
+    /// <param name="parentId">Optional ID for adding to a directory</param>
     /// <returns>The created workspace</returns>
-    public Workspace AddWorkspace()
+    public Workspace AddWorkspace(int parentId = -1)
     {
-        Logger.Trace("Adding a new default workspace");
-        var space = new Workspace(new Document(true), NextId);
-        var link = new Link(space.Id, space);
-
-        _referencedDocuments.Add(link);
-        _loadedWorkspaces.Add(space);
-        WorkingSpace = space;
-        return space;
+        Logger.Trace("Creating a default workspace");
+        var wsp = new Workspace(new Document(true), NextId);
+        return AddWorkspace(wsp, parentId);
     }
 
     /// <summary>
-    /// Add a <see cref="Workspace"/> to the solution
-    /// </summary>
-    /// <param name="space">Workspace to add</param>
-    /// <returns>The workspace</returns>
-    public Workspace AddWorkspace(Workspace space)
-    {
-        Logger.Trace($"Adding workspace {space.DisplayTitle}");
-        var link = new Link(space.Id, space, space.SavePath);
-        _referencedDocuments.Add(link);
-        _loadedWorkspaces.Add(space);
-        WorkingSpace = space;
-        return space;
-    }
-
-    /// <summary>
-    /// Use a <see cref="Document"/> to add a <see cref="Workspace"/> to the solution
+    /// Add a new <see cref="Workspace"/> to the solution using an existing <see cref="Document"/>, and open it
     /// </summary>
     /// <param name="document">Document to add</param>
-    /// <param name="savePath">Path the document is saved at</param>
+    /// <param name="savePath">Save path of the document</param>
+    /// <param name="parentId">Optional ID for adding to a directory</param>
     /// <returns>The created workspace</returns>
-    public Workspace AddWorkspace(Document document, Uri savePath)
+    public Workspace AddWorkspace(Document document, Uri savePath, int parentId = -1)
     {
+        Logger.Trace($"Creating a workspace from document at {savePath}");
         var wsp = new Workspace(document, NextId, savePath);
-        return AddWorkspace(wsp);
+        return AddWorkspace(wsp, parentId);
+    }
+
+    /// <summary>
+    /// Add an existing <see cref="Workspace"/> to the solution, and open it
+    /// </summary>
+    /// <param name="wsp">The workspace to add</param>
+    /// <param name="parentId">Optional ID for adding to a directory</param>
+    /// <returns>The workspace</returns>
+    public Workspace AddWorkspace(Workspace wsp, int parentId = -1)
+    {
+        Logger.Trace($"Adding workspace {wsp.DisplayTitle}, parent: {parentId}");
+        var docItem = new SolutionItem
+        {
+            Type = SolutionItemType.Document,
+            Id = wsp.Id,
+            Workspace = wsp,
+            Uri = wsp.SavePath,
+        };
+
+        if (parentId < 0)
+        {
+            _referencedItems.Add(docItem);
+        }
+        else
+        {
+            var parent = FindItemById(parentId);
+            if (parent is not null)
+                parent.Children.Add(docItem);
+            else // Parent not found
+                _referencedItems.Add(docItem);
+        }
+
+        _loadedWorkspaces.Add(wsp);
+        WorkingSpace = wsp;
+        return wsp;
+    }
+
+    /// <summary>
+    /// Add a virtual directory to the solution
+    /// </summary>
+    /// <param name="name">Name of the directory</param>
+    /// <param name="parentId">Optional ID for adding to a directory</param>
+    /// <returns>The directory item</returns>
+    public SolutionItem AddDirectory(string name, int parentId = -1)
+    {
+        Logger.Trace($"Adding a new directory, parent: {parentId}");
+        var dirItem = new SolutionItem
+        {
+            Type = SolutionItemType.Directory,
+            Id = NextId,
+            Name = name,
+        };
+
+        if (parentId < 0)
+        {
+            _referencedItems.Add(dirItem);
+        }
+        else
+        {
+            var parent = FindItemById(parentId);
+            if (parent is not null)
+                parent.Children.Add(dirItem);
+            else // Parent not found
+                _referencedItems.Add(dirItem);
+        }
+        return dirItem;
     }
 
     /// <summary>
     /// Remove a <see cref="Workspace"/> from the solution
     /// </summary>
     /// <param name="id">ID of the workspace to remove</param>
-    /// <returns><see langword="true"/> if the space was removed</returns>
+    /// <returns><see langword="true"/> if the workspace was removed</returns>
     /// <remarks>
-    /// If the workspace to remove is the <see cref="WorkingSpace"/>, then
+    /// If the workspace being removed is the <see cref="WorkingSpace"/>, then
     /// the <see cref="WorkingSpace"/> will be set to any other currently open
     /// <see cref="Workspace"/>. If there are no other open workspaces, a new
     /// workspace will be created and selected.
     /// </remarks>
     public bool RemoveWorkspace(int id)
     {
-        Logger.Trace($"Removing workspace {id} from the solution");
+        Logger.Trace($"Removing workspace {id}");
         if (WorkingSpaceId == id)
         {
             WorkingSpace =
@@ -243,12 +286,13 @@ public class Solution : BindableBase
                     ? _loadedWorkspaces.First(w => w.Id != id)
                     : AddWorkspace();
         }
-        _loadedWorkspaces.RemoveAll(d => d.Id == id);
-        return _referencedDocuments.RemoveAll(d => d.Id == id) != 0;
+
+        _loadedWorkspaces.RemoveAll(w => w.Id == id);
+        return RemoveItemById(id);
     }
 
     /// <summary>
-    /// Open a document in the solution
+    /// Open a referenced document
     /// </summary>
     /// <param name="id">ID of the document to open</param>
     /// <returns>ID of the document or -1 on failure</returns>
@@ -261,28 +305,32 @@ public class Solution : BindableBase
         Logger.Trace($"Opening referenced document {id}");
         try
         {
-            var matches = _referencedDocuments.Where(l => l.Id == id).ToList();
-            if (matches.Count == 0)
+            var item = FindItemById(id);
+            if (item is null || item.Type != SolutionItemType.Document)
             {
-                Logger.Error($"Referenced document {id} was not found");
+                Logger.Error($"A referenced document with id {id} was not found");
                 return -1;
             }
 
-            var link = matches.First();
-            if (!link.IsSaved)
+            if (item.Type != SolutionItemType.Document)
             {
-                Logger.Error(
-                    $"Referenced document {id} could not be opened because it does not exist on disk"
-                );
+                Logger.Error($"Failed to parse document reference with id {id}");
                 return -1;
             }
+
+            if (!item.IsSavedToFileSystem)
+            {
+                Logger.Error($"Document item with id {id} was not saved to file system");
+                return -1;
+            }
+
             var parser = new AssParser();
-            var doc = parser.Parse(link.Uri!.LocalPath);
+            var document = parser.Parse(item.Uri!.LocalPath);
 
-            link.Workspace = new Workspace(doc, id, link.Uri);
-            _loadedWorkspaces.Add(link.Workspace);
-            WorkingSpace = GetWorkspace(id)!;
-            return id;
+            item.Workspace = new Workspace(document, NextId, item.Uri);
+            _loadedWorkspaces.Add(item.Workspace);
+            WorkingSpace = item.Workspace;
+            return item.Id;
         }
         catch (Exception ex)
         {
@@ -292,13 +340,13 @@ public class Solution : BindableBase
     }
 
     /// <summary>
-    /// Close a document in the workspace
+    /// Close an open document
     /// </summary>
     /// <param name="id">ID of the document to close</param>
-    /// <param name="replaceIfLast">If the document should be replaced if it's the last open</param>
+    /// <param name="replaceIfLast">Open a new document if this is the last one open</param>
     /// <returns><see langword="true"/> if the document was closed</returns>
     /// <remarks>
-    /// <para>
+    ///<para>
     /// It is assumed that the caller has saved the file prior
     /// </para><para>
     /// If the document closed is in the <see cref="WorkingSpace"/>, then
@@ -313,13 +361,13 @@ public class Solution : BindableBase
         Logger.Trace($"Closing referenced document {id}");
 
         if (WorkingSpaceId != id)
-            return _loadedWorkspaces.RemoveAll(d => d.Id == id) != 0;
+            return _loadedWorkspaces.RemoveAll(w => w.Id == id) != 0;
         if (_loadedWorkspaces.Count > 1)
             WorkingSpace = _loadedWorkspaces.First(w => w.Id != id);
         else if (replaceIfLast)
             WorkingSpace = AddWorkspace();
 
-        return _loadedWorkspaces.RemoveAll(d => d.Id == id) != 0;
+        return _loadedWorkspaces.RemoveAll(w => w.Id == id) != 0;
     }
 
     /// <summary>
@@ -352,15 +400,14 @@ public class Solution : BindableBase
         var fp = savePath.LocalPath;
         var dir = Path.GetDirectoryName(fp) ?? string.Empty;
 
+        var items = new List<SolutionItemModel>();
+
         try
         {
             var model = new SolutionModel
             {
                 Version = SolutionModel.CurrentApiVersion,
-                ReferencedDocuments = _referencedDocuments
-                    .Where(f => f.IsSaved)
-                    .Select(f => Path.GetRelativePath(dir, f.Uri!.LocalPath))
-                    .ToArray(),
+                ReferencedDocuments = ConvertToModels(_referencedItems, dir),
                 Styles = _styleManager.Styles.Select(s => s.AsAss()).ToArray(),
                 Cps = _cps,
                 CpsIncludesWhitespace = _cpsIncludesWhitespace,
@@ -415,12 +462,9 @@ public class Solution : BindableBase
             var sln = new Solution(model.ReferencedDocuments.Length != 0) { _savePath = filePath };
 
             // De-relative the file paths in the solution
-            sln._referencedDocuments.AddRange(
-                model.ReferencedDocuments.Select(f => new Link(
-                    sln.NextId,
-                    null,
-                    new Uri(Path.Combine(dir, f))
-                ))
+            var initialId = 1;
+            sln._referencedItems.AddRange(
+                ConvertFromModels(model.ReferencedDocuments, dir, ref initialId)
             );
             sln._cps = model.Cps;
             sln._cpsIncludesWhitespace = model.CpsIncludesWhitespace;
@@ -433,11 +477,16 @@ public class Solution : BindableBase
                 .ForEach(sln._styleManager.Add);
 
             // Load first workspace or create a new one
-            var first = sln._referencedDocuments.FirstOrDefault();
+            var first = sln._referencedItems.FirstOrDefault();
             if (first is null)
             {
                 var wsp = sln.AddWorkspace();
-                first = new Link(wsp.Id, wsp);
+                first = new SolutionItem
+                {
+                    Type = SolutionItemType.Document,
+                    Id = wsp.Id,
+                    Workspace = wsp,
+                };
             }
             else
             {
@@ -461,17 +510,144 @@ public class Solution : BindableBase
     }
 
     /// <summary>
+    /// Find a referenced <see cref="SolutionItem"/> by ID
+    /// </summary>
+    /// <param name="id">ID of the item to find</param>
+    /// <returns>The item, or <see langword="null"/> if not found</returns>
+    /// <remarks>Uses breadth-first search</remarks>
+    private SolutionItem? FindItemById(int id)
+    {
+        var queue = new Queue<SolutionItem>(_referencedItems);
+
+        while (queue.Count > 0)
+        {
+            var current = queue.Dequeue();
+            if (current.Id == id)
+                return current;
+
+            if (current.Type != SolutionItemType.Directory)
+                continue;
+
+            foreach (var child in current.Children)
+                queue.Enqueue(child);
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// Remove a referenced <see cref="SolutionItem"/> by ID
+    /// </summary>
+    /// <param name="id">ID of the item to remove</param>
+    /// <returns><see langword="true"/> if successfully removed</returns>
+    /// <remarks>Uses breadth-first search</remarks>
+    private bool RemoveItemById(int id)
+    {
+        var queue = new Queue<(ObservableCollection<SolutionItem> Parent, SolutionItem Item)>();
+
+        // Seed the queue
+        foreach (var item in _referencedItems)
+        {
+            queue.Enqueue((_referencedItems, item));
+        }
+
+        while (queue.Count > 0)
+        {
+            var (parent, current) = queue.Dequeue();
+
+            if (current.Id == id)
+                return parent.Remove(current);
+
+            if (current.Type != SolutionItemType.Directory)
+                continue;
+
+            foreach (var item in current.Children)
+                queue.Enqueue((current.Children, item));
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// Convert from <see cref="SolutionItem"/> to <see cref="SolutionItemModel"/>
+    /// </summary>
+    /// <param name="items">List of solution items</param>
+    /// <param name="dir">Directory for making relative paths</param>
+    /// <returns>Array of <see cref="SolutionItemModel"/>s</returns>
+    private static SolutionItemModel[] ConvertToModels(IList<SolutionItem> items, string dir)
+    {
+        List<SolutionItemModel> result = [];
+        result.AddRange(
+            from item in items
+            where item is not { Type: SolutionItemType.Document, IsSavedToFileSystem: false }
+            select new SolutionItemModel
+            {
+                Name = item.Name,
+                Type = item.Type,
+                RelativePath =
+                    item.Type == SolutionItemType.Document
+                        ? Path.GetRelativePath(dir, item.Uri!.LocalPath)
+                        : null,
+                Children =
+                    item.Type == SolutionItemType.Directory
+                        ? ConvertToModels(item.Children, dir).ToArray()
+                        : [],
+            }
+        );
+        return result.ToArray();
+    }
+
+    /// <summary>
+    /// Convert from <see cref="SolutionItemModel"/> to <see cref="SolutionItem"/>
+    /// </summary>
+    /// <param name="models">Array of models</param>
+    /// <param name="dir">Directory for resolving relative paths</param>
+    /// <param name="nextId">Initial ID</param>
+    /// <returns>List of <see cref="SolutionItem"/>s</returns>
+    private static List<SolutionItem> ConvertFromModels(
+        SolutionItemModel[] models,
+        string dir,
+        ref int nextId
+    )
+    {
+        List<SolutionItem> result = [];
+
+        foreach (var model in models)
+        {
+            var item = new SolutionItem
+            {
+                Id = nextId++,
+                Name = model.Name,
+                Type = model.Type,
+                Uri = model is { Type: SolutionItemType.Document, RelativePath: not null }
+                    ? new Uri(Path.Combine(dir, model.RelativePath))
+                    : null,
+                Children =
+                    model.Type == SolutionItemType.Directory
+                        ? new RangeObservableCollection<SolutionItem>(
+                            ConvertFromModels(model.Children, dir, ref nextId)
+                        )
+                        : [],
+            };
+
+            result.Add(item);
+        }
+
+        return result;
+    }
+
+    /// <summary>
     /// Initialize a solution
     /// </summary>
     /// <param name="isEmpty">If the solution should be created
     /// without a default <see cref="Workspace"/></param>
     public Solution(bool isEmpty = false)
     {
-        _referencedDocuments = [];
+        _referencedItems = [];
         _loadedWorkspaces = [];
         _styleManager = new StyleManager();
 
-        ReferencedDocuments = new ReadOnlyObservableCollection<Link>(_referencedDocuments);
+        ReferencedItems = new ReadOnlyObservableCollection<SolutionItem>(_referencedItems);
         LoadedWorkspaces = new ReadOnlyObservableCollection<Workspace>(_loadedWorkspaces);
 
         if (isEmpty)
@@ -479,9 +655,14 @@ public class Solution : BindableBase
 
         var id = NextId;
         var defaultWorkspace = new Workspace(new Document(true), id);
-        var defaultLink = new Link(id, defaultWorkspace, null);
+        var defaultLink = new SolutionItem
+        {
+            Type = SolutionItemType.Document,
+            Id = id,
+            Workspace = defaultWorkspace,
+        };
 
-        _referencedDocuments.Add(defaultLink);
+        _referencedItems.Add(defaultLink);
         _loadedWorkspaces.Add(defaultWorkspace);
         _workingSpace = defaultWorkspace;
     }

@@ -16,7 +16,7 @@
             <DockPanel Width="125">
                 <TextBlock DockPanel.Dock="Top"
                            Text="{x:Static i18n:Resources.SolutionExplorer_Header}" />
-                <ListBox ItemsSource="{Binding Context.Solution.ReferencedDocuments}">
+                <ListBox ItemsSource="{Binding Context.Solution.ReferencedItems}">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <TextBlock Text="{Binding Title}">
