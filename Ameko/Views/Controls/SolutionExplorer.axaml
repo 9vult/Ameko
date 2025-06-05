@@ -4,21 +4,24 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:holo="clr-namespace:Holo.Models;assembly=Holo"
              xmlns:i18n="clr-namespace:Ameko.I18N"
              xmlns:icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              xmlns:vm="clr-namespace:Ameko.ViewModels.Windows"
              mc:Ignorable="d" d:DesignWidth="125" d:DesignHeight="450"
              x:Class="Ameko.Views.Controls.SolutionExplorer"
              x:DataType="vm:MainWindowViewModel">
-    <TabControl Width="125" TabStripPlacement="Bottom">
+    <TabControl TabStripPlacement="Bottom">
         <TabItem Name="SolutionExplorerTabItem"
                  Header="{icons:MaterialIconExt Kind=PlaylistStar}">
-            <DockPanel Width="125">
+            <DockPanel>
                 <TextBlock DockPanel.Dock="Top"
                            Text="{x:Static i18n:Resources.SolutionExplorer_Header}" />
                 <TreeView ItemsSource="{Binding Context.Solution.ReferencedItems}">
-                    <TreeView.ItemTemplate>
-                        <TreeDataTemplate ItemsSource="{Binding Children}">
+                    <TreeView.DataTemplates>
+                        <!-- Documents -->
+                        <TreeDataTemplate DataType="holo:DocumentItem"
+                                          ItemsSource="{Binding Children}">
                             <TextBlock Text="{Binding Title}">
                                 <TextBlock.ContextMenu>
                                     <ContextMenu>
@@ -32,7 +35,20 @@
                                 </TextBlock.ContextMenu>
                             </TextBlock>
                         </TreeDataTemplate>
-                    </TreeView.ItemTemplate>
+                        <!-- Directories -->
+                        <TreeDataTemplate DataType="holo:DirectoryItem"
+                                          ItemsSource="{Binding Children}">
+                            <TextBlock Text="{Binding Title}">
+                                <TextBlock.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="{x:Static i18n:Resources.SolutionExplorer_ContextMenu_Remove}"
+                                                  Icon="{icons:MaterialIconExt Kind=TrashCanOutline}"
+                                                  CommandParameter="{Binding Id}"/>
+                                    </ContextMenu>
+                                </TextBlock.ContextMenu>
+                            </TextBlock>
+                        </TreeDataTemplate>
+                    </TreeView.DataTemplates>
                 </TreeView>
             </DockPanel>
         </TabItem>
