@@ -2,6 +2,7 @@
 
 using System;
 using System.IO;
+using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using Ameko.Services;
@@ -14,6 +15,7 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Holo;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Enums;
+using NLog;
 using ReactiveUI;
 
 namespace Ameko.ViewModels.Windows;
@@ -27,8 +29,8 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         return ReactiveCommand.Create(() =>
         {
-            var wsp = Solution.AddWorkspace();
-            Solution.WorkingSpace = wsp;
+            var wsp = Context.Solution.AddWorkspace();
+            Context.Solution.WorkingSpace = wsp;
         });
     }
 
@@ -53,13 +55,13 @@ public partial class MainWindowViewModel : ViewModelBase
                     _ => throw new ArgumentOutOfRangeException(),
                 };
 
-                latest = Solution.AddWorkspace(doc, uri);
+                latest = Context.Solution.AddWorkspace(doc, uri);
                 latest.IsSaved = true;
                 Log.Info($"Opened subtitle file {latest.Title}");
             }
 
             if (latest is not null)
-                Solution.WorkingSpace = latest;
+                Context.Solution.WorkingSpace = latest;
         });
     }
 
@@ -70,7 +72,7 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         return ReactiveCommand.CreateFromTask(async () =>
         {
-            _ = await IoService.SaveSubtitle(SaveSubtitleAs, Solution.WorkingSpace);
+            _ = await IoService.SaveSubtitle(SaveSubtitleAs, Context.Solution.WorkingSpace);
         });
     }
 
@@ -81,7 +83,7 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         return ReactiveCommand.CreateFromTask(async () =>
         {
-            _ = await IoService.SaveSubtitleAs(SaveSubtitleAs, Solution.WorkingSpace);
+            _ = await IoService.SaveSubtitleAs(SaveSubtitleAs, Context.Solution.WorkingSpace);
         });
     }
 
@@ -92,46 +94,64 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         return ReactiveCommand.CreateFromTask(async () =>
         {
-            _ = await IoService.ExportSubtitle(ExportSubtitle, Solution.WorkingSpace);
+            _ = await IoService.ExportSubtitle(ExportSubtitle, Context.Solution.WorkingSpace);
         });
     }
 
+    /// <summary>
+    /// Display the Open Solution File dialog
+    /// </summary>
+    private ReactiveCommand<Unit, Unit> CreateOpenSolutionCommand()
+    {
+        return ReactiveCommand.CreateFromTask(async () =>
+        {
+            Log.Info("Preparing to open solution file");
+            var uri = await OpenSolution.Handle(Unit.Default);
+
+            if (uri is null)
+            {
+                Log.Info("Opening solution file aborted");
+                return;
+            }
+
+            foreach (var wsp in Context.Solution.LoadedWorkspaces.ToArray())
+            {
+                await IoService.SafeCloseWorkspace(wsp, SaveSubtitleAs, false);
+            }
+
+            if (Context.Solution.LoadedWorkspaces.Count > 0)
+            {
+                Log.Info(
+                    $"Opening solution file aborted - {Context.Solution.LoadedWorkspaces.Count} workspaces remain open"
+                );
+                return;
+            }
+
+            HoloContext.Instance.Solution = Solution.Parse(uri);
+            Log.Info("Loaded solution file");
+        });
+    }
+
+    /// <summary>
+    /// Display the Open Solution File dialog
+    /// </summary>
+    private ReactiveCommand<Unit, Unit> CreateSaveSolutionCommand()
+    {
+        return ReactiveCommand.CreateFromTask(async () =>
+        {
+            _ = await IoService.SaveSolution(SaveSolutionAs, Context.Solution);
+        });
+    }
+
+    /// <summary>
+    /// Close the currently active tab
+    /// </summary>
     private ReactiveCommand<Unit, Unit> CreateCloseTabCommand()
     {
         return ReactiveCommand.CreateFromTask(async () =>
         {
-            Log.Trace($"Closing tab {Solution.WorkingSpace.Title}");
-            if (Solution.WorkingSpace.IsSaved)
-            {
-                Solution.CloseDocument(Solution.WorkingSpaceId);
-                return;
-            }
-
-            Log.Trace($"Displaying message box because {Solution.WorkingSpace.Title} is not saved");
-            var box = MessageBoxManager.GetMessageBoxStandard(
-                title: I18N.Resources.MsgBox_Save_Title,
-                text: string.Format(I18N.Resources.MsgBox_Save_Body, Solution.WorkingSpace.Title),
-                ButtonEnum.YesNoCancel
-            );
-            var boxResult = await box.ShowAsync();
-
-            switch (boxResult)
-            {
-                case ButtonResult.Yes:
-                    var saved = await IoService.SaveSubtitle(SaveSubtitleAs, Solution.WorkingSpace);
-                    if (!saved)
-                    {
-                        Log.Info("Tab close operation aborted");
-                        return;
-                    }
-                    Solution.CloseDocument(Solution.WorkingSpaceId);
-                    return;
-                case ButtonResult.No:
-                    Solution.CloseDocument(Solution.WorkingSpaceId);
-                    return;
-                default:
-                    return;
-            }
+            Log.Trace($"Closing tab {Context.Solution.WorkingSpace.Title}");
+            await IoService.SafeCloseWorkspace(Context.Solution.WorkingSpace, SaveSubtitleAs);
         });
     }
 
@@ -144,12 +164,12 @@ public partial class MainWindowViewModel : ViewModelBase
         {
             if (
                 Application.Current?.ApplicationLifetime
-                is IClassicDesktopStyleApplicationLifetime desktop
+                is not IClassicDesktopStyleApplicationLifetime desktop
             )
-            {
-                Log.Info("Shutting down...");
-                desktop.Shutdown();
-            }
+                return;
+
+            Log.Info("Shutting down...");
+            desktop.Shutdown();
         });
     }
 

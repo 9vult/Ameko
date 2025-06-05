@@ -279,4 +279,13 @@
     <data name="Tab_CloseButton_ToolTip" xml:space="preserve">
         <value>Close Tab</value>
     </data>
+    <data name="FileDialog_FileType_Solution" xml:space="preserve">
+        <value>Ameko Solution Files</value>
+    </data>
+    <data name="FileDialog_OpenSolution_Title" xml:space="preserve">
+        <value>Open Solution File</value>
+    </data>
+    <data name="FileDialog_SaveSolution_Title" xml:space="preserve">
+        <value>Save Solution File</value>
+    </data>
 </root>

@@ -432,7 +432,19 @@ public class Solution : BindableBase
                 .ToList()
                 .ForEach(sln._styleManager.Add);
 
-            sln.WorkingSpace = sln._referencedDocuments.First().Workspace!;
+            // Load first workspace or create a new one
+            var first = sln._referencedDocuments.FirstOrDefault();
+            if (first is null)
+            {
+                var wsp = sln.AddWorkspace();
+                first = new Link(wsp.Id, wsp);
+            }
+            else
+            {
+                sln.OpenDocument(first.Id);
+            }
+
+            sln.WorkingSpace = first.Workspace!;
             sln.IsSaved = true;
             return sln;
         }

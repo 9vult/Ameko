@@ -31,9 +31,11 @@
                       Command="{Binding ExportSubtitleCommand}"/>
             <Separator />
             <MenuItem Header="{x:Static i18n:Resources.Menu_OpenSolution}"
-                      Icon="{icons:MaterialIconExt Kind=ArchiveArrowUpOutline}" />
+                      Icon="{icons:MaterialIconExt Kind=ArchiveArrowUpOutline}"
+                      Command="{Binding OpenSolutionCommand}" />
             <MenuItem Header="{x:Static i18n:Resources.Menu_SaveSolution}"
-                      Icon="{icons:MaterialIconExt Kind=ArchiveArrowDownOutline}" />
+                      Icon="{icons:MaterialIconExt Kind=ArchiveArrowDownOutline}"
+                      Command="{Binding SaveSolutionCommand}" />
             <Separator />
             <MenuItem Header="{x:Static i18n:Resources.Menu_CloseTab}"
                       Icon="{icons:MaterialIconExt Kind=TabRemove}"
