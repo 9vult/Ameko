@@ -208,9 +208,8 @@ public class Solution : BindableBase
     public Workspace AddWorkspace(Workspace wsp, int parentId = -1)
     {
         Logger.Trace($"Adding workspace {wsp.DisplayTitle}, parent: {parentId}");
-        var docItem = new SolutionItem
+        var docItem = new DocumentItem
         {
-            Type = SolutionItemType.Document,
             Id = wsp.Id,
             Workspace = wsp,
             Uri = wsp.SavePath,
@@ -243,12 +242,7 @@ public class Solution : BindableBase
     public SolutionItem AddDirectory(string name, int parentId = -1)
     {
         Logger.Trace($"Adding a new directory, parent: {parentId}");
-        var dirItem = new SolutionItem
-        {
-            Type = SolutionItemType.Directory,
-            Id = NextId,
-            Name = name,
-        };
+        var dirItem = new DirectoryItem { Id = NextId, Name = name };
 
         if (parentId < 0)
         {
@@ -494,12 +488,7 @@ public class Solution : BindableBase
             if (first is null)
             {
                 var wsp = sln.AddWorkspace();
-                first = new SolutionItem
-                {
-                    Type = SolutionItemType.Document,
-                    Id = wsp.Id,
-                    Workspace = wsp,
-                };
+                first = new DocumentItem { Id = wsp.Id, Workspace = wsp };
             }
             else
             {
@@ -616,6 +605,7 @@ public class Solution : BindableBase
     /// <param name="models">Array of models</param>
     /// <param name="dir">Directory for resolving relative paths</param>
     /// <param name="nextId">Initial ID</param>
+    /// <exception cref="ArgumentOutOfRangeException"></exception>
     /// <returns>List of <see cref="SolutionItem"/>s</returns>
     private static List<SolutionItem> ConvertFromModels(
         SolutionItemModel[] models,
@@ -627,23 +617,28 @@ public class Solution : BindableBase
 
         foreach (var model in models)
         {
-            var item = new SolutionItem
-            {
-                Id = nextId++,
-                Name = model.Name,
-                Type = model.Type,
-                Uri = model is { Type: SolutionItemType.Document, RelativePath: not null }
-                    ? new Uri(Path.Combine(dir, model.RelativePath))
-                    : null,
-                Children =
-                    model.Type == SolutionItemType.Directory
-                        ? new RangeObservableCollection<SolutionItem>(
+            result.Add(
+                model.Type switch
+                {
+                    SolutionItemType.Document => new DocumentItem
+                    {
+                        Id = nextId++,
+                        Name = model.Name,
+                        Uri = model.RelativePath is not null
+                            ? new Uri(Path.Combine(dir, model.RelativePath))
+                            : null,
+                    },
+                    SolutionItemType.Directory => new DirectoryItem
+                    {
+                        Id = nextId++,
+                        Name = model.Name,
+                        Children = new RangeObservableCollection<SolutionItem>(
                             ConvertFromModels(model.Children, dir, ref nextId)
-                        )
-                        : [],
-            };
-
-            result.Add(item);
+                        ),
+                    },
+                    _ => throw new InvalidOperationException(nameof(model)),
+                }
+            );
         }
 
         return result;
@@ -668,12 +663,7 @@ public class Solution : BindableBase
 
         var id = NextId;
         var defaultWorkspace = new Workspace(new Document(true), id);
-        var defaultLink = new SolutionItem
-        {
-            Type = SolutionItemType.Document,
-            Id = id,
-            Workspace = defaultWorkspace,
-        };
+        var defaultLink = new DocumentItem { Id = id, Workspace = defaultWorkspace };
 
         _referencedItems.Add(defaultLink);
         _loadedWorkspaces.Add(defaultWorkspace);

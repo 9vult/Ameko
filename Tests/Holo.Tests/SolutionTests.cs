@@ -84,7 +84,7 @@ public class SolutionTests
         var dir1 = sln.AddDirectory("Directory1");
         var dir2 = sln.AddDirectory("Directory2", dir1.Id);
 
-        sln.ReferencedItems.ShouldContain(dir2);
+        sln.ReferencedItems.ShouldContain(dir1);
         dir1.Children.ShouldContain(dir2);
     }
 
