@@ -69,6 +69,67 @@ public class SolutionTests
     }
 
     [Fact]
+    public void AddDirectory_Root()
+    {
+        var sln = new Solution();
+        var dir = sln.AddDirectory("Directory1");
+
+        sln.ReferencedItems.ShouldContain(dir);
+    }
+
+    [Fact]
+    public void AddDirectory_Child()
+    {
+        var sln = new Solution();
+        var dir1 = sln.AddDirectory("Directory1");
+        var dir2 = sln.AddDirectory("Directory2", dir1.Id);
+
+        sln.ReferencedItems.ShouldContain(dir2);
+        dir1.Children.ShouldContain(dir2);
+    }
+
+    [Fact]
+    public void RemoveDirectory_Root()
+    {
+        var sln = new Solution();
+        var dir1 = sln.AddDirectory("Directory1");
+        var dir2 = sln.AddDirectory("Directory2", dir1.Id);
+
+        sln.ReferencedItems.ShouldContain(dir1);
+        dir1.Children.ShouldContain(dir2);
+
+        sln.RemoveDirectory(dir2.Id);
+
+        sln.ReferencedItems.ShouldContain(dir1);
+        dir1.Children.ShouldNotContain(dir2);
+    }
+
+    [Fact]
+    public void RemoveDirectory_Child()
+    {
+        var sln = new Solution();
+        var dir = sln.AddDirectory("Directory1");
+
+        sln.ReferencedItems.ShouldContain(dir);
+
+        sln.RemoveDirectory(dir.Id);
+        sln.ReferencedItems.ShouldNotContain(dir);
+    }
+
+    [Fact]
+    public void AddWorkspace_ToDirectory()
+    {
+        var sln = new Solution();
+        var dir = sln.AddDirectory("Directory1");
+
+        var workspaceId = sln.AddWorkspace(dir.Id).Id;
+
+        dir.Children.ShouldContain(w => w.Id == workspaceId);
+        sln.LoadedWorkspaces.ShouldContain(w => w.Id == workspaceId);
+        sln.WorkingSpaceId.ShouldBe(workspaceId);
+    }
+
+    [Fact]
     public void OpenDocument_NotExists()
     {
         var sln = new Solution();
