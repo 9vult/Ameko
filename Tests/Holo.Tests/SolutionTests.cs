@@ -12,7 +12,7 @@ public class SolutionTests
     {
         var sln = new Solution();
         sln.LoadedWorkspaces.Count.ShouldBe(1);
-        sln.WorkingSpaceId.ShouldBe(sln.LoadedWorkspaces[0].Id);
+        sln.WorkingSpace?.Id.ShouldBe(sln.LoadedWorkspaces[0].Id);
     }
 
     [Fact]
@@ -22,7 +22,7 @@ public class SolutionTests
         var workspaceId = sln.AddWorkspace().Id;
 
         sln.LoadedWorkspaces.ShouldContain(w => w.Id == workspaceId);
-        sln.WorkingSpaceId.ShouldBe(workspaceId);
+        sln.WorkingSpace?.Id.ShouldBe(workspaceId);
     }
 
     [Fact]
@@ -33,7 +33,7 @@ public class SolutionTests
         var workspaceId = sln.AddWorkspace(workspace).Id;
 
         sln.LoadedWorkspaces.ShouldContain(w => w.Id == workspaceId);
-        sln.WorkingSpaceId.ShouldBe(workspaceId);
+        sln.WorkingSpace?.Id.ShouldBe(workspaceId);
     }
 
     [Fact]
@@ -44,7 +44,7 @@ public class SolutionTests
         var workspaceId = sln.AddWorkspace(document, new Uri("file:///test.ass")).Id;
 
         sln.LoadedWorkspaces.ShouldContain(w => w.Id == workspaceId);
-        sln.WorkingSpaceId.ShouldBe(workspaceId);
+        sln.WorkingSpace?.Id.ShouldBe(workspaceId);
     }
 
     [Fact]
@@ -126,7 +126,7 @@ public class SolutionTests
 
         dir.Children.ShouldContain(w => w.Id == workspaceId);
         sln.LoadedWorkspaces.ShouldContain(w => w.Id == workspaceId);
-        sln.WorkingSpaceId.ShouldBe(workspaceId);
+        sln.WorkingSpace?.Id.ShouldBe(workspaceId);
     }
 
     [Fact]

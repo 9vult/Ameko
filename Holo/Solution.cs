@@ -93,11 +93,6 @@ public class Solution : BindableBase
     public bool IsWorkspaceLoaded => WorkingSpace is not null;
 
     /// <summary>
-    /// The currently-selected workspace ID
-    /// </summary>
-    public int WorkingSpaceId => WorkingSpace?.Id ?? -1;
-
-    /// <summary>
     /// The currently-loaded workspace
     /// </summary>
     /// <remarks>
@@ -106,11 +101,7 @@ public class Solution : BindableBase
     public Workspace? WorkingSpace
     {
         get => _workingSpace;
-        set
-        {
-            SetProperty(ref _workingSpace, value);
-            RaisePropertyChanged(nameof(WorkingSpaceId));
-        }
+        set => SetProperty(ref _workingSpace, value);
     }
 
     /// <summary>
@@ -296,7 +287,7 @@ public class Solution : BindableBase
     public bool RemoveWorkspace(int id)
     {
         Logger.Trace($"Removing workspace {id}");
-        if (WorkingSpaceId == id)
+        if (WorkingSpace?.Id == id)
         {
             WorkingSpace =
                 _loadedWorkspaces.Count > 1
@@ -377,7 +368,7 @@ public class Solution : BindableBase
     {
         Logger.Trace($"Closing referenced document {id}");
 
-        if (WorkingSpaceId != id)
+        if (WorkingSpace?.Id != id)
             return _loadedWorkspaces.RemoveAll(w => w.Id == id) != 0;
         if (_loadedWorkspaces.Count > 1)
             WorkingSpace = _loadedWorkspaces.First(w => w.Id != id);
