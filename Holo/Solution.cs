@@ -334,7 +334,7 @@ public class Solution : BindableBase
             var parser = new AssParser();
             var document = parser.Parse(item.Uri!.LocalPath);
 
-            item.Workspace = new Workspace(document, NextId, item.Uri);
+            item.Workspace = new Workspace(document, item.Id, item.Uri);
             _loadedWorkspaces.Add(item.Workspace);
             WorkingSpace = item.Workspace;
             return item.Id;
@@ -469,9 +469,8 @@ public class Solution : BindableBase
             var sln = new Solution(model.ReferencedDocuments.Length != 0) { _savePath = filePath };
 
             // De-relative the file paths in the solution
-            var initialId = 1;
             sln._referencedItems.AddRange(
-                ConvertFromModels(model.ReferencedDocuments, dir, ref initialId)
+                ConvertFromModels(model.ReferencedDocuments, dir, ref sln._docId)
             );
             sln._cps = model.Cps;
             sln._cpsIncludesWhitespace = model.CpsIncludesWhitespace;

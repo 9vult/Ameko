@@ -22,7 +22,8 @@
                         <!-- Documents -->
                         <TreeDataTemplate DataType="holo:DocumentItem"
                                           ItemsSource="{Binding Children}">
-                            <TextBlock Text="{Binding Title}">
+                            <TextBlock Text="{Binding Title}"
+                                       DoubleTapped="DocumentTreeItem_OnDoubleTapped">
                                 <TextBlock.ContextMenu>
                                     <ContextMenu>
                                         <MenuItem Header="{x:Static i18n:Resources.SolutionExplorer_ContextMenu_Open}"
