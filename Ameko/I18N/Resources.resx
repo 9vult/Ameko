@@ -300,4 +300,37 @@
     <data name="MsgBox_RemoveDirectory_Body" xml:space="preserve">
         <value>Are you sure you want to remove this directory from the solution?</value>
     </data>
+    <data name="StylesManager_Title" xml:space="preserve">
+        <value>Styles Manager</value>
+    </data>
+    <data name="StylesManager_GlobalStyles" xml:space="preserve">
+        <value>Global Styles</value>
+    </data>
+    <data name="StylesManager_SolutionStyles" xml:space="preserve">
+        <value>Solution Styles</value>
+    </data>
+    <data name="StylesManager_DocumentStyles" xml:space="preserve">
+        <value>Document Styles</value>
+    </data>
+    <data name="StylesManager_Button_Delete" xml:space="preserve">
+        <value>Delete</value>
+    </data>
+    <data name="StylesManager_Button_Copy" xml:space="preserve">
+        <value>Copy</value>
+    </data>
+    <data name="StylesManager_Button_Edit" xml:space="preserve">
+        <value>Edit</value>
+    </data>
+    <data name="StylesManager_Button_New" xml:space="preserve">
+        <value>New</value>
+    </data>
+    <data name="StylesManager_Button_CopyToSolution" xml:space="preserve">
+        <value>Copy to Solution</value>
+    </data>
+    <data name="StylesManager_Button_CopyToGlobal" xml:space="preserve">
+        <value>Copy to Global</value>
+    </data>
+    <data name="StylesManager_Button_CopyToDocument" xml:space="preserve">
+        <value>Copy to Document</value>
+    </data>
 </root>

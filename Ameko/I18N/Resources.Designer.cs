@@ -888,6 +888,105 @@ namespace Ameko.I18N {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Copy.
+        /// </summary>
+        public static string StylesManager_Button_Copy {
+            get {
+                return ResourceManager.GetString("StylesManager_Button_Copy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Copy to Document.
+        /// </summary>
+        public static string StylesManager_Button_CopyToDocument {
+            get {
+                return ResourceManager.GetString("StylesManager_Button_CopyToDocument", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Copy to Global.
+        /// </summary>
+        public static string StylesManager_Button_CopyToGlobal {
+            get {
+                return ResourceManager.GetString("StylesManager_Button_CopyToGlobal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Copy to Solution.
+        /// </summary>
+        public static string StylesManager_Button_CopyToSolution {
+            get {
+                return ResourceManager.GetString("StylesManager_Button_CopyToSolution", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete.
+        /// </summary>
+        public static string StylesManager_Button_Delete {
+            get {
+                return ResourceManager.GetString("StylesManager_Button_Delete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit.
+        /// </summary>
+        public static string StylesManager_Button_Edit {
+            get {
+                return ResourceManager.GetString("StylesManager_Button_Edit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to New.
+        /// </summary>
+        public static string StylesManager_Button_New {
+            get {
+                return ResourceManager.GetString("StylesManager_Button_New", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Document Styles.
+        /// </summary>
+        public static string StylesManager_DocumentStyles {
+            get {
+                return ResourceManager.GetString("StylesManager_DocumentStyles", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Global Styles.
+        /// </summary>
+        public static string StylesManager_GlobalStyles {
+            get {
+                return ResourceManager.GetString("StylesManager_GlobalStyles", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Solution Styles.
+        /// </summary>
+        public static string StylesManager_SolutionStyles {
+            get {
+                return ResourceManager.GetString("StylesManager_SolutionStyles", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Styles Manager.
+        /// </summary>
+        public static string StylesManager_Title {
+            get {
+                return ResourceManager.GetString("StylesManager_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Close Tab.
         /// </summary>
         public static string Tab_CloseButton_ToolTip {

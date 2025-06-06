@@ -1,0 +1,162 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="775" d:DesignHeight="525"
+        xmlns:ass="clr-namespace:AssCS;assembly=AssCS"
+        xmlns:vm="clr-namespace:Ameko.ViewModels.Windows"
+        xmlns:i18n="clr-namespace:Ameko.I18N"
+        x:Class="Ameko.Views.Windows.StylesManagerWindow"
+        Width="775"
+        Height="525"
+        Topmost="True"
+        CanResize="False"
+        Icon="/Assets/Ameko-Simplified-BG-64.ico"
+        Title="{x:Static i18n:Resources.StylesManager_Title}">
+    <Grid ColumnDefinitions="*, *, *"
+          RowDefinitions="Auto, *">
+        <!-- Global style list -->
+        <TextBlock Grid.Column="0"
+                   Grid.Row="0"
+                   HorizontalAlignment="Center"
+                   Text="{x:Static i18n:Resources.StylesManager_GlobalStyles}" />
+        <Grid Grid.Column="0"
+              Grid.Row="1"
+              RowDefinitions="*, Auto">
+            <ListBox Grid.Row="0"
+                     Margin="2">
+                <ListBox.ItemTemplate>
+                    <DataTemplate x:DataType="ass:Style">
+                        <TextBlock Text="{Binding Name}" />
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+            <Grid Grid.Row="1"
+                  ColumnDefinitions="*, *, *, *"
+                  RowDefinitions="Auto, Auto">
+                <Button Grid.Column="0"
+                        Grid.Row="0"
+                        Grid.ColumnSpan="2"
+                        Margin="2"
+                        Content="{x:Static i18n:Resources.StylesManager_Button_CopyToSolution}" />
+                <Button Grid.Column="2"
+                        Grid.Row="0"
+                        Grid.ColumnSpan="2"
+                        Margin="2"
+                        Content="{x:Static i18n:Resources.StylesManager_Button_CopyToDocument}" />
+                <Button Grid.Column="0"
+                        Grid.Row="1"
+                        Margin="2"
+                        Content="{x:Static i18n:Resources.StylesManager_Button_New}" />
+                <Button Grid.Column="1"
+                        Grid.Row="1"
+                        Margin="2"
+                        Content="{x:Static i18n:Resources.StylesManager_Button_Edit}" />
+                <Button Grid.Column="2"
+                        Grid.Row="1"
+                        Margin="2"
+                        Content="{x:Static i18n:Resources.StylesManager_Button_Copy}" />
+                <Button Grid.Column="3"
+                        Grid.Row="1"
+                        Margin="2"
+                        Content="{x:Static i18n:Resources.StylesManager_Button_Delete}" />
+            </Grid>
+        </Grid>
+        
+        <!-- Solution style list -->
+        <TextBlock Grid.Column="1"
+                   Grid.Row="0"
+                   HorizontalAlignment="Center"
+                   Text="{x:Static i18n:Resources.StylesManager_SolutionStyles}" />
+        <Grid Grid.Column="1"
+              Grid.Row="1"
+              RowDefinitions="*, Auto">
+            <ListBox Grid.Row="0"
+                     Margin="2">
+                <ListBox.ItemTemplate>
+                    <DataTemplate x:DataType="ass:Style">
+                        <TextBlock Text="{Binding Name}" />
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+            <Grid Grid.Row="1"
+                  ColumnDefinitions="*, *, *, *"
+                  RowDefinitions="Auto, Auto">
+                <Button Grid.Column="0"
+                        Grid.Row="0"
+                        Grid.ColumnSpan="2"
+                        Margin="2"
+                        Content="{x:Static i18n:Resources.StylesManager_Button_CopyToGlobal}" />
+                <Button Grid.Column="2"
+                        Grid.Row="0"
+                        Grid.ColumnSpan="2"
+                        Margin="2"
+                        Content="{x:Static i18n:Resources.StylesManager_Button_CopyToDocument}" />
+                <Button Grid.Column="0"
+                        Grid.Row="1"
+                        Margin="2"
+                        Content="{x:Static i18n:Resources.StylesManager_Button_New}" />
+                <Button Grid.Column="1"
+                        Grid.Row="1"
+                        Margin="2"
+                        Content="{x:Static i18n:Resources.StylesManager_Button_Edit}" />
+                <Button Grid.Column="2"
+                        Grid.Row="1"
+                        Margin="2"
+                        Content="{x:Static i18n:Resources.StylesManager_Button_Copy}" />
+                <Button Grid.Column="3"
+                        Grid.Row="1"
+                        Margin="2"
+                        Content="{x:Static i18n:Resources.StylesManager_Button_Delete}" />
+            </Grid>
+        </Grid>
+        
+        <!-- Document style list -->
+        <TextBlock Grid.Column="2"
+                   Grid.Row="0"
+                   HorizontalAlignment="Center"
+                   Text="{x:Static i18n:Resources.StylesManager_DocumentStyles}" />
+        <Grid Grid.Column="2"
+              Grid.Row="1"
+              RowDefinitions="*, Auto">
+            <ListBox Grid.Row="0"
+                     Margin="2">
+                <ListBox.ItemTemplate>
+                    <DataTemplate x:DataType="ass:Style">
+                        <TextBlock Text="{Binding Name}" />
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+            <Grid Grid.Row="1"
+                  ColumnDefinitions="*, *, *, *"
+                  RowDefinitions="Auto, Auto">
+                <Button Grid.Column="0"
+                        Grid.Row="0"
+                        Grid.ColumnSpan="2"
+                        Margin="2"
+                        Content="{x:Static i18n:Resources.StylesManager_Button_CopyToGlobal}" />
+                <Button Grid.Column="2"
+                        Grid.Row="0"
+                        Grid.ColumnSpan="2"
+                        Margin="2"
+                        Content="{x:Static i18n:Resources.StylesManager_Button_CopyToSolution}" />
+                <Button Grid.Column="0"
+                        Grid.Row="1"
+                        Margin="2"
+                        Content="{x:Static i18n:Resources.StylesManager_Button_New}" />
+                <Button Grid.Column="1"
+                        Grid.Row="1"
+                        Margin="2"
+                        Content="{x:Static i18n:Resources.StylesManager_Button_Edit}" />
+                <Button Grid.Column="2"
+                        Grid.Row="1"
+                        Margin="2"
+                        Content="{x:Static i18n:Resources.StylesManager_Button_Copy}" />
+                <Button Grid.Column="3"
+                        Grid.Row="1"
+                        Margin="2"
+                        Content="{x:Static i18n:Resources.StylesManager_Button_Delete}" />
+            </Grid>
+        </Grid>
+    </Grid>
+</Window>
