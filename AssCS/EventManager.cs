@@ -123,7 +123,7 @@ public class EventManager : BindableBase
     /// </remarks>
     public void AddAfter(int id, Event e)
     {
-        if (!_events.TryGetValue(id, out Link value))
+        if (!_events.TryGetValue(id, out var value))
             throw new ArgumentException(
                 $"Cannot add event after id={id} because that id cannot be found."
             );
@@ -176,7 +176,7 @@ public class EventManager : BindableBase
     /// </remarks>
     public void AddBefore(int id, Event e)
     {
-        if (!_events.TryGetValue(id, out Link value))
+        if (!_events.TryGetValue(id, out var value))
             throw new ArgumentException(
                 $"Cannot add event after id={id} because that id cannot be found."
             );
@@ -352,7 +352,7 @@ public class EventManager : BindableBase
     /// <exception cref="ArgumentException">If the ID is not found</exception>
     public Event Replace(int id, Event e)
     {
-        if (!_events.TryGetValue(id, out Link link))
+        if (!_events.TryGetValue(id, out var link))
             throw new ArgumentException(
                 $"Cannot replace event id={id} because that id cannot be found."
             );
@@ -374,7 +374,7 @@ public class EventManager : BindableBase
     /// <exception cref="ArgumentException">If the ID is not found</exception>
     public void ReplaceInplace(Event e)
     {
-        if (!_events.TryGetValue(e.Id, out Link original))
+        if (!_events.TryGetValue(e.Id, out var original))
             throw new ArgumentException(
                 $"Cannot replace event id={e.Id} because that id cannot be found."
             );
@@ -394,7 +394,7 @@ public class EventManager : BindableBase
     {
         foreach (var e in list)
         {
-            if (!_events.TryGetValue(e.Id, out Link original))
+            if (!_events.TryGetValue(e.Id, out var original))
                 throw new ArgumentException(
                     $"Cannot replace event id={e.Id} because that id cannot be found."
                 );
@@ -413,9 +413,8 @@ public class EventManager : BindableBase
     /// <exception cref="ArgumentException">If the ID is not found</exception>
     public bool Remove(int id)
     {
-        if (_events.TryGetValue(id, out Link link))
+        if (_events.Remove(id, out var link))
         {
-            _events.Remove(id);
             _chain.Remove(link.Node);
             var result = _currentIds.Remove(id);
             Notify();
@@ -435,11 +434,11 @@ public class EventManager : BindableBase
     {
         if (!list.Any())
             return false;
-        bool result = true;
+        var result = true;
 
         foreach (var id in list)
         {
-            if (_events.Remove(id, out Link link))
+            if (_events.Remove(id, out var link))
             {
                 _chain.Remove(link.Node);
             }
@@ -472,7 +471,7 @@ public class EventManager : BindableBase
     /// <exception cref="ArgumentException">If the ID is not found</exception>
     public Event Get(int id)
     {
-        if (_events.TryGetValue(id, out Link link))
+        if (_events.TryGetValue(id, out var link))
         {
             return link.Event;
         }
@@ -501,7 +500,7 @@ public class EventManager : BindableBase
     /// if the parent is the last in the document</returns>
     public Event? GetAfter(int id)
     {
-        if (!_events.TryGetValue(id, out Link link))
+        if (!_events.TryGetValue(id, out var link))
             return null;
         return link.Node.Next is not null ? _events[link.Node.Next.Value].Event : null;
     }
@@ -537,7 +536,7 @@ public class EventManager : BindableBase
     /// if the child is the first in the document</returns>
     public Event? GetBefore(int id)
     {
-        if (!_events.TryGetValue(id, out Link link))
+        if (!_events.TryGetValue(id, out var link))
             return null;
         return link.Node.Previous is not null ? _events[link.Node.Previous.Value].Event : null;
     }
