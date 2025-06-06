@@ -167,6 +167,16 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         interaction.SetOutput(null);
     }
 
+    private static void DoShowStylesManager(
+        IInteractionContext<StylesManagerWindowViewModel, Unit> interaction
+    )
+    {
+        Log.Trace("Displaying Styles Manager");
+        var window = new StylesManagerWindow { DataContext = interaction.Input };
+        window.Show();
+        interaction.SetOutput(Unit.Default);
+    }
+
     private static void DoShowLogWindow(IInteractionContext<LogWindowViewModel, Unit> interaction)
     {
         Log.Trace("Displaying Log Window");
@@ -200,6 +210,8 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
                 ViewModel.ExportSubtitle.RegisterHandler(DoShowExportSubtitleDialogAsync);
                 ViewModel.OpenSolution.RegisterHandler(DoShowOpenSolutionDialogAsync);
                 ViewModel.SaveSolutionAs.RegisterHandler(DoShowSaveSolutionAsDialogAsync);
+                // Subtitle
+                ViewModel.ShowStylesManager.RegisterHandler(DoShowStylesManager);
                 // Help
                 ViewModel.ShowLogWindow.RegisterHandler(DoShowLogWindow);
                 ViewModel.ShowAboutWindow.RegisterHandler(DoShowAboutWindowAsync);

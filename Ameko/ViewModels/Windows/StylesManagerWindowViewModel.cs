@@ -1,0 +1,67 @@
+﻿// SPDX-License-Identifier: GPL-3.0-only
+
+using System.Windows.Input;
+using AssCS;
+using Holo;
+using ReactiveUI;
+
+namespace Ameko.ViewModels.Windows;
+
+public partial class StylesManagerWindowViewModel : ViewModelBase
+{
+    private Style? _selectedGlobalStyle;
+    private Style? _selectedSolutionStyle;
+    private Style? _selectedDocumentStyle;
+
+    public Solution Solution { get; init; }
+    public Document Document { get; init; }
+
+    public Style? SelectedGlobalStyle
+    {
+        get => _selectedGlobalStyle;
+        set
+        {
+            this.RaiseAndSetIfChanged(ref _selectedGlobalStyle, value);
+            this.RaisePropertyChanged(nameof(GlobalButtonsEnabled));
+        }
+    }
+
+    public Style? SelectedSolutionStyle
+    {
+        get => _selectedSolutionStyle;
+        set
+        {
+            this.RaiseAndSetIfChanged(ref _selectedSolutionStyle, value);
+            this.RaisePropertyChanged(nameof(SolutionButtonsEnabled));
+        }
+    }
+
+    public Style? SelectedDocumentStyle
+    {
+        get => _selectedDocumentStyle;
+        set
+        {
+            this.RaiseAndSetIfChanged(ref _selectedDocumentStyle, value);
+            this.RaisePropertyChanged(nameof(DocumentButtonsEnabled));
+        }
+    }
+
+    public bool GlobalButtonsEnabled => SelectedGlobalStyle is not null;
+    public bool SolutionButtonsEnabled => SelectedSolutionStyle is not null;
+    public bool DocumentButtonsEnabled => SelectedDocumentStyle is not null;
+
+    #region Commands
+    public ICommand CopyToCommand { get; }
+    public ICommand DuplicateStyleCommand { get; }
+    public ICommand EditStyleCommand { get; }
+    public ICommand DeleteStyleCommand { get; }
+    public ICommand NewStyleCommand { get; }
+    #endregion
+
+    public StylesManagerWindowViewModel(Solution solution, Document document)
+    {
+        Solution = solution;
+        Document = document;
+        CopyToCommand = CreateCopyToCommand();
+    }
+}

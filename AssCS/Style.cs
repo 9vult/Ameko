@@ -291,6 +291,38 @@ public partial class Style(int id) : BindableBase
     }
 
     /// <summary>
+    /// Initialize a style from an existing style
+    /// </summary>
+    /// <param name="id">ID of the style</param>
+    /// <param name="data">Style to use as the basis</param>
+    /// <returns>Style object with the same properties</returns>
+    public static Style FromStyle(int id, Style data)
+    {
+        return new Style(id)
+        {
+            _name = data.Name,
+            _fontFamily = data.FontFamily,
+            _fontSize = data._fontSize,
+            _primaryColor = Color.FromColor(data.PrimaryColor),
+            _secondaryColor = Color.FromColor(data.SecondaryColor),
+            _outlineColor = Color.FromColor(data.OutlineColor),
+            _shadowColor = Color.FromColor(data.ShadowColor),
+            _isBold = data._isBold,
+            _isItalic = data.IsItalic,
+            _isUnderline = data.IsUnderline,
+            _isStrikethrough = data._isStrikethrough,
+            _scaleX = data.ScaleX,
+            _scaleY = data.ScaleY,
+            _spacing = data.Spacing,
+            _borderStyle = data.BorderStyle,
+            _shadowDistance = data.ShadowDistance,
+            _alignment = data.Alignment,
+            _margins = new Margins(data.Margins.Left, data.Margins.Right, data.Margins.Vertical),
+            _encoding = data.Encoding,
+        };
+    }
+
+    /// <summary>
     /// Clone this style
     /// </summary>
     /// <returns>Clone of the style</returns>

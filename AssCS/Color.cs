@@ -145,6 +145,22 @@ public partial class Color : BindableBase
     }
 
     /// <summary>
+    /// Initialize a color from another Color
+    /// </summary>
+    /// <param name="color">Color to use as the basis</param>
+    /// <returns>Color object with the values provided</returns>
+    public static Color FromColor(Color color)
+    {
+        return new Color
+        {
+            _alpha = color.Alpha,
+            _blue = color.Blue,
+            _green = color.Green,
+            _red = color.Red,
+        };
+    }
+
+    /// <summary>
     /// Calculate the relative contrast between two colors
     /// </summary>
     /// <param name="a">Color A</param>
