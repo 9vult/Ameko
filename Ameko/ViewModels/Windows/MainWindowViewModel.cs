@@ -1,6 +1,7 @@
 ﻿// SPDX-License-Identifier: GPL-3.0-only
 
 using System;
+using System.Linq;
 using System.Reactive;
 using System.Windows.Input;
 using Ameko.Services;
@@ -54,6 +55,22 @@ public partial class MainWindowViewModel : ViewModelBase
     public string WindowTitle { get; } = $"Ameko {VersionService.FullLabel}";
 
     public HoloContext Context => HoloContext.Instance;
+
+    /// <summary>
+    /// Set the <see cref="Solution.WorkingSpace"/> to the selected workspace, opening it if needed
+    /// </summary>
+    /// <param name="workspaceId">ID to open</param>
+    public void TryLoadReferenced(int workspaceId)
+    {
+        var wsp = Context.Solution.LoadedWorkspaces.FirstOrDefault(w => w.Id == workspaceId);
+        if (wsp is not null)
+        {
+            Context.Solution.WorkingSpace = wsp;
+            return;
+        }
+
+        Context.Solution.OpenDocument(workspaceId);
+    }
 
     public MainWindowViewModel()
     {
