@@ -280,7 +280,7 @@ public partial class MainWindowViewModel : ViewModelBase
                 );
                 var boxResult = await box.ShowAsync();
 
-                if (boxResult == ButtonResult.Ok)
+                if (boxResult == ButtonResult.Ok && !string.IsNullOrWhiteSpace(box.InputValue))
                 {
                     dirItem.Name = box.InputValue;
                 }
@@ -318,7 +318,7 @@ public partial class MainWindowViewModel : ViewModelBase
                 );
                 var boxResult = await box.ShowAsync();
 
-                if (boxResult == ButtonResult.Ok)
+                if (boxResult == ButtonResult.Ok && !string.IsNullOrWhiteSpace(box.InputValue))
                 {
                     docItem.Name = box.InputValue;
                 }
