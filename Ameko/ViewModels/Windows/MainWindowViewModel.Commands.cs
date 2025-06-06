@@ -11,9 +11,12 @@ using Ameko.Views.Windows;
 using AssCS;
 using AssCS.IO;
 using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Holo;
+using Holo.Models;
 using MsBox.Avalonia;
+using MsBox.Avalonia.Dto;
 using MsBox.Avalonia.Enums;
 using NLog;
 using ReactiveUI;
@@ -242,6 +245,82 @@ public partial class MainWindowViewModel : ViewModelBase
                 if (boxResult == ButtonResult.Yes)
                 {
                     Context.Solution.RemoveDirectory(id);
+                }
+            }
+        );
+    }
+
+    /// <summary>
+    /// Rename solution directory
+    /// </summary>
+    private ReactiveCommand<int, Unit> CreateRenameDirectoryCommand()
+    {
+        return ReactiveCommand.CreateFromTask(
+            async (int id) =>
+            {
+                if (Context.Solution.FindItemById(id) is not DirectoryItem dirItem)
+                    return;
+
+                Log.Trace($"Displaying input box for rename of directory {id} ({dirItem.Title})");
+
+                var box = MessageBoxManager.GetMessageBoxStandard(
+                    new MessageBoxStandardParams
+                    {
+                        ContentTitle = I18N.Resources.MsgBox_NameDirectory_Title,
+                        ContentMessage = I18N.Resources.MsgBox_NameDirectory_Body,
+                        ButtonDefinitions = ButtonEnum.OkCancel,
+                        Icon = Icon.None,
+                        WindowStartupLocation = WindowStartupLocation.CenterScreen,
+                        InputParams = new InputParams
+                        {
+                            DefaultValue = dirItem.Name ?? string.Empty,
+                            Label = I18N.Resources.MsgBox_NameItem_Label,
+                        },
+                    }
+                );
+                var boxResult = await box.ShowAsync();
+
+                if (boxResult == ButtonResult.Ok)
+                {
+                    dirItem.Name = box.InputValue;
+                }
+            }
+        );
+    }
+
+    /// <summary>
+    /// Rename solution document
+    /// </summary>
+    private ReactiveCommand<int, Unit> CreateRenameDocumentCommand()
+    {
+        return ReactiveCommand.CreateFromTask(
+            async (int id) =>
+            {
+                if (Context.Solution.FindItemById(id) is not DocumentItem docItem)
+                    return;
+
+                Log.Trace($"Displaying input box for rename of document {id} ({docItem.Title})");
+
+                var box = MessageBoxManager.GetMessageBoxStandard(
+                    new MessageBoxStandardParams
+                    {
+                        ContentTitle = I18N.Resources.MsgBox_NameDocument_Title,
+                        ContentMessage = I18N.Resources.MsgBox_NameDocument_Body,
+                        ButtonDefinitions = ButtonEnum.OkCancel,
+                        Icon = Icon.None,
+                        WindowStartupLocation = WindowStartupLocation.CenterScreen,
+                        InputParams = new InputParams
+                        {
+                            DefaultValue = docItem.Name ?? string.Empty,
+                            Label = I18N.Resources.MsgBox_NameItem_Label,
+                        },
+                    }
+                );
+                var boxResult = await box.ShowAsync();
+
+                if (boxResult == ButtonResult.Ok)
+                {
+                    docItem.Name = box.InputValue;
                 }
             }
         );

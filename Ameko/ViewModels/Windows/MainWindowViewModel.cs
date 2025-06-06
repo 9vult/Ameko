@@ -47,6 +47,8 @@ public partial class MainWindowViewModel : ViewModelBase
     // Other
     public ICommand RemoveDocumentFromSolutionCommand { get; }
     public ICommand RemoveDirectoryFromSolutionCommand { get; }
+    public ICommand RenameDocumentCommand { get; }
+    public ICommand RenameDirectoryCommand { get; }
     #endregion
 
     /// <summary>
@@ -103,6 +105,8 @@ public partial class MainWindowViewModel : ViewModelBase
         // Other
         RemoveDocumentFromSolutionCommand = CreateRemoveDocumentFromSolutionCommand();
         RemoveDirectoryFromSolutionCommand = CreateRemoveDirectoryFromSolutionCommand();
+        RenameDocumentCommand = CreateRenameDocumentCommand();
+        RenameDirectoryCommand = CreateRenameDirectoryCommand();
         #endregion
     }
 }

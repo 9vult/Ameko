@@ -516,7 +516,7 @@ public class Solution : BindableBase
     /// <param name="id">ID of the item to find</param>
     /// <returns>The item, or <see langword="null"/> if not found</returns>
     /// <remarks>Uses breadth-first search</remarks>
-    private SolutionItem? FindItemById(int id)
+    public SolutionItem? FindItemById(int id)
     {
         var queue = new Queue<SolutionItem>(_referencedItems);
 
