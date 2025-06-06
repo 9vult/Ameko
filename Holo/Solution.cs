@@ -1,6 +1,7 @@
 ﻿// SPDX-License-Identifier: MPL-2.0
 
 using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using AssCS;
 using AssCS.IO;
@@ -39,7 +40,7 @@ public class Solution : BindableBase
     private bool _isSaved;
 
     private int _docId = 1;
-    private Workspace _workingSpace;
+    private Workspace? _workingSpace;
 
     private int? _cps;
     private bool? _cpsIncludesWhitespace;
@@ -83,17 +84,26 @@ public class Solution : BindableBase
     /// <summary>
     /// Next available ID for documents/workspaces
     /// </summary>
-    internal int NextId => _docId++;
+    private int NextId => _docId++;
+
+    /// <summary>
+    /// Whether there is currently a loaded <see cref="Workspace"/>
+    /// </summary>
+    [MemberNotNullWhen(true, nameof(WorkingSpace))]
+    public bool IsWorkspaceLoaded => WorkingSpace is not null;
 
     /// <summary>
     /// The currently-selected workspace ID
     /// </summary>
-    public int WorkingSpaceId => _workingSpace.Id;
+    public int WorkingSpaceId => WorkingSpace?.Id ?? -1;
 
     /// <summary>
     /// The currently-loaded workspace
     /// </summary>
-    public Workspace WorkingSpace
+    /// <remarks>
+    /// <see langword="null"/> if no workspace is loaded
+    /// </remarks>
+    public Workspace? WorkingSpace
     {
         get => _workingSpace;
         set
@@ -406,8 +416,6 @@ public class Solution : BindableBase
 
         var fp = savePath.LocalPath;
         var dir = Path.GetDirectoryName(fp) ?? string.Empty;
-
-        var items = new List<SolutionItemModel>();
 
         try
         {
