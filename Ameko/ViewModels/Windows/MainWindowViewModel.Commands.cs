@@ -75,7 +75,10 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         return ReactiveCommand.CreateFromTask(async () =>
         {
-            _ = await IoService.SaveSubtitle(SaveSubtitleAs, Context.Solution.WorkingSpace);
+            if (Context.Solution.IsWorkspaceLoaded)
+            {
+                _ = await IoService.SaveSubtitle(SaveSubtitleAs, Context.Solution.WorkingSpace);
+            }
         });
     }
 
@@ -86,7 +89,10 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         return ReactiveCommand.CreateFromTask(async () =>
         {
-            _ = await IoService.SaveSubtitleAs(SaveSubtitleAs, Context.Solution.WorkingSpace);
+            if (Context.Solution.IsWorkspaceLoaded)
+            {
+                _ = await IoService.SaveSubtitleAs(SaveSubtitleAs, Context.Solution.WorkingSpace);
+            }
         });
     }
 
@@ -97,7 +103,10 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         return ReactiveCommand.CreateFromTask(async () =>
         {
-            _ = await IoService.ExportSubtitle(ExportSubtitle, Context.Solution.WorkingSpace);
+            if (Context.Solution.IsWorkspaceLoaded)
+            {
+                _ = await IoService.ExportSubtitle(ExportSubtitle, Context.Solution.WorkingSpace);
+            }
         });
     }
 
@@ -153,8 +162,11 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         return ReactiveCommand.CreateFromTask(async () =>
         {
-            Log.Trace($"Closing tab {Context.Solution.WorkingSpace.Title}");
-            await IoService.SafeCloseWorkspace(Context.Solution.WorkingSpace, SaveSubtitleAs);
+            if (Context.Solution.IsWorkspaceLoaded)
+            {
+                Log.Trace($"Closing tab {Context.Solution.WorkingSpace.Title}");
+                await IoService.SafeCloseWorkspace(Context.Solution.WorkingSpace, SaveSubtitleAs);
+            }
         });
     }
 
