@@ -807,6 +807,51 @@ namespace Ameko.I18N {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Please choose a name for the directory:.
+        /// </summary>
+        public static string MsgBox_NameDirectory_Body {
+            get {
+                return ResourceManager.GetString("MsgBox_NameDirectory_Body", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Set Directory Name.
+        /// </summary>
+        public static string MsgBox_NameDirectory_Title {
+            get {
+                return ResourceManager.GetString("MsgBox_NameDirectory_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Please choose a display name for the document:.
+        /// </summary>
+        public static string MsgBox_NameDocument_Body {
+            get {
+                return ResourceManager.GetString("MsgBox_NameDocument_Body", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Set Document Name.
+        /// </summary>
+        public static string MsgBox_NameDocument_Title {
+            get {
+                return ResourceManager.GetString("MsgBox_NameDocument_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Name:.
+        /// </summary>
+        public static string MsgBox_NameItem_Label {
+            get {
+                return ResourceManager.GetString("MsgBox_NameItem_Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Are you sure you want to remove this directory from the solution?.
         /// </summary>
         public static string MsgBox_RemoveDirectory_Body {
@@ -875,6 +920,15 @@ namespace Ameko.I18N {
         public static string SolutionExplorer_ContextMenu_Remove {
             get {
                 return ResourceManager.GetString("SolutionExplorer_ContextMenu_Remove", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Rename....
+        /// </summary>
+        public static string SolutionExplorer_ContextMenu_Rename {
+            get {
+                return ResourceManager.GetString("SolutionExplorer_ContextMenu_Rename", resourceCulture);
             }
         }
         

@@ -29,6 +29,10 @@
                                         <MenuItem Header="{x:Static i18n:Resources.SolutionExplorer_ContextMenu_Open}"
                                                   Icon="{icons:MaterialIconExt Kind=FolderOpenOutline}" />
                                         <Separator />
+                                        <MenuItem Header="{x:Static i18n:Resources.SolutionExplorer_ContextMenu_Rename}"
+                                                  Icon="{icons:MaterialIconExt Kind=RenameOutline}"
+                                                  CommandParameter="{Binding Id}"
+                                                  Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).RenameDocumentCommand, FallbackValue=.}" />
                                         <MenuItem Header="{x:Static i18n:Resources.SolutionExplorer_ContextMenu_Remove}"
                                                   Icon="{icons:MaterialIconExt Kind=TrashCanOutline}"
                                                   CommandParameter="{Binding Id}"
@@ -43,6 +47,10 @@
                             <TextBlock Text="{Binding Title}">
                                 <TextBlock.ContextMenu>
                                     <ContextMenu>
+                                        <MenuItem Header="{x:Static i18n:Resources.SolutionExplorer_ContextMenu_Rename}"
+                                                  Icon="{icons:MaterialIconExt Kind=RenameOutline}"
+                                                  CommandParameter="{Binding Id}"
+                                                  Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).RenameDirectoryCommand, FallbackValue=.}" />
                                         <MenuItem Header="{x:Static i18n:Resources.SolutionExplorer_ContextMenu_Remove}"
                                                   Icon="{icons:MaterialIconExt Kind=TrashCanOutline}"
                                                   CommandParameter="{Binding Id}"

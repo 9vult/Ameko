@@ -333,4 +333,22 @@
     <data name="StylesManager_Button_CopyToDocument" xml:space="preserve">
         <value>Copy to Document</value>
     </data>
+    <data name="MsgBox_NameDirectory_Title" xml:space="preserve">
+        <value>Set Directory Name</value>
+    </data>
+    <data name="MsgBox_NameDirectory_Body" xml:space="preserve">
+        <value>Please choose a name for the directory:</value>
+    </data>
+    <data name="MsgBox_NameItem_Label" xml:space="preserve">
+        <value>Name:</value>
+    </data>
+    <data name="SolutionExplorer_ContextMenu_Rename" xml:space="preserve">
+        <value>Rename...</value>
+    </data>
+    <data name="MsgBox_NameDocument_Body" xml:space="preserve">
+        <value>Please choose a display name for the document:</value>
+    </data>
+    <data name="MsgBox_NameDocument_Title" xml:space="preserve">
+        <value>Set Document Name</value>
+    </data>
 </root>

@@ -23,7 +23,11 @@ public abstract class SolutionItem : BindableBase
     public string? Name
     {
         get => _name;
-        set => SetProperty(ref _name, value);
+        set
+        {
+            SetProperty(ref _name, value);
+            RaisePropertyChanged(nameof(Title));
+        }
     }
 
     /// <summary>
