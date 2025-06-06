@@ -23,6 +23,9 @@ public partial class MainWindowViewModel : ViewModelBase
     public Interaction<Unit, Uri?> OpenSolution { get; }
     public Interaction<string, Uri?> SaveSolutionAs { get; }
 
+    // Subtitle
+    public Interaction<StylesManagerWindowViewModel, Unit> ShowStylesManager { get; }
+
     // Help
     public Interaction<LogWindowViewModel, Unit> ShowLogWindow { get; }
     public Interaction<AboutWindowViewModel, Unit> ShowAboutWindow { get; }
@@ -39,6 +42,9 @@ public partial class MainWindowViewModel : ViewModelBase
     public ICommand SaveSolutionCommand { get; }
     public ICommand CloseTabCommand { get; }
     public ICommand QuitCommand { get; }
+
+    // Subtitle
+    public ICommand ShowStylesManagerCommand { get; }
 
     // Help
     public ICommand ShowLogWindowCommand { get; }
@@ -83,6 +89,8 @@ public partial class MainWindowViewModel : ViewModelBase
         ExportSubtitle = new Interaction<string, Uri?>();
         OpenSolution = new Interaction<Unit, Uri?>();
         SaveSolutionAs = new Interaction<string, Uri?>();
+        // Subtitle
+        ShowStylesManager = new Interaction<StylesManagerWindowViewModel, Unit>();
         // Help
         ShowLogWindow = new Interaction<LogWindowViewModel, Unit>();
         ShowAboutWindow = new Interaction<AboutWindowViewModel, Unit>();
@@ -99,6 +107,8 @@ public partial class MainWindowViewModel : ViewModelBase
         SaveSolutionCommand = CreateSaveSolutionCommand();
         CloseTabCommand = CreateCloseTabCommand();
         QuitCommand = CreateQuitCommand();
+        // Subtitle
+        ShowStylesManagerCommand = CreateShowStylesManagerCommand();
         // Help
         ShowLogWindowCommand = CreateShowLogWindowCommand();
         ShowAboutWindowCommand = CreateShowAboutWindowCommand();

@@ -58,7 +58,8 @@
         </MenuItem>
         <MenuItem Header="{x:Static i18n:Resources.Menu_Subtitle}">
             <MenuItem Header="{x:Static i18n:Resources.Menu_StylesManager}"
-                      Icon="{icons:MaterialIconExt Kind=PaletteOutline}" />
+                      Icon="{icons:MaterialIconExt Kind=PaletteOutline}"
+                      Command="{Binding ShowStylesManagerCommand}" />
             <Separator />
             <MenuItem Header="{x:Static i18n:Resources.Menu_ScriptProperties}"
                       Icon="{icons:MaterialIconExt Kind=ListBoxOutline}" />

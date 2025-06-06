@@ -56,6 +56,9 @@
     <Compile Update="ViewModels\Controls\TabItemViewModel.Commands.cs">
       <DependentUpon>TabItemViewModel.cs</DependentUpon>
     </Compile>
+    <Compile Update="ViewModels\Windows\StylesManagerWindowViewModel.Commands.cs">
+      <DependentUpon>StylesManagerWindowViewModel.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Update="I18N\Resources.resx">

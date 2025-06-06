@@ -189,6 +189,24 @@ public partial class MainWindowViewModel : ViewModelBase
     }
 
     /// <summary>
+    /// Display the <see cref="StylesManagerWindow"/>
+    /// </summary>
+    private ReactiveCommand<Unit, Unit> CreateShowStylesManagerCommand()
+    {
+        return ReactiveCommand.CreateFromTask(async () =>
+        {
+            if (Context.Solution.IsWorkspaceLoaded)
+            {
+                var vm = new StylesManagerWindowViewModel(
+                    Context.Solution,
+                    Context.Solution.WorkingSpace.Document
+                );
+                await ShowStylesManager.Handle(vm);
+            }
+        });
+    }
+
+    /// <summary>
     /// Display the <see cref="LogWindow"/>
     /// </summary>
     private ReactiveCommand<Unit, Unit> CreateShowLogWindowCommand()
