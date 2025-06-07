@@ -13,8 +13,9 @@ public partial class StylesManagerWindowViewModel : ViewModelBase
     private Style? _selectedSolutionStyle;
     private Style? _selectedDocumentStyle;
 
-    public Solution Solution { get; init; }
-    public Document Document { get; init; }
+    public Solution Solution { get; }
+    public Document Document { get; }
+    public Globals Globals { get; } = HoloContext.Instance.Globals;
 
     public Style? SelectedGlobalStyle
     {
