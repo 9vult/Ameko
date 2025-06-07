@@ -1,6 +1,8 @@
 ﻿// SPDX-License-Identifier: MPL-2.0
 
-using AssCS;
+using System.IO.Abstractions.TestingHelpers;
+using Holo.IO;
+using Holo.Models;
 using Shouldly;
 
 namespace Holo.Tests;
@@ -10,32 +12,79 @@ public class ConfigurationTests
     [Fact]
     public void Constructor()
     {
-        var cfg = new Configuration();
-        cfg.SavePath.ShouldBeNull();
+        var fs = new MockFileSystem();
+        var cfg = new Configuration(fs, Paths.Configuration);
+
+        cfg.SavePath.ShouldNotBeNull();
+        cfg.Cps.ShouldBe(18);
+        cfg.UseSoftLinebreaks.ShouldBe(false);
+        cfg.AutosaveEnabled.ShouldBe(true);
+        cfg.AutosaveInterval.ShouldBe(60);
     }
 
     [Fact]
-    public void Save()
+    public void Parse_NotExists()
     {
-        var cfg = new Configuration { Cps = 12 };
+        var fs = new MockFileSystem();
+        var cfg = Configuration.Parse(fs, Paths.Configuration);
 
-        var writer = new StringWriter();
-        bool result = cfg.Save(writer);
-
-        result.ShouldBeTrue();
-        writer.ToString().ShouldNotBeNullOrEmpty();
+        cfg.ShouldNotBeNull();
+        cfg.Cps.ShouldBe(18);
+        cfg.UseSoftLinebreaks.ShouldBe(false);
+        cfg.AutosaveEnabled.ShouldBe(true);
+        cfg.AutosaveInterval.ShouldBe(60);
     }
 
     [Fact]
-    public void Parse()
+    public void Parse_Exists()
     {
-        var sr = new StringReader(ExampleConfiguration);
-        var cfg = Configuration.Parse(sr, null);
+        var fs = new MockFileSystem(
+            new Dictionary<string, MockFileData>
+            {
+                { Paths.Configuration.LocalPath, new MockFileData(ExampleConfiguration) },
+            }
+        );
+        var cfg = Configuration.Parse(fs, Paths.Configuration);
 
+        cfg.ShouldNotBeNull();
         cfg.Cps.ShouldBe(12);
+        cfg.CpsIncludesWhitespace.ShouldBeFalse();
+        cfg.CpsIncludesPunctuation.ShouldBeFalse();
         cfg.UseSoftLinebreaks.ShouldBe(true);
         cfg.AutosaveEnabled.ShouldBe(false);
         cfg.AutosaveInterval.ShouldBe(120);
+        cfg.LineWidthIncludesWhitespace.ShouldBeTrue();
+        cfg.LineWidthIncludesPunctuation.ShouldBeTrue();
+        cfg.Theme.ShouldBe(Theme.Light);
+    }
+
+    [Fact]
+    public void Save_Exists()
+    {
+        var fs = new MockFileSystem(
+            new Dictionary<string, MockFileData>
+            {
+                { Paths.Configuration.LocalPath, new MockFileData(ExampleConfiguration) },
+            }
+        );
+        var cfg = new Configuration(fs, Paths.Configuration) { Cps = 12 };
+
+        var result = cfg.Save();
+
+        result.ShouldBeTrue();
+        fs.FileExists(Paths.Configuration.LocalPath).ShouldBeTrue();
+    }
+
+    [Fact]
+    public void Save_NotExists()
+    {
+        var fs = new MockFileSystem();
+        var cfg = new Configuration(fs, Paths.Configuration) { Cps = 12 };
+
+        var result = cfg.Save();
+
+        result.ShouldBeTrue();
+        fs.FileExists(Paths.Configuration.LocalPath).ShouldBeTrue();
     }
 
     private const string ExampleConfiguration = """
@@ -48,7 +97,8 @@ public class ConfigurationTests
             "AutosaveEnabled": false,
             "AutosaveInterval": 120,
             "LineWidthIncludesWhitespace": true,
-            "LineWidthIncludesPunctuation": true
+            "LineWidthIncludesPunctuation": true,
+            "Theme": "light"
         }
         """;
 }

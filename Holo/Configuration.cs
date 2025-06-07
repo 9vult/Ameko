@@ -1,5 +1,6 @@
 ﻿// SPDX-License-Identifier: MPL-2.0
 
+using System.IO.Abstractions;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -31,6 +32,12 @@ public partial class Configuration : BindableBase
         IncludeFields = true,
         Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) },
     };
+
+    /// <summary>
+    /// The filesystem being used
+    /// </summary>
+    /// <remarks>This allows for filesystem mocking to be used in tests</remarks>
+    private readonly IFileSystem _fileSystem;
 
     private int _cps;
     private bool _cpsIncludesWhitespace;
@@ -125,37 +132,24 @@ public partial class Configuration : BindableBase
         set => SetProperty(ref _theme, value);
     }
 
-    public Uri? SavePath { get; init; }
-
-    /// <summary>
-    /// Write the configuration to file
-    /// </summary>
-    /// <returns><see langword="true"/> if saving was successful</returns>
-    /// <remarks>
-    /// <see cref="SavePath"/> must be set prior to calling this method.
-    /// </remarks>
-    public bool Save()
-    {
-        if (string.IsNullOrEmpty(SavePath?.LocalPath))
-            return false;
-
-        Logger.Info($"Writing configuration to {SavePath.LocalPath}");
-        var fp = SavePath.LocalPath;
-        using var writer = new StreamWriter(fp, false);
-        return Save(writer);
-    }
+    public Uri SavePath { get; }
 
     /// <summary>
     /// Write the solution to file
     /// </summary>
-    /// <param name="writer">Writer to write to</param>
     /// <returns><see langword="true"/> if saving was successful</returns>
-    public bool Save(TextWriter writer)
+    public bool Save()
     {
-        Logger.Info($"Saving configuration");
-
+        var path = SavePath.LocalPath;
+        Logger.Info($"Writing configuration to {path}");
         try
         {
+            if (!_fileSystem.Directory.Exists(Path.GetDirectoryName(path)))
+                _fileSystem.Directory.CreateDirectory(Path.GetDirectoryName(path) ?? "/");
+
+            using var fs = _fileSystem.FileStream.New(path, FileMode.OpenOrCreate);
+            using var writer = new StreamWriter(fs);
+
             var model = new ConfigurationModel
             {
                 Version = ConfigurationModel.CurrentApiVersion,
@@ -174,14 +168,9 @@ public partial class Configuration : BindableBase
             writer.Write(content);
             return true;
         }
-        catch (JsonException je)
+        catch (Exception ex) when (ex is IOException or JsonException)
         {
-            Logger.Error(je);
-            return false;
-        }
-        catch (IOException ioe)
-        {
-            Logger.Error(ioe);
+            Logger.Error(ex);
             return false;
         }
     }
@@ -189,38 +178,40 @@ public partial class Configuration : BindableBase
     /// <summary>
     /// Parse a saved configuration file
     /// </summary>
-    /// <param name="filePath">Path to the configuration file</param>
+    /// <param name="savePath">Path to the configuration file</param>
     /// <returns><see cref="Configuration"/> object</returns>
-    public static Configuration Parse(Uri filePath)
+    public static Configuration Parse(Uri savePath)
     {
-        if (!File.Exists(filePath.LocalPath))
-            return new Configuration { SavePath = filePath };
-
-        using var reader = new StreamReader(filePath.LocalPath);
-        return Parse(reader, filePath);
+        return Parse(new FileSystem(), savePath);
     }
 
     /// <summary>
     /// Parse a saved configuration file
     /// </summary>
-    /// <param name="reader">Reader to read the configuration from</param>
-    /// <param name="filePath">Path to the configuration file</param>
+    /// <param name="fileSystem">FileSystem to use</param>
+    /// <param name="savePath">Path to the configuration file</param>
     /// <returns><see cref="Configuration"/> object</returns>
-    /// <remarks>Returns the default configuration if <paramref name="reader"/> is empty.</remarks>
-    public static Configuration Parse(TextReader reader, Uri? filePath)
+    public static Configuration Parse(IFileSystem fileSystem, Uri savePath)
     {
-        if (reader.Peek() == -1)
-            return new Configuration { SavePath = filePath };
-
+        Logger.Info("Parsing configuration");
+        var path = savePath.LocalPath;
         try
         {
+            if (!fileSystem.Directory.Exists(Path.GetDirectoryName(path)))
+                fileSystem.Directory.CreateDirectory(Path.GetDirectoryName(path) ?? "/");
+
+            if (!fileSystem.File.Exists(path))
+                return new Configuration(fileSystem, savePath);
+
+            using var fs = fileSystem.FileStream.New(path, FileMode.OpenOrCreate);
+            using var reader = new StreamReader(fs);
+
             var model =
                 JsonSerializer.Deserialize<ConfigurationModel>(reader.ReadToEnd(), JsonOptions)
-                ?? throw new InvalidDataException("Configuration model serialization failed");
+                ?? throw new InvalidDataException("Configuration model deserialization failed");
 
-            return new Configuration
+            return new Configuration(fileSystem, savePath)
             {
-                SavePath = filePath,
                 _cps = model.Cps,
                 _cpsIncludesWhitespace = model.CpsIncludesWhitespace,
                 _cpsIncludesPunctuation = model.CpsIncludesPunctuation,
@@ -232,20 +223,29 @@ public partial class Configuration : BindableBase
                 _theme = model.Theme,
             };
         }
-        catch (JsonException je)
+        catch (Exception ex) when (ex is IOException or JsonException)
         {
-            Logger.Error(je);
-            return new Configuration();
-        }
-        catch (IOException ioe)
-        {
-            Logger.Error(ioe);
-            return new Configuration();
+            Logger.Error(ex);
+            return new Configuration(fileSystem, savePath);
         }
     }
 
-    public Configuration()
+    /// <summary>
+    /// Instantiate a Configuration instance
+    /// </summary>
+    /// <param name="savePath">Location of the configuration file</param>
+    public Configuration(Uri savePath)
+        : this(new FileSystem(), savePath) { }
+
+    /// <summary>
+    /// Instantiate a Configuration instance
+    /// </summary>
+    /// <param name="fileSystem">FileSystem to use</param>
+    /// <param name="savePath">Location of the configuration file</param>
+    public Configuration(IFileSystem fileSystem, Uri savePath)
     {
+        _fileSystem = fileSystem;
+        SavePath = savePath;
         Cps = 18;
         UseSoftLinebreaks = false;
         AutosaveEnabled = true;

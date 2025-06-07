@@ -65,8 +65,8 @@ public class Globals : BindableBase
     /// <returns><see langword="true"/> if saving was successful</returns>
     public bool Save()
     {
-        Logger.Info("Saving globals");
         var path = _savePath.LocalPath;
+        Logger.Info($"Writing globals to {path}");
         try
         {
             if (!_fileSystem.Directory.Exists(Path.GetDirectoryName(path)))
@@ -126,7 +126,7 @@ public class Globals : BindableBase
 
             var model =
                 JsonSerializer.Deserialize<GlobalsModel>(reader.ReadToEnd(), JsonOptions)
-                ?? throw new InvalidDataException("Globals model serialization failed");
+                ?? throw new InvalidDataException("Globals model deserialization failed");
 
             var g = new Globals(fileSystem, savePath);
             foreach (var style in model.Styles.Select(s => Style.FromAss(g.StyleManager.NextId, s)))
