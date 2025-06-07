@@ -393,18 +393,10 @@ public class Solution : BindableBase
     /// </remarks>
     public bool Save()
     {
-        return !string.IsNullOrEmpty(SavePath?.LocalPath) && Save(SavePath);
-    }
+        if (SavePath is null)
+            throw new InvalidOperationException("SavePath is null");
 
-    /// <summary>
-    /// Write the solution to file
-    /// </summary>
-    /// <param name="savePath">Path the solution for relative filepath parsing</param>
-    /// <returns><see langword="true"/> if saving was successful</returns>
-    public bool Save(Uri savePath)
-    {
-        SavePath = savePath;
-        var path = savePath.LocalPath;
+        var path = SavePath.LocalPath;
         Logger.Info($"Saving solution {Title} to {path}");
 
         var dir = _fileSystem.Path.GetDirectoryName(path) ?? string.Empty;
