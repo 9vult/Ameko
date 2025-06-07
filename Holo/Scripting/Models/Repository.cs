@@ -14,6 +14,12 @@ namespace Holo.Scripting.Models;
 /// </summary>
 public record Repository
 {
+    private static readonly JsonSerializerOptions JsonOptions = new()
+    {
+        IncludeFields = true,
+        Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) },
+    };
+
     /// <summary>
     /// Name of the repository
     /// </summary>
@@ -87,7 +93,7 @@ public record Repository
     {
         try
         {
-            var repo = JsonSerializer.Deserialize<Repository>(jsonContent);
+            var repo = JsonSerializer.Deserialize<Repository>(jsonContent, JsonOptions);
             if (repo is not null)
                 repo.Url = url;
             return repo;

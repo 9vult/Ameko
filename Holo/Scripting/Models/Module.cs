@@ -6,10 +6,16 @@ using System.Text.Json.Serialization;
 namespace Holo.Scripting.Models;
 
 /// <summary>
-/// A Module is an entry in a <see cref="Repository"/> for a <see cref="Scripting.HoloScript"/>
+/// A Module is an entry in a <see cref="Repository"/>
+/// for a <see cref="Scripting.HoloScript"/> or <see cref="Scripting.HoloLibrary"/>
 /// </summary>
 public record Module
 {
+    /// <summary>
+    /// Type of module
+    /// </summary>
+    public required ModuleType Type { get; init; }
+
     /// <summary>
     /// Name used for display purposes
     /// </summary>
@@ -21,8 +27,8 @@ public record Module
     /// </summary>
     /// <remarks>
     /// The most common format is <c>author.scriptName</c>, but this isn't a requirement.
-    /// Must match the <see cref="Scripting.ScriptInfo.QualifiedName"/>
-    /// defined in the module's <see cref="Scripting.ScriptInfo"/>.
+    /// Must match the <see cref="ModuleInfo.QualifiedName"/>
+    /// defined in the module's <see cref="ModuleInfo"/>.
     /// </remarks>
     /// <example><c>petzku.encodeClip</c></example>
     public required string QualifiedName { get; init; }
@@ -43,8 +49,8 @@ public record Module
     /// Current module version. (Major.Minor)
     /// </summary>
     /// <remarks>
-    /// Must match the <see cref="Scripting.ScriptInfo.Version"/>
-    /// defined in the module's <see cref="Scripting.ScriptInfo"/>.
+    /// Must match the <see cref="ModuleInfo.Version"/>
+    /// defined in the module's <see cref="ModuleInfo"/>.
     /// </remarks>
     public required decimal Version { get; init; }
 

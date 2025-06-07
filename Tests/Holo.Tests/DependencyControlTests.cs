@@ -18,13 +18,13 @@ public class DependencyControlTests
         var fileSystem = new MockFileSystem(
             new Dictionary<string, MockFileData>
             {
-                { DependencyControl.ModulePath("author.test"), new MockFileData(string.Empty) },
+                { DependencyControl.ModulePath(TestScriptModule), new MockFileData(string.Empty) },
             }
         );
 
         var dc = new DependencyControl(fileSystem, new HttpClient());
 
-        dc.IsModuleInstalled("author.test").ShouldBeTrue();
+        dc.IsModuleInstalled(TestScriptModule).ShouldBeTrue();
     }
 
     [Fact]
@@ -34,15 +34,21 @@ public class DependencyControlTests
 
         var dc = new DependencyControl(fileSystem, new HttpClient());
 
-        dc.IsModuleInstalled("author.test").ShouldBeFalse();
+        dc.IsModuleInstalled(TestScriptModule).ShouldBeFalse();
     }
 
     [Fact]
-    public void ModulePath()
+    public void ModulePath_Script()
     {
-        const string moduleName = "author.test";
-        var path = DependencyControl.ModulePath(moduleName);
-        path.ShouldEndWith($"{moduleName}.cs");
+        var path = DependencyControl.ModulePath(TestScriptModule);
+        path.ShouldEndWith($"{TestScriptModule.QualifiedName}.cs");
+    }
+
+    [Fact]
+    public void ModulePath_Library()
+    {
+        var path = DependencyControl.ModulePath(TestLibraryModule);
+        path.ShouldEndWith($"{TestLibraryModule.QualifiedName}.lib.cs");
     }
 
     [Fact]
@@ -81,7 +87,7 @@ public class DependencyControlTests
         var fileSystem = new MockFileSystem(
             new Dictionary<string, MockFileData>
             {
-                { DependencyControl.ModulePath("9volt.example1"), new MockFileData(string.Empty) },
+                { DependencyControl.ModulePath(Example1), new MockFileData(string.Empty) },
             }
         );
 
@@ -93,7 +99,7 @@ public class DependencyControlTests
         await dc.SetUpBaseRepository();
 
         var result = await dc.InstallModule(
-            dc.ModuleStore.First(m => m.QualifiedName == "9volt.example1")
+            dc.ModuleStore.First(m => m.QualifiedName == Example1.QualifiedName)
         );
 
         result.ShouldBe(InstallationResult.AlreadyInstalled);
@@ -115,11 +121,11 @@ public class DependencyControlTests
         await dc.SetUpBaseRepository();
 
         var result = await dc.InstallModule(
-            dc.ModuleStore.First(m => m.QualifiedName == "9volt.example1")
+            dc.ModuleStore.First(m => m.QualifiedName == Example1.QualifiedName)
         );
 
         result.ShouldBe(InstallationResult.Success);
-        fileSystem.FileExists(DependencyControl.ModulePath("9volt.example1")).ShouldBeTrue();
+        fileSystem.FileExists(DependencyControl.ModulePath(Example1)).ShouldBeTrue();
     }
 
     [Fact]
@@ -135,7 +141,7 @@ public class DependencyControlTests
         await dc.SetUpBaseRepository();
 
         var result = dc.UninstallModule(
-            dc.ModuleStore.First(m => m.QualifiedName == "9volt.example1")
+            dc.ModuleStore.First(m => m.QualifiedName == Example1.QualifiedName)
         );
 
         result.ShouldBe(InstallationResult.NotInstalled);
@@ -147,7 +153,7 @@ public class DependencyControlTests
         var fileSystem = new MockFileSystem(
             new Dictionary<string, MockFileData>
             {
-                { DependencyControl.ModulePath("9volt.example1"), new MockFileData(string.Empty) },
+                { DependencyControl.ModulePath(Example1), new MockFileData(string.Empty) },
             }
         );
 
@@ -159,12 +165,54 @@ public class DependencyControlTests
         await dc.SetUpBaseRepository();
 
         var result = dc.UninstallModule(
-            dc.ModuleStore.First(m => m.QualifiedName == "9volt.example1")
+            dc.ModuleStore.First(m => m.QualifiedName == Example1.QualifiedName)
         );
 
         result.ShouldBe(InstallationResult.Success);
-        fileSystem.FileExists(DependencyControl.ModulePath("9volt.example1")).ShouldBeFalse();
+        fileSystem.FileExists(DependencyControl.ModulePath(Example1)).ShouldBeFalse();
     }
+
+    private static readonly Module TestScriptModule = new Module
+    {
+        Type = ModuleType.Script,
+        DisplayName = "Test",
+        QualifiedName = "author.test",
+        Description = string.Empty,
+        Author = "author",
+        Version = 0,
+        IsBetaChannel = false,
+        Dependencies = [],
+        Tags = [],
+        Url = string.Empty,
+    };
+
+    private static readonly Module TestLibraryModule = new Module
+    {
+        Type = ModuleType.Library,
+        DisplayName = "Test",
+        QualifiedName = "author.test",
+        Description = string.Empty,
+        Author = "author",
+        Version = 0,
+        IsBetaChannel = false,
+        Dependencies = [],
+        Tags = [],
+        Url = string.Empty,
+    };
+
+    private static readonly Module Example1 = new Module
+    {
+        Type = ModuleType.Script,
+        DisplayName = "Example Script 1",
+        QualifiedName = "9volt.example1",
+        Description = "An example script for testing purposes",
+        Author = "9volt",
+        Version = 0.1m,
+        IsBetaChannel = false,
+        Dependencies = [],
+        Tags = ["Example", "Dialogue"],
+        Url = "https://dc.ameko.moe/scripts/9volt/9volt.example1.cs",
+    };
 
     private const string RepositoryJson = """
         {
@@ -174,6 +222,7 @@ public class DependencyControlTests
           "IsBetaChannel": false,
           "Modules": [
             {
+              "Type": "Script",
               "DisplayName": "Example Script 1",
               "QualifiedName": "9volt.example1",
               "Description": "An example script for testing purposes",

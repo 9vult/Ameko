@@ -4,6 +4,7 @@ using System;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
+using Ameko.Services;
 using Ameko.ViewModels.Windows;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
@@ -27,6 +28,7 @@ public partial class App : Application
     {
         I18N.Resources.Culture = new CultureInfo("en-US"); // TODO: Learn how to set this dynamically
         var context = HoloContext.Instance; // Load Holo
+        _ = ScriptService.Instance; // TODO: not this
 
         // Set the startup theme and subscribe to changes
         SetTheme(context);
