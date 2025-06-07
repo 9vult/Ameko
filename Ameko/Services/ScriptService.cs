@@ -57,7 +57,10 @@ public class ScriptService
                 Logger.Error(ex);
                 continue;
             }
-            Logger.Info($"Reloaded {_scripts.Count} scripts");
+            // For informational purposes
+            var libCount = Directory.GetFiles(ScriptsRoot.LocalPath, "*.lib.cs").Length;
+
+            Logger.Info($"Reloaded {_scripts.Count} scripts ({libCount} libraries)");
         }
     }
 
