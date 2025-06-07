@@ -62,11 +62,15 @@
                 <Button Grid.Column="2"
                         Grid.Row="1"
                         Margin="2"
-                        Content="{x:Static i18n:Resources.StylesManager_Button_Copy}" />
+                        Content="{x:Static i18n:Resources.StylesManager_Button_Copy}"
+                        Command="{Binding DuplicateCommand}"
+                        CommandParameter="global" />
                 <Button Grid.Column="3"
                         Grid.Row="1"
                         Margin="2"
-                        Content="{x:Static i18n:Resources.StylesManager_Button_Delete}" />
+                        Content="{x:Static i18n:Resources.StylesManager_Button_Delete}"
+                        Command="{Binding DeleteCommand}"
+                        CommandParameter="global" />
             </Grid>
         </Grid>
 
@@ -117,11 +121,15 @@
                 <Button Grid.Column="2"
                         Grid.Row="1"
                         Margin="2"
-                        Content="{x:Static i18n:Resources.StylesManager_Button_Copy}" />
+                        Content="{x:Static i18n:Resources.StylesManager_Button_Copy}"
+                        Command="{Binding DuplicateCommand}"
+                        CommandParameter="solution" />
                 <Button Grid.Column="3"
                         Grid.Row="1"
                         Margin="2"
-                        Content="{x:Static i18n:Resources.StylesManager_Button_Delete}" />
+                        Content="{x:Static i18n:Resources.StylesManager_Button_Delete}"
+                        Command="{Binding DeleteCommand}"
+                        CommandParameter="solution" />
             </Grid>
         </Grid>
 
@@ -172,11 +180,15 @@
                 <Button Grid.Column="2"
                         Grid.Row="1"
                         Margin="2"
-                        Content="{x:Static i18n:Resources.StylesManager_Button_Copy}" />
+                        Content="{x:Static i18n:Resources.StylesManager_Button_Copy}"
+                        Command="{Binding DuplicateCommand}"
+                        CommandParameter="document" />
                 <Button Grid.Column="3"
                         Grid.Row="1"
                         Margin="2"
-                        Content="{x:Static i18n:Resources.StylesManager_Button_Delete}" />
+                        Content="{x:Static i18n:Resources.StylesManager_Button_Delete}"
+                        Command="{Binding DeleteCommand}"
+                        CommandParameter="document" />
             </Grid>
         </Grid>
     </Grid>

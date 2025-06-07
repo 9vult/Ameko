@@ -1005,6 +1005,15 @@ namespace Ameko.I18N {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Copy.
+        /// </summary>
+        public static string StylesManager_CopyAppendage {
+            get {
+                return ResourceManager.GetString("StylesManager_CopyAppendage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Document Styles.
         /// </summary>
         public static string StylesManager_DocumentStyles {

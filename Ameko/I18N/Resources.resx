@@ -351,4 +351,7 @@
     <data name="MsgBox_NameDocument_Title" xml:space="preserve">
         <value>Set Document Name</value>
     </data>
+    <data name="StylesManager_CopyAppendage" xml:space="preserve">
+        <value>Copy</value>
+    </data>
 </root>

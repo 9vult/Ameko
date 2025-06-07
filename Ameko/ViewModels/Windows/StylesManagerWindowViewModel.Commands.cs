@@ -10,7 +10,63 @@ namespace Ameko.ViewModels.Windows;
 public partial class StylesManagerWindowViewModel : ViewModelBase
 {
     /// <summary>
-    /// Create a new file
+    /// Duplicate a style
+    /// </summary>
+    private ReactiveCommand<string, Unit> CreateDuplicateCommand()
+    {
+        return ReactiveCommand.Create(
+            (string input) =>
+            {
+                var (style, manager) = input switch
+                {
+                    "global" => throw new NotImplementedException(),
+                    "solution" => (SelectedSolutionStyle, Solution.StyleManager),
+                    "document" => (SelectedDocumentStyle, Document.StyleManager),
+                    _ => throw new ArgumentOutOfRangeException(nameof(input), input, null),
+                };
+
+                if (style is null)
+                    return;
+
+                var newStyle = Style.FromStyle(manager.NextId, style);
+                while (manager.TryGet(newStyle.Name, out _))
+                    newStyle.Name += $" ({I18N.Resources.StylesManager_CopyAppendage})";
+
+                manager.Add(newStyle);
+            }
+        );
+    }
+
+    /// <summary>
+    /// Delete a style
+    /// </summary>
+    private ReactiveCommand<string, Unit> CreateDeleteCommand()
+    {
+        return ReactiveCommand.Create(
+            (string input) =>
+            {
+                var (style, manager) = input switch
+                {
+                    "global" => throw new NotImplementedException(),
+                    "solution" => (SelectedSolutionStyle, Solution.StyleManager),
+                    "document" => (SelectedDocumentStyle, Document.StyleManager),
+                    _ => throw new ArgumentOutOfRangeException(nameof(input), input, null),
+                };
+
+                if (style is null)
+                    return;
+
+                manager.Remove(style.Name);
+
+                // Ensure documents always have at least one style
+                if (input == "document" && manager.Styles.Count == 0)
+                    manager.Add(new Style(manager.NextId));
+            }
+        );
+    }
+
+    /// <summary>
+    /// Copy a style from one group to another
     /// </summary>
     private ReactiveCommand<string, Unit> CreateCopyToCommand()
     {
