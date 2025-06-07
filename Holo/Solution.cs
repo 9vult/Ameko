@@ -34,7 +34,6 @@ public class Solution : BindableBase
 
     private readonly RangeObservableCollection<SolutionItem> _referencedItems;
     private readonly RangeObservableCollection<Workspace> _loadedWorkspaces;
-    private readonly StyleManager _styleManager;
 
     private Uri? _savePath;
     private bool _isSaved;
@@ -60,7 +59,7 @@ public class Solution : BindableBase
     /// <summary>
     /// The solution's style manager
     /// </summary>
-    public StyleManager StyleManager => _styleManager;
+    public StyleManager StyleManager { get; }
 
     /// <summary>
     /// The path the <see cref="Document"/> is saved to,
@@ -414,7 +413,7 @@ public class Solution : BindableBase
             {
                 Version = SolutionModel.CurrentApiVersion,
                 ReferencedDocuments = ConvertToModels(_referencedItems, dir),
-                Styles = _styleManager.Styles.Select(s => s.AsAss()).ToArray(),
+                Styles = StyleManager.Styles.Select(s => s.AsAss()).ToArray(),
                 Cps = _cps,
                 CpsIncludesWhitespace = _cpsIncludesWhitespace,
                 CpsIncludesPunctuation = _cpsIncludesPunctuation,
@@ -425,14 +424,9 @@ public class Solution : BindableBase
             writer.Write(content);
             return true;
         }
-        catch (JsonException je)
+        catch (Exception ex) when (ex is IOException or JsonException)
         {
-            Logger.Error(je);
-            return false;
-        }
-        catch (IOException ioe)
-        {
-            Logger.Error(ioe);
+            Logger.Error(ex);
             return false;
         }
     }
@@ -477,9 +471,9 @@ public class Solution : BindableBase
             sln._useSoftLinebreaks = model.UseSoftLinebreaks;
 
             model
-                .Styles.Select(s => Style.FromAss(sln._styleManager.NextId, s))
+                .Styles.Select(s => Style.FromAss(sln.StyleManager.NextId, s))
                 .ToList()
-                .ForEach(sln._styleManager.Add);
+                .ForEach(sln.StyleManager.Add);
 
             // Load first workspace or create a new one
             var first = sln._referencedItems.FirstOrDefault();
@@ -497,14 +491,9 @@ public class Solution : BindableBase
             sln.IsSaved = true;
             return sln;
         }
-        catch (JsonException je)
+        catch (Exception ex) when (ex is IOException or JsonException)
         {
-            Logger.Error(je);
-            return new Solution();
-        }
-        catch (IOException ioe)
-        {
-            Logger.Error(ioe);
+            Logger.Error(ex);
             return new Solution();
         }
     }
@@ -651,7 +640,7 @@ public class Solution : BindableBase
     {
         _referencedItems = [];
         _loadedWorkspaces = [];
-        _styleManager = new StyleManager();
+        StyleManager = new StyleManager();
 
         ReferencedItems = new ReadOnlyObservableCollection<SolutionItem>(_referencedItems);
         LoadedWorkspaces = new ReadOnlyObservableCollection<Workspace>(_loadedWorkspaces);

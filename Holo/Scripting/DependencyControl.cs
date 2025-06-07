@@ -100,7 +100,9 @@ public class DependencyControl
         try
         {
             var path = ModulePath(module.QualifiedName);
-            _fileSystem.Directory.CreateDirectory(path); // Create module directory if it doesn't exist
+            // Create module directory if it doesn't exist
+            if (!_fileSystem.Directory.Exists(Path.GetDirectoryName(path)))
+                _fileSystem.Directory.CreateDirectory(Path.GetDirectoryName(path) ?? "/");
             await using var stream = await _httpClient.GetStreamAsync(module.Url);
             await using var fs = _fileSystem.FileStream.New(path, FileMode.OpenOrCreate);
             await stream.CopyToAsync(fs);
