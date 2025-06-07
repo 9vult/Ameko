@@ -52,7 +52,12 @@ public class HoloContext : BindableBase
     /// <summary>
     /// Application-level configuration options
     /// </summary>
-    public Configuration Configuration { get; init; }
+    public Configuration Configuration { get; }
+
+    /// <summary>
+    /// Globally-accessible objects
+    /// </summary>
+    public Globals Globals { get; }
 
     private HoloContext()
     {
@@ -66,6 +71,9 @@ public class HoloContext : BindableBase
 
         Configuration = Configuration.Parse(Paths.Configuration);
         Configuration.Save();
+
+        Globals = Globals.Parse(Paths.Globals);
+        Globals.Save();
 
         _solution = new Solution();
 
