@@ -72,7 +72,7 @@ public class EventManager : BindableBase
     /// This collection can be listened to to detect changes in the
     /// events in the document; For example, to re-render a subtitle grid.
     /// </remarks>
-    public ReadOnlyObservableCollection<int> CurrentIds { get; }
+    public Utilities.ReadOnlyObservableCollection<int> CurrentIds { get; }
 
     /// <summary>
     /// A set of all the actor values currently present in the document
@@ -838,7 +838,7 @@ public class EventManager : BindableBase
         _currentIds = [];
         _events = [];
 
-        CurrentIds = new ReadOnlyObservableCollection<int>(_currentIds);
+        CurrentIds = new Utilities.ReadOnlyObservableCollection<int>(_currentIds);
     }
 
     private struct Link(LinkedListNode<int> node, Event e)

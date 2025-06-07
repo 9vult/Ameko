@@ -21,7 +21,7 @@ public class StyleManager : BindableBase
     /// <summary>
     /// An observable collection of the styles currently in the document
     /// </summary>
-    public ReadOnlyObservableCollection<Style> Styles { get; }
+    public Utilities.ReadOnlyObservableCollection<Style> Styles { get; }
 
     /// <summary>
     /// Obtain the next available style ID for use in the document
@@ -158,6 +158,6 @@ public class StyleManager : BindableBase
     public StyleManager()
     {
         _styles = [];
-        Styles = new ReadOnlyObservableCollection<Style>(_styles);
+        Styles = new Utilities.ReadOnlyObservableCollection<Style>(_styles);
     }
 }
