@@ -1,11 +1,11 @@
 ﻿// SPDX-License-Identifier: MPL-2.0
 
-namespace Holo.Scripting;
+namespace Holo.Scripting.Models;
 
 /// <summary>
-/// Information about a <see cref="HoloScript"/>
+/// Information about a <see cref="HoloScript"/> or <see cref="HoloLibrary"/>
 /// </summary>
-public readonly struct ScriptInfo
+public class ModuleInfo
 {
     /// <summary>
     /// Name of the script
@@ -17,7 +17,9 @@ public readonly struct ScriptInfo
     /// </summary>
     /// <remarks>
     /// The most common format is <c>author.scriptName</c>, but this isn't a requirement.
-    /// The script's filename should match the qualified name: <c>author.scriptName.cs</c>
+    /// The script's filename should match the qualified name -
+    /// either <c>author.scriptName.cs</c> for <see cref="HoloScript"/>s
+    /// or <c>author.libraryName.lib.cs</c> for libraries
     /// </remarks>
     public required string QualifiedName { get; init; }
 

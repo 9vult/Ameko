@@ -2,7 +2,6 @@
 
 using System.Collections.ObjectModel;
 using System.IO.Abstractions;
-using System.Text.Json;
 using Holo.IO;
 using Holo.Scripting.Models;
 using NLog;
@@ -15,7 +14,7 @@ namespace Holo.Scripting;
 public class DependencyControl
 {
     private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-    private static readonly JsonSerializerOptions JsonOptions = new() { IncludeFields = true };
+
     private static readonly Uri ModulesRoot = new Uri(
         Path.Combine(Directories.DataHome, "scripts")
     );
@@ -62,9 +61,14 @@ public class DependencyControl
 
     #region Modules
 
-    public bool IsModuleInstalled(string qualifiedName)
+    /// <summary>
+    /// Determine if a module is installed
+    /// </summary>
+    /// <param name="module">Module to check</param>
+    /// <returns><see langword="true"/> if the module is installed</returns>
+    public bool IsModuleInstalled(Module module)
     {
-        return _fileSystem.File.Exists(ModulePath(qualifiedName));
+        return _fileSystem.File.Exists(ModulePath(module));
     }
 
     /// <summary>
@@ -74,23 +78,27 @@ public class DependencyControl
     /// <returns><see cref="InstallationResult.Success"/> on success</returns>
     public async Task<InstallationResult> InstallModule(Module module)
     {
-        if (IsModuleInstalled(module.QualifiedName))
+        if (IsModuleInstalled(module))
             return InstallationResult.AlreadyInstalled;
         Logger.Info($"Attempting to install module {module.QualifiedName}");
 
         foreach (
-            var dependencyName in module
-                .Dependencies.Where(dependencyName => !IsModuleInstalled(dependencyName)) // Skip already-installed modules
-                .Where(dependencyName => dependencyName != module.QualifiedName)
-        ) // Prevent recursion
+            var dependencyName in module.Dependencies.Where(dependencyName =>
+                dependencyName != module.QualifiedName
+            ) // Prevent recursion
+        )
         {
-            if (!_moduleMap.TryGetValue(dependencyName, out Module? dependency))
+            if (!_moduleMap.TryGetValue(dependencyName, out var dependency))
             {
                 Logger.Error(
                     $"Failed to find dependency {dependencyName} for module {module.QualifiedName}"
                 );
                 return InstallationResult.DependencyNotFound;
             }
+
+            // Skip already-installed dependencies
+            if (IsModuleInstalled(dependency))
+                continue;
 
             var depResult = await InstallModule(dependency);
             if (depResult != InstallationResult.Success)
@@ -99,7 +107,7 @@ public class DependencyControl
 
         try
         {
-            var path = ModulePath(module.QualifiedName);
+            var path = ModulePath(module);
             // Create module directory if it doesn't exist
             if (!_fileSystem.Directory.Exists(Path.GetDirectoryName(path)))
                 _fileSystem.Directory.CreateDirectory(Path.GetDirectoryName(path) ?? "/");
@@ -132,7 +140,7 @@ public class DependencyControl
     /// <remarks>Does not uninstall dependencies</remarks>
     public InstallationResult UninstallModule(Module module)
     {
-        if (!IsModuleInstalled(module.QualifiedName))
+        if (!IsModuleInstalled(module))
             return InstallationResult.NotInstalled;
         if (_installedModules.Any(m => m.Dependencies.Contains(module.QualifiedName)))
             return InstallationResult.IsRequiredDependency;
@@ -140,7 +148,7 @@ public class DependencyControl
 
         try
         {
-            _fileSystem.File.Delete(ModulePath(module.QualifiedName));
+            _fileSystem.File.Delete(ModulePath(module));
             Logger.Info($"Successfully uninstalled module {module.QualifiedName}");
             return InstallationResult.Success;
         }
@@ -173,11 +181,17 @@ public class DependencyControl
     /// <summary>
     /// Get the filepath for a module
     /// </summary>
-    /// <param name="qualifiedName">Qualified name of the module</param>
+    /// <param name="module">Module</param>
     /// <returns>The filepath, ending in <c>.cs</c></returns>
-    public static string ModulePath(string qualifiedName)
+    public static string ModulePath(Module module)
     {
-        return Path.Combine(ModulesRoot.LocalPath, $"{qualifiedName}.cs");
+        var qName = module.QualifiedName;
+        return module.Type switch
+        {
+            ModuleType.Script => Path.Combine(ModulesRoot.LocalPath, $"{qName}.cs"),
+            ModuleType.Library => Path.Combine(ModulesRoot.LocalPath, $"{qName}.lib.cs"),
+            _ => throw new ArgumentOutOfRangeException(nameof(module)),
+        };
     }
 
     #endregion Modules
@@ -193,7 +207,7 @@ public class DependencyControl
         if (_repositoryMap.TryAdd(repository.Name, repository))
             _repositories.Add(repository);
 
-        foreach (string url in repository.Repositories)
+        foreach (var url in repository.Repositories)
         {
             var repo = await Repository.Build(url, _httpClient);
             if (repo is null)
@@ -219,7 +233,7 @@ public class DependencyControl
             foreach (var module in repo.Modules)
             {
                 module.Repository = repo.Name;
-                if (_moduleMap.TryGetValue(module.QualifiedName, out Module? conflict))
+                if (_moduleMap.TryGetValue(module.QualifiedName, out var conflict))
                 {
                     Logger.Warn(
                         $"Conflict between {module.QualifiedName} from {conflict.Repository} and {module.Repository}"

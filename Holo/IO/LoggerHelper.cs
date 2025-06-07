@@ -19,7 +19,7 @@ internal static class LoggerHelper
     internal static void Initialize(ObservableCollection<string> logEntries)
     {
         const string layout =
-            "${longdate} | ${level:uppercase=true:padding=-5} | ${callsite} → ${message}";
+            "${longdate} | ${level:uppercase=true:padding=-5} | ${logger}.${callsite:className=false:methodName=true} → ${message}";
 
         var config = new LoggingConfiguration();
         var consoleTarget = new ColoredConsoleTarget("console") { Layout = layout };
