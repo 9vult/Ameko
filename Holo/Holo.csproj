@@ -12,8 +12,8 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="NLog" Version="5.3.4" />
-    <PackageReference Include="TestableIO.System.IO.Abstractions" Version="22.0.10" />
-    <PackageReference Include="TestableIO.System.IO.Abstractions.Wrappers" Version="22.0.10" />
+    <PackageReference Include="TestableIO.System.IO.Abstractions" Version="22.0.14" />
+    <PackageReference Include="TestableIO.System.IO.Abstractions.Wrappers" Version="22.0.14" />
     <PackageReference Include="Xdg.Directories" Version="0.1.2" />
   </ItemGroup>
 

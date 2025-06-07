@@ -332,7 +332,7 @@ public class Solution : BindableBase
             }
 
             var parser = new AssParser();
-            var document = parser.Parse(item.Uri!.LocalPath);
+            var document = parser.Parse(item.Uri!);
 
             item.Workspace = new Workspace(document, item.Id, item.Uri);
             _loadedWorkspaces.Add(item.Workspace);

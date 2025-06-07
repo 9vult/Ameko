@@ -1,19 +1,24 @@
 ﻿// SPDX-License-Identifier: MPL-2.0
 
+using System.IO.Abstractions.TestingHelpers;
 using AssCS.IO;
 using Shouldly;
+using static AssCS.Tests.Utilities.TestUtils;
 
 namespace AssCS.Tests;
 
-public class AssParserTestss
+public class AssParserTests
 {
     [Fact]
     public void Parse()
     {
-        var ap = new AssParser();
-        var tr = new StringReader(File1);
+        var fs = new MockFileSystem();
+        var path = MakeTestableUri(fs, "test.ass");
+        fs.AddFile(path.LocalPath, new MockFileData(File1));
 
-        var doc = ap.Parse(tr);
+        var ap = new AssParser();
+
+        var doc = ap.Parse(fs, path);
 
         doc.ShouldNotBeNull();
         doc.Version.ShouldBe(AssVersion.V400P);

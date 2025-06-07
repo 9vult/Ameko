@@ -1,7 +1,9 @@
 ﻿// SPDX-License-Identifier: MPL-2.0
 
+using System.IO.Abstractions.TestingHelpers;
 using AssCS.IO;
 using Shouldly;
+using static AssCS.Tests.Utilities.TestUtils;
 
 namespace AssCS.Tests;
 
@@ -10,17 +12,19 @@ public class AssWriterTests
     [Fact]
     public void Write()
     {
+        var fs = new MockFileSystem();
+        var path = MakeTestableUri(fs, "test.ass");
         var consumer = new ConsumerInfo("Test Suite", "1.0", "testsuite.com");
         var aw = new AssWriter(CreateDoc(), consumer);
 
-        var sw = new StringWriter();
-        aw.Write(sw);
-        var result = sw.ToString();
+        var result = aw.Write(fs, path);
 
-        // TODO: better tests
-        result.Contains("Aegisub Project Garbage").ShouldBeTrue();
+        result.ShouldBeTrue();
+        fs.FileExists(path.LocalPath).ShouldBeTrue();
 
-        var recreation = new AssParser().Parse(new StringReader(result));
+        // Validate the written file
+        var recreation = new AssParser().Parse(fs, path);
+
         recreation.ShouldNotBeNull();
         recreation
             .StyleManager.Get("Test")
@@ -33,17 +37,19 @@ public class AssWriterTests
     [Fact]
     public void Write_Export()
     {
+        var fs = new MockFileSystem();
+        var path = MakeTestableUri(fs, "test.ass");
         var consumer = new ConsumerInfo("Test Suite", "1.0", "testsuite.com");
         var aw = new AssWriter(CreateDoc(), consumer);
 
-        var sw = new StringWriter();
-        aw.Write(sw, true);
-        var result = sw.ToString();
+        var result = aw.Write(fs, path, true);
 
-        // TODO: better tests
-        result.Contains("Aegisub Project Garbage").ShouldBeFalse();
+        result.ShouldBeTrue();
+        fs.FileExists(path.LocalPath).ShouldBeTrue();
 
-        var recreation = new AssParser().Parse(new StringReader(result));
+        // Validate the written file
+        var recreation = new AssParser().Parse(fs, path);
+
         recreation.ShouldNotBeNull();
         recreation
             .StyleManager.Get("Test")

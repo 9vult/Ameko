@@ -37,7 +37,7 @@ public static class IoService
         }
 
         var writer = new AssWriter(wsp.Document, ConsumerService.AmekoInfo);
-        writer.Write(uri.LocalPath);
+        writer.Write(uri);
         wsp.SavePath = uri;
         wsp.IsSaved = true;
         Log.Info($"Saved subtitle file {wsp.Title}");
@@ -65,7 +65,7 @@ public static class IoService
         }
 
         var writer = new AssWriter(wsp.Document, ConsumerService.AmekoInfo);
-        writer.Write(uri.LocalPath);
+        writer.Write(uri);
         wsp.SavePath = uri;
         wsp.IsSaved = true;
         Log.Info($"Saved subtitle file {wsp.Title}");
@@ -93,7 +93,7 @@ public static class IoService
         }
 
         var writer = new TxtWriter(wsp.Document, ConsumerService.AmekoInfo);
-        writer.Write(uri.LocalPath, true);
+        writer.Write(uri, true);
         Log.Info($"Exported {wsp.Title}");
         return true;
     }

@@ -11,7 +11,7 @@ namespace AssCS.IO;
 /// <param name="actorDelim">Delimiter for actors</param>
 public class TxtParser(char commentDelim = '#', char actorDelim = ':') : FileParser
 {
-    public override Document Parse(TextReader reader)
+    protected override Document Parse(TextReader reader)
     {
         var doc = new Document(true);
         doc.EventManager.Remove(doc.EventManager.Head.Id);
