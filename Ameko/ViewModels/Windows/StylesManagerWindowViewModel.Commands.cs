@@ -19,7 +19,7 @@ public partial class StylesManagerWindowViewModel : ViewModelBase
             {
                 var (style, manager) = input switch
                 {
-                    "global" => throw new NotImplementedException(),
+                    "global" => (SelectedGlobalStyle, Globals.StyleManager),
                     "solution" => (SelectedSolutionStyle, Solution.StyleManager),
                     "document" => (SelectedDocumentStyle, Document.StyleManager),
                     _ => throw new ArgumentOutOfRangeException(nameof(input), input, null),
@@ -47,7 +47,7 @@ public partial class StylesManagerWindowViewModel : ViewModelBase
             {
                 var (style, manager) = input switch
                 {
-                    "global" => throw new NotImplementedException(),
+                    "global" => (SelectedGlobalStyle, Globals.StyleManager),
                     "solution" => (SelectedSolutionStyle, Solution.StyleManager),
                     "document" => (SelectedDocumentStyle, Document.StyleManager),
                     _ => throw new ArgumentOutOfRangeException(nameof(input), input, null),
@@ -91,23 +91,15 @@ public partial class StylesManagerWindowViewModel : ViewModelBase
                 if (style is null)
                     return;
 
-                switch (dest)
+                var manager = dest switch
                 {
-                    case "global":
-                        throw new NotImplementedException();
-                    case "solution":
-                        Solution.StyleManager.AddOrReplace(
-                            Style.FromStyle(Solution.StyleManager.NextId, style)
-                        );
-                        break;
-                    case "document":
-                        Document.StyleManager.AddOrReplace(
-                            Style.FromStyle(Document.StyleManager.NextId, style)
-                        );
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException(nameof(dest), dest, null);
-                }
+                    "global" => Globals.StyleManager,
+                    "solution" => Solution.StyleManager,
+                    "document" => Document.StyleManager,
+                    _ => throw new ArgumentOutOfRangeException(nameof(dest), dest, null),
+                };
+
+                manager.AddOrReplace(Style.FromStyle(manager.NextId, style));
             }
         );
     }

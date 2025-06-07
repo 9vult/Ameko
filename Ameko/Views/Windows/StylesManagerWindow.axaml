@@ -26,7 +26,8 @@
               RowDefinitions="*, Auto">
             <ListBox Grid.Row="0"
                      Margin="2"
-                     SelectedItem="{Binding SelectedGlobalStyle}">
+                     SelectedItem="{Binding SelectedGlobalStyle}"
+                     ItemsSource="{Binding Globals.StyleManager.Styles}">
                 <ListBox.ItemTemplate>
                     <DataTemplate x:DataType="ass:Style">
                         <TextBlock Text="{Binding Name}" />
