@@ -11,6 +11,8 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="TestableIO.System.IO.Abstractions" Version="22.0.14" />
+    <PackageReference Include="TestableIO.System.IO.Abstractions.Wrappers" Version="22.0.14" />
   </ItemGroup>
 
 </Project>
