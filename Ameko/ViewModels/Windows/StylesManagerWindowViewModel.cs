@@ -52,9 +52,9 @@ public partial class StylesManagerWindowViewModel : ViewModelBase
 
     #region Commands
     public ICommand CopyToCommand { get; }
-    public ICommand DuplicateStyleCommand { get; }
+    public ICommand DuplicateCommand { get; }
     public ICommand EditStyleCommand { get; }
-    public ICommand DeleteStyleCommand { get; }
+    public ICommand DeleteCommand { get; }
     public ICommand NewStyleCommand { get; }
     #endregion
 
@@ -62,6 +62,8 @@ public partial class StylesManagerWindowViewModel : ViewModelBase
     {
         Solution = solution;
         Document = document;
+        DuplicateCommand = CreateDuplicateCommand();
+        DeleteCommand = CreateDeleteCommand();
         CopyToCommand = CreateCopyToCommand();
     }
 }

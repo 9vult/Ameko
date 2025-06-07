@@ -12,9 +12,16 @@ public class StyleNameConverter : IValueConverter
 {
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        return value is not string name
-            ? null
-            : HoloContext.Instance.Solution.WorkingSpace?.Document.StyleManager.Get(name);
+        if (value is not string name)
+            return null;
+        if (
+            HoloContext.Instance.Solution.WorkingSpace?.Document.StyleManager.TryGet(
+                name,
+                out var style
+            ) ?? false
+        )
+            return style;
+        return null;
     }
 
     public object? ConvertBack(
