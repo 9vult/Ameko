@@ -117,7 +117,7 @@ public class GlobalsTests
     }
 
     [Fact]
-    public void Save_NotExists()
+    public void Save_Exists()
     {
         var fs = new MockFileSystem(
             new Dictionary<string, MockFileData>
@@ -134,7 +134,7 @@ public class GlobalsTests
     }
 
     [Fact]
-    public void Save_Exists()
+    public void Save_NotExists()
     {
         var fs = new MockFileSystem();
         var g = Globals.Parse(fs, Paths.Globals);
