@@ -2,6 +2,7 @@
 
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
+using System.IO.Abstractions;
 using System.Text.Json;
 using AssCS;
 using AssCS.IO;
@@ -34,6 +35,12 @@ public class Solution : BindableBase
 
     private readonly RangeObservableCollection<SolutionItem> _referencedItems;
     private readonly RangeObservableCollection<Workspace> _loadedWorkspaces;
+
+    /// <summary>
+    /// The filesystem being used
+    /// </summary>
+    /// <remarks>This allows for filesystem mocking to be used in tests</remarks>
+    private readonly IFileSystem _fileSystem;
 
     private Uri? _savePath;
     private bool _isSaved;
@@ -386,29 +393,30 @@ public class Solution : BindableBase
     /// </remarks>
     public bool Save()
     {
-        if (string.IsNullOrEmpty(SavePath?.LocalPath))
-            return false;
-
-        var fp = SavePath.LocalPath;
-        using var writer = new StreamWriter(fp, false);
-        return Save(writer, SavePath);
+        return !string.IsNullOrEmpty(SavePath?.LocalPath) && Save(SavePath);
     }
 
     /// <summary>
     /// Write the solution to file
     /// </summary>
-    /// <param name="writer">Writer to write to</param>
     /// <param name="savePath">Path the solution for relative filepath parsing</param>
     /// <returns><see langword="true"/> if saving was successful</returns>
-    public bool Save(TextWriter writer, Uri savePath)
+    public bool Save(Uri savePath)
     {
-        Logger.Info($"Saving solution {Title}");
+        SavePath = savePath;
+        var path = savePath.LocalPath;
+        Logger.Info($"Saving solution {Title} to {path}");
 
-        var fp = savePath.LocalPath;
-        var dir = Path.GetDirectoryName(fp) ?? string.Empty;
+        var dir = _fileSystem.Path.GetDirectoryName(path) ?? string.Empty;
 
         try
         {
+            if (!_fileSystem.Directory.Exists(Path.GetDirectoryName(path)))
+                _fileSystem.Directory.CreateDirectory(Path.GetDirectoryName(path) ?? "/");
+
+            using var fs = _fileSystem.FileStream.New(path, FileMode.OpenOrCreate);
+            using var writer = new StreamWriter(fs);
+
             var model = new SolutionModel
             {
                 Version = SolutionModel.CurrentApiVersion,
@@ -439,27 +447,42 @@ public class Solution : BindableBase
     public static Solution Parse(Uri filePath)
     {
         using var reader = new StreamReader(filePath.LocalPath);
-        return Parse(reader, filePath);
+        return Parse(new FileSystem(), filePath);
     }
 
     /// <summary>
     /// Parse a saved solution file
     /// </summary>
-    /// <param name="reader">Reader to read the solution from</param>
-    /// <param name="filePath">Path to the solution file for relative filepath parsing</param>
+    /// <param name="fileSystem">FileSystem to use</param>
+    /// <param name="savePath">Path to the solution file</param>
     /// <returns><see cref="Solution"/> object</returns>
-    public static Solution Parse(TextReader reader, Uri filePath)
+    public static Solution Parse(IFileSystem fileSystem, Uri savePath)
     {
-        var dir = Path.GetDirectoryName(filePath.LocalPath) ?? string.Empty;
+        var path = savePath.LocalPath;
+        Logger.Info($"Parsing solution {path}");
 
         try
         {
+            var dir = fileSystem.Path.GetDirectoryName(path) ?? string.Empty;
+
+            if (!fileSystem.Directory.Exists(Path.GetDirectoryName(path)))
+                fileSystem.Directory.CreateDirectory(Path.GetDirectoryName(path) ?? "/");
+
+            if (!fileSystem.File.Exists(path))
+                throw new FileNotFoundException($"Solution {path} was not found");
+
+            using var fs = fileSystem.FileStream.New(path, FileMode.OpenOrCreate);
+            using var reader = new StreamReader(fs);
+
             var model =
                 JsonSerializer.Deserialize<SolutionModel>(reader.ReadToEnd(), JsonOptions)
-                ?? throw new InvalidDataException("Solution model serialization failed");
+                ?? throw new InvalidDataException("Solution model deserialization failed");
 
             // If the solution has no referenced documents, initialize it with one
-            var sln = new Solution(model.ReferencedDocuments.Length != 0) { _savePath = filePath };
+            var sln = new Solution(fileSystem, model.ReferencedDocuments.Length != 0)
+            {
+                _savePath = savePath,
+            };
 
             // De-relative the file paths in the solution
             sln._referencedItems.AddRange(
@@ -494,7 +517,7 @@ public class Solution : BindableBase
         catch (Exception ex) when (ex is IOException or JsonException)
         {
             Logger.Error(ex);
-            return new Solution();
+            return new Solution(fileSystem);
         }
     }
 
@@ -637,7 +660,17 @@ public class Solution : BindableBase
     /// <param name="isEmpty">If the solution should be created
     /// without a default <see cref="Workspace"/></param>
     public Solution(bool isEmpty = false)
+        : this(new FileSystem(), isEmpty) { }
+
+    /// <summary>
+    /// Initialize a solution
+    /// </summary>
+    /// <param name="fileSystem">FileSystem to use</param>
+    /// <param name="isEmpty">If the solution should be created
+    /// without a default <see cref="Workspace"/></param>
+    public Solution(IFileSystem fileSystem, bool isEmpty = false)
     {
+        _fileSystem = fileSystem;
         _referencedItems = [];
         _loadedWorkspaces = [];
         StyleManager = new StyleManager();
