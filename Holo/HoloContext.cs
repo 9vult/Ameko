@@ -39,7 +39,7 @@ public class HoloContext : BindableBase
     /// <summary>
     /// Observable collection of formatted log entries
     /// </summary>
-    public ReadOnlyObservableCollection<string> LogEntries { get; }
+    public AssCS.Utilities.ReadOnlyObservableCollection<string> LogEntries { get; }
 
     /// <summary>
     /// The currently-loaded solution
@@ -65,7 +65,7 @@ public class HoloContext : BindableBase
     private HoloContext()
     {
         ObservableCollection<string> logEntries = [];
-        LogEntries = new ReadOnlyObservableCollection<string>(logEntries);
+        LogEntries = new AssCS.Utilities.ReadOnlyObservableCollection<string>(logEntries);
 
         Directories.Create();
         LoggerHelper.Initialize(logEntries);
