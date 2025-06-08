@@ -555,6 +555,15 @@ namespace Ameko.I18N {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Open _Dependency Control....
+        /// </summary>
+        public static string Menu_DependencyControl {
+            get {
+                return ResourceManager.GetString("Menu_DependencyControl", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to _Edit.
         /// </summary>
         public static string Menu_Edit {
@@ -668,6 +677,15 @@ namespace Ameko.I18N {
         public static string Menu_Redo {
             get {
                 return ResourceManager.GetString("Menu_Redo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to _Reload Scripts.
+        /// </summary>
+        public static string Menu_ReloadScripts {
+            get {
+                return ResourceManager.GetString("Menu_ReloadScripts", resourceCulture);
             }
         }
         
