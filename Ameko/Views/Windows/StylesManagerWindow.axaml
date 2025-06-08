@@ -1,13 +1,20 @@
+<!-- SPDX-License-Identifier: GPL-3.0-only -->
+
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="775" d:DesignHeight="525"
+        mc:Ignorable="d"
+        d:DesignWidth="775"
+        d:DesignHeight="525"
+
         xmlns:ass="clr-namespace:AssCS;assembly=AssCS"
-        xmlns:vm="clr-namespace:Ameko.ViewModels.Windows"
         xmlns:i18n="clr-namespace:Ameko.I18N"
+        xmlns:vm="clr-namespace:Ameko.ViewModels.Windows"
+
         x:Class="Ameko.Views.Windows.StylesManagerWindow"
         x:DataType="vm:StylesManagerWindowViewModel"
+
         Width="775"
         Height="525"
         Topmost="True"

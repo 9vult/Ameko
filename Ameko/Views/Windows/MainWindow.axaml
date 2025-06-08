@@ -2,20 +2,24 @@
 
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:c="using:Ameko.Views.Controls"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
-        xmlns:holo="clr-namespace:Holo;assembly=Holo"
-        xmlns:vm="clr-namespace:Ameko.ViewModels.Windows"
+        mc:Ignorable="d"
+        d:DesignWidth="800"
+        d:DesignHeight="450"
+
+        xmlns:c="using:Ameko.Views.Controls"
         xmlns:converters="clr-namespace:Ameko.Converters"
+        xmlns:holo="clr-namespace:Holo;assembly=Holo"
         xmlns:i18n="clr-namespace:Ameko.I18N"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        xmlns:icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+        xmlns:vm="clr-namespace:Ameko.ViewModels.Windows"
+
         x:Class="Ameko.Views.Windows.MainWindow"
         x:DataType="vm:MainWindowViewModel"
+
         Icon="/Assets/Ameko-Simplified-BG-64.ico"
         Title="{Binding WindowTitle}">
-
     <Design.DataContext>
         <!-- This only sets the DataContext for the previewer in an IDE,
              to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
