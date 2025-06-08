@@ -3,6 +3,7 @@
 using System.Collections.ObjectModel;
 using System.IO.Abstractions;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using Holo.IO;
 using Holo.Scripting.Models;
 using NLog;
@@ -15,6 +16,12 @@ namespace Holo.Scripting;
 public class DependencyControl
 {
     private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
+    private static readonly JsonSerializerOptions JsonOptions = new()
+    {
+        IncludeFields = true,
+        Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) },
+    };
 
     private static readonly Uri ModulesRoot = new Uri(
         Path.Combine(Directories.DataHome, "scripts")
@@ -121,7 +128,7 @@ public class DependencyControl
             await dlStream.CopyToAsync(moduleFs);
 
             await using var sidecarFs = _fileSystem.FileStream.New(sidecar, FileMode.OpenOrCreate);
-            await JsonSerializer.SerializeAsync(sidecarFs, module);
+            await JsonSerializer.SerializeAsync(sidecarFs, module, JsonOptions);
 
             _installedModules.Add(module);
             Logger.Info($"Successfully installed module {module.QualifiedName}");
@@ -322,7 +329,7 @@ public class DependencyControl
                             sidecarPath,
                             FileMode.Open
                         );
-                        var sidecar = JsonSerializer.Deserialize<Module>(sidecarFs);
+                        var sidecar = JsonSerializer.Deserialize<Module>(sidecarFs, JsonOptions);
                         if (sidecar is null)
                             Logger.Warn($"Failed to read sidecar {sidecarPath}");
                         _installedModules.Add(sidecar ?? module);

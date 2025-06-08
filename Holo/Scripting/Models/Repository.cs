@@ -1,7 +1,6 @@
 ﻿// SPDX-License-Identifier: MPL-2.0
 
 using System.Collections.Frozen;
-using System.Collections.Immutable;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using NLog;
