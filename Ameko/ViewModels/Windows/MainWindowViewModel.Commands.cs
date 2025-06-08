@@ -209,7 +209,7 @@ public partial class MainWindowViewModel : ViewModelBase
     /// <summary>
     /// Execute a Script
     /// </summary>
-    private ReactiveCommand<string, Unit> CreateExecuteScriptCommand()
+    private static ReactiveCommand<string, Unit> CreateExecuteScriptCommand()
     {
         return ReactiveCommand.CreateFromTask(
             async (string qualifiedName) =>
@@ -217,6 +217,17 @@ public partial class MainWindowViewModel : ViewModelBase
                 await ScriptService.Instance.ExecuteScriptAsync(qualifiedName);
             }
         );
+    }
+
+    /// <summary>
+    /// Reload scripts
+    /// </summary>
+    private static ReactiveCommand<Unit, Unit> CreateReloadScriptsCommand()
+    {
+        return ReactiveCommand.Create(() =>
+        {
+            ScriptService.Instance.Reload(true);
+        });
     }
 
     /// <summary>

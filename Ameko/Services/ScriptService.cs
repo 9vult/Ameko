@@ -10,6 +10,8 @@ using System.Threading.Tasks;
 using CSScriptLib;
 using Holo.IO;
 using Holo.Scripting;
+using MsBox.Avalonia;
+using MsBox.Avalonia.Enums;
 using NLog;
 
 namespace Ameko.Services;
@@ -76,6 +78,10 @@ public class ScriptService
         };
     }
 
+    /// <summary>
+    /// Reload scripts
+    /// </summary>
+    /// <param name="isManual">Whether to show the message box</param>
     public void Reload(bool isManual)
     {
         Logger.Info("Reloading scripts");
@@ -86,6 +92,7 @@ public class ScriptService
         }
 
         _scripts.Clear();
+        _scriptMap.Clear();
 
         foreach (
             var path in Directory
@@ -116,7 +123,18 @@ public class ScriptService
             var libCount = Directory.GetFiles(ScriptsRoot.LocalPath, "*.lib.cs").Length;
 
             Logger.Info($"Reloaded {_scripts.Count} scripts ({libCount} libraries)");
+            if (isManual)
+                _ = DisplayMessageBoxAsync(I18N.Resources.MsgBox_ScriptService_Reload_Body);
         }
+    }
+
+    private static async Task DisplayMessageBoxAsync(string message)
+    {
+        var box = MessageBoxManager.GetMessageBoxStandard(
+            I18N.Resources.MsgBox_ScriptService_Title,
+            message
+        );
+        await box.ShowAsync();
     }
 
     private ScriptService()
