@@ -4,12 +4,16 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:i18n="clr-namespace:Ameko.I18N"
+             mc:Ignorable="d"
+             d:DesignWidth="800"
+             d:DesignHeight="450"
+
              xmlns:assCs="clr-namespace:AssCS;assembly=AssCS"
              xmlns:converters="clr-namespace:Ameko.Converters"
+             xmlns:i18n="clr-namespace:Ameko.I18N"
              xmlns:icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              xmlns:vm="clr-namespace:Ameko.ViewModels.Controls"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+
              x:Class="Ameko.Views.Controls.TabItemEditorArea"
              x:DataType="vm:TabItemViewModel">
     <UserControl.Resources>
