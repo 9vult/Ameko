@@ -18,6 +18,9 @@ internal static class LoggerHelper
     /// <param name="logEntries">Observable collection for log viewing</param>
     internal static void Initialize(ObservableCollection<string> logEntries)
     {
+        // ${logger}.${callsite:className=false:methodName=true}
+        // achieves the same thing as ${callsite}, but allows for custom-named loggers when appropriate.
+        // GetCurrentClassLogger() will work as normal, while Scripts inject their QualifiedName for the same effect.
         const string layout =
             "${longdate} | ${level:uppercase=true:padding=-5} | ${logger}.${callsite:className=false:methodName=true} → ${message}";
 
