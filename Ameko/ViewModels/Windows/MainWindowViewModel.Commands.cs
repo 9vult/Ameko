@@ -207,6 +207,19 @@ public partial class MainWindowViewModel : ViewModelBase
     }
 
     /// <summary>
+    /// Execute a Script
+    /// </summary>
+    private ReactiveCommand<string, Unit> CreateExecuteScriptCommand()
+    {
+        return ReactiveCommand.CreateFromTask(
+            async (string qualifiedName) =>
+            {
+                await ScriptService.Instance.ExecuteScriptAsync(qualifiedName);
+            }
+        );
+    }
+
+    /// <summary>
     /// Display the <see cref="LogWindow"/>
     /// </summary>
     private ReactiveCommand<Unit, Unit> CreateShowLogWindowCommand()

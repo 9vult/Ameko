@@ -51,7 +51,7 @@ public partial class MainWindowViewModel : ViewModelBase
     public ICommand ShowStylesManagerCommand { get; }
 
     // Scripts
-    public ICommand ActivateScriptCommand { get; }
+    public ICommand ExecuteScriptCommand { get; }
     public ICommand ReloadScriptsCommand { get; }
     public ICommand ShowDependencyControlCommand { get; }
 
@@ -97,7 +97,7 @@ public partial class MainWindowViewModel : ViewModelBase
         ScriptMenuItems.AddRange(
             ScriptMenuService.GenerateMenuItemSource(
                 ScriptService.Instance.Scripts,
-                ActivateScriptCommand
+                ExecuteScriptCommand
             )
         );
 
@@ -135,6 +135,8 @@ public partial class MainWindowViewModel : ViewModelBase
         QuitCommand = CreateQuitCommand();
         // Subtitle
         ShowStylesManagerCommand = CreateShowStylesManagerCommand();
+        // Script
+        ExecuteScriptCommand = CreateExecuteScriptCommand();
         // Help
         ShowLogWindowCommand = CreateShowLogWindowCommand();
         ShowAboutWindowCommand = CreateShowAboutWindowCommand();
