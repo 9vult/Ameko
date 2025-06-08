@@ -137,6 +137,7 @@ public partial class MainWindowViewModel : ViewModelBase
         ShowStylesManagerCommand = CreateShowStylesManagerCommand();
         // Script
         ExecuteScriptCommand = CreateExecuteScriptCommand();
+        ReloadScriptsCommand = CreateReloadScriptsCommand();
         // Help
         ShowLogWindowCommand = CreateShowLogWindowCommand();
         ShowAboutWindowCommand = CreateShowAboutWindowCommand();

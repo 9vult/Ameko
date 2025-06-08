@@ -360,4 +360,10 @@
     <data name="Menu_DependencyControl" xml:space="preserve">
         <value>Open _Dependency Control...</value>
     </data>
+    <data name="MsgBox_ScriptService_Title" xml:space="preserve">
+        <value>Ameko Script Service</value>
+    </data>
+    <data name="MsgBox_ScriptService_Reload_Body" xml:space="preserve">
+        <value>Scripts reloaded successfully</value>
+    </data>
 </root>

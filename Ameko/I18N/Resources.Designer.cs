@@ -924,6 +924,24 @@ namespace Ameko.I18N {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Scripts reloaded successfully.
+        /// </summary>
+        public static string MsgBox_ScriptService_Reload_Body {
+            get {
+                return ResourceManager.GetString("MsgBox_ScriptService_Reload_Body", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ameko Script Service.
+        /// </summary>
+        public static string MsgBox_ScriptService_Title {
+            get {
+                return ResourceManager.GetString("MsgBox_ScriptService_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Open.
         /// </summary>
         public static string SolutionExplorer_ContextMenu_Open {
