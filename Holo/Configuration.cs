@@ -1,5 +1,6 @@
 ﻿// SPDX-License-Identifier: MPL-2.0
 
+using System.Collections.ObjectModel;
 using System.IO.Abstractions;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
@@ -48,6 +49,7 @@ public partial class Configuration : BindableBase
     private bool _lineWidthIncludesWhitespace;
     private bool _lineWidthIncludesPunctuation;
     private Theme _theme;
+    private RangeObservableCollection<string> _repositoryUrls;
 
     /// <summary>
     /// Characters-per-second threshold
@@ -132,7 +134,34 @@ public partial class Configuration : BindableBase
         set => SetProperty(ref _theme, value);
     }
 
+    /// <summary>
+    /// List of user-added repository URLs
+    /// </summary>
+    public ReadOnlyObservableCollection<string> RepositoryUrls { get; }
+
     public Uri SavePath { get; }
+
+    /// <summary>
+    /// Add a repository
+    /// </summary>
+    /// <param name="url">Repository to add</param>
+    public void AddRepositoryUrl(string url)
+    {
+        _repositoryUrls.Add(url);
+        Save();
+    }
+
+    /// <summary>
+    /// Remove a repository
+    /// </summary>
+    /// <param name="url">Repository to remove</param>
+    /// <returns><see langword="true"/> if successful</returns>
+    public bool RemoveRepositoryUrl(string url)
+    {
+        var result = _repositoryUrls.Remove(url);
+        Save();
+        return result;
+    }
 
     /// <summary>
     /// Write the solution to file
@@ -162,6 +191,7 @@ public partial class Configuration : BindableBase
                 LineWidthIncludesWhitespace = _lineWidthIncludesWhitespace,
                 LineWidthIncludesPunctuation = _lineWidthIncludesPunctuation,
                 Theme = _theme,
+                RepositoryUrls = RepositoryUrls.ToArray(),
             };
 
             var content = JsonSerializer.Serialize(model, JsonOptions);
@@ -221,6 +251,7 @@ public partial class Configuration : BindableBase
                 _lineWidthIncludesWhitespace = model.LineWidthIncludesWhitespace,
                 _lineWidthIncludesPunctuation = model.LineWidthIncludesPunctuation,
                 _theme = model.Theme,
+                _repositoryUrls = new RangeObservableCollection<string>(model.RepositoryUrls),
             };
         }
         catch (Exception ex) when (ex is IOException or JsonException)
@@ -250,6 +281,9 @@ public partial class Configuration : BindableBase
         _useSoftLinebreaks = false;
         _autosaveEnabled = true;
         _autosaveInterval = 60;
+        _repositoryUrls = [];
+
+        RepositoryUrls = new ReadOnlyObservableCollection<string>(_repositoryUrls);
     }
 
     /// <inheritdoc />

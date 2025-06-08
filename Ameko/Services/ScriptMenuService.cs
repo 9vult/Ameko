@@ -48,11 +48,12 @@ public static class ScriptMenuService
 
             foreach (var methodInfo in script.Info.Exports)
             {
+                var fullQualifiedName = $"{script.Info.QualifiedName}.{methodInfo.QualifiedName}";
                 var methodMenu = new MenuItem
                 {
                     Header = methodInfo.DisplayName,
                     Command = executeScriptCommand,
-                    CommandParameter = methodInfo.QualifiedName,
+                    CommandParameter = fullQualifiedName,
                     Icon = new MaterialIcon { Kind = MaterialIconKind.CodeBlockParentheses },
                 };
 
@@ -84,6 +85,7 @@ public static class ScriptMenuService
         {
             Header = I18N.Resources.Menu_ReloadScripts,
             Command = reloadCommand,
+            CommandParameter = true,
             Icon = new MaterialIcon { Kind = MaterialIconKind.Reload },
         };
     }

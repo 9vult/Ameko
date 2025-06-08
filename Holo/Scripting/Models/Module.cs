@@ -82,6 +82,24 @@ public record Module
     /// </summary>
     public string? Repository { get; set; }
 
+    public virtual bool Equals(Module? other)
+    {
+        if (other is null)
+            return false;
+        if (ReferenceEquals(this, other))
+            return true;
+
+        return Type == other.Type
+            && QualifiedName == other.QualifiedName
+            && Author == other.Author
+            && IsBetaChannel == other.IsBetaChannel;
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine((int)Type, QualifiedName, Author, IsBetaChannel);
+    }
+
     #region Serialization fields
 
     [JsonPropertyName("Dependencies")]
