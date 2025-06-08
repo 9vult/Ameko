@@ -354,4 +354,10 @@
     <data name="StylesManager_CopyAppendage" xml:space="preserve">
         <value>Copy</value>
     </data>
+    <data name="Menu_ReloadScripts" xml:space="preserve">
+        <value>_Reload Scripts</value>
+    </data>
+    <data name="Menu_DependencyControl" xml:space="preserve">
+        <value>Open _Dependency Control...</value>
+    </data>
 </root>

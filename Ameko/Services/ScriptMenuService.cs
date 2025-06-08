@@ -32,7 +32,7 @@ public static class ScriptMenuService
                 Header = script.Info.DisplayName,
                 Command = activateScriptCommand,
                 CommandParameter = script.Info.QualifiedName,
-                Icon = new MaterialIconExt(MaterialIconKind.CodeBlockBraces),
+                Icon = new MaterialIcon { Kind = MaterialIconKind.CodeBlockBraces },
             };
 
             if (script.Info.Submenu is not null)
@@ -53,7 +53,7 @@ public static class ScriptMenuService
                     Header = methodInfo.DisplayName,
                     Command = activateScriptCommand,
                     CommandParameter = methodInfo.QualifiedName,
-                    Icon = new MaterialIconExt(MaterialIconKind.CodeBlockParentheses),
+                    Icon = new MaterialIcon { Kind = MaterialIconKind.CodeBlockParentheses },
                 };
 
                 if (methodInfo.Submenu is not null)
@@ -76,5 +76,25 @@ public static class ScriptMenuService
         congregation.AddRange(groups);
         congregation.AddRange(rootItems);
         return congregation;
+    }
+
+    public static MenuItem GenerateReloadMenuItem(ICommand reloadCommand)
+    {
+        return new MenuItem
+        {
+            Header = I18N.Resources.Menu_ReloadScripts,
+            Command = reloadCommand,
+            Icon = new MaterialIcon { Kind = MaterialIconKind.Reload },
+        };
+    }
+
+    public static MenuItem GenerateDepCtlMenuItem(ICommand depCtlCommand)
+    {
+        return new MenuItem
+        {
+            Header = I18N.Resources.Menu_DependencyControl,
+            Command = depCtlCommand,
+            Icon = new MaterialIcon { Kind = MaterialIconKind.EarthArrowDown },
+        };
     }
 }

@@ -1,10 +1,14 @@
 ﻿// SPDX-License-Identifier: GPL-3.0-only
 
 using System;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive;
 using System.Windows.Input;
 using Ameko.Services;
+using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
+using DynamicData;
 using Holo;
 using NLog;
 using ReactiveUI;
@@ -46,6 +50,11 @@ public partial class MainWindowViewModel : ViewModelBase
     // Subtitle
     public ICommand ShowStylesManagerCommand { get; }
 
+    // Scripts
+    public ICommand ActivateScriptCommand { get; }
+    public ICommand ReloadScriptsCommand { get; }
+    public ICommand ShowDependencyControlCommand { get; }
+
     // Help
     public ICommand ShowLogWindowCommand { get; }
     public ICommand ShowAboutWindowCommand { get; }
@@ -56,6 +65,8 @@ public partial class MainWindowViewModel : ViewModelBase
     public ICommand RenameDocumentCommand { get; }
     public ICommand RenameDirectoryCommand { get; }
     #endregion
+
+    public ObservableCollection<TemplatedControl> ScriptMenuItems { get; }
 
     /// <summary>
     /// Window title
@@ -78,6 +89,21 @@ public partial class MainWindowViewModel : ViewModelBase
         }
 
         Context.Solution.OpenDocument(workspaceId);
+    }
+
+    private void GenerateScriptsMenu()
+    {
+        ScriptMenuItems.Clear();
+        ScriptMenuItems.AddRange(
+            ScriptMenuService.GenerateMenuItemSource(
+                ScriptService.Instance.Scripts,
+                ActivateScriptCommand
+            )
+        );
+
+        ScriptMenuItems.Add(new Separator());
+        ScriptMenuItems.Add(ScriptMenuService.GenerateReloadMenuItem(ReloadScriptsCommand));
+        ScriptMenuItems.Add(ScriptMenuService.GenerateDepCtlMenuItem(ShowDependencyControlCommand));
     }
 
     public MainWindowViewModel()
@@ -118,5 +144,9 @@ public partial class MainWindowViewModel : ViewModelBase
         RenameDocumentCommand = CreateRenameDocumentCommand();
         RenameDirectoryCommand = CreateRenameDirectoryCommand();
         #endregion
+
+        ScriptMenuItems = [];
+        GenerateScriptsMenu();
+        ScriptService.Instance.Scripts.CollectionChanged += (_, _) => GenerateScriptsMenu();
     }
 }
