@@ -178,6 +178,7 @@ public class DependencyControl
     /// <returns><see cref="InstallationResult.Success"/> on success</returns>
     public async Task<InstallationResult> UpdateModule(Module module)
     {
+        Logger.Info($"Update for module {module.QualifiedName} requested...");
         var uninstallResult = UninstallModule(module);
         if (uninstallResult == InstallationResult.Success)
             return await InstallModule(module);
@@ -265,6 +266,7 @@ public class DependencyControl
     /// <param name="repository">Head repository</param>
     public async Task GatherRepositories(Repository repository)
     {
+        Logger.Trace($"Gathering repositories for repository '{repository.Name}'");
         if (_repositoryMap.TryAdd(repository.Name, repository))
             _repositories.Add(repository);
 
@@ -287,18 +289,20 @@ public class DependencyControl
     /// </summary>
     public void GatherModules()
     {
+        Logger.Trace("Gathering modules...");
         _moduleMap.Clear();
         _moduleStore.Clear();
         _installedModules.Clear();
         foreach (var repo in _repositories)
         {
+            Logger.Trace($"Gathering modules in repository '{repo.Name}'");
             foreach (var module in repo.Modules)
             {
                 module.Repository = repo.Name;
                 if (_moduleMap.TryGetValue(module.QualifiedName, out var conflict))
                 {
                     Logger.Warn(
-                        $"Conflict between {module.QualifiedName} from {conflict.Repository} and {module.Repository}"
+                        $"Conflict between {module.QualifiedName} from '{conflict.Repository}' and '{module.Repository}'"
                     );
                     continue;
                 }
@@ -334,6 +338,7 @@ public class DependencyControl
                 }
             }
         }
+        Logger.Trace("Finished gathering modules");
     }
 
     /// <summary>
@@ -342,6 +347,7 @@ public class DependencyControl
     /// <param name="repoUrls">List of <see cref="Repository"/> URLs</param>
     public async Task BootstrapFromList(IList<string> repoUrls)
     {
+        Logger.Info($"Adding additional {repoUrls.Count} user repositories...");
         foreach (var url in repoUrls)
         {
             var repo = await Repository.Build(url, _httpClient);
@@ -358,6 +364,7 @@ public class DependencyControl
     /// <remarks>This clears the <see cref="_repositoryMap"/></remarks>
     public async Task SetUpBaseRepository()
     {
+        Logger.Info("Setting up base repository");
         _repositories.Clear();
         _repositoryMap.Clear();
         _baseRepository = await Repository.Build(BaseRepositoryUrl, _httpClient);
@@ -404,5 +411,7 @@ public class DependencyControl
         ModuleStore = new ReadOnlyObservableCollection<Module>(_moduleStore);
 
         InstalledModules = new ReadOnlyObservableCollection<Module>(_installedModules);
+
+        Logger.Info("Initialized Dependency Control");
     }
 }
