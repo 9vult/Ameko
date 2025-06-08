@@ -17,7 +17,7 @@ public static class ScriptMenuService
 {
     public static List<MenuItem> GenerateMenuItemSource(
         IList<HoloScript> scripts,
-        ICommand activateScriptCommand
+        ICommand executeScriptCommand
     )
     {
         var congregation = new List<MenuItem>();
@@ -30,7 +30,7 @@ public static class ScriptMenuService
             var menu = new MenuItem
             {
                 Header = script.Info.DisplayName,
-                Command = activateScriptCommand,
+                Command = executeScriptCommand,
                 CommandParameter = script.Info.QualifiedName,
                 Icon = new MaterialIcon { Kind = MaterialIconKind.CodeBlockBraces },
             };
@@ -51,7 +51,7 @@ public static class ScriptMenuService
                 var methodMenu = new MenuItem
                 {
                     Header = methodInfo.DisplayName,
-                    Command = activateScriptCommand,
+                    Command = executeScriptCommand,
                     CommandParameter = methodInfo.QualifiedName,
                     Icon = new MaterialIcon { Kind = MaterialIconKind.CodeBlockParentheses },
                 };
