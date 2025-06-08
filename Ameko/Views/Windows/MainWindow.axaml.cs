@@ -177,6 +177,16 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         interaction.SetOutput(Unit.Default);
     }
 
+    private async Task DoShowDepCtlWindowAsync(
+        IInteractionContext<DepCtlWindowViewModel, Unit> interaction
+    )
+    {
+        Log.Trace("Displaying Dependency Control");
+        var window = new DepCtlWindow { DataContext = interaction.Input };
+        await window.ShowDialog(this);
+        interaction.SetOutput(Unit.Default);
+    }
+
     private static void DoShowLogWindow(IInteractionContext<LogWindowViewModel, Unit> interaction)
     {
         Log.Trace("Displaying Log Window");
@@ -212,6 +222,8 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
                 ViewModel.SaveSolutionAs.RegisterHandler(DoShowSaveSolutionAsDialogAsync);
                 // Subtitle
                 ViewModel.ShowStylesManager.RegisterHandler(DoShowStylesManager);
+                // Scripts
+                ViewModel.ShowDependencyControl.RegisterHandler(DoShowDepCtlWindowAsync);
                 // Help
                 ViewModel.ShowLogWindow.RegisterHandler(DoShowLogWindow);
                 ViewModel.ShowAboutWindow.RegisterHandler(DoShowAboutWindowAsync);

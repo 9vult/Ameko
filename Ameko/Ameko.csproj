@@ -60,6 +60,9 @@
     <Compile Update="ViewModels\Windows\StylesManagerWindowViewModel.Commands.cs">
       <DependentUpon>StylesManagerWindowViewModel.cs</DependentUpon>
     </Compile>
+    <Compile Update="ViewModels\Windows\DepCtlWindowViewModel.commands.cs">
+      <DependentUpon>DepCtlWindowViewModel.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Update="I18N\Resources.resx">

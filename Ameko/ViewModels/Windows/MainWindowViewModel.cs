@@ -30,6 +30,9 @@ public partial class MainWindowViewModel : ViewModelBase
     // Subtitle
     public Interaction<StylesManagerWindowViewModel, Unit> ShowStylesManager { get; }
 
+    // Scripts
+    public Interaction<DepCtlWindowViewModel, Unit> ShowDependencyControl { get; }
+
     // Help
     public Interaction<LogWindowViewModel, Unit> ShowLogWindow { get; }
     public Interaction<AboutWindowViewModel, Unit> ShowAboutWindow { get; }
@@ -117,6 +120,8 @@ public partial class MainWindowViewModel : ViewModelBase
         SaveSolutionAs = new Interaction<string, Uri?>();
         // Subtitle
         ShowStylesManager = new Interaction<StylesManagerWindowViewModel, Unit>();
+        // Scripts
+        ShowDependencyControl = new Interaction<DepCtlWindowViewModel, Unit>();
         // Help
         ShowLogWindow = new Interaction<LogWindowViewModel, Unit>();
         ShowAboutWindow = new Interaction<AboutWindowViewModel, Unit>();
@@ -135,9 +140,10 @@ public partial class MainWindowViewModel : ViewModelBase
         QuitCommand = CreateQuitCommand();
         // Subtitle
         ShowStylesManagerCommand = CreateShowStylesManagerCommand();
-        // Script
+        // Scripts
         ExecuteScriptCommand = CreateExecuteScriptCommand();
         ReloadScriptsCommand = CreateReloadScriptsCommand();
+        ShowDependencyControlCommand = CreateShowDependencyControlCommand();
         // Help
         ShowLogWindowCommand = CreateShowLogWindowCommand();
         ShowAboutWindowCommand = CreateShowAboutWindowCommand();

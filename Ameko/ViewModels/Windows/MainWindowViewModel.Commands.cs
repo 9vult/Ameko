@@ -222,11 +222,25 @@ public partial class MainWindowViewModel : ViewModelBase
     /// <summary>
     /// Reload scripts
     /// </summary>
-    private static ReactiveCommand<Unit, Unit> CreateReloadScriptsCommand()
+    private static ReactiveCommand<bool, Unit> CreateReloadScriptsCommand()
     {
-        return ReactiveCommand.Create(() =>
+        return ReactiveCommand.Create(
+            (bool isManual) =>
+            {
+                ScriptService.Instance.Reload(isManual);
+            }
+        );
+    }
+
+    /// <summary>
+    /// Display the <see cref="DepCtlWindow"/>
+    /// </summary>
+    private ReactiveCommand<Unit, Unit> CreateShowDependencyControlCommand()
+    {
+        return ReactiveCommand.CreateFromTask(async () =>
         {
-            ScriptService.Instance.Reload(true);
+            var vm = new DepCtlWindowViewModel(ReloadScriptsCommand);
+            await ShowDependencyControl.Handle(vm);
         });
     }
 

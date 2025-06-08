@@ -118,14 +118,13 @@ public class ScriptService
                 Logger.Error(ex);
                 continue;
             }
-
-            // For informational purposes
-            var libCount = Directory.GetFiles(ScriptsRoot.LocalPath, "*.lib.cs").Length;
-
-            Logger.Info($"Reloaded {_scripts.Count} scripts ({libCount} libraries)");
-            if (isManual)
-                _ = DisplayMessageBoxAsync(I18N.Resources.MsgBox_ScriptService_Reload_Body);
         }
+        // For informational purposes
+        var libCount = Directory.GetFiles(ScriptsRoot.LocalPath, "*.lib.cs").Length;
+
+        Logger.Info($"Reloaded {_scripts.Count} scripts ({libCount} libraries)");
+        if (isManual)
+            _ = DisplayMessageBoxAsync(I18N.Resources.MsgBox_ScriptService_Reload_Body);
     }
 
     private static async Task DisplayMessageBoxAsync(string message)

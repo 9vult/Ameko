@@ -2,6 +2,7 @@
 
 using System.Collections.ObjectModel;
 using System.IO.Abstractions;
+using System.Text.Json;
 using Holo.IO;
 using Holo.Scripting.Models;
 using NLog;
@@ -108,12 +109,20 @@ public class DependencyControl
         try
         {
             var path = ModulePath(module);
-            // Create module directory if it doesn't exist
+            var sidecar = SidecarPath(module);
+            // Create module directories if they don't exist
             if (!_fileSystem.Directory.Exists(Path.GetDirectoryName(path)))
                 _fileSystem.Directory.CreateDirectory(Path.GetDirectoryName(path) ?? "/");
-            await using var stream = await _httpClient.GetStreamAsync(module.Url);
-            await using var fs = _fileSystem.FileStream.New(path, FileMode.OpenOrCreate);
-            await stream.CopyToAsync(fs);
+            if (!_fileSystem.Directory.Exists(Path.GetDirectoryName(sidecar)))
+                _fileSystem.Directory.CreateDirectory(Path.GetDirectoryName(sidecar) ?? "/");
+
+            await using var dlStream = await _httpClient.GetStreamAsync(module.Url);
+            await using var moduleFs = _fileSystem.FileStream.New(path, FileMode.OpenOrCreate);
+            await dlStream.CopyToAsync(moduleFs);
+
+            await using var sidecarFs = _fileSystem.FileStream.New(sidecar, FileMode.OpenOrCreate);
+            await JsonSerializer.SerializeAsync(sidecarFs, module);
+
             _installedModules.Add(module);
             Logger.Info($"Successfully installed module {module.QualifiedName}");
             return InstallationResult.Success;
@@ -149,7 +158,9 @@ public class DependencyControl
         try
         {
             _fileSystem.File.Delete(ModulePath(module));
+            _fileSystem.File.Delete(SidecarPath(module));
             Logger.Info($"Successfully uninstalled module {module.QualifiedName}");
+            _installedModules.Remove(module);
             return InstallationResult.Success;
         }
         catch (Exception e)
@@ -173,9 +184,39 @@ public class DependencyControl
         return uninstallResult;
     }
 
+    /// <summary>
+    /// Get a list of installed modules with available updates
+    /// </summary>
+    /// <returns>List of updatable modules</returns>
     public List<Module> GetUpdateCandidates()
     {
-        throw new NotImplementedException();
+        var updatable = new List<Module>();
+
+        foreach (var module in _installedModules)
+        {
+            var match = _moduleStore.FirstOrDefault(m => m.QualifiedName == module.QualifiedName);
+            if (match is null)
+                continue;
+
+            if (match.Version > module.Version)
+                updatable.Add(match);
+        }
+        return updatable;
+    }
+
+    /// <summary>
+    /// Check if a module is up to date
+    /// </summary>
+    /// <param name="module">Module to check</param>
+    /// <returns><see langword="true"/> if the module is up to date</returns>
+    /// <remarks>If the module isn't found in the <see cref="ModuleStore"/>, returns <see langword="true"/></remarks>
+    public bool IsModuleUpToDate(Module module)
+    {
+        var match = _moduleStore.FirstOrDefault(m => m.QualifiedName == module.QualifiedName);
+        if (match is null)
+            return true;
+
+        return match.Version <= module.Version;
     }
 
     /// <summary>
@@ -190,6 +231,26 @@ public class DependencyControl
         {
             ModuleType.Script => Path.Combine(ModulesRoot.LocalPath, $"{qName}.cs"),
             ModuleType.Library => Path.Combine(ModulesRoot.LocalPath, $"{qName}.lib.cs"),
+            _ => throw new ArgumentOutOfRangeException(nameof(module)),
+        };
+    }
+
+    /// <summary>
+    /// Get the filepath for a module sidecar
+    /// </summary>
+    /// <param name="module">Module</param>
+    /// <returns>The filepath, ending in <c>.json</c></returns>
+    public static string SidecarPath(Module module)
+    {
+        var qName = module.QualifiedName;
+        return module.Type switch
+        {
+            ModuleType.Script => Path.Combine(ModulesRoot.LocalPath, "modules", $"{qName}.json"),
+            ModuleType.Library => Path.Combine(
+                ModulesRoot.LocalPath,
+                "modules",
+                $"{qName}.lib.json"
+            ),
             _ => throw new ArgumentOutOfRangeException(nameof(module)),
         };
     }
@@ -222,12 +283,13 @@ public class DependencyControl
     }
 
     /// <summary>
-    /// Populate the <see cref="ModuleStore"/>
+    /// Populate the <see cref="ModuleStore"/> and the <see cref="InstalledModules"/> list
     /// </summary>
     public void GatherModules()
     {
         _moduleMap.Clear();
         _moduleStore.Clear();
+        _installedModules.Clear();
         foreach (var repo in _repositories)
         {
             foreach (var module in repo.Modules)
@@ -242,6 +304,34 @@ public class DependencyControl
                 }
                 _moduleMap.Add(module.QualifiedName, module);
                 _moduleStore.Add(module);
+
+                if (!IsModuleInstalled(module))
+                    continue;
+
+                var sidecarPath = SidecarPath(module);
+                if (_fileSystem.File.Exists(sidecarPath))
+                {
+                    try
+                    {
+                        using var sidecarFs = _fileSystem.FileStream.New(
+                            sidecarPath,
+                            FileMode.Open
+                        );
+                        var sidecar = JsonSerializer.Deserialize<Module>(sidecarFs);
+                        if (sidecar is null)
+                            Logger.Warn($"Failed to read sidecar {sidecarPath}");
+                        _installedModules.Add(sidecar ?? module);
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.Warn($"Failed to read sidecar {sidecarPath} because of {e}");
+                        _installedModules.Add(module);
+                    }
+                }
+                else
+                {
+                    _installedModules.Add(module);
+                }
             }
         }
     }
@@ -250,8 +340,7 @@ public class DependencyControl
     /// Load repositories from a list of URLs and populate the <see cref="ModuleStore"/>
     /// </summary>
     /// <param name="repoUrls">List of <see cref="Repository"/> URLs</param>
-    /// <remarks>Does not clear the collections</remarks>
-    public async Task BootstrapFromList(List<string> repoUrls)
+    public async Task BootstrapFromList(IList<string> repoUrls)
     {
         foreach (var url in repoUrls)
         {
@@ -259,14 +348,18 @@ public class DependencyControl
             if (repo is not null)
                 await GatherRepositories(repo);
         }
-        GatherModules();
+        if (repoUrls.Count > 1)
+            GatherModules();
     }
 
     /// <summary>
     /// Set up the base repository
     /// </summary>
+    /// <remarks>This clears the <see cref="_repositoryMap"/></remarks>
     public async Task SetUpBaseRepository()
     {
+        _repositories.Clear();
+        _repositoryMap.Clear();
         _baseRepository = await Repository.Build(BaseRepositoryUrl, _httpClient);
         if (_baseRepository is not null)
         {

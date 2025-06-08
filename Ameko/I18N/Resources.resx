@@ -366,4 +366,109 @@
     <data name="MsgBox_ScriptService_Reload_Body" xml:space="preserve">
         <value>Scripts reloaded successfully</value>
     </data>
+    <data name="DepCtlWindow_Title" xml:space="preserve">
+        <value>Ameko Dependency Control</value>
+    </data>
+    <data name="DepCtl_ModuleStore" xml:space="preserve">
+        <value>Module Store</value>
+    </data>
+    <data name="DepCtl_Info_Name" xml:space="preserve">
+        <value>Name</value>
+    </data>
+    <data name="DepCtl_Info_QualifiedName" xml:space="preserve">
+        <value>Qualified Name</value>
+    </data>
+    <data name="DepCtl_Info_Version" xml:space="preserve">
+        <value>Version</value>
+    </data>
+    <data name="DepCtl_Info_Author" xml:space="preserve">
+        <value>Author</value>
+    </data>
+    <data name="DepCtl_Info_Description" xml:space="preserve">
+        <value>Description</value>
+    </data>
+    <data name="DepCtl_Info_Dependencies" xml:space="preserve">
+        <value>Dependencies</value>
+    </data>
+    <data name="DepCtl_Info_Methods" xml:space="preserve">
+        <value>Exported Methods</value>
+    </data>
+    <data name="DepCtl_Info_Type" xml:space="preserve">
+        <value>Type</value>
+    </data>
+    <data name="DepCtl_Info_NoSelection" xml:space="preserve">
+        <value>No Selection</value>
+    </data>
+    <data name="DepCtl_InstalledModules" xml:space="preserve">
+        <value>Installed Modules</value>
+    </data>
+    <data name="DepCtl_Info_Repository" xml:space="preserve">
+        <value>Repository</value>
+    </data>
+    <data name="DepCtl_Button_RepoManager" xml:space="preserve">
+        <value>Repositories...</value>
+    </data>
+    <data name="DepCtl_Button_Export_ToolTip" xml:space="preserve">
+        <value>Export</value>
+    </data>
+    <data name="DepCtl_Button_Import_ToolTip" xml:space="preserve">
+        <value>Import</value>
+    </data>
+    <data name="DepCtl_Button_Install" xml:space="preserve">
+        <value>Install</value>
+    </data>
+    <data name="DepCtl_Button_UpdateAll" xml:space="preserve">
+        <value>Update All</value>
+    </data>
+    <data name="DepCtl_Button_Update" xml:space="preserve">
+        <value>Update</value>
+    </data>
+    <data name="DepCtl_Button_Uninstall" xml:space="preserve">
+        <value>Uninstall</value>
+    </data>
+    <data name="DepCtl_Button_Install_ToolTip" xml:space="preserve">
+        <value>Install the selected module</value>
+    </data>
+    <data name="DepCtl_Button_RepoManager_ToolTip" xml:space="preserve">
+        <value>View the Repository Manager</value>
+    </data>
+    <data name="DepCtl_Button_UpdateAll_ToolTip" xml:space="preserve">
+        <value>Update all modules to their latest version</value>
+    </data>
+    <data name="DepCtl_Button_Update_ToolTip" xml:space="preserve">
+        <value>Update the selected module to its latest version</value>
+    </data>
+    <data name="DepCtl_Button_Uninstall_ToolTip" xml:space="preserve">
+        <value>Uninstall the selected module</value>
+    </data>
+    <data name="DepCtl_Result_Success" xml:space="preserve">
+        <value>Success!</value>
+    </data>
+    <data name="DepCtl_Result_Failure" xml:space="preserve">
+        <value>Failed!</value>
+    </data>
+    <data name="DepCtl_Result_DepNotFound" xml:space="preserve">
+        <value>Could not find a required dependency</value>
+    </data>
+    <data name="DepCtl_Result_AlreadyInstalled" xml:space="preserve">
+        <value>The module is already installed!</value>
+    </data>
+    <data name="DepCtl_Result_NotInstalled" xml:space="preserve">
+        <value>The module is not installed</value>
+    </data>
+    <data name="DepCtl_Result_FS_Failure" xml:space="preserve">
+        <value>A filesystem error occured</value>
+    </data>
+    <data name="DepCtl_Result_IsRequiredDep" xml:space="preserve">
+        <value>This module is required by other modules</value>
+    </data>
+    <data name="DepCtl_Update_Available_ToolTip" xml:space="preserve">
+        <value>An update is available for this module</value>
+    </data>
+    <data name="DepCtl_Button_Refresh_ToolTip" xml:space="preserve">
+        <value>Refresh the Module Store</value>
+    </data>
+    <data name="DepCtl_MsgBox_Refreshed" xml:space="preserve">
+        <value>Refresh successful</value>
+    </data>
 </root>

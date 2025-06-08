@@ -3,6 +3,7 @@
 using System.Collections.ObjectModel;
 using AssCS;
 using Holo.IO;
+using Holo.Scripting;
 using NLog;
 
 namespace Holo;
@@ -59,6 +60,8 @@ public class HoloContext : BindableBase
     /// </summary>
     public Globals Globals { get; }
 
+    public DependencyControl DependencyControl { get; }
+
     private HoloContext()
     {
         ObservableCollection<string> logEntries = [];
@@ -74,6 +77,10 @@ public class HoloContext : BindableBase
 
         Globals = Globals.Parse(Paths.Globals);
         Globals.Save();
+
+        DependencyControl = new DependencyControl();
+        Task.Run(() => DependencyControl.SetUpBaseRepository())
+            .ContinueWith(_ => DependencyControl.BootstrapFromList(Configuration.RepositoryUrls));
 
         _solution = new Solution();
 

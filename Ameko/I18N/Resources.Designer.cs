@@ -96,6 +96,321 @@ namespace Ameko.I18N {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Export.
+        /// </summary>
+        public static string DepCtl_Button_Export_ToolTip {
+            get {
+                return ResourceManager.GetString("DepCtl_Button_Export_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Import.
+        /// </summary>
+        public static string DepCtl_Button_Import_ToolTip {
+            get {
+                return ResourceManager.GetString("DepCtl_Button_Import_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Install.
+        /// </summary>
+        public static string DepCtl_Button_Install {
+            get {
+                return ResourceManager.GetString("DepCtl_Button_Install", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Install the selected module.
+        /// </summary>
+        public static string DepCtl_Button_Install_ToolTip {
+            get {
+                return ResourceManager.GetString("DepCtl_Button_Install_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Refresh the Module Store.
+        /// </summary>
+        public static string DepCtl_Button_Refresh_ToolTip {
+            get {
+                return ResourceManager.GetString("DepCtl_Button_Refresh_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Repositories....
+        /// </summary>
+        public static string DepCtl_Button_RepoManager {
+            get {
+                return ResourceManager.GetString("DepCtl_Button_RepoManager", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to View the Repository Manager.
+        /// </summary>
+        public static string DepCtl_Button_RepoManager_ToolTip {
+            get {
+                return ResourceManager.GetString("DepCtl_Button_RepoManager_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Uninstall.
+        /// </summary>
+        public static string DepCtl_Button_Uninstall {
+            get {
+                return ResourceManager.GetString("DepCtl_Button_Uninstall", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Uninstall the selected module.
+        /// </summary>
+        public static string DepCtl_Button_Uninstall_ToolTip {
+            get {
+                return ResourceManager.GetString("DepCtl_Button_Uninstall_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Update.
+        /// </summary>
+        public static string DepCtl_Button_Update {
+            get {
+                return ResourceManager.GetString("DepCtl_Button_Update", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Update the selected module to its latest version.
+        /// </summary>
+        public static string DepCtl_Button_Update_ToolTip {
+            get {
+                return ResourceManager.GetString("DepCtl_Button_Update_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Update All.
+        /// </summary>
+        public static string DepCtl_Button_UpdateAll {
+            get {
+                return ResourceManager.GetString("DepCtl_Button_UpdateAll", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Update all modules to their latest version.
+        /// </summary>
+        public static string DepCtl_Button_UpdateAll_ToolTip {
+            get {
+                return ResourceManager.GetString("DepCtl_Button_UpdateAll_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Author.
+        /// </summary>
+        public static string DepCtl_Info_Author {
+            get {
+                return ResourceManager.GetString("DepCtl_Info_Author", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Dependencies.
+        /// </summary>
+        public static string DepCtl_Info_Dependencies {
+            get {
+                return ResourceManager.GetString("DepCtl_Info_Dependencies", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Description.
+        /// </summary>
+        public static string DepCtl_Info_Description {
+            get {
+                return ResourceManager.GetString("DepCtl_Info_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Exported Methods.
+        /// </summary>
+        public static string DepCtl_Info_Methods {
+            get {
+                return ResourceManager.GetString("DepCtl_Info_Methods", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Name.
+        /// </summary>
+        public static string DepCtl_Info_Name {
+            get {
+                return ResourceManager.GetString("DepCtl_Info_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No Selection.
+        /// </summary>
+        public static string DepCtl_Info_NoSelection {
+            get {
+                return ResourceManager.GetString("DepCtl_Info_NoSelection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Qualified Name.
+        /// </summary>
+        public static string DepCtl_Info_QualifiedName {
+            get {
+                return ResourceManager.GetString("DepCtl_Info_QualifiedName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Repository.
+        /// </summary>
+        public static string DepCtl_Info_Repository {
+            get {
+                return ResourceManager.GetString("DepCtl_Info_Repository", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Type.
+        /// </summary>
+        public static string DepCtl_Info_Type {
+            get {
+                return ResourceManager.GetString("DepCtl_Info_Type", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Version.
+        /// </summary>
+        public static string DepCtl_Info_Version {
+            get {
+                return ResourceManager.GetString("DepCtl_Info_Version", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Installed Modules.
+        /// </summary>
+        public static string DepCtl_InstalledModules {
+            get {
+                return ResourceManager.GetString("DepCtl_InstalledModules", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Module Store.
+        /// </summary>
+        public static string DepCtl_ModuleStore {
+            get {
+                return ResourceManager.GetString("DepCtl_ModuleStore", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Refresh successful.
+        /// </summary>
+        public static string DepCtl_MsgBox_Refreshed {
+            get {
+                return ResourceManager.GetString("DepCtl_MsgBox_Refreshed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The module is already installed!.
+        /// </summary>
+        public static string DepCtl_Result_AlreadyInstalled {
+            get {
+                return ResourceManager.GetString("DepCtl_Result_AlreadyInstalled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Could not find a required dependency.
+        /// </summary>
+        public static string DepCtl_Result_DepNotFound {
+            get {
+                return ResourceManager.GetString("DepCtl_Result_DepNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed!.
+        /// </summary>
+        public static string DepCtl_Result_Failure {
+            get {
+                return ResourceManager.GetString("DepCtl_Result_Failure", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A filesystem error occured.
+        /// </summary>
+        public static string DepCtl_Result_FS_Failure {
+            get {
+                return ResourceManager.GetString("DepCtl_Result_FS_Failure", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This module is required by other modules.
+        /// </summary>
+        public static string DepCtl_Result_IsRequiredDep {
+            get {
+                return ResourceManager.GetString("DepCtl_Result_IsRequiredDep", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The module is not installed.
+        /// </summary>
+        public static string DepCtl_Result_NotInstalled {
+            get {
+                return ResourceManager.GetString("DepCtl_Result_NotInstalled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Success!.
+        /// </summary>
+        public static string DepCtl_Result_Success {
+            get {
+                return ResourceManager.GetString("DepCtl_Result_Success", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to An update is available for this module.
+        /// </summary>
+        public static string DepCtl_Update_Available_ToolTip {
+            get {
+                return ResourceManager.GetString("DepCtl_Update_Available_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ameko Dependency Control.
+        /// </summary>
+        public static string DepCtlWindow_Title {
+            get {
+                return ResourceManager.GetString("DepCtlWindow_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Actor for this line.
         /// </summary>
         public static string Editor_ActorAcBox_ToolTip {

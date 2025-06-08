@@ -1,0 +1,119 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             d:DesignWidth="350"
+             d:DesignHeight="135"
+
+             xmlns:converters="clr-namespace:Ameko.Converters"
+             xmlns:holo="clr-namespace:Holo.Scripting.Models;assembly=Holo"
+             xmlns:i18n="clr-namespace:Ameko.I18N"
+             xmlns:icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+
+             x:Class="Ameko.Views.Controls.ModuleInformation"
+             x:DataType="holo:Module">
+    <UserControl.Resources>
+        <converters:DepCtlIconConverter x:Key="IconConverter" />
+        <converters:DepCtlDependencyConverter x:Key="DependencyConverter" />
+        <converters:DepCtlUpToDateConverter x:Key="UpToDateConverter" />
+    </UserControl.Resources>
+    <ScrollViewer Height="135"
+                  Margin="2"
+                  AllowAutoHide="False"
+                  VerticalScrollBarVisibility="Visible"
+                  HorizontalScrollBarVisibility="Disabled">
+        <Grid ColumnDefinitions="Auto, *"
+              RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto">
+            <TextBlock Grid.Column="0"
+                       Grid.Row="0"
+                       Margin="0 0 5 0"
+                       Text="{x:Static i18n:Resources.DepCtl_Info_Name}" />
+            <TextBlock Grid.Column="1"
+                       Grid.Row="0"
+                       Text="{Binding DisplayName,
+                                      FallbackValue={x:Static i18n:Resources.DepCtl_Info_NoSelection}}" />
+            <TextBlock Grid.Column="0"
+                       Grid.Row="1"
+                       Margin="0 0 5 0"
+                       Text="{x:Static i18n:Resources.DepCtl_Info_Type}" />
+            <Grid Grid.Column="1"
+                  Grid.Row="1"
+                  ColumnDefinitions="Auto, *">
+                <Image Grid.Column="0"
+                       Source="{Binding Type,
+                                        Converter={StaticResource IconConverter},
+                                        FallbackValue={}}" />
+                <TextBlock Grid.Column="1"
+                           Text="{Binding Type,
+                                          FallbackValue={x:Static i18n:Resources.DepCtl_Info_NoSelection}}" />
+            </Grid>
+            <TextBlock Grid.Column="0"
+                       Grid.Row="2"
+                       Margin="0 0 5 0"
+                       Text="{x:Static i18n:Resources.DepCtl_Info_QualifiedName}" />
+            <TextBlock Grid.Column="1"
+                       Grid.Row="2"
+                       Text="{Binding QualifiedName,
+                                      FallbackValue={x:Static i18n:Resources.DepCtl_Info_NoSelection}}" />
+            <TextBlock Grid.Column="0"
+                       Grid.Row="3"
+                       Margin="0 0 5 0"
+                       Text="{x:Static i18n:Resources.DepCtl_Info_Version}" />
+            <Grid Grid.Column="1"
+                  Grid.Row="3"
+                  ColumnDefinitions="Auto, *">
+                <icons:MaterialIcon Grid.Column="0"
+                       Kind="ArrowUpThinCircleOutline"
+                       Padding="0 0 5 0"
+                       IsVisible="{Binding ., Converter={StaticResource UpToDateConverter}}"
+                       ToolTip.Tip="{x:Static i18n:Resources.DepCtl_Update_Available_ToolTip}" />
+                <TextBlock Grid.Column="1"
+                           Text="{Binding Version,
+                                          StringFormat='v{0}',
+                                          FallbackValue={x:Static i18n:Resources.DepCtl_Info_NoSelection}}" />
+            </Grid>
+            <TextBlock Grid.Column="0"
+                       Grid.Row="4"
+                       Margin="0 0 2 0"
+                       Text="{x:Static i18n:Resources.DepCtl_Info_Author}" />
+            <TextBlock Grid.Column="1"
+                       Grid.Row="4"
+                       Text="{Binding Author,
+                                      FallbackValue={x:Static i18n:Resources.DepCtl_Info_NoSelection}}" />
+            <TextBlock Grid.Column="0"
+                       Grid.Row="5"
+                       Margin="0 0 5 0"
+                       Text="{x:Static i18n:Resources.DepCtl_Info_Dependencies}" />
+            <TextBox Grid.Column="1"
+                     Grid.Row="5"
+                     Padding="0"
+                     Margin="0 1"
+                     IsReadOnly="True"
+                     TextWrapping="NoWrap"
+                     Text="{Binding .,
+                                    Converter={StaticResource DependencyConverter},
+                                    FallbackValue={x:Static i18n:Resources.DepCtl_Info_NoSelection}}" />
+            <TextBlock Grid.Column="0"
+                       Grid.Row="6"
+                       Margin="0 0 5 0"
+                       Text="{x:Static i18n:Resources.DepCtl_Info_Description}" />
+            <TextBox Grid.Column="1"
+                     Grid.Row="6"
+                     Padding="0"
+                     Margin="0 1"
+                     IsReadOnly="True"
+                     TextWrapping="Wrap"
+                     Text="{Binding Description,
+                                    FallbackValue={x:Static i18n:Resources.DepCtl_Info_NoSelection}}" />
+            <TextBlock Grid.Column="0"
+                       Grid.Row="7"
+                       Margin="0 0 2 0"
+                       Text="{x:Static i18n:Resources.DepCtl_Info_Repository}" />
+            <TextBlock Grid.Column="1"
+                       Grid.Row="7"
+                       Text="{Binding Repository,
+                                      FallbackValue={x:Static i18n:Resources.DepCtl_Info_NoSelection}}" />
+        </Grid>
+    </ScrollViewer>
+</UserControl>

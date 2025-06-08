@@ -19,4 +19,5 @@ internal record ConfigurationModel
     public required bool LineWidthIncludesWhitespace;
     public required bool LineWidthIncludesPunctuation;
     public required Theme Theme;
+    public required string[] RepositoryUrls;
 }
