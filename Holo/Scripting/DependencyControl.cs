@@ -145,13 +145,14 @@ public class DependencyControl
     /// Uninstall a <see cref="Module"/>
     /// </summary>
     /// <param name="module">Module to uninstall</param>
+    /// <param name="isUpdate">Bypass dependency checking for update purposes</param>
     /// <returns><see cref="InstallationResult.Success"/> on success</returns>
     /// <remarks>Does not uninstall dependencies</remarks>
-    public InstallationResult UninstallModule(Module module)
+    public InstallationResult UninstallModule(Module module, bool isUpdate = false)
     {
         if (!IsModuleInstalled(module))
             return InstallationResult.NotInstalled;
-        if (_installedModules.Any(m => m.Dependencies.Contains(module.QualifiedName)))
+        if (!isUpdate && _installedModules.Any(m => m.Dependencies.Contains(module.QualifiedName)))
             return InstallationResult.IsRequiredDependency;
         Logger.Info($"Attempting to uninstall module {module.QualifiedName}");
 
@@ -179,7 +180,7 @@ public class DependencyControl
     public async Task<InstallationResult> UpdateModule(Module module)
     {
         Logger.Info($"Update for module {module.QualifiedName} requested...");
-        var uninstallResult = UninstallModule(module);
+        var uninstallResult = UninstallModule(module, true);
         if (uninstallResult == InstallationResult.Success)
             return await InstallModule(module);
         return uninstallResult;
