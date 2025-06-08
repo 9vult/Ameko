@@ -39,21 +39,20 @@ public class ModuleInfo
     public required decimal Version { get; init; }
 
     /// <summary>
-    /// A list of qualified method names for export
+    /// A list of methods for export
     /// </summary>
-    /// <remarks>
-    /// <para>Method qualified names must follow the format <c>[scriptQName].funcName</c>. The funcName must not contain full stops.</para>
-    /// <para>The method qualified name (after the last full stop) will be passed to <see cref="HoloScript.ExecuteAsync(string)"/></para>
-    /// </remarks>
-    public required string[] Exports { get; init; }
+    /// <remarks>Only applies to <see cref="HoloScript"/>s. Will be ignored otherwise.</remarks>
+    public MethodInfo[] Exports { get; init; } = [];
 
     /// <summary>
     /// Defines the behavior of the log window
     /// </summary>
-    public required LogDisplay LogDisplay { get; init; }
+    /// <remarks>Only applies to <see cref="HoloScript"/>s. Will be ignored otherwise.</remarks>
+    public LogDisplay LogDisplay { get; init; } = LogDisplay.OnError;
 
     /// <summary>
     /// Optional sub-menu name for categorization
     /// </summary>
+    /// <remarks>Only applies to <see cref="HoloScript"/>s. Will be ignored otherwise.</remarks>
     public string? Submenu { get; init; }
 }
