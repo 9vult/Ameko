@@ -17,11 +17,13 @@
         Icon="/Assets/Ameko-Simplified-BG-64.ico"
         Width="600"
         Height="400"
-        Topmost="True"
         Title="{x:Static i18n:Resources.LogWindow_Title}">
 
     <ListBox Name="LogList"
              ItemsSource="{Binding LogEntries}"
-             FontFamily="{StaticResource MartianMonoFont}"/>
+             FontFamily="{StaticResource MartianMonoFont}"
+             SelectedItem="{Binding SelectedLog}"
+             SelectionMode="Multiple"
+             AutoScrollToSelectedItem="True" />
 
 </Window>
