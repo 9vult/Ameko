@@ -244,12 +244,12 @@ public partial class Configuration : BindableBase
     /// <param name="savePath">Location of the configuration file</param>
     public Configuration(IFileSystem fileSystem, Uri savePath)
     {
-        _fileSystem = fileSystem;
         SavePath = savePath;
-        Cps = 18;
-        UseSoftLinebreaks = false;
-        AutosaveEnabled = true;
-        AutosaveInterval = 60;
+        _fileSystem = fileSystem;
+        _cps = 18;
+        _useSoftLinebreaks = false;
+        _autosaveEnabled = true;
+        _autosaveInterval = 60;
     }
 
     /// <inheritdoc />
