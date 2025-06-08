@@ -52,6 +52,20 @@ public class DependencyControlTests
     }
 
     [Fact]
+    public void SidecarPath_Script()
+    {
+        var path = DependencyControl.SidecarPath(TestScriptModule);
+        path.ShouldEndWith($"{TestScriptModule.QualifiedName}.json");
+    }
+
+    [Fact]
+    public void SidecarPath_Library()
+    {
+        var path = DependencyControl.SidecarPath(TestLibraryModule);
+        path.ShouldEndWith($"{TestLibraryModule.QualifiedName}.lib.json");
+    }
+
+    [Fact]
     public async Task SetUpBaseRepository_Handles_404()
     {
         var mockClient = new MockHttpMessageHandler();
@@ -72,7 +86,7 @@ public class DependencyControlTests
         var mockClient = new MockHttpMessageHandler();
         mockClient
             .When(HttpMethod.Get, DependencyControl.BaseRepositoryUrl)
-            .Respond("application/json", RepositoryJson);
+            .Respond("application/json", Repository1Json);
         var dc = new DependencyControl(new FileSystem(), new HttpClient(mockClient));
 
         await dc.SetUpBaseRepository();
@@ -87,19 +101,20 @@ public class DependencyControlTests
         var fileSystem = new MockFileSystem(
             new Dictionary<string, MockFileData>
             {
-                { DependencyControl.ModulePath(Example1), new MockFileData(string.Empty) },
+                { DependencyControl.ModulePath(Script1), new MockFileData(string.Empty) },
+                { DependencyControl.SidecarPath(Script1), new MockFileData(string.Empty) },
             }
         );
 
         var mockClient = new MockHttpMessageHandler();
         mockClient
             .When(HttpMethod.Get, DependencyControl.BaseRepositoryUrl)
-            .Respond("application/json", RepositoryJson);
+            .Respond("application/json", Repository1Json);
         var dc = new DependencyControl(fileSystem, new HttpClient(mockClient));
         await dc.SetUpBaseRepository();
 
         var result = await dc.InstallModule(
-            dc.ModuleStore.First(m => m.QualifiedName == Example1.QualifiedName)
+            dc.ModuleStore.First(m => m.QualifiedName == Script1.QualifiedName)
         );
 
         result.ShouldBe(InstallationResult.AlreadyInstalled);
@@ -113,7 +128,7 @@ public class DependencyControlTests
         var mockClient = new MockHttpMessageHandler();
         mockClient
             .When(HttpMethod.Get, DependencyControl.BaseRepositoryUrl)
-            .Respond("application/json", RepositoryJson);
+            .Respond("application/json", Repository1Json);
         mockClient
             .When(HttpMethod.Get, ScriptExample1Url)
             .Respond("application/text", ScriptExample1);
@@ -121,11 +136,11 @@ public class DependencyControlTests
         await dc.SetUpBaseRepository();
 
         var result = await dc.InstallModule(
-            dc.ModuleStore.First(m => m.QualifiedName == Example1.QualifiedName)
+            dc.ModuleStore.First(m => m.QualifiedName == Script1.QualifiedName)
         );
 
         result.ShouldBe(InstallationResult.Success);
-        fileSystem.FileExists(DependencyControl.ModulePath(Example1)).ShouldBeTrue();
+        fileSystem.FileExists(DependencyControl.ModulePath(Script1)).ShouldBeTrue();
     }
 
     [Fact]
@@ -136,12 +151,12 @@ public class DependencyControlTests
         var mockClient = new MockHttpMessageHandler();
         mockClient
             .When(HttpMethod.Get, DependencyControl.BaseRepositoryUrl)
-            .Respond("application/json", RepositoryJson);
+            .Respond("application/json", Repository1Json);
         var dc = new DependencyControl(fileSystem, new HttpClient(mockClient));
         await dc.SetUpBaseRepository();
 
         var result = dc.UninstallModule(
-            dc.ModuleStore.First(m => m.QualifiedName == Example1.QualifiedName)
+            dc.ModuleStore.First(m => m.QualifiedName == Script1.QualifiedName)
         );
 
         result.ShouldBe(InstallationResult.NotInstalled);
@@ -153,23 +168,171 @@ public class DependencyControlTests
         var fileSystem = new MockFileSystem(
             new Dictionary<string, MockFileData>
             {
-                { DependencyControl.ModulePath(Example1), new MockFileData(string.Empty) },
+                { DependencyControl.ModulePath(Script1), new MockFileData(string.Empty) },
+                { DependencyControl.SidecarPath(Script1), new MockFileData(string.Empty) },
             }
         );
 
         var mockClient = new MockHttpMessageHandler();
         mockClient
             .When(HttpMethod.Get, DependencyControl.BaseRepositoryUrl)
-            .Respond("application/json", RepositoryJson);
+            .Respond("application/json", Repository1Json);
         var dc = new DependencyControl(fileSystem, new HttpClient(mockClient));
         await dc.SetUpBaseRepository();
 
         var result = dc.UninstallModule(
-            dc.ModuleStore.First(m => m.QualifiedName == Example1.QualifiedName)
+            dc.ModuleStore.First(m => m.QualifiedName == Script1.QualifiedName)
         );
 
         result.ShouldBe(InstallationResult.Success);
-        fileSystem.FileExists(DependencyControl.ModulePath(Example1)).ShouldBeFalse();
+        fileSystem.FileExists(DependencyControl.ModulePath(Script1)).ShouldBeFalse();
+    }
+
+    [Fact]
+    public async Task UninstallModule_IsDependent()
+    {
+        var fileSystem = new MockFileSystem(
+            new Dictionary<string, MockFileData>
+            {
+                { DependencyControl.ModulePath(Script2), new MockFileData(string.Empty) },
+                { DependencyControl.SidecarPath(Script2), new MockFileData(string.Empty) },
+                { DependencyControl.ModulePath(Lib1), new MockFileData(string.Empty) },
+                { DependencyControl.SidecarPath(Lib1), new MockFileData(string.Empty) },
+            }
+        );
+
+        var mockClient = new MockHttpMessageHandler();
+        mockClient
+            .When(HttpMethod.Get, DependencyControl.BaseRepositoryUrl)
+            .Respond("application/json", Repository2Json);
+        var dc = new DependencyControl(fileSystem, new HttpClient(mockClient));
+        await dc.SetUpBaseRepository();
+
+        var result = dc.UninstallModule(
+            dc.ModuleStore.First(m => m.QualifiedName == Lib1.QualifiedName)
+        );
+
+        result.ShouldBe(InstallationResult.IsRequiredDependency);
+        fileSystem.FileExists(DependencyControl.ModulePath(Lib1)).ShouldBeTrue();
+        fileSystem.FileExists(DependencyControl.SidecarPath(Lib1)).ShouldBeTrue();
+    }
+
+    [Fact]
+    public async Task UninstallModule_IsDependent_IsUpdate()
+    {
+        var fileSystem = new MockFileSystem(
+            new Dictionary<string, MockFileData>
+            {
+                { DependencyControl.ModulePath(Script2), new MockFileData(string.Empty) },
+                { DependencyControl.SidecarPath(Script2), new MockFileData(string.Empty) },
+                { DependencyControl.ModulePath(Lib1), new MockFileData(string.Empty) },
+                { DependencyControl.SidecarPath(Lib1), new MockFileData(string.Empty) },
+            }
+        );
+
+        var mockClient = new MockHttpMessageHandler();
+        mockClient
+            .When(HttpMethod.Get, DependencyControl.BaseRepositoryUrl)
+            .Respond("application/json", Repository2Json);
+        var dc = new DependencyControl(fileSystem, new HttpClient(mockClient));
+        await dc.SetUpBaseRepository();
+
+        var result = dc.UninstallModule(
+            dc.ModuleStore.First(m => m.QualifiedName == Lib1.QualifiedName),
+            true
+        );
+
+        result.ShouldBe(InstallationResult.Success);
+        fileSystem.FileExists(DependencyControl.ModulePath(Lib1)).ShouldBeFalse();
+        fileSystem.FileExists(DependencyControl.SidecarPath(Lib1)).ShouldBeFalse();
+    }
+
+    [Fact]
+    public async Task IsModuleUpToDate_True()
+    {
+        var fileSystem = new MockFileSystem(
+            new Dictionary<string, MockFileData>
+            {
+                { DependencyControl.ModulePath(Script1), new MockFileData(string.Empty) },
+                { DependencyControl.SidecarPath(Script1), new MockFileData(ScriptExample1Json) },
+            }
+        );
+
+        var mockClient = new MockHttpMessageHandler();
+        mockClient
+            .When(HttpMethod.Get, DependencyControl.BaseRepositoryUrl)
+            .Respond("application/json", Repository1Json);
+        var dc = new DependencyControl(fileSystem, new HttpClient(mockClient));
+        await dc.SetUpBaseRepository();
+
+        // Check if up to date
+        dc.IsModuleUpToDate(Script1).ShouldBeTrue();
+    }
+
+    [Fact]
+    public async Task IsModuleUpToDate_False()
+    {
+        var fileSystem = new MockFileSystem(
+            new Dictionary<string, MockFileData>
+            {
+                { DependencyControl.ModulePath(Script1), new MockFileData(string.Empty) },
+                { DependencyControl.SidecarPath(Script1), new MockFileData(ScriptExample1Json) },
+            }
+        );
+
+        var mockClient = new MockHttpMessageHandler();
+        mockClient
+            .When(HttpMethod.Get, DependencyControl.BaseRepositoryUrl)
+            .Respond("application/json", Repository1JsonUpdated);
+        var dc = new DependencyControl(fileSystem, new HttpClient(mockClient));
+        await dc.SetUpBaseRepository();
+
+        // Check if up to date
+        dc.IsModuleUpToDate(Script1).ShouldBeFalse();
+    }
+
+    [Fact]
+    public async Task GetUpdateCandidates_NoCandidates()
+    {
+        var fileSystem = new MockFileSystem(
+            new Dictionary<string, MockFileData>
+            {
+                { DependencyControl.ModulePath(Script1), new MockFileData(string.Empty) },
+                { DependencyControl.SidecarPath(Script1), new MockFileData(ScriptExample1Json) },
+            }
+        );
+
+        var mockClient = new MockHttpMessageHandler();
+        mockClient
+            .When(HttpMethod.Get, DependencyControl.BaseRepositoryUrl)
+            .Respond("application/json", Repository1Json);
+        var dc = new DependencyControl(fileSystem, new HttpClient(mockClient));
+        await dc.SetUpBaseRepository();
+
+        // Check if up to date
+        dc.GetUpdateCandidates().ShouldBeEmpty();
+    }
+
+    [Fact]
+    public async Task GetUpdateCandidates_HasCandidates()
+    {
+        var fileSystem = new MockFileSystem(
+            new Dictionary<string, MockFileData>
+            {
+                { DependencyControl.ModulePath(Script1), new MockFileData(string.Empty) },
+                { DependencyControl.SidecarPath(Script1), new MockFileData(ScriptExample1Json) },
+            }
+        );
+
+        var mockClient = new MockHttpMessageHandler();
+        mockClient
+            .When(HttpMethod.Get, DependencyControl.BaseRepositoryUrl)
+            .Respond("application/json", Repository1JsonUpdated);
+        var dc = new DependencyControl(fileSystem, new HttpClient(mockClient));
+        await dc.SetUpBaseRepository();
+
+        // Check if up to date
+        dc.GetUpdateCandidates().Count.ShouldBe(1);
     }
 
     private static readonly Module TestScriptModule = new Module
@@ -200,7 +363,7 @@ public class DependencyControlTests
         Url = string.Empty,
     };
 
-    private static readonly Module Example1 = new Module
+    private static readonly Module Script1 = new Module
     {
         Type = ModuleType.Script,
         DisplayName = "Example Script 1",
@@ -214,7 +377,35 @@ public class DependencyControlTests
         Url = "https://dc.ameko.moe/scripts/9volt/9volt.example1.cs",
     };
 
-    private const string RepositoryJson = """
+    private static readonly Module Script2 = new Module
+    {
+        Type = ModuleType.Script,
+        DisplayName = "Example Script 2",
+        QualifiedName = "9volt.example2",
+        Description = "An example script for testing purposes",
+        Author = "9volt",
+        Version = 0.1m,
+        IsBetaChannel = false,
+        Dependencies = [],
+        Tags = ["Example", "Dialogue"],
+        Url = "https://dc.ameko.moe/scripts/9volt/9volt.example2.cs",
+    };
+
+    private static readonly Module Lib1 = new Module
+    {
+        Type = ModuleType.Library,
+        DisplayName = "CalculatorLib",
+        QualifiedName = "9volt.calculator",
+        Description = "A basic library for testing",
+        Author = "9volt",
+        Version = 0.1m,
+        IsBetaChannel = false,
+        Dependencies = [],
+        Tags = ["Calculator"],
+        Url = "https://dc.ameko.moe/scripts/9volt/9volt.calculator.lib.cs",
+    };
+
+    private const string Repository1Json = """
         {
           "Name": "Ameko Dependency Control Base",
           "Description": "Default Dependency Control repository included with Ameko",
@@ -238,29 +429,110 @@ public class DependencyControlTests
         }
         """;
 
+    private const string Repository1JsonUpdated = """
+        {
+          "Name": "Ameko Dependency Control Base",
+          "Description": "Default Dependency Control repository included with Ameko",
+          "Maintainer": "9volt",
+          "IsBetaChannel": false,
+          "Modules": [
+            {
+              "Type": "Script",
+              "DisplayName": "Example Script 1",
+              "QualifiedName": "9volt.example1",
+              "Description": "An example script for testing purposes",
+              "Author": "9volt",
+              "Version": 0.5,
+              "IsBetaChannel": false,
+              "Dependencies": [],
+              "Tags": [ "Example", "Dialogue" ],
+              "Url": "https://dc.ameko.moe/scripts/9volt/9volt.example1.cs"
+            }
+          ],
+          "Repositories": []
+        }
+        """;
+
+    private const string Repository2Json = """
+        {
+          "Name": "Ameko Dependency Control Base",
+          "Description": "Default Dependency Control repository included with Ameko",
+          "Maintainer": "9volt",
+          "IsBetaChannel": false,
+          "Modules": [
+            {
+              "Type": "Script",
+              "DisplayName": "Example Script 2",
+              "QualifiedName": "9volt.example2",
+              "Description": "An example script for testing purposes",
+              "Author": "9volt",
+              "Version": 0.1,
+              "IsBetaChannel": false,
+              "Dependencies": [ "9volt.calculator" ],
+              "Tags": [ "Example", "Dialogue" ],
+              "Url": "https://dc.ameko.moe/scripts/9volt/9volt.example2.cs"
+            },
+            {
+              "Type": "Library",
+              "DisplayName": "CalculatorLib",
+              "QualifiedName": "9volt.calculator",
+              "Description": "A basic library for testing",
+              "Author": "9volt",
+              "Version": 0.1,
+              "IsBetaChannel": false,
+              "Dependencies": [],
+              "Tags": [ "Calculator" ],
+              "Url": "https://dc.ameko.moe/scripts/9volt/9volt.calculator.lib.cs"
+            }
+          ],
+          "Repositories": []
+        }
+        """;
+
     private const string ScriptExample1Url = "https://dc.ameko.moe/scripts/9volt/9volt.example1.cs";
     private const string ScriptExample1 = """
         // SPDX-License-Identifier: MIT
         using AssCS;
         using Holo;
         using Holo.Scripting;
+        using System.Threading.Tasks;
+
         public class Example1 : HoloScript
         {
-            public override ScriptInfo Info { get; init; } = new()
-            {
-                DisplayName = "Example Script 1",
-                QualifiedName = "9volt.example1",
-                Description = "An example script for testing purposes",
-                Author = "9volt",
-                Version = 0.1m,
-                Exports = [],
-                LogDisplay = LogDisplay.Ephemeral
-            };
             public override async Task<ExecutionResult> ExecuteAsync ()
             {
                 Logger.Info($"Example1 executed!");
                 return ExecutionResult.Success;
             }
+            
+            public Example1()
+                : base(
+                    new ModuleInfo
+                    {
+                        DisplayName = "Example Script 1",
+                        QualifiedName = "9volt.example1",
+                        Description = "An example script for testing purposes",
+                        Author = "9volt",
+                        Version = 0.1m,
+                        Exports = [],
+                        LogDisplay = LogDisplay.OnError,
+                    }
+                ) { }
+        }
+        """;
+
+    private const string ScriptExample1Json = """
+        {
+          "Type": "Script",
+          "DisplayName": "Example Script 1",
+          "QualifiedName": "9volt.example1",
+          "Description": "An example script for testing purposes",
+          "Author": "9volt",
+          "Version": 0.1,
+          "IsBetaChannel": false,
+          "Dependencies": [],
+          "Tags": [ "Example", "Dialogue" ],
+          "Url": "https://dc.ameko.moe/scripts/9volt/9volt.example1.cs"
         }
         """;
 }
