@@ -405,14 +405,8 @@
     <data name="DepCtrl_Info_Repository" xml:space="preserve">
         <value>Repository</value>
     </data>
-    <data name="DepCtrl_Button_RepoManager" xml:space="preserve">
-        <value>Repositories...</value>
-    </data>
-    <data name="DepCtrl_Button_Export_ToolTip" xml:space="preserve">
-        <value>Export</value>
-    </data>
-    <data name="DepCtrl_Button_Import_ToolTip" xml:space="preserve">
-        <value>Import</value>
+    <data name="DepCtrl_RepositoriesTab" xml:space="preserve">
+        <value>Repositories</value>
     </data>
     <data name="DepCtrl_Button_Install" xml:space="preserve">
         <value>Install</value>
@@ -428,9 +422,6 @@
     </data>
     <data name="DepCtrl_Button_Install_ToolTip" xml:space="preserve">
         <value>Install the selected module</value>
-    </data>
-    <data name="DepCtrl_Button_RepoManager_ToolTip" xml:space="preserve">
-        <value>View the Repository Manager</value>
     </data>
     <data name="DepCtrl_Button_UpdateAll_ToolTip" xml:space="preserve">
         <value>Update all modules to their latest version</value>
@@ -470,5 +461,8 @@
     </data>
     <data name="DepCtrl_MsgBox_Refreshed" xml:space="preserve">
         <value>Refresh successful</value>
+    </data>
+    <data name="DepCtrl_ModulesTab" xml:space="preserve">
+        <value>Modules</value>
     </data>
 </root>

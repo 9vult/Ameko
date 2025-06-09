@@ -1,0 +1,18 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             d:DesignWidth="700"
+             d:DesignHeight="475"
+
+             xmlns:vm="clr-namespace:Ameko.ViewModels.Windows"
+             xmlns:i18n="clr-namespace:Ameko.I18N"
+             xmlns:converters="clr-namespace:Ameko.Converters"
+             xmlns:controls="clr-namespace:Ameko.Views.Controls"
+             xmlns:holo="clr-namespace:Holo.Scripting.Models;assembly=Holo"
+             xmlns:icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             x:Class="Ameko.Views.Controls.DepCtrlRepositoriesTab"
+             x:DataType="vm:DepCtrlWindowViewModel">
+    Welcome to Avalonia!
+</UserControl>
