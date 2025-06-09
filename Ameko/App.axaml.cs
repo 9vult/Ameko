@@ -10,6 +10,8 @@ using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
+using Holo;
+using Holo.Scripting;
 using Microsoft.Extensions.DependencyInjection;
 using NLog;
 using MainWindow = Ameko.Views.Windows.MainWindow;
@@ -45,20 +47,11 @@ public partial class App : Application
             };
         }
 
-        // Start script loading in the background after GUI finishes loading
-        _ = Task.Run(() =>
-        {
-            try
-            {
-                provider.GetRequiredService<ScriptService>().Reload(isManual: false);
-            }
-            catch (Exception ex)
-            {
-                LogManager.GetCurrentClassLogger().Error(ex, "ScriptService failed to initialize.");
-            }
-        });
-
         base.OnFrameworkInitializationCompleted();
+
+        // Start long process loading in the background after GUI finishes loading
+        InitializeScriptService(provider);
+        InitializeDependencyControl(provider);
     }
 
     private void DisableAvaloniaDataAnnotationValidation()
@@ -73,5 +66,49 @@ public partial class App : Application
         {
             BindingPlugins.DataValidators.Remove(plugin);
         }
+    }
+
+    /// <summary>
+    /// Initialize the <see cref="ScriptService"/>
+    /// </summary>
+    /// <param name="provider">Service Provider</param>
+    private static void InitializeScriptService(IServiceProvider provider)
+    {
+        _ = Task.Run(async () =>
+        {
+            try
+            {
+                await provider.GetRequiredService<ScriptService>().Reload(isManual: false);
+            }
+            catch (Exception ex)
+            {
+                LogManager.GetCurrentClassLogger().Error(ex, "ScriptService failed to initialize.");
+            }
+        });
+    }
+
+    /// <summary>
+    /// Initialize <see cref="DependencyControl"/>
+    /// </summary>
+    /// <param name="provider">Service Provider</param>
+    private static void InitializeDependencyControl(IServiceProvider provider)
+    {
+        _ = Task.Run(async () =>
+        {
+            try
+            {
+                var depCtrl = provider.GetRequiredService<DependencyControl>();
+                await depCtrl.SetUpBaseRepository();
+                await depCtrl.AddAdditionalRepositories(
+                    provider.GetRequiredService<Configuration>().RepositoryUrls
+                );
+            }
+            catch (Exception ex)
+            {
+                LogManager
+                    .GetCurrentClassLogger()
+                    .Error(ex, "Dependency Control failed to initialize.");
+            }
+        });
     }
 }

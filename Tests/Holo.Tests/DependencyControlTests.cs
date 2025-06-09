@@ -3,6 +3,7 @@
 using System.IO.Abstractions;
 using System.IO.Abstractions.TestingHelpers;
 using System.Net;
+using System.Net.Sockets;
 using Holo.Scripting;
 using Holo.Scripting.Models;
 using RichardSzalay.MockHttp;
@@ -93,6 +94,44 @@ public class DependencyControlTests
 
         dc.Repositories.Count.ShouldBe(1);
         dc.ModuleStore.Count.ShouldBe(1);
+    }
+
+    [Fact]
+    public async Task SetUpBaseRepository_NoInternetConnection()
+    {
+        var mockClient = new MockHttpMessageHandler();
+        mockClient
+            .When(HttpMethod.Get, DependencyControl.BaseRepositoryUrl)
+            .Throw(new HttpRequestException("No internet connection", new SocketException()));
+        var dc = new DependencyControl(new FileSystem(), new HttpClient(mockClient));
+
+        await dc.SetUpBaseRepository();
+
+        dc.Repositories.Count.ShouldBe(0);
+        dc.ModuleStore.Count.ShouldBe(0);
+    }
+
+    [Fact]
+    public async Task InstallModule_NoInternetConnection()
+    {
+        var fileSystem = new MockFileSystem();
+
+        var mockClient = new MockHttpMessageHandler();
+        mockClient
+            .When(HttpMethod.Get, DependencyControl.BaseRepositoryUrl)
+            .Respond("application/json", Repository1Json);
+        mockClient
+            .When(HttpMethod.Get, ScriptExample1Url)
+            .Throw(new HttpRequestException("No internet connection", new SocketException()));
+
+        var dc = new DependencyControl(fileSystem, new HttpClient(mockClient));
+        await dc.SetUpBaseRepository();
+
+        var result = await dc.InstallModule(
+            dc.ModuleStore.First(m => m.QualifiedName == Script1.QualifiedName)
+        );
+
+        result.ShouldBe(InstallationResult.Failure);
     }
 
     [Fact]

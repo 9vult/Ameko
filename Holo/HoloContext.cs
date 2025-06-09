@@ -41,8 +41,6 @@ public class HoloContext : BindableBase, IHoloContext
     /// </summary>
     public Globals Globals { get; }
 
-    public DependencyControl DependencyControl { get; }
-
     public HoloContext()
     {
         Directories.Create();
@@ -54,12 +52,6 @@ public class HoloContext : BindableBase, IHoloContext
 
         Globals = Globals.Parse(Paths.Globals);
         Globals.Save();
-
-        DependencyControl = new DependencyControl();
-        Task.Run(() => DependencyControl.SetUpBaseRepository())
-            .ContinueWith(_ =>
-                DependencyControl.AddAdditionalRepositories(Configuration.RepositoryUrls)
-            );
 
         SolutionProvider = new SolutionProvider();
 

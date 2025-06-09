@@ -10,6 +10,5 @@ public interface IHoloContext
 {
     Configuration Configuration { get; }
     Globals Globals { get; }
-    DependencyControl DependencyControl { get; }
     ISolutionProvider SolutionProvider { get; }
 }
