@@ -3,6 +3,7 @@
 using System.Collections.ObjectModel;
 using AssCS;
 using Holo.IO;
+using Holo.Providers;
 using Holo.Scripting;
 using NLog;
 
@@ -22,7 +23,7 @@ namespace Holo;
 /// to use.
 /// </para>
 /// </remarks>
-public class HoloContext : BindableBase
+public class HoloContext : BindableBase, IHoloContext
 {
     // ReSharper disable once InconsistentNaming
     private static readonly Lazy<HoloContext> _instance = new(() => new HoloContext());
@@ -34,21 +35,23 @@ public class HoloContext : BindableBase
     /// Holo instance
     /// </summary>
     /// <remarks>Not initialized until first request</remarks>
+    [Obsolete("Use Dependency Injection instead.")]
     public static HoloContext Instance => _instance.Value;
-
-    /// <summary>
-    /// Observable collection of formatted log entries
-    /// </summary>
-    public AssCS.Utilities.ReadOnlyObservableCollection<string> LogEntries { get; }
 
     /// <summary>
     /// The currently-loaded solution
     /// </summary>
+    [Obsolete("Use Dependency Injection instead.")]
     public Solution Solution
     {
         get => _solution;
         set => SetProperty(ref _solution, value);
     }
+
+    /// <summary>
+    /// Provides the currently-loaded <see cref="Solution"/>
+    /// </summary>
+    public ISolutionProvider SolutionProvider { get; }
 
     /// <summary>
     /// Application-level configuration options
@@ -64,11 +67,7 @@ public class HoloContext : BindableBase
 
     private HoloContext()
     {
-        ObservableCollection<string> logEntries = [];
-        LogEntries = new AssCS.Utilities.ReadOnlyObservableCollection<string>(logEntries);
-
         Directories.Create();
-        LoggerHelper.Initialize(logEntries);
 
         Logger.Info("Initializing Holo");
 
@@ -85,6 +84,7 @@ public class HoloContext : BindableBase
             );
 
         _solution = new Solution();
+        SolutionProvider = new SolutionProvider();
 
         Logger.Info("Initialization complete");
     }

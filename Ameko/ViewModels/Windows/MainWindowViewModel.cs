@@ -18,6 +18,7 @@ namespace Ameko.ViewModels.Windows;
 public partial class MainWindowViewModel : ViewModelBase
 {
     private static readonly Logger Log = LogManager.GetCurrentClassLogger();
+    private readonly IServiceProvider _provider;
 
     #region Interactions
     // File
@@ -109,8 +110,10 @@ public partial class MainWindowViewModel : ViewModelBase
         ScriptMenuItems.Add(ScriptMenuService.GenerateDepCtlMenuItem(ShowDependencyControlCommand));
     }
 
-    public MainWindowViewModel()
+    public MainWindowViewModel(IServiceProvider provider)
     {
+        _provider = provider;
+
         #region Interactions
         // File
         OpenSubtitle = new Interaction<Unit, Uri[]>();

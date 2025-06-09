@@ -15,6 +15,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Holo;
 using Holo.Models;
+using Microsoft.Extensions.DependencyInjection;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Dto;
 using MsBox.Avalonia.Enums;
@@ -251,7 +252,7 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         return ReactiveCommand.CreateFromTask(async () =>
         {
-            var vm = new LogWindowViewModel();
+            var vm = _provider.GetRequiredService<LogWindowViewModel>();
             await ShowLogWindow.Handle(vm);
         });
     }
