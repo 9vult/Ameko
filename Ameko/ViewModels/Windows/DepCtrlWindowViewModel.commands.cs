@@ -140,7 +140,7 @@ public partial class DepCtrlWindowViewModel
         return ReactiveCommand.CreateFromTask(async () =>
         {
             await DependencyControl.SetUpBaseRepository();
-            await DependencyControl.BootstrapFromList(
+            await DependencyControl.AddAdditionalRepositories(
                 HoloContext.Instance.Configuration.RepositoryUrls
             );
 

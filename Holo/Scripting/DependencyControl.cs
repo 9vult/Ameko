@@ -272,11 +272,17 @@ public class DependencyControl
     /// Recursively collect repositories
     /// </summary>
     /// <param name="repository">Head repository</param>
-    public async Task GatherRepositories(Repository repository)
+    /// <returns>List of new repositories</returns>
+    private async Task<IList<Repository>> GatherRepositories(Repository repository)
     {
         Logger.Trace($"Gathering repositories for repository '{repository.Name}'");
+        var newRepos = new List<Repository>();
+
         if (_repositoryMap.TryAdd(repository.Name, repository))
+        {
             _repositories.Add(repository);
+            newRepos.Add(repository);
+        }
 
         foreach (var url in repository.Repositories)
         {
@@ -288,20 +294,19 @@ public class DependencyControl
             }
 
             if (!_repositoryMap.ContainsKey(repo.Name))
-                await GatherRepositories(repo);
+                newRepos.AddRange(await GatherRepositories(repo));
         }
+        return newRepos;
     }
 
     /// <summary>
     /// Populate the <see cref="ModuleStore"/> and the <see cref="InstalledModules"/> list
     /// </summary>
-    public void GatherModules()
+    /// <param name="repositories">Repositories to gather for. Defaults to <see cref="Repositories"/></param>
+    private void GatherModules(IList<Repository>? repositories = null)
     {
         Logger.Trace("Gathering modules...");
-        _moduleMap.Clear();
-        _moduleStore.Clear();
-        _installedModules.Clear();
-        foreach (var repo in _repositories)
+        foreach (var repo in repositories ?? _repositories)
         {
             Logger.Trace($"Gathering modules in repository '{repo.Name}'");
             foreach (var module in repo.Modules)
@@ -353,28 +358,34 @@ public class DependencyControl
     /// Load repositories from a list of URLs and populate the <see cref="ModuleStore"/>
     /// </summary>
     /// <param name="repoUrls">List of <see cref="Repository"/> URLs</param>
-    public async Task BootstrapFromList(IList<string> repoUrls)
+    public async Task AddAdditionalRepositories(IList<string> repoUrls)
     {
         Logger.Info($"Adding additional {repoUrls.Count} user repositories...");
+        List<Repository> newRepos = [];
+
         foreach (var url in repoUrls)
         {
             var repo = await Repository.Build(url, _httpClient);
             if (repo is not null)
-                await GatherRepositories(repo);
+                newRepos.AddRange(await GatherRepositories(repo));
         }
         if (repoUrls.Count > 1)
-            GatherModules();
+            GatherModules(newRepos);
     }
 
     /// <summary>
     /// Set up the base repository
     /// </summary>
-    /// <remarks>This clears the <see cref="_repositoryMap"/></remarks>
+    /// <remarks>This clears Dependency Control</remarks>
     public async Task SetUpBaseRepository()
     {
         Logger.Info("Setting up base repository");
         _repositories.Clear();
         _repositoryMap.Clear();
+        _installedModules.Clear();
+        _moduleStore.Clear();
+        _moduleMap.Clear();
+
         _baseRepository = await Repository.Build(BaseRepositoryUrl, _httpClient);
         if (_baseRepository is not null)
         {
