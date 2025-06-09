@@ -3,17 +3,21 @@
 using System;
 using System.Globalization;
 using Avalonia.Data.Converters;
+using Holo;
 using Holo.Scripting.Models;
 
 namespace Ameko.Converters;
 
-public class DepCtlDependencyConverter : IValueConverter
+public class DepCtrlUpToDateConverter : IValueConverter
 {
+    /// <summary>
+    /// Returns <see langword="true"/> if the module is NOT up to date
+    /// </summary>
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        return value is Module module
-            ? string.Join(Environment.NewLine, module.Dependencies)
-            : I18N.Resources.DepCtl_Info_NoSelection;
+        if (value is not Module module)
+            return false;
+        return !HoloContext.Instance.DependencyControl.IsModuleUpToDate(module);
     }
 
     public object? ConvertBack(

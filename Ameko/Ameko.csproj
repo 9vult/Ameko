@@ -60,8 +60,8 @@
     <Compile Update="ViewModels\Windows\StylesManagerWindowViewModel.Commands.cs">
       <DependentUpon>StylesManagerWindowViewModel.cs</DependentUpon>
     </Compile>
-    <Compile Update="ViewModels\Windows\DepCtlWindowViewModel.commands.cs">
-      <DependentUpon>DepCtlWindowViewModel.cs</DependentUpon>
+    <Compile Update="ViewModels\Windows\DepCtrlWindowViewModel.commands.cs">
+      <DependentUpon>DepCtrlWindowViewModel.cs</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>

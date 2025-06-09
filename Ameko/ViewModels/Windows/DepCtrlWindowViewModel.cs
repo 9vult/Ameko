@@ -12,7 +12,7 @@ using ReactiveUI;
 
 namespace Ameko.ViewModels.Windows;
 
-public partial class DepCtlWindowViewModel : ViewModelBase
+public partial class DepCtrlWindowViewModel : ViewModelBase
 {
     private Module? _selectedStoreModule;
     private Module? _selectedInstalledModule;
@@ -65,7 +65,7 @@ public partial class DepCtlWindowViewModel : ViewModelBase
 
     public bool UpdateAllButtonEnabled => UpdateCandidates.Count > 0;
 
-    public DepCtlWindowViewModel(ICommand reloadCommand)
+    public DepCtrlWindowViewModel(ICommand reloadCommand)
     {
         _reloadCommand = reloadCommand;
         _updateCandidates = new ObservableCollection<Module>(
