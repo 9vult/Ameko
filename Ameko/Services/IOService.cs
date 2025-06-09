@@ -3,6 +3,7 @@
 using System;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
+using Ameko.Providers;
 using AssCS.IO;
 using Holo;
 using Holo.Providers;
@@ -13,7 +14,7 @@ using ReactiveUI;
 
 namespace Ameko.Services;
 
-public class IoService(ISolutionProvider solutionProvider)
+public class IoService(ISolutionProvider solutionProvider, TabProvider tabProvider)
 {
     private static readonly Logger Log = LogManager.GetCurrentClassLogger();
 
@@ -118,7 +119,7 @@ public class IoService(ISolutionProvider solutionProvider)
         if (wsp.IsSaved)
         {
             sln.CloseDocument(wsp.Id, replaceIfLast);
-            WorkspaceViewModelService.Deregister(wsp.Id);
+            tabProvider.Release(wsp);
             return true;
         }
 
@@ -143,7 +144,7 @@ public class IoService(ISolutionProvider solutionProvider)
                 goto case ButtonResult.No; // lol
             case ButtonResult.No:
                 sln.CloseDocument(wsp.Id, replaceIfLast);
-                WorkspaceViewModelService.Deregister(wsp.Id);
+                tabProvider.Release(wsp);
                 return true;
             default:
                 return false;
