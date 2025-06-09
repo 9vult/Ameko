@@ -101,7 +101,7 @@
         <!-- Store buttons -->
         <Grid Grid.Column="0"
               Grid.Row="2"
-              ColumnDefinitions="Auto, Auto, Auto, Auto, *">
+              ColumnDefinitions="Auto, Auto, *">
             <Button Grid.Column="0"
                     Margin="2 0 1 0"
                     Content="{icons:MaterialIconExt Kind=CloudRefreshOutline}"
@@ -112,14 +112,6 @@
                     Content="{x:Static i18n:Resources.DepCtrl_Button_RepoManager}"
                     ToolTip.Tip="{x:Static i18n:Resources.DepCtrl_Button_RepoManager_ToolTip}" />
             <Button Grid.Column="2"
-                    Margin="1 0"
-                    Content="{icons:MaterialIconExt Kind=Import}"
-                    ToolTip.Tip="{x:Static i18n:Resources.DepCtrl_Button_Import_ToolTip}" />
-            <Button Grid.Column="3"
-                    Margin="1 0"
-                    Content="{icons:MaterialIconExt Kind=Export}"
-                    ToolTip.Tip="{x:Static i18n:Resources.DepCtrl_Button_Export_ToolTip}" />
-            <Button Grid.Column="4"
                     Margin="1 0 2 0"
                     Content="{x:Static i18n:Resources.DepCtrl_Button_Install}"
                     ToolTip.Tip="{x:Static i18n:Resources.DepCtrl_Button_Install_ToolTip}"

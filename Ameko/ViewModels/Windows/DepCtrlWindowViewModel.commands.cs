@@ -99,12 +99,12 @@ public partial class DepCtrlWindowViewModel
     {
         return ReactiveCommand.CreateFromTask(async () =>
         {
-            if (UpdateCandidates.Count == 0)
+            if (_updateCandidates.Count == 0)
                 return;
 
             var finalResult = InstallationResult.Success;
 
-            foreach (var module in UpdateCandidates)
+            foreach (var module in _updateCandidates)
             {
                 var result = await DependencyControl.UpdateModule(module);
                 // Pick a failure, any failure
