@@ -80,7 +80,9 @@ public class HoloContext : BindableBase
 
         DependencyControl = new DependencyControl();
         Task.Run(() => DependencyControl.SetUpBaseRepository())
-            .ContinueWith(_ => DependencyControl.BootstrapFromList(Configuration.RepositoryUrls));
+            .ContinueWith(_ =>
+                DependencyControl.AddAdditionalRepositories(Configuration.RepositoryUrls)
+            );
 
         _solution = new Solution();
 
