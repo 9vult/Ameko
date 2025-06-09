@@ -10,6 +10,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using DynamicData;
 using Holo;
+using Holo.Providers;
 using NLog;
 using ReactiveUI;
 
@@ -18,7 +19,9 @@ namespace Ameko.ViewModels.Windows;
 public partial class MainWindowViewModel : ViewModelBase
 {
     private static readonly Logger Log = LogManager.GetCurrentClassLogger();
-    private readonly IServiceProvider _provider;
+
+    private readonly IServiceProvider _serviceProvider;
+    private readonly IoService _ioService;
 
     #region Interactions
     // File
@@ -70,6 +73,8 @@ public partial class MainWindowViewModel : ViewModelBase
     public ICommand RenameDirectoryCommand { get; }
     #endregion
 
+    public ISolutionProvider SolutionProvider { get; }
+
     public ObservableCollection<TemplatedControl> ScriptMenuItems { get; }
 
     /// <summary>
@@ -77,22 +82,22 @@ public partial class MainWindowViewModel : ViewModelBase
     /// </summary>
     public string WindowTitle { get; } = $"Ameko {VersionService.FullLabel}";
 
-    public HoloContext Context => HoloContext.Instance;
-
     /// <summary>
     /// Set the <see cref="Solution.WorkingSpace"/> to the selected workspace, opening it if needed
     /// </summary>
     /// <param name="workspaceId">ID to open</param>
     public void TryLoadReferenced(int workspaceId)
     {
-        var wsp = Context.Solution.LoadedWorkspaces.FirstOrDefault(w => w.Id == workspaceId);
+        var wsp = SolutionProvider.Current.LoadedWorkspaces.FirstOrDefault(w =>
+            w.Id == workspaceId
+        );
         if (wsp is not null)
         {
-            Context.Solution.WorkingSpace = wsp;
+            SolutionProvider.Current.WorkingSpace = wsp;
             return;
         }
 
-        Context.Solution.OpenDocument(workspaceId);
+        SolutionProvider.Current.OpenDocument(workspaceId);
     }
 
     private void GenerateScriptsMenu()
@@ -110,9 +115,15 @@ public partial class MainWindowViewModel : ViewModelBase
         ScriptMenuItems.Add(ScriptMenuService.GenerateDepCtlMenuItem(ShowDependencyControlCommand));
     }
 
-    public MainWindowViewModel(IServiceProvider provider)
+    public MainWindowViewModel(
+        IServiceProvider serviceProvider,
+        IoService ioService,
+        ISolutionProvider solutionProvider
+    )
     {
-        _provider = provider;
+        _serviceProvider = serviceProvider;
+        _ioService = ioService;
+        SolutionProvider = solutionProvider;
 
         #region Interactions
         // File

@@ -5,6 +5,7 @@ using System.Reactive.Linq;
 using System.Threading.Tasks;
 using AssCS.IO;
 using Holo;
+using Holo.Providers;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Enums;
 using NLog;
@@ -12,7 +13,7 @@ using ReactiveUI;
 
 namespace Ameko.Services;
 
-public static class IoService
+public class IoService(ISolutionProvider solutionProvider)
 {
     private static readonly Logger Log = LogManager.GetCurrentClassLogger();
 
@@ -105,14 +106,14 @@ public static class IoService
     /// <param name="saveAs">SaveAs interaction</param>
     /// <param name="replaceIfLast">Should the workspace be replaced if it's the last one</param>
     /// <returns><see langword="true"/> if the workspace was closed</returns>
-    public static async Task<bool> SafeCloseWorkspace(
+    public async Task<bool> SafeCloseWorkspace(
         Workspace wsp,
         Interaction<string, Uri?> saveAs,
         bool replaceIfLast = true
     )
     {
         Log.Trace($"Closing workspace {wsp.Title}");
-        var sln = HoloContext.Instance.Solution;
+        var sln = solutionProvider.Current;
 
         if (wsp.IsSaved)
         {
