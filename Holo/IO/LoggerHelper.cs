@@ -48,13 +48,28 @@ internal static class LoggerHelper
         LogManager.Configuration = config;
     }
 
-    private class ObservableCollectionTarget(ObservableCollection<string> entries)
-        : TargetWithLayout
+    private sealed class ObservableCollectionTarget(
+        ObservableCollection<string> entries,
+        int maxEntries = 500
+    ) : TargetWithLayout
     {
+        private readonly SynchronizationContext? _syncContext = SynchronizationContext.Current;
+
         protected override void Write(LogEventInfo logEvent)
         {
             var message = Layout.Render(logEvent);
-            entries.Add(message);
+
+            if (entries.Count >= maxEntries)
+                entries.RemoveAt(0); // Remove oldest
+
+            if (_syncContext is not null)
+            {
+                _syncContext.Post(_ => entries.Add(message), null);
+            }
+            else
+            {
+                entries.Add(message); // Fallback
+            }
         }
     }
 }

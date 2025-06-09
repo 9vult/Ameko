@@ -2,12 +2,14 @@
 
 using System.Collections.ObjectModel;
 using Holo;
+using Holo.Providers;
 using ReactiveUI;
 
 namespace Ameko.ViewModels.Windows;
 
 public partial class LogWindowViewModel : ViewModelBase
 {
+    private readonly ILogProvider _logProvider;
     private object? _selectedLog;
 
     public object? SelectedLog
@@ -16,12 +18,12 @@ public partial class LogWindowViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _selectedLog, value);
     }
 
-    public static ReadOnlyObservableCollection<string> LogEntries =>
-        HoloContext.Instance.LogEntries;
+    public ReadOnlyObservableCollection<string> LogEntries => _logProvider.LogEntries;
 
-    public LogWindowViewModel()
+    public LogWindowViewModel(ILogProvider logProvider)
     {
-        HoloContext.Instance.LogEntries.CollectionChanged += (_, args) =>
+        _logProvider = logProvider;
+        _logProvider.LogEntries.CollectionChanged += (_, args) =>
         {
             if (args.NewItems is not null && args.NewItems.Count > 0)
                 SelectedLog = args.NewItems[^1];
