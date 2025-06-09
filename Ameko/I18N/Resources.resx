@@ -390,9 +390,6 @@
     <data name="DepCtrl_Info_Dependencies" xml:space="preserve">
         <value>Dependencies</value>
     </data>
-    <data name="DepCtrl_Info_Methods" xml:space="preserve">
-        <value>Exported Methods</value>
-    </data>
     <data name="DepCtrl_Info_Type" xml:space="preserve">
         <value>Type</value>
     </data>
@@ -464,5 +461,32 @@
     </data>
     <data name="DepCtrl_ModulesTab" xml:space="preserve">
         <value>Modules</value>
+    </data>
+    <data name="DepCtrl_Button_RemoveRepo" xml:space="preserve">
+        <value>Remove</value>
+    </data>
+    <data name="DepCtrl_Button_AddRepo" xml:space="preserve">
+        <value>Add</value>
+    </data>
+    <data name="DepCtrl_Button_RemoveRepo_ToolTip" xml:space="preserve">
+        <value>Remove the selected repository</value>
+    </data>
+    <data name="DepCtrl_Button_AddRepo_ToolTip" xml:space="preserve">
+        <value>Add a new repository</value>
+    </data>
+    <data name="DepCtrl_Info_Maintainer" xml:space="preserve">
+        <value>Maintainer</value>
+    </data>
+    <data name="DepCtrl_Info_IsBetaChannel" xml:space="preserve">
+        <value>Beta Channel?</value>
+    </data>
+    <data name="DepCtrl_Info_SubRepoCount" xml:space="preserve">
+        <value>Sub-Repositories</value>
+    </data>
+    <data name="DepCtrl_Info_ModuleCount" xml:space="preserve">
+        <value>Modules</value>
+    </data>
+    <data name="DepCtrl_Info_Url" xml:space="preserve">
+        <value>Url</value>
     </data>
 </root>

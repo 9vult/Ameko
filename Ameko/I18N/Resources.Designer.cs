@@ -96,6 +96,24 @@ namespace Ameko.I18N {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Add.
+        /// </summary>
+        public static string DepCtrl_Button_AddRepo {
+            get {
+                return ResourceManager.GetString("DepCtrl_Button_AddRepo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add a new repository.
+        /// </summary>
+        public static string DepCtrl_Button_AddRepo_ToolTip {
+            get {
+                return ResourceManager.GetString("DepCtrl_Button_AddRepo_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Install.
         /// </summary>
         public static string DepCtrl_Button_Install {
@@ -119,6 +137,24 @@ namespace Ameko.I18N {
         public static string DepCtrl_Button_Refresh_ToolTip {
             get {
                 return ResourceManager.GetString("DepCtrl_Button_Refresh_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remove.
+        /// </summary>
+        public static string DepCtrl_Button_RemoveRepo {
+            get {
+                return ResourceManager.GetString("DepCtrl_Button_RemoveRepo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remove the selected repository.
+        /// </summary>
+        public static string DepCtrl_Button_RemoveRepo_ToolTip {
+            get {
+                return ResourceManager.GetString("DepCtrl_Button_RemoveRepo_ToolTip", resourceCulture);
             }
         }
         
@@ -204,11 +240,29 @@ namespace Ameko.I18N {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Exported Methods.
+        ///   Looks up a localized string similar to Beta Channel?.
         /// </summary>
-        public static string DepCtrl_Info_Methods {
+        public static string DepCtrl_Info_IsBetaChannel {
             get {
-                return ResourceManager.GetString("DepCtrl_Info_Methods", resourceCulture);
+                return ResourceManager.GetString("DepCtrl_Info_IsBetaChannel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Maintainer.
+        /// </summary>
+        public static string DepCtrl_Info_Maintainer {
+            get {
+                return ResourceManager.GetString("DepCtrl_Info_Maintainer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Modules.
+        /// </summary>
+        public static string DepCtrl_Info_ModuleCount {
+            get {
+                return ResourceManager.GetString("DepCtrl_Info_ModuleCount", resourceCulture);
             }
         }
         
@@ -249,11 +303,29 @@ namespace Ameko.I18N {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Sub-Repositories.
+        /// </summary>
+        public static string DepCtrl_Info_SubRepoCount {
+            get {
+                return ResourceManager.GetString("DepCtrl_Info_SubRepoCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Type.
         /// </summary>
         public static string DepCtrl_Info_Type {
             get {
                 return ResourceManager.GetString("DepCtrl_Info_Type", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Url.
+        /// </summary>
+        public static string DepCtrl_Info_Url {
+            get {
+                return ResourceManager.GetString("DepCtrl_Info_Url", resourceCulture);
             }
         }
         

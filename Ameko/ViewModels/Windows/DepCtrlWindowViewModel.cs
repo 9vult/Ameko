@@ -1,5 +1,6 @@
 ﻿// SPDX-License-Identifier: GPL-3.0-only
 
+using System;
 using System.Collections.ObjectModel;
 using System.Reactive;
 using System.Windows.Input;
@@ -16,8 +17,10 @@ public partial class DepCtrlWindowViewModel : ViewModelBase
 {
     private Module? _selectedStoreModule;
     private Module? _selectedInstalledModule;
+    private Repository? _selectedRepository;
     private readonly ObservableCollection<Module> _updateCandidates;
     private readonly ICommand? _reloadCommand;
+    private string _repoUrlInput;
 
     public Interaction<IMsBox<ButtonResult>, Unit> ShowMessageBox { get; }
 
@@ -50,6 +53,26 @@ public partial class DepCtrlWindowViewModel : ViewModelBase
         }
     }
 
+    public Repository? SelectedRepository
+    {
+        get => _selectedRepository;
+        set
+        {
+            this.RaiseAndSetIfChanged(ref _selectedRepository, value);
+            this.RaisePropertyChanged(nameof(RemoveRepoButtonEnabled));
+        }
+    }
+
+    public string RepoUrlInput
+    {
+        get => _repoUrlInput;
+        set
+        {
+            this.RaiseAndSetIfChanged(ref _repoUrlInput, value);
+            this.RaisePropertyChanged(nameof(AddRepoButtonEnabled));
+        }
+    }
+
     public bool InstallButtonEnabled =>
         SelectedStoreModule is not null
         && !DependencyControl.InstalledModules.Contains(SelectedStoreModule);
@@ -61,9 +84,20 @@ public partial class DepCtrlWindowViewModel : ViewModelBase
 
     public bool UpdateAllButtonEnabled => _updateCandidates.Count > 0;
 
+    public bool AddRepoButtonEnabled =>
+        !string.IsNullOrEmpty(RepoUrlInput) && Uri.TryCreate(RepoUrlInput, UriKind.Absolute, out _);
+
+    public bool RemoveRepoButtonEnabled =>
+        SelectedRepository?.Url != null
+        && SelectedRepository.Url != DependencyControl.BaseRepositoryUrl
+        && HoloContext.Instance.Configuration.RepositoryUrls.Contains(SelectedRepository.Url);
+
     public DepCtrlWindowViewModel(ICommand reloadCommand)
     {
         _reloadCommand = reloadCommand;
+
+        _repoUrlInput = string.Empty;
+
         _updateCandidates = new ObservableCollection<Module>(
             DependencyControl.GetUpdateCandidates()
         );

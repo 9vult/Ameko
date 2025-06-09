@@ -63,6 +63,10 @@
     <Compile Update="ViewModels\Windows\DepCtrlWindowViewModel.commands.cs">
       <DependentUpon>DepCtrlWindowViewModel.cs</DependentUpon>
     </Compile>
+    <Compile Update="Views\Controls\RepositoryInformation.axaml.cs">
+      <DependentUpon>RepositoryInformation.axaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Update="I18N\Resources.resx">
