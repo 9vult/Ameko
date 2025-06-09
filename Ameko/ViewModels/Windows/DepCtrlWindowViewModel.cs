@@ -17,7 +17,7 @@ public partial class DepCtrlWindowViewModel : ViewModelBase
     private Module? _selectedStoreModule;
     private Module? _selectedInstalledModule;
     private readonly ObservableCollection<Module> _updateCandidates;
-    private ICommand? _reloadCommand;
+    private readonly ICommand? _reloadCommand;
 
     public Interaction<IMsBox<ButtonResult>, Unit> ShowMessageBox { get; }
 
@@ -26,12 +26,8 @@ public partial class DepCtrlWindowViewModel : ViewModelBase
     public ICommand UpdateCommand { get; }
     public ICommand UpdateAllCommand { get; }
     public ICommand RefreshCommand { get; }
-    public ICommand ImportCommand { get; }
-    public ICommand ExportCommand { get; }
 
     public DependencyControl DependencyControl => HoloContext.Instance.DependencyControl;
-
-    public ReadOnlyCollection<Module> UpdateCandidates { get; }
 
     public Module? SelectedStoreModule
     {
@@ -61,9 +57,9 @@ public partial class DepCtrlWindowViewModel : ViewModelBase
     public bool UninstallButtonEnabled => SelectedInstalledModule is not null;
 
     public bool UpdateButtonEnabled =>
-        SelectedInstalledModule is not null && UpdateCandidates.Contains(SelectedInstalledModule);
+        SelectedInstalledModule is not null && _updateCandidates.Contains(SelectedInstalledModule);
 
-    public bool UpdateAllButtonEnabled => UpdateCandidates.Count > 0;
+    public bool UpdateAllButtonEnabled => _updateCandidates.Count > 0;
 
     public DepCtrlWindowViewModel(ICommand reloadCommand)
     {
@@ -71,7 +67,6 @@ public partial class DepCtrlWindowViewModel : ViewModelBase
         _updateCandidates = new ObservableCollection<Module>(
             DependencyControl.GetUpdateCandidates()
         );
-        UpdateCandidates = new ReadOnlyCollection<Module>(_updateCandidates);
 
         ShowMessageBox = new Interaction<IMsBox<ButtonResult>, Unit>();
 
