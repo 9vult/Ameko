@@ -42,8 +42,8 @@
             <GridSplitter Grid.Column="1" ResizeDirection="Columns" />
             <TabControl Grid.Column="2"
                         Name="WorkspaceTabControl"
-                        ItemsSource="{Binding Context.Solution.LoadedWorkspaces}"
-                        SelectedItem="{Binding Context.Solution.WorkingSpace}"
+                        ItemsSource="{Binding SolutionProvider.Current.LoadedWorkspaces}"
+                        SelectedItem="{Binding SolutionProvider.Current.WorkingSpace}"
                         TabStripPlacement="Bottom">
                 <TabControl.ItemTemplate>
                     <DataTemplate DataType="{x:Type holo:Workspace}">
@@ -64,9 +64,7 @@
                     </DataTemplate>
                 </TabControl.ItemTemplate>
                 <TabControl.ContentTemplate>
-                    <DataTemplate DataType="{x:Type holo:Workspace}">
-                        <c:TabItem DataContext="{Binding ., Converter={StaticResource WorkspaceConverter}}" />
-                    </DataTemplate>
+                    <DynamicResource ResourceKey="WorkspaceTabTemplate" />
                 </TabControl.ContentTemplate>
                 <TabControl.Styles>
                     <Style Selector="TabItem">

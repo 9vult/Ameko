@@ -6,9 +6,7 @@ using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using Ameko.Services;
-using Ameko.ViewModels.Controls;
 using Ameko.Views.Windows;
-using AssCS;
 using AssCS.IO;
 using Avalonia;
 using Avalonia.Controls;
@@ -19,7 +17,6 @@ using Microsoft.Extensions.DependencyInjection;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Dto;
 using MsBox.Avalonia.Enums;
-using NLog;
 using ReactiveUI;
 
 namespace Ameko.ViewModels.Windows;
@@ -33,8 +30,8 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         return ReactiveCommand.Create(() =>
         {
-            var wsp = Context.Solution.AddWorkspace();
-            Context.Solution.WorkingSpace = wsp;
+            var wsp = SolutionProvider.Current.AddWorkspace();
+            SolutionProvider.Current.WorkingSpace = wsp;
         });
     }
 
@@ -59,13 +56,13 @@ public partial class MainWindowViewModel : ViewModelBase
                     _ => throw new ArgumentOutOfRangeException(),
                 };
 
-                latest = Context.Solution.AddWorkspace(doc, uri);
+                latest = SolutionProvider.Current.AddWorkspace(doc, uri);
                 latest.IsSaved = true;
                 Log.Info($"Opened subtitle file {latest.Title}");
             }
 
             if (latest is not null)
-                Context.Solution.WorkingSpace = latest;
+                SolutionProvider.Current.WorkingSpace = latest;
         });
     }
 
@@ -76,9 +73,12 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         return ReactiveCommand.CreateFromTask(async () =>
         {
-            if (Context.Solution.IsWorkspaceLoaded)
+            if (SolutionProvider.Current.IsWorkspaceLoaded)
             {
-                _ = await IoService.SaveSubtitle(SaveSubtitleAs, Context.Solution.WorkingSpace);
+                _ = await IoService.SaveSubtitle(
+                    SaveSubtitleAs,
+                    SolutionProvider.Current.WorkingSpace
+                );
             }
         });
     }
@@ -90,9 +90,12 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         return ReactiveCommand.CreateFromTask(async () =>
         {
-            if (Context.Solution.IsWorkspaceLoaded)
+            if (SolutionProvider.Current.IsWorkspaceLoaded)
             {
-                _ = await IoService.SaveSubtitleAs(SaveSubtitleAs, Context.Solution.WorkingSpace);
+                _ = await IoService.SaveSubtitleAs(
+                    SaveSubtitleAs,
+                    SolutionProvider.Current.WorkingSpace
+                );
             }
         });
     }
@@ -104,9 +107,12 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         return ReactiveCommand.CreateFromTask(async () =>
         {
-            if (Context.Solution.IsWorkspaceLoaded)
+            if (SolutionProvider.Current.IsWorkspaceLoaded)
             {
-                _ = await IoService.ExportSubtitle(ExportSubtitle, Context.Solution.WorkingSpace);
+                _ = await IoService.ExportSubtitle(
+                    ExportSubtitle,
+                    SolutionProvider.Current.WorkingSpace
+                );
             }
         });
     }
@@ -127,15 +133,15 @@ public partial class MainWindowViewModel : ViewModelBase
                 return;
             }
 
-            foreach (var wsp in Context.Solution.LoadedWorkspaces.ToArray())
+            foreach (var wsp in SolutionProvider.Current.LoadedWorkspaces.ToArray())
             {
-                await IoService.SafeCloseWorkspace(wsp, SaveSubtitleAs, false);
+                await _ioService.SafeCloseWorkspace(wsp, SaveSubtitleAs, false);
             }
 
-            if (Context.Solution.LoadedWorkspaces.Count > 0)
+            if (SolutionProvider.Current.LoadedWorkspaces.Count > 0)
             {
                 Log.Info(
-                    $"Opening solution file aborted - {Context.Solution.LoadedWorkspaces.Count} workspaces remain open"
+                    $"Opening solution file aborted - {SolutionProvider.Current.LoadedWorkspaces.Count} workspaces remain open"
                 );
                 return;
             }
@@ -152,7 +158,7 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         return ReactiveCommand.CreateFromTask(async () =>
         {
-            _ = await IoService.SaveSolution(SaveSolutionAs, Context.Solution);
+            _ = await IoService.SaveSolution(SaveSolutionAs, SolutionProvider.Current);
         });
     }
 
@@ -163,10 +169,13 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         return ReactiveCommand.CreateFromTask(async () =>
         {
-            if (Context.Solution.IsWorkspaceLoaded)
+            if (SolutionProvider.Current.IsWorkspaceLoaded)
             {
-                Log.Trace($"Closing tab {Context.Solution.WorkingSpace.Title}");
-                await IoService.SafeCloseWorkspace(Context.Solution.WorkingSpace, SaveSubtitleAs);
+                Log.Trace($"Closing tab {SolutionProvider.Current.WorkingSpace.Title}");
+                await _ioService.SafeCloseWorkspace(
+                    SolutionProvider.Current.WorkingSpace,
+                    SaveSubtitleAs
+                );
             }
         });
     }
@@ -196,11 +205,11 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         return ReactiveCommand.CreateFromTask(async () =>
         {
-            if (Context.Solution.IsWorkspaceLoaded)
+            if (SolutionProvider.Current.IsWorkspaceLoaded)
             {
                 var vm = new StylesManagerWindowViewModel(
-                    Context.Solution,
-                    Context.Solution.WorkingSpace.Document
+                    SolutionProvider.Current,
+                    SolutionProvider.Current.WorkingSpace.Document
                 );
                 await ShowStylesManager.Handle(vm);
             }
@@ -252,7 +261,7 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         return ReactiveCommand.CreateFromTask(async () =>
         {
-            var vm = _provider.GetRequiredService<LogWindowViewModel>();
+            var vm = _serviceProvider.GetRequiredService<LogWindowViewModel>();
             await ShowLogWindow.Handle(vm);
         });
     }
@@ -288,7 +297,7 @@ public partial class MainWindowViewModel : ViewModelBase
 
                 if (boxResult == ButtonResult.Yes)
                 {
-                    Context.Solution.RemoveWorkspace(id);
+                    SolutionProvider.Current.RemoveWorkspace(id);
                 }
             }
         );
@@ -313,7 +322,7 @@ public partial class MainWindowViewModel : ViewModelBase
 
                 if (boxResult == ButtonResult.Yes)
                 {
-                    Context.Solution.RemoveDirectory(id);
+                    SolutionProvider.Current.RemoveDirectory(id);
                 }
             }
         );
@@ -327,7 +336,7 @@ public partial class MainWindowViewModel : ViewModelBase
         return ReactiveCommand.CreateFromTask(
             async (int id) =>
             {
-                if (Context.Solution.FindItemById(id) is not DirectoryItem dirItem)
+                if (SolutionProvider.Current.FindItemById(id) is not DirectoryItem dirItem)
                     return;
 
                 Log.Trace($"Displaying input box for rename of directory {id} ({dirItem.Title})");
@@ -365,7 +374,7 @@ public partial class MainWindowViewModel : ViewModelBase
         return ReactiveCommand.CreateFromTask(
             async (int id) =>
             {
-                if (Context.Solution.FindItemById(id) is not DocumentItem docItem)
+                if (SolutionProvider.Current.FindItemById(id) is not DocumentItem docItem)
                     return;
 
                 Log.Trace($"Displaying input box for rename of document {id} ({docItem.Title})");

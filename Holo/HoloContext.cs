@@ -65,7 +65,7 @@ public class HoloContext : BindableBase, IHoloContext
 
     public DependencyControl DependencyControl { get; }
 
-    private HoloContext()
+    public HoloContext()
     {
         Directories.Create();
 
