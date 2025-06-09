@@ -29,25 +29,6 @@ public class HoloContext : BindableBase, IHoloContext
     private static readonly Lazy<HoloContext> _instance = new(() => new HoloContext());
     private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-    private Solution _solution;
-
-    /// <summary>
-    /// Holo instance
-    /// </summary>
-    /// <remarks>Not initialized until first request</remarks>
-    [Obsolete("Use Dependency Injection instead.")]
-    public static HoloContext Instance => _instance.Value;
-
-    /// <summary>
-    /// The currently-loaded solution
-    /// </summary>
-    [Obsolete("Use Dependency Injection instead.")]
-    public Solution Solution
-    {
-        get => _solution;
-        set => SetProperty(ref _solution, value);
-    }
-
     /// <summary>
     /// Provides the currently-loaded <see cref="Solution"/>
     /// </summary>
@@ -83,7 +64,6 @@ public class HoloContext : BindableBase, IHoloContext
                 DependencyControl.AddAdditionalRepositories(Configuration.RepositoryUrls)
             );
 
-        _solution = new Solution();
         SolutionProvider = new SolutionProvider();
 
         Logger.Info("Initialization complete");

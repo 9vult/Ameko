@@ -2,6 +2,7 @@
 
 using System.Windows.Input;
 using Holo;
+using Holo.Providers;
 using ReactiveUI;
 
 namespace Ameko.ViewModels.Controls;
@@ -39,6 +40,8 @@ public partial class TabItemViewModel : ViewModelBase
     private int _editBoxSelectionEnd;
 
     public Workspace Workspace => _workspace;
+    public ISolutionProvider SolutionProvider { get; }
+    public Configuration Configuration { get; }
 
     public int EditBoxSelectionStart
     {
@@ -52,7 +55,11 @@ public partial class TabItemViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _editBoxSelectionEnd, value);
     }
 
-    public TabItemViewModel(Workspace workspace)
+    public TabItemViewModel(
+        ISolutionProvider solutionProvider,
+        Configuration configuration,
+        Workspace workspace
+    )
     {
         #region Interactions
         CopyEvents = new Interaction<TabItemViewModel, string?>();
@@ -76,5 +83,7 @@ public partial class TabItemViewModel : ViewModelBase
         #endregion
 
         _workspace = workspace;
+        SolutionProvider = solutionProvider;
+        Configuration = configuration;
     }
 }

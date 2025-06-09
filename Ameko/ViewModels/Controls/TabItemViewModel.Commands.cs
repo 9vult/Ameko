@@ -1,14 +1,11 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using AssCS;
 using AssCS.History;
-using AssCS.Utilities;
-using Holo;
 using ReactiveUI;
 
 namespace Ameko.ViewModels.Controls;
@@ -174,8 +171,7 @@ public partial class TabItemViewModel : ViewModelBase
                 return;
 
             var useSoftBreaks =
-                HoloContext.Instance.Solution.UseSoftLinebreaks
-                ?? HoloContext.Instance.Configuration.UseSoftLinebreaks;
+                SolutionProvider.Current.UseSoftLinebreaks ?? Configuration.UseSoftLinebreaks;
 
             var one = selectionManager.SelectedEventCollection[0];
             var two = selectionManager.SelectedEventCollection[1];

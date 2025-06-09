@@ -2,9 +2,12 @@
 
 using System;
 using System.Globalization;
+using Ameko.Services;
 using Avalonia.Data.Converters;
 using Holo;
+using Holo.Scripting;
 using Holo.Scripting.Models;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Ameko.Converters;
 
@@ -17,7 +20,9 @@ public class DepCtrlUpToDateConverter : IValueConverter
     {
         if (value is not Module module)
             return false;
-        return !HoloContext.Instance.DependencyControl.IsModuleUpToDate(module);
+        return !AmekoServiceProvider
+                .Provider?.GetRequiredService<DependencyControl>()
+                .IsModuleUpToDate(module) ?? true;
     }
 
     public object? ConvertBack(

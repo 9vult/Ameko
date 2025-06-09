@@ -9,7 +9,6 @@
         d:DesignHeight="450"
 
         xmlns:c="using:Ameko.Views.Controls"
-        xmlns:converters="clr-namespace:Ameko.Converters"
         xmlns:holo="clr-namespace:Holo;assembly=Holo"
         xmlns:i18n="clr-namespace:Ameko.I18N"
         xmlns:icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
@@ -20,16 +19,12 @@
 
         Icon="/Assets/Ameko-Simplified-BG-64.ico"
         Title="{Binding WindowTitle}">
-    <Design.DataContext>
-        <!-- This only sets the DataContext for the previewer in an IDE,
-             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
-        <vm:MainWindowViewModel/>
-    </Design.DataContext>
+    <!-- <Design.DataContext> -->
+    <!--     This only sets the DataContext for the previewer in an IDE, -->
+    <!--          to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+    <!--     <vm:MainWindowViewModel/> -->
+    <!-- </Design.DataContext> -->
     
-    <Window.Resources>
-        <converters:WorkspaceViewModelConverter x:Key="WorkspaceConverter" />
-    </Window.Resources>
-
     <DockPanel>
         <c:MenuStrip DockPanel.Dock="Top" />
         <Grid>
