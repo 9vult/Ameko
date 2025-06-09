@@ -173,7 +173,7 @@ public class Karaoke
         if (time > syl.Start + Time.FromMillis(syl.Duration))
             return;
 
-        var delta = (time - syl.Start).TotalMilliseconds;
+        var delta = time.TotalMilliseconds - syl.Start.TotalMilliseconds;
         syl.Start = Time.FromTime(time);
         syl.Duration -= delta;
         pre.Duration += delta;
@@ -194,7 +194,7 @@ public class Karaoke
         // Chop off any portion of syllables starting before the new start time
         do
         {
-            long delta = (start - _syllables[index].Start).TotalMilliseconds;
+            var delta = start.TotalMilliseconds - _syllables[index].Start.TotalMilliseconds;
             _syllables[index].Start = Time.FromTime(start);
             _syllables[index].Duration = Math.Max(0, _syllables[index].Duration - delta);
         } while (++index < _syllables.Count && _syllables[index].Start < start);
@@ -209,7 +209,8 @@ public class Karaoke
             --index;
         }
 
-        _syllables[index].Duration = (end - _syllables[index].Start).TotalMilliseconds;
+        _syllables[index].Duration =
+            end.TotalMilliseconds - _syllables[index].Start.TotalMilliseconds;
     }
 
     /// <summary>
@@ -233,11 +234,17 @@ public class Karaoke
                     break;
                 case BlockType.Override:
                     var b = (OverrideBlock)block;
-                    bool inTag = false;
+                    var inTag = false;
 
                     foreach (var tag in b.Tags)
                     {
-                        if (tag.IsValid && tag.Name.StartsWith(@"\k"))
+                        if (
+                            tag.IsValid
+                            && tag.Name.StartsWith(
+                                @"\k",
+                                StringComparison.InvariantCultureIgnoreCase
+                            )
+                        )
                         {
                             if (inTag)
                             {
@@ -252,8 +259,13 @@ public class Karaoke
                             if (syl.Duration > 0 || syl.Text.Length != 0)
                             {
                                 _syllables.Add(syl);
-                                syl.Text = string.Empty;
-                                syl.OverrideTags.Clear();
+                                syl = new Syllable
+                                {
+                                    Start = syl.Start,
+                                    Duration = syl.Duration,
+                                    TagType = syl.TagType,
+                                    Text = string.Empty,
+                                };
                             }
 
                             syl.TagType = tag.Name;
@@ -262,19 +274,27 @@ public class Karaoke
                         }
                         else
                         {
-                            var otext = syl.OverrideTags[syl.Text.Length];
-                            // Merge adjacent tags
-                            if (text.EndsWith('}'))
-                                text = text[..^1];
+                            // Get or create the override tag string at the index of syl.Text.Length
+                            if (!syl.OverrideTags.TryGetValue(syl.Text.Length, out var oText))
+                                syl.OverrideTags[syl.Text.Length] = oText = string.Empty;
+
+                            text = text.TrimEnd('}');
+
                             if (!inTag)
-                                otext += '{';
+                                oText += "{";
+
                             inTag = true;
-                            otext += tag;
+                            oText += tag;
+
+                            // Save the updated string back
+                            syl.OverrideTags[syl.Text.Length] = oText;
                         }
                     }
                     if (inTag)
                         syl.OverrideTags[syl.Text.Length] += '}';
                     break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(syl));
             }
         }
         _syllables.Add(syl);
