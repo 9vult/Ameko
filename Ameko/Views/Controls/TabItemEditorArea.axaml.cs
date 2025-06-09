@@ -13,15 +13,18 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.ReactiveUI;
 using Holo;
+using Holo.Providers;
+using Microsoft.Extensions.DependencyInjection;
 using ReactiveUI;
 
 namespace Ameko.Views.Controls;
 
 public partial class TabItemEditorArea : ReactiveUserControl<TabItemViewModel>
 {
-    private static bool UseSoftLinebreaks =>
-        HoloContext.Instance.Solution.UseSoftLinebreaks
-        ?? HoloContext.Instance.Configuration.UseSoftLinebreaks;
+    private bool UseSoftLinebreaks =>
+        ViewModel?.SolutionProvider.Current.UseSoftLinebreaks
+        ?? ViewModel?.Configuration.UseSoftLinebreaks
+        ?? false;
 
     private void EditBox_OnKeyDown(object? sender, KeyEventArgs e)
     {
@@ -80,6 +83,7 @@ public partial class TabItemEditorArea : ReactiveUserControl<TabItemViewModel>
     public TabItemEditorArea()
     {
         InitializeComponent();
+
         var previousVMs = new List<TabItemViewModel>();
 
         this.WhenActivated(disposables =>

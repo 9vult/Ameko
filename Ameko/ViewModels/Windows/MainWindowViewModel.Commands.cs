@@ -146,7 +146,7 @@ public partial class MainWindowViewModel : ViewModelBase
                 return;
             }
 
-            HoloContext.Instance.Solution = Solution.Parse(uri);
+            SolutionProvider.Current = Solution.Parse(uri);
             Log.Info("Loaded solution file");
         });
     }
@@ -207,7 +207,7 @@ public partial class MainWindowViewModel : ViewModelBase
         {
             if (SolutionProvider.Current.IsWorkspaceLoaded)
             {
-                var vm = new StylesManagerWindowViewModel(
+                var vm = _stylesVmProvider.Create(
                     SolutionProvider.Current,
                     SolutionProvider.Current.WorkingSpace.Document
                 );
@@ -219,12 +219,12 @@ public partial class MainWindowViewModel : ViewModelBase
     /// <summary>
     /// Execute a Script
     /// </summary>
-    private static ReactiveCommand<string, Unit> CreateExecuteScriptCommand()
+    private ReactiveCommand<string, Unit> CreateExecuteScriptCommand()
     {
         return ReactiveCommand.CreateFromTask(
             async (string qualifiedName) =>
             {
-                await ScriptService.Instance.ExecuteScriptAsync(qualifiedName);
+                await _scriptService.ExecuteScriptAsync(qualifiedName);
             }
         );
     }
@@ -232,12 +232,12 @@ public partial class MainWindowViewModel : ViewModelBase
     /// <summary>
     /// Reload scripts
     /// </summary>
-    private static ReactiveCommand<bool, Unit> CreateReloadScriptsCommand()
+    private ReactiveCommand<bool, Unit> CreateReloadScriptsCommand()
     {
         return ReactiveCommand.Create(
             (bool isManual) =>
             {
-                ScriptService.Instance.Reload(isManual);
+                _scriptService.Reload(isManual);
             }
         );
     }
@@ -249,7 +249,7 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         return ReactiveCommand.CreateFromTask(async () =>
         {
-            var vm = new DepCtrlWindowViewModel(ReloadScriptsCommand);
+            var vm = _serviceProvider.GetRequiredService<DepCtrlWindowViewModel>();
             await ShowDependencyControl.Handle(vm);
         });
     }

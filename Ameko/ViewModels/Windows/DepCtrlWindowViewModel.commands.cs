@@ -34,7 +34,7 @@ public partial class DepCtrlWindowViewModel
                 this.RaisePropertyChanged(nameof(InstallButtonEnabled));
                 this.RaisePropertyChanged(nameof(UninstallButtonEnabled));
 
-                _reloadCommand?.Execute(false);
+                _scriptService.Reload(false);
             }
         });
     }
@@ -58,7 +58,7 @@ public partial class DepCtrlWindowViewModel
                 this.RaisePropertyChanged(nameof(InstallButtonEnabled));
                 this.RaisePropertyChanged(nameof(UninstallButtonEnabled));
 
-                _reloadCommand?.Execute(false);
+                _scriptService.Reload(false);
             }
         });
     }
@@ -87,7 +87,7 @@ public partial class DepCtrlWindowViewModel
                 this.RaisePropertyChanged(nameof(UpdateButtonEnabled));
                 this.RaisePropertyChanged(nameof(UpdateAllButtonEnabled));
 
-                _reloadCommand?.Execute(false);
+                _scriptService.Reload(false);
             }
         });
     }
@@ -128,7 +128,7 @@ public partial class DepCtrlWindowViewModel
 
             await ShowMessageBox.Handle(GetDefaultBox(finalResult));
 
-            _reloadCommand?.Execute(false);
+            _scriptService.Reload(false);
         });
     }
 
@@ -140,9 +140,7 @@ public partial class DepCtrlWindowViewModel
         return ReactiveCommand.CreateFromTask(async () =>
         {
             await DependencyControl.SetUpBaseRepository();
-            await DependencyControl.AddAdditionalRepositories(
-                HoloContext.Instance.Configuration.RepositoryUrls
-            );
+            await DependencyControl.AddAdditionalRepositories(_configuration.RepositoryUrls);
 
             _updateCandidates.Clear();
             _updateCandidates.AddRange(DependencyControl.GetUpdateCandidates());

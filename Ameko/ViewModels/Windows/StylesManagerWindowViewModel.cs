@@ -15,7 +15,7 @@ public partial class StylesManagerWindowViewModel : ViewModelBase
 
     public Solution Solution { get; }
     public Document Document { get; }
-    public Globals Globals { get; } = HoloContext.Instance.Globals;
+    public Globals Globals { get; }
 
     public Style? SelectedGlobalStyle
     {
@@ -59,8 +59,10 @@ public partial class StylesManagerWindowViewModel : ViewModelBase
     public ICommand NewStyleCommand { get; }
     #endregion
 
-    public StylesManagerWindowViewModel(Solution solution, Document document)
+    public StylesManagerWindowViewModel(Globals globals, Solution solution, Document document)
     {
+        Globals = globals;
+
         Solution = solution;
         Document = document;
         DuplicateCommand = CreateDuplicateCommand();

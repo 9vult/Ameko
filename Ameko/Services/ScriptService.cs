@@ -21,15 +21,11 @@ namespace Ameko.Services;
 /// </summary>
 public class ScriptService
 {
-    // ReSharper disable once InconsistentNaming
-    private static readonly Lazy<ScriptService> _instance = new(() => new ScriptService());
     private static readonly Uri ScriptsRoot = new(Path.Combine(Directories.DataHome, "scripts"));
     private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
     private readonly ObservableCollection<HoloScript> _scripts;
     private readonly Dictionary<string, HoloScript?> _scriptMap;
-
-    public static ScriptService Instance => _instance.Value;
 
     public AssCS.Utilities.ReadOnlyObservableCollection<HoloScript> Scripts { get; }
 
@@ -123,6 +119,11 @@ public class ScriptService
         var libCount = Directory.GetFiles(ScriptsRoot.LocalPath, "*.lib.cs").Length;
 
         Logger.Info($"Reloaded {_scripts.Count} scripts ({libCount} libraries)");
+
+        // Execute event
+        OnReload?.Invoke(this, EventArgs.Empty);
+
+        // Display message box (if manually invoked)
         if (isManual)
             _ = DisplayMessageBoxAsync(I18N.Resources.MsgBox_ScriptService_Reload_Body);
     }
@@ -136,11 +137,17 @@ public class ScriptService
         await box.ShowAsync();
     }
 
-    private ScriptService()
+    public ScriptService()
     {
         _scripts = [];
         _scriptMap = [];
         Scripts = new AssCS.Utilities.ReadOnlyObservableCollection<HoloScript>(_scripts);
         Reload(false);
     }
+
+    /// <summary>
+    /// Event Handler for <see cref="ScriptService.Reload"/>
+    /// </summary>
+    public delegate void ReloadEventHandler(object sender, EventArgs e);
+    public event ReloadEventHandler? OnReload;
 }

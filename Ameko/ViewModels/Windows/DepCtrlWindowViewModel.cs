@@ -4,6 +4,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Reactive;
 using System.Windows.Input;
+using Ameko.Services;
 using Holo;
 using Holo.Scripting;
 using Holo.Scripting.Models;
@@ -15,11 +16,13 @@ namespace Ameko.ViewModels.Windows;
 
 public partial class DepCtrlWindowViewModel : ViewModelBase
 {
+    private readonly ScriptService _scriptService;
+    private readonly Configuration _configuration;
+
     private Module? _selectedStoreModule;
     private Module? _selectedInstalledModule;
     private Repository? _selectedRepository;
     private readonly ObservableCollection<Module> _updateCandidates;
-    private readonly ICommand? _reloadCommand;
     private string _repoUrlInput;
 
     public Interaction<IMsBox<ButtonResult>, Unit> ShowMessageBox { get; }
@@ -30,7 +33,7 @@ public partial class DepCtrlWindowViewModel : ViewModelBase
     public ICommand UpdateAllCommand { get; }
     public ICommand RefreshCommand { get; }
 
-    public DependencyControl DependencyControl => HoloContext.Instance.DependencyControl;
+    public DependencyControl DependencyControl { get; }
 
     public Module? SelectedStoreModule
     {
@@ -90,11 +93,17 @@ public partial class DepCtrlWindowViewModel : ViewModelBase
     public bool RemoveRepoButtonEnabled =>
         SelectedRepository?.Url != null
         && SelectedRepository.Url != DependencyControl.BaseRepositoryUrl
-        && HoloContext.Instance.Configuration.RepositoryUrls.Contains(SelectedRepository.Url);
+        && _configuration.RepositoryUrls.Contains(SelectedRepository.Url);
 
-    public DepCtrlWindowViewModel(ICommand reloadCommand)
+    public DepCtrlWindowViewModel(
+        DependencyControl dependencyControl,
+        ScriptService scriptService,
+        Configuration configuration
+    )
     {
-        _reloadCommand = reloadCommand;
+        _scriptService = scriptService;
+        _configuration = configuration;
+        DependencyControl = dependencyControl;
 
         _repoUrlInput = string.Empty;
 

@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive;
 using System.Windows.Input;
+using Ameko.Providers;
 using Ameko.Services;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
@@ -21,7 +22,9 @@ public partial class MainWindowViewModel : ViewModelBase
     private static readonly Logger Log = LogManager.GetCurrentClassLogger();
 
     private readonly IServiceProvider _serviceProvider;
+    private readonly StylesManagerViewModelProvider _stylesVmProvider;
     private readonly IoService _ioService;
+    private readonly ScriptService _scriptService;
 
     #region Interactions
     // File
@@ -104,10 +107,7 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         ScriptMenuItems.Clear();
         ScriptMenuItems.AddRange(
-            ScriptMenuService.GenerateMenuItemSource(
-                ScriptService.Instance.Scripts,
-                ExecuteScriptCommand
-            )
+            ScriptMenuService.GenerateMenuItemSource(_scriptService.Scripts, ExecuteScriptCommand)
         );
 
         ScriptMenuItems.Add(new Separator());
@@ -117,13 +117,17 @@ public partial class MainWindowViewModel : ViewModelBase
 
     public MainWindowViewModel(
         IServiceProvider serviceProvider,
+        ISolutionProvider solutionProvider,
+        StylesManagerViewModelProvider stylesVmProvider,
         IoService ioService,
-        ISolutionProvider solutionProvider
+        ScriptService scriptService
     )
     {
         _serviceProvider = serviceProvider;
-        _ioService = ioService;
         SolutionProvider = solutionProvider;
+        _stylesVmProvider = stylesVmProvider;
+        _ioService = ioService;
+        _scriptService = scriptService;
 
         #region Interactions
         // File
@@ -170,6 +174,6 @@ public partial class MainWindowViewModel : ViewModelBase
 
         ScriptMenuItems = [];
         GenerateScriptsMenu();
-        ScriptService.Instance.Scripts.CollectionChanged += (_, _) => GenerateScriptsMenu();
+        _scriptService.OnReload += (_, _) => GenerateScriptsMenu();
     }
 }

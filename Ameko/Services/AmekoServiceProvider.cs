@@ -29,13 +29,17 @@ public static class AmekoServiceProvider
         services.AddSingleton(p => p.GetRequiredService<IHoloContext>().SolutionProvider);
         services.AddSingleton(p => p.GetRequiredService<ILogProvider>().LogEntries);
 
-        // Register additional providers
+        // Register additional services and providers
+        services.AddSingleton<ScriptService>();
         services.AddSingleton<IoService>();
+
         services.AddSingleton<TabProvider>();
+        services.AddSingleton<StylesManagerViewModelProvider>();
 
         // Register ViewModels
         services.AddSingleton<MainWindowViewModel>();
         services.AddTransient<LogWindowViewModel>();
+        services.AddTransient<DepCtrlWindowViewModel>();
 
         Provider = services.BuildServiceProvider();
 
