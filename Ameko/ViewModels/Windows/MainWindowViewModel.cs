@@ -105,6 +105,7 @@ public partial class MainWindowViewModel : ViewModelBase
 
     private void GenerateScriptsMenu()
     {
+        Log.Trace("Regenerating scripts menu...");
         ScriptMenuItems.Clear();
         ScriptMenuItems.AddRange(
             ScriptMenuService.GenerateMenuItemSource(_scriptService.Scripts, ExecuteScriptCommand)
@@ -113,6 +114,7 @@ public partial class MainWindowViewModel : ViewModelBase
         ScriptMenuItems.Add(new Separator());
         ScriptMenuItems.Add(ScriptMenuService.GenerateReloadMenuItem(ReloadScriptsCommand));
         ScriptMenuItems.Add(ScriptMenuService.GenerateDepCtlMenuItem(ShowDependencyControlCommand));
+        Log.Trace("Finished generating scripts menu");
     }
 
     public MainWindowViewModel(

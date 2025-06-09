@@ -82,10 +82,7 @@ public class ScriptService
     {
         Logger.Info("Reloading scripts");
         if (!Directory.Exists(ScriptsRoot.LocalPath))
-        {
-            Logger.Error("Scripts directory not found");
-            return;
-        }
+            Directory.CreateDirectory(ScriptsRoot.LocalPath);
 
         _scripts.Clear();
         _scriptMap.Clear();
@@ -142,7 +139,6 @@ public class ScriptService
         _scripts = [];
         _scriptMap = [];
         Scripts = new AssCS.Utilities.ReadOnlyObservableCollection<HoloScript>(_scripts);
-        Reload(false);
     }
 
     /// <summary>
