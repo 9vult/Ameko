@@ -31,7 +31,7 @@ public partial class MainWindowViewModel : ViewModelBase
     public Interaction<StylesManagerWindowViewModel, Unit> ShowStylesManager { get; }
 
     // Scripts
-    public Interaction<DepCtlWindowViewModel, Unit> ShowDependencyControl { get; }
+    public Interaction<DepCtrlWindowViewModel, Unit> ShowDependencyControl { get; }
 
     // Help
     public Interaction<LogWindowViewModel, Unit> ShowLogWindow { get; }
@@ -121,7 +121,7 @@ public partial class MainWindowViewModel : ViewModelBase
         // Subtitle
         ShowStylesManager = new Interaction<StylesManagerWindowViewModel, Unit>();
         // Scripts
-        ShowDependencyControl = new Interaction<DepCtlWindowViewModel, Unit>();
+        ShowDependencyControl = new Interaction<DepCtrlWindowViewModel, Unit>();
         // Help
         ShowLogWindow = new Interaction<LogWindowViewModel, Unit>();
         ShowAboutWindow = new Interaction<AboutWindowViewModel, Unit>();

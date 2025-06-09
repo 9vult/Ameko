@@ -178,11 +178,11 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
     }
 
     private async Task DoShowDepCtlWindowAsync(
-        IInteractionContext<DepCtlWindowViewModel, Unit> interaction
+        IInteractionContext<DepCtrlWindowViewModel, Unit> interaction
     )
     {
         Log.Trace("Displaying Dependency Control");
-        var window = new DepCtlWindow { DataContext = interaction.Input };
+        var window = new DepCtrlWindow { DataContext = interaction.Input };
         await window.ShowDialog(this);
         interaction.SetOutput(Unit.Default);
     }

@@ -13,7 +13,7 @@ using ReactiveUI;
 
 namespace Ameko.ViewModels.Windows;
 
-public partial class DepCtlWindowViewModel
+public partial class DepCtrlWindowViewModel
 {
     /// <summary>
     /// Install a module
@@ -157,7 +157,7 @@ public partial class DepCtlWindowViewModel
             this.RaisePropertyChanged(nameof(UpdateButtonEnabled));
             this.RaisePropertyChanged(nameof(UpdateAllButtonEnabled));
 
-            await ShowMessageBox.Handle(GetInfoBox(I18N.Resources.DepCtl_MsgBox_Refreshed));
+            await ShowMessageBox.Handle(GetInfoBox(I18N.Resources.DepCtrl_MsgBox_Refreshed));
         });
     }
 
@@ -170,18 +170,18 @@ public partial class DepCtlWindowViewModel
     private static IMsBox<ButtonResult> GetDefaultBox(InstallationResult result)
     {
         return MessageBoxManager.GetMessageBoxStandard(
-            I18N.Resources.DepCtlWindow_Title,
+            I18N.Resources.DepCtrlWindow_Title,
             result switch
             {
-                InstallationResult.Success => I18N.Resources.DepCtl_Result_Success,
-                InstallationResult.Failure => I18N.Resources.DepCtl_Result_Failure,
-                InstallationResult.DependencyNotFound => I18N.Resources.DepCtl_Result_DepNotFound,
+                InstallationResult.Success => I18N.Resources.DepCtrl_Result_Success,
+                InstallationResult.Failure => I18N.Resources.DepCtrl_Result_Failure,
+                InstallationResult.DependencyNotFound => I18N.Resources.DepCtrl_Result_DepNotFound,
                 InstallationResult.AlreadyInstalled =>
-                    I18N.Resources.DepCtl_Result_AlreadyInstalled,
-                InstallationResult.FilesystemFailure => I18N.Resources.DepCtl_Result_FS_Failure,
-                InstallationResult.NotInstalled => I18N.Resources.DepCtl_Result_NotInstalled,
+                    I18N.Resources.DepCtrl_Result_AlreadyInstalled,
+                InstallationResult.FilesystemFailure => I18N.Resources.DepCtrl_Result_FS_Failure,
+                InstallationResult.NotInstalled => I18N.Resources.DepCtrl_Result_NotInstalled,
                 InstallationResult.IsRequiredDependency =>
-                    I18N.Resources.DepCtl_Result_IsRequiredDep,
+                    I18N.Resources.DepCtrl_Result_IsRequiredDep,
                 _ => throw new ArgumentOutOfRangeException(nameof(result)),
             },
             ButtonEnum.Ok,
@@ -201,7 +201,7 @@ public partial class DepCtlWindowViewModel
     private static IMsBox<ButtonResult> GetInfoBox(string content)
     {
         return MessageBoxManager.GetMessageBoxStandard(
-            I18N.Resources.DepCtlWindow_Title,
+            I18N.Resources.DepCtrlWindow_Title,
             content,
             ButtonEnum.Ok,
             Icon.Info

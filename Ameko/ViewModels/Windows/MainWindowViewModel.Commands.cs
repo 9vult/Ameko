@@ -233,13 +233,13 @@ public partial class MainWindowViewModel : ViewModelBase
     }
 
     /// <summary>
-    /// Display the <see cref="DepCtlWindow"/>
+    /// Display the <see cref="DepCtrlWindow"/>
     /// </summary>
     private ReactiveCommand<Unit, Unit> CreateShowDependencyControlCommand()
     {
         return ReactiveCommand.CreateFromTask(async () =>
         {
-            var vm = new DepCtlWindowViewModel(ReloadScriptsCommand);
+            var vm = new DepCtrlWindowViewModel(ReloadScriptsCommand);
             await ShowDependencyControl.Handle(vm);
         });
     }
