@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 using System;
+using System.Threading.Tasks;
 using Ameko.Providers;
-using Ameko.ViewModels.Controls;
 using Ameko.ViewModels.Windows;
 using Holo;
 using Holo.Providers;
@@ -45,6 +45,9 @@ public static class AmekoServiceProvider
 
         // Load the logger service immediately
         _ = Provider.GetRequiredService<ILogProvider>();
+
+        // Load scripts on a background thread to avoid blocking UI
+        _ = Task.Run(() => Provider.GetRequiredService<ScriptService>().Reload(isManual: false));
 
         return Provider;
     }

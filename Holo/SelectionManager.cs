@@ -47,6 +47,9 @@ public class SelectionManager : BindableBase
     /// <param name="selection">Collection of all selected events</param>
     public void Select(Event active, IList<Event> selection)
     {
+        if (active == ActiveEvent && selection.Count == SelectedEventCollection.Count)
+            return;
+
         Logger.Info($"Now selecting {active.Id} ({selection.Count})");
         if (active == ActiveEvent && selection.Count == SelectedEventCollection.Count)
             return;

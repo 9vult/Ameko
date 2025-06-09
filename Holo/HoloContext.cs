@@ -1,6 +1,5 @@
 ﻿// SPDX-License-Identifier: MPL-2.0
 
-using System.Collections.ObjectModel;
 using AssCS;
 using Holo.IO;
 using Holo.Providers;
@@ -25,8 +24,6 @@ namespace Holo;
 /// </remarks>
 public class HoloContext : BindableBase, IHoloContext
 {
-    // ReSharper disable once InconsistentNaming
-    private static readonly Lazy<HoloContext> _instance = new(() => new HoloContext());
     private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
     /// <summary>
