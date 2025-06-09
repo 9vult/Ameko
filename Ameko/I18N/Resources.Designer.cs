@@ -96,24 +96,6 @@ namespace Ameko.I18N {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Export.
-        /// </summary>
-        public static string DepCtrl_Button_Export_ToolTip {
-            get {
-                return ResourceManager.GetString("DepCtrl_Button_Export_ToolTip", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Import.
-        /// </summary>
-        public static string DepCtrl_Button_Import_ToolTip {
-            get {
-                return ResourceManager.GetString("DepCtrl_Button_Import_ToolTip", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Install.
         /// </summary>
         public static string DepCtrl_Button_Install {
@@ -137,24 +119,6 @@ namespace Ameko.I18N {
         public static string DepCtrl_Button_Refresh_ToolTip {
             get {
                 return ResourceManager.GetString("DepCtrl_Button_Refresh_ToolTip", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Repositories....
-        /// </summary>
-        public static string DepCtrl_Button_RepoManager {
-            get {
-                return ResourceManager.GetString("DepCtrl_Button_RepoManager", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to View the Repository Manager.
-        /// </summary>
-        public static string DepCtrl_Button_RepoManager_ToolTip {
-            get {
-                return ResourceManager.GetString("DepCtrl_Button_RepoManager_ToolTip", resourceCulture);
             }
         }
         
@@ -312,6 +276,15 @@ namespace Ameko.I18N {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Modules.
+        /// </summary>
+        public static string DepCtrl_ModulesTab {
+            get {
+                return ResourceManager.GetString("DepCtrl_ModulesTab", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Module Store.
         /// </summary>
         public static string DepCtrl_ModuleStore {
@@ -326,6 +299,15 @@ namespace Ameko.I18N {
         public static string DepCtrl_MsgBox_Refreshed {
             get {
                 return ResourceManager.GetString("DepCtrl_MsgBox_Refreshed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Repositories.
+        /// </summary>
+        public static string DepCtrl_RepositoriesTab {
+            get {
+                return ResourceManager.GetString("DepCtrl_RepositoriesTab", resourceCulture);
             }
         }
         
