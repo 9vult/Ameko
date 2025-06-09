@@ -6,6 +6,7 @@ using Ameko.Providers;
 using Ameko.ViewModels.Windows;
 using Holo;
 using Holo.Providers;
+using Holo.Scripting;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Ameko.Services;
@@ -25,15 +26,16 @@ public static class AmekoServiceProvider
         // Register secondary Holo services
         services.AddSingleton(p => p.GetRequiredService<IHoloContext>().Configuration);
         services.AddSingleton(p => p.GetRequiredService<IHoloContext>().Globals);
-        services.AddSingleton(p => p.GetRequiredService<IHoloContext>().DependencyControl);
         services.AddSingleton(p => p.GetRequiredService<IHoloContext>().SolutionProvider);
         services.AddSingleton(p => p.GetRequiredService<ILogProvider>().LogEntries);
 
         // Register additional services and providers
         services.AddSingleton<CultureService>();
         services.AddSingleton<ThemeService>();
-        services.AddSingleton<ScriptService>();
         services.AddSingleton<IoService>();
+
+        services.AddSingleton<ScriptService>();
+        services.AddSingleton<DependencyControl>();
 
         services.AddSingleton<TabProvider>();
         services.AddSingleton<StylesManagerViewModelProvider>();
