@@ -30,6 +30,8 @@ public static class AmekoServiceProvider
         services.AddSingleton(p => p.GetRequiredService<ILogProvider>().LogEntries);
 
         // Register additional services and providers
+        services.AddSingleton<CultureService>();
+        services.AddSingleton<ThemeService>();
         services.AddSingleton<ScriptService>();
         services.AddSingleton<IoService>();
 
@@ -45,9 +47,6 @@ public static class AmekoServiceProvider
 
         // Load the logger service immediately
         _ = Provider.GetRequiredService<ILogProvider>();
-
-        // Load scripts on a background thread to avoid blocking UI
-        _ = Task.Run(() => Provider.GetRequiredService<ScriptService>().Reload(isManual: false));
 
         return Provider;
     }

@@ -48,6 +48,7 @@ public partial class Configuration : BindableBase
     private bool _useSoftLinebreaks;
     private bool _lineWidthIncludesWhitespace;
     private bool _lineWidthIncludesPunctuation;
+    private string _culture;
     private Theme _theme;
     private RangeObservableCollection<string> _repositoryUrls;
 
@@ -125,6 +126,12 @@ public partial class Configuration : BindableBase
         set => SetProperty(ref _lineWidthIncludesPunctuation, value);
     }
 
+    public string Culture
+    {
+        get => _culture;
+        set => SetProperty(ref _culture, value);
+    }
+
     /// <summary>
     /// Display theme to use
     /// </summary>
@@ -190,6 +197,7 @@ public partial class Configuration : BindableBase
                 AutosaveInterval = _autosaveInterval,
                 LineWidthIncludesWhitespace = _lineWidthIncludesWhitespace,
                 LineWidthIncludesPunctuation = _lineWidthIncludesPunctuation,
+                Culture = _culture,
                 Theme = _theme,
                 RepositoryUrls = RepositoryUrls.ToArray(),
             };
@@ -250,6 +258,7 @@ public partial class Configuration : BindableBase
                 _autosaveInterval = model.AutosaveInterval,
                 _lineWidthIncludesWhitespace = model.LineWidthIncludesWhitespace,
                 _lineWidthIncludesPunctuation = model.LineWidthIncludesPunctuation,
+                _culture = model.Culture,
                 _theme = model.Theme,
                 _repositoryUrls = new RangeObservableCollection<string>(model.RepositoryUrls),
             };
@@ -282,6 +291,8 @@ public partial class Configuration : BindableBase
         _autosaveEnabled = true;
         _autosaveInterval = 60;
         _repositoryUrls = [];
+        _culture = "en-US";
+        _theme = Theme.Default;
 
         RepositoryUrls = new ReadOnlyObservableCollection<string>(_repositoryUrls);
     }

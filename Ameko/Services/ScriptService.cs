@@ -7,6 +7,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Avalonia.Threading;
 using CSScriptLib;
 using Holo.IO;
 using Holo.Scripting;
@@ -78,20 +79,19 @@ public class ScriptService
     /// Reload scripts
     /// </summary>
     /// <param name="isManual">Whether to show the message box</param>
-    public void Reload(bool isManual)
+    public async Task Reload(bool isManual)
     {
         Logger.Info("Reloading scripts");
         if (!Directory.Exists(ScriptsRoot.LocalPath))
             Directory.CreateDirectory(ScriptsRoot.LocalPath);
 
-        _scripts.Clear();
-        _scriptMap.Clear();
+        var scriptPaths = Directory
+            .EnumerateFiles(ScriptsRoot.LocalPath, "*.cs")
+            .Where(f => !f.EndsWith(".lib.cs"));
 
-        foreach (
-            var path in Directory
-                .EnumerateFiles(ScriptsRoot.LocalPath, "*.cs")
-                .Where(f => !f.EndsWith(".lib.cs")) // Exclude libraries from being loaded
-        )
+        List<HoloScript> loadedScripts = [];
+
+        foreach (var path in scriptPaths)
         {
             try
             {
@@ -103,8 +103,7 @@ public class ScriptService
                     continue;
                 }
 
-                _scripts.Add(script);
-                _scriptMap.Add(script.Info.QualifiedName, script);
+                loadedScripts.Add(script);
             }
             catch (Exception ex)
             {
@@ -112,17 +111,30 @@ public class ScriptService
                 continue;
             }
         }
+
         // For informational purposes
         var libCount = Directory.GetFiles(ScriptsRoot.LocalPath, "*.lib.cs").Length;
-
         Logger.Info($"Reloaded {_scripts.Count} scripts ({libCount} libraries)");
 
-        // Execute event
-        OnReload?.Invoke(this, EventArgs.Empty);
+        // Update UI-bound collections and fire event on the UI thread for safety
+        await Dispatcher.UIThread.InvokeAsync(() =>
+        {
+            _scripts.Clear();
+            _scriptMap.Clear();
+
+            foreach (var script in loadedScripts)
+            {
+                _scripts.Add(script);
+                _scriptMap.Add(script.Info.QualifiedName, script);
+            }
+
+            // Fire event
+            OnReload?.Invoke(this, EventArgs.Empty);
+        });
 
         // Display message box (if manually invoked)
         if (isManual)
-            _ = DisplayMessageBoxAsync(I18N.Resources.MsgBox_ScriptService_Reload_Body);
+            await DisplayMessageBoxAsync(I18N.Resources.MsgBox_ScriptService_Reload_Body);
     }
 
     private static async Task DisplayMessageBoxAsync(string message)
