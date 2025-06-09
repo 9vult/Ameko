@@ -8,11 +8,53 @@
 
              xmlns:vm="clr-namespace:Ameko.ViewModels.Windows"
              xmlns:i18n="clr-namespace:Ameko.I18N"
-             xmlns:converters="clr-namespace:Ameko.Converters"
              xmlns:controls="clr-namespace:Ameko.Views.Controls"
              xmlns:holo="clr-namespace:Holo.Scripting.Models;assembly=Holo"
-             xmlns:icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              x:Class="Ameko.Views.Controls.DepCtrlRepositoriesTab"
              x:DataType="vm:DepCtrlWindowViewModel">
-    Welcome to Avalonia!
+    <DockPanel>
+        <Grid DockPanel.Dock="Bottom"
+              ColumnDefinitions="*, *">
+            <controls:RepositoryInformation Grid.Column="0"
+                                            DataContext="{Binding SelectedRepository}"/>
+            <Grid Grid.Column="1"
+                  VerticalAlignment="Bottom"
+                  ColumnDefinitions="5*, 2*"
+                  RowDefinitions="Auto, Auto">
+                <Button Grid.Column="1"
+                        Grid.Row="0"
+                        Margin="2"
+                        Content="{x:Static i18n:Resources.DepCtrl_Button_RemoveRepo}"
+                        ToolTip.Tip="{x:Static i18n:Resources.DepCtrl_Button_RemoveRepo_ToolTip}"
+                        IsEnabled="{Binding RemoveRepoButtonEnabled}" />
+                <Button Grid.Column="1"
+                        Grid.Row="1"
+                        Margin="2"
+                        Content="{x:Static i18n:Resources.DepCtrl_Button_AddRepo}"
+                        ToolTip.Tip="{x:Static i18n:Resources.DepCtrl_Button_AddRepo_ToolTip}"
+                        IsEnabled="{Binding AddRepoButtonEnabled}" />
+                <TextBox Grid.Column="0"
+                         Grid.Row="1"
+                         Margin="2"
+                         AcceptsReturn="False"
+                         AcceptsTab="False"
+                         TextWrapping="NoWrap"
+                         Watermark="https://your-repository.gov/base.json"
+                         Text="{Binding RepoUrlInput}"/>
+            </Grid>
+        </Grid>
+        
+        <!-- Repository list -->
+        <ListBox Margin="2"
+                 VerticalAlignment="Stretch"
+                 SelectionMode="Single"
+                 SelectedItem="{Binding SelectedRepository}"
+                 ItemsSource="{Binding DependencyControl.Repositories, Mode=TwoWay}">
+            <ListBox.ItemTemplate>
+                <DataTemplate x:DataType="holo:Repository">
+                    <TextBlock Text="{Binding Name}" />
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+    </DockPanel>
 </UserControl>
