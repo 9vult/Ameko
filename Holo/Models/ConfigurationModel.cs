@@ -18,6 +18,7 @@ internal record ConfigurationModel
     public required int AutosaveInterval;
     public required bool LineWidthIncludesWhitespace;
     public required bool LineWidthIncludesPunctuation;
+    public required string Culture;
     public required Theme Theme;
     public required string[] RepositoryUrls;
 }
