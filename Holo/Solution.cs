@@ -590,11 +590,11 @@ public class Solution : BindableBase
     /// <returns>Array of <see cref="SolutionItemModel"/>s</returns>
     private static SolutionItemModel[] ConvertToModels(IList<SolutionItem> items, string dir)
     {
-        List<SolutionItemModel> result = [];
-        result.AddRange(
-            from item in items
-            where item is not { Type: SolutionItemType.Document, IsSavedToFileSystem: false }
-            select new SolutionItemModel
+        return items
+            .Where(item =>
+                item is not { Type: SolutionItemType.Document, IsSavedToFileSystem: false }
+            )
+            .Select(item => new SolutionItemModel
             {
                 Name = item.Name,
                 Type = item.Type,
@@ -606,9 +606,8 @@ public class Solution : BindableBase
                     item.Type == SolutionItemType.Directory
                         ? ConvertToModels(item.Children, dir).ToArray()
                         : [],
-            }
-        );
-        return result.ToArray();
+            })
+            .ToArray();
     }
 
     /// <summary>
