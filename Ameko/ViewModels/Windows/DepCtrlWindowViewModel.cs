@@ -20,7 +20,7 @@ public partial class DepCtrlWindowViewModel : ViewModelBase
     private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
     private readonly IScriptService _scriptService;
-    private readonly Configuration _configuration;
+    private readonly IConfiguration _configuration;
     private readonly IMessageBoxService _messageBoxService;
 
     private Module? _selectedStoreModule;
@@ -104,7 +104,7 @@ public partial class DepCtrlWindowViewModel : ViewModelBase
     public DepCtrlWindowViewModel(
         IDependencyControl dependencyControl,
         IScriptService scriptService,
-        Configuration configuration,
+        IConfiguration configuration,
         IMessageBoxService messageBoxService
     )
     {
