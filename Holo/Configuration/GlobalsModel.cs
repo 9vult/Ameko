@@ -2,7 +2,7 @@
 
 using System.Text.Json.Serialization;
 
-namespace Holo.Models;
+namespace Holo.Configuration;
 
 /// <summary>
 /// Simplified representation of a <see cref="Globals"/> for

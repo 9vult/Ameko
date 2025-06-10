@@ -2,9 +2,10 @@
 
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using AssCS;
 using Holo.Models;
 
-namespace Holo;
+namespace Holo.Configuration;
 
 public interface IConfiguration
 {
@@ -12,7 +13,7 @@ public interface IConfiguration
     /// Characters-per-second threshold
     /// </summary>
     /// <remarks>This value may be overloaded by <see cref="Solution.Cps"/>.</remarks>
-    int Cps { get; set; }
+    uint Cps { get; set; }
 
     /// <summary>
     /// If whitespace should be included in <see cref="Event.Cps"/> calculation
@@ -38,7 +39,7 @@ public interface IConfiguration
     /// <summary>
     /// Interval between autosave attempts, in seconds
     /// </summary>
-    int AutosaveInterval { get; set; }
+    uint AutosaveInterval { get; set; }
 
     /// <summary>
     /// If whitespace should be included in <see cref="Event.MaxLineWidth"/> calculation
@@ -50,6 +51,9 @@ public interface IConfiguration
     /// </summary>
     bool LineWidthIncludesPunctuation { get; set; }
 
+    /// <summary>
+    /// Current display language
+    /// </summary>
     string Culture { get; set; }
 
     /// <summary>
@@ -61,8 +65,6 @@ public interface IConfiguration
     /// List of user-added repository URLs
     /// </summary>
     ReadOnlyObservableCollection<string> RepositoryUrls { get; }
-
-    Uri SavePath { get; }
 
     /// <summary>
     /// Add a repository

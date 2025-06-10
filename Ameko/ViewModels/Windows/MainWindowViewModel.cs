@@ -179,7 +179,6 @@ public partial class MainWindowViewModel : ViewModelBase
         #endregion
 
         ScriptMenuItems = [];
-        GenerateScriptsMenu();
         _scriptService.OnReload += (_, _) => GenerateScriptsMenu();
     }
 }

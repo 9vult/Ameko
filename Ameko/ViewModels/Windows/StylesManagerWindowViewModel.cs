@@ -3,6 +3,7 @@
 using System.Windows.Input;
 using AssCS;
 using Holo;
+using Holo.Configuration;
 using ReactiveUI;
 
 namespace Ameko.ViewModels.Windows;
@@ -15,7 +16,7 @@ public partial class StylesManagerWindowViewModel : ViewModelBase
 
     public Solution Solution { get; }
     public Document Document { get; }
-    public Globals Globals { get; }
+    public IGlobals Globals { get; }
 
     public Style? SelectedGlobalStyle
     {
@@ -59,10 +60,9 @@ public partial class StylesManagerWindowViewModel : ViewModelBase
     public ICommand NewStyleCommand { get; }
     #endregion
 
-    public StylesManagerWindowViewModel(Globals globals, Solution solution, Document document)
+    public StylesManagerWindowViewModel(IGlobals globals, Solution solution, Document document)
     {
         Globals = globals;
-
         Solution = solution;
         Document = document;
         DuplicateCommand = CreateDuplicateCommand();

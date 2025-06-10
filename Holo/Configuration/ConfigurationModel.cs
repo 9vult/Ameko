@@ -1,8 +1,9 @@
 ﻿// SPDX-License-Identifier: MPL-2.0
 
 using System.Text.Json.Serialization;
+using Holo.Models;
 
-namespace Holo.Models;
+namespace Holo.Configuration;
 
 internal record ConfigurationModel
 {
@@ -10,12 +11,12 @@ internal record ConfigurationModel
     internal const double CurrentApiVersion = 1.0d;
 
     public required double Version;
-    public required int Cps;
+    public required uint Cps;
     public required bool CpsIncludesWhitespace;
     public required bool CpsIncludesPunctuation;
     public required bool UseSoftLinebreaks;
     public required bool AutosaveEnabled;
-    public required int AutosaveInterval;
+    public required uint AutosaveInterval;
     public required bool LineWidthIncludesWhitespace;
     public required bool LineWidthIncludesPunctuation;
     public required string Culture;
