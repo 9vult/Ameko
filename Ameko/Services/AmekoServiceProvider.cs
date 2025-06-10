@@ -33,7 +33,7 @@ public static class AmekoServiceProvider
         // Register additional services and providers
         services.AddSingleton<CultureService>();
         services.AddSingleton<ThemeService>();
-        services.AddSingleton<IoService>();
+        services.AddSingleton<IIoService, IoService>();
 
         services.AddSingleton<IScriptService, ScriptService>();
         services.AddSingleton<DependencyControl>();

@@ -75,7 +75,7 @@ public partial class MainWindowViewModel : ViewModelBase
         {
             if (SolutionProvider.Current.IsWorkspaceLoaded)
             {
-                _ = await IoService.SaveSubtitle(
+                _ = await _ioService.SaveSubtitle(
                     SaveSubtitleAs,
                     SolutionProvider.Current.WorkingSpace
                 );
@@ -92,7 +92,7 @@ public partial class MainWindowViewModel : ViewModelBase
         {
             if (SolutionProvider.Current.IsWorkspaceLoaded)
             {
-                _ = await IoService.SaveSubtitleAs(
+                _ = await _ioService.SaveSubtitleAs(
                     SaveSubtitleAs,
                     SolutionProvider.Current.WorkingSpace
                 );
@@ -109,7 +109,7 @@ public partial class MainWindowViewModel : ViewModelBase
         {
             if (SolutionProvider.Current.IsWorkspaceLoaded)
             {
-                _ = await IoService.ExportSubtitle(
+                _ = await _ioService.ExportSubtitle(
                     ExportSubtitle,
                     SolutionProvider.Current.WorkingSpace
                 );
@@ -158,7 +158,7 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         return ReactiveCommand.CreateFromTask(async () =>
         {
-            _ = await IoService.SaveSolution(SaveSolutionAs, SolutionProvider.Current);
+            _ = await _ioService.SaveSolution(SaveSolutionAs, SolutionProvider.Current);
         });
     }
 
