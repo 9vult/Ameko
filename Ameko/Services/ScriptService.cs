@@ -7,12 +7,12 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Ameko.Services.Interfaces;
 using Avalonia.Threading;
 using CSScriptLib;
 using Holo.IO;
 using Holo.Scripting;
 using MsBox.Avalonia;
-using MsBox.Avalonia.Enums;
 using NLog;
 
 namespace Ameko.Services;
@@ -20,7 +20,7 @@ namespace Ameko.Services;
 /// <summary>
 /// Service for executing <see cref="HoloScript"/>s
 /// </summary>
-public class ScriptService
+public class ScriptService : IScriptService
 {
     private static readonly Uri ScriptsRoot = new(Path.Combine(Directories.DataHome, "scripts"));
     private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
@@ -153,9 +153,5 @@ public class ScriptService
         Scripts = new AssCS.Utilities.ReadOnlyObservableCollection<HoloScript>(_scripts);
     }
 
-    /// <summary>
-    /// Event Handler for <see cref="ScriptService.Reload"/>
-    /// </summary>
-    public delegate void ReloadEventHandler(object sender, EventArgs e);
-    public event ReloadEventHandler? OnReload;
+    public event IScriptService.ReloadEventHandler? OnReload;
 }

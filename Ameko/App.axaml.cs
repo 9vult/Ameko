@@ -4,6 +4,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Ameko.Services;
+using Ameko.Services.Interfaces;
 using Ameko.Templates;
 using Ameko.ViewModels.Windows;
 using Avalonia;
@@ -82,7 +83,7 @@ public partial class App : Application
         {
             try
             {
-                await provider.GetRequiredService<ScriptService>().Reload(isManual: false);
+                await provider.GetRequiredService<IScriptService>().Reload(isManual: false);
             }
             catch (Exception ex)
             {

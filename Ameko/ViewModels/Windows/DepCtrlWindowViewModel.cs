@@ -4,7 +4,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Reactive;
 using System.Windows.Input;
-using Ameko.Services;
+using Ameko.Services.Interfaces;
 using Holo;
 using Holo.Scripting;
 using Holo.Scripting.Models;
@@ -19,7 +19,7 @@ public partial class DepCtrlWindowViewModel : ViewModelBase
 {
     private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-    private readonly ScriptService _scriptService;
+    private readonly IScriptService _scriptService;
     private readonly Configuration _configuration;
 
     private Module? _selectedStoreModule;
@@ -102,7 +102,7 @@ public partial class DepCtrlWindowViewModel : ViewModelBase
 
     public DepCtrlWindowViewModel(
         DependencyControl dependencyControl,
-        ScriptService scriptService,
+        IScriptService scriptService,
         Configuration configuration
     )
     {

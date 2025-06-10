@@ -3,6 +3,7 @@
 using System;
 using System.Threading.Tasks;
 using Ameko.Providers;
+using Ameko.Services.Interfaces;
 using Ameko.ViewModels.Windows;
 using Holo;
 using Holo.Providers;
@@ -34,7 +35,7 @@ public static class AmekoServiceProvider
         services.AddSingleton<ThemeService>();
         services.AddSingleton<IoService>();
 
-        services.AddSingleton<ScriptService>();
+        services.AddSingleton<IScriptService, ScriptService>();
         services.AddSingleton<DependencyControl>();
 
         services.AddSingleton<TabProvider>();
