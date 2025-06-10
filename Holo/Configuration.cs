@@ -25,7 +25,7 @@ namespace Holo;
 /// <see cref="Save()"/> is automatically called when an option is changed.
 /// </para>
 /// </remarks>
-public partial class Configuration : BindableBase
+public partial class Configuration : BindableBase, IConfiguration
 {
     private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
     private static readonly JsonSerializerOptions JsonOptions = new()

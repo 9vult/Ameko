@@ -41,7 +41,7 @@ public partial class TabItemViewModel : ViewModelBase
 
     public Workspace Workspace => _workspace;
     public ISolutionProvider SolutionProvider { get; }
-    public Configuration Configuration { get; }
+    public IConfiguration Configuration { get; }
 
     public int EditBoxSelectionStart
     {
@@ -57,7 +57,7 @@ public partial class TabItemViewModel : ViewModelBase
 
     public TabItemViewModel(
         ISolutionProvider solutionProvider,
-        Configuration configuration,
+        IConfiguration configuration,
         Workspace workspace
     )
     {

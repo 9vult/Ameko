@@ -24,7 +24,7 @@ public static class AmekoServiceProvider
         services.AddSingleton<ILogProvider, LogProvider>();
 
         // Register secondary Holo services
-        services.AddSingleton(p => p.GetRequiredService<IHoloContext>().Configuration);
+        services.AddSingleton(p => p.GetRequiredService<IHoloContext>().Config);
         services.AddSingleton(p => p.GetRequiredService<IHoloContext>().Globals);
         services.AddSingleton(p => p.GetRequiredService<IHoloContext>().SolutionProvider);
         services.AddSingleton(p => p.GetRequiredService<ILogProvider>().LogEntries);

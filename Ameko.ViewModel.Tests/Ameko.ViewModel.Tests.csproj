@@ -29,4 +29,8 @@
       <ProjectReference Include="..\Holo\Holo.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="DataAttributes\" />
+    </ItemGroup>
+
 </Project>

@@ -12,7 +12,7 @@ namespace Ameko.Services;
 public class ThemeService
 {
     private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-    private readonly Configuration _configuration;
+    private readonly IConfiguration _configuration;
     private readonly Application? _app;
 
     private void ApplyTheme(Theme theme)
@@ -32,13 +32,13 @@ public class ThemeService
 
     private void OnConfigurationChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName == nameof(Configuration.Theme))
+        if (e.PropertyName == nameof(IConfiguration.Theme))
         {
             ApplyTheme(_configuration.Theme);
         }
     }
 
-    public ThemeService(Configuration configuration)
+    public ThemeService(IConfiguration configuration)
     {
         _configuration = configuration;
         _app = Application.Current;

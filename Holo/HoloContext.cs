@@ -34,7 +34,7 @@ public class HoloContext : BindableBase, IHoloContext
     /// <summary>
     /// Application-level configuration options
     /// </summary>
-    public Configuration Configuration { get; }
+    public IConfiguration Config { get; }
 
     /// <summary>
     /// Globally-accessible objects
@@ -47,8 +47,8 @@ public class HoloContext : BindableBase, IHoloContext
 
         Logger.Info("Initializing Holo");
 
-        Configuration = Configuration.Parse(Paths.Configuration);
-        Configuration.Save();
+        Config = Configuration.Parse(Paths.Configuration);
+        Config.Save();
 
         Globals = Globals.Parse(Paths.Globals);
         Globals.Save();

@@ -13,7 +13,7 @@ namespace Ameko.Services;
 public class CultureService
 {
     private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-    private readonly Configuration _configuration;
+    private readonly IConfiguration _configuration;
 
     public IReadOnlyList<CultureInfo> AvailableCultures { get; } = [new("en-US")];
 
@@ -33,13 +33,13 @@ public class CultureService
 
     private void OnConfigurationChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName == nameof(Configuration.Culture))
+        if (e.PropertyName == nameof(IConfiguration.Culture))
         {
             SetCulture(_configuration.Culture);
         }
     }
 
-    public CultureService(Configuration configuration)
+    public CultureService(IConfiguration configuration)
     {
         _configuration = configuration;
 
