@@ -7,6 +7,7 @@ using System.Reactive;
 using System.Windows.Input;
 using Ameko.Providers;
 using Ameko.Services;
+using Ameko.Services.Interfaces;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using DynamicData;
@@ -24,7 +25,7 @@ public partial class MainWindowViewModel : ViewModelBase
     private readonly IServiceProvider _serviceProvider;
     private readonly StylesManagerViewModelProvider _stylesVmProvider;
     private readonly IoService _ioService;
-    private readonly ScriptService _scriptService;
+    private readonly IScriptService _scriptService;
 
     #region Interactions
     // File
@@ -122,7 +123,7 @@ public partial class MainWindowViewModel : ViewModelBase
         ISolutionProvider solutionProvider,
         StylesManagerViewModelProvider stylesVmProvider,
         IoService ioService,
-        ScriptService scriptService
+        IScriptService scriptService
     )
     {
         _serviceProvider = serviceProvider;
