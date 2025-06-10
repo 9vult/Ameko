@@ -375,6 +375,15 @@ namespace Ameko.I18N {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Repository has already been added.
+        /// </summary>
+        public static string DepCtrl_MsgBox_RepoAlreadyAdded {
+            get {
+                return ResourceManager.GetString("DepCtrl_MsgBox_RepoAlreadyAdded", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Repositories.
         /// </summary>
         public static string DepCtrl_RepositoriesTab {

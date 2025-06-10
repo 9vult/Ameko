@@ -489,4 +489,7 @@
     <data name="DepCtrl_Info_Url" xml:space="preserve">
         <value>Url</value>
     </data>
+    <data name="DepCtrl_MsgBox_RepoAlreadyAdded" xml:space="preserve">
+        <value>Repository has already been added</value>
+    </data>
 </root>

@@ -26,13 +26,15 @@
                         Margin="2"
                         Content="{x:Static i18n:Resources.DepCtrl_Button_RemoveRepo}"
                         ToolTip.Tip="{x:Static i18n:Resources.DepCtrl_Button_RemoveRepo_ToolTip}"
-                        IsEnabled="{Binding RemoveRepoButtonEnabled}" />
+                        IsEnabled="{Binding RemoveRepoButtonEnabled}"
+                        Command="{Binding RemoveRepositoryCommand}" />
                 <Button Grid.Column="1"
                         Grid.Row="1"
                         Margin="2"
                         Content="{x:Static i18n:Resources.DepCtrl_Button_AddRepo}"
                         ToolTip.Tip="{x:Static i18n:Resources.DepCtrl_Button_AddRepo_ToolTip}"
-                        IsEnabled="{Binding AddRepoButtonEnabled}" />
+                        IsEnabled="{Binding AddRepoButtonEnabled}"
+                        Command="{Binding AddRepositoryCommand}" />
                 <TextBox Grid.Column="0"
                          Grid.Row="1"
                          Margin="2"
