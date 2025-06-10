@@ -4,6 +4,7 @@ using System;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Ameko.Providers;
+using Ameko.Services.Interfaces;
 using AssCS.IO;
 using Holo;
 using Holo.Providers;
@@ -14,20 +15,12 @@ using ReactiveUI;
 
 namespace Ameko.Services;
 
-public class IoService(ISolutionProvider solutionProvider, TabProvider tabProvider)
+public class IoService(ISolutionProvider solutionProvider, TabProvider tabProvider) : IIoService
 {
     private static readonly Logger Log = LogManager.GetCurrentClassLogger();
 
-    /// <summary>
-    /// Save a subtitle file, displaying a SaveFileDialog if needed
-    /// </summary>
-    /// <param name="interaction">Interaction to use for displaying the dialog</param>
-    /// <param name="wsp"></param>
-    /// <returns>Workspace containing the document being saved</returns>
-    public static async Task<bool> SaveSubtitle(
-        Interaction<string, Uri?> interaction,
-        Workspace wsp
-    )
+    /// <inheritdoc cref="IIoService.SaveSubtitle"/>
+    public async Task<bool> SaveSubtitle(Interaction<string, Uri?> interaction, Workspace wsp)
     {
         Log.Info($"Preparing to save subtitle file {wsp.Title}");
         var uri = wsp.SavePath ?? await interaction.Handle(wsp.Title);
@@ -46,16 +39,8 @@ public class IoService(ISolutionProvider solutionProvider, TabProvider tabProvid
         return true;
     }
 
-    /// <summary>
-    /// Save a subtitle file with a new name
-    /// </summary>
-    /// <param name="interaction">Interaction to use for displaying the dialog</param>
-    /// <param name="wsp">Workspace containing the document being saved</param>
-    /// <returns><see langword="true"/> if successful</returns>
-    public static async Task<bool> SaveSubtitleAs(
-        Interaction<string, Uri?> interaction,
-        Workspace wsp
-    )
+    /// <inheritdoc cref="IIoService.SaveSubtitleAs"/>
+    public async Task<bool> SaveSubtitleAs(Interaction<string, Uri?> interaction, Workspace wsp)
     {
         Log.Info($"Preparing to save subtitle file {wsp.Title}");
         var uri = await interaction.Handle(wsp.Title);
@@ -74,16 +59,8 @@ public class IoService(ISolutionProvider solutionProvider, TabProvider tabProvid
         return true;
     }
 
-    /// <summary>
-    /// Export a subtitle, displaying the Save As dialog
-    /// </summary>
-    /// <param name="interaction">Interaction to use for displaying the dialog</param>
-    /// <param name="wsp">Workspace containing the document being exported</param>
-    /// <returns><see langword="true"/> if successful</returns>
-    public static async Task<bool> ExportSubtitle(
-        Interaction<string, Uri?> interaction,
-        Workspace wsp
-    )
+    /// <inheritdoc cref="IIoService.ExportSubtitle"/>
+    public async Task<bool> ExportSubtitle(Interaction<string, Uri?> interaction, Workspace wsp)
     {
         Log.Info($"Preparing to export subtitle file {wsp.Title}");
         var uri = await interaction.Handle(wsp.Title);
@@ -100,13 +77,7 @@ public class IoService(ISolutionProvider solutionProvider, TabProvider tabProvid
         return true;
     }
 
-    /// <summary>
-    /// Safely close a workspace, verifying save state
-    /// </summary>
-    /// <param name="wsp">Workspace to close</param>
-    /// <param name="saveAs">SaveAs interaction</param>
-    /// <param name="replaceIfLast">Should the workspace be replaced if it's the last one</param>
-    /// <returns><see langword="true"/> if the workspace was closed</returns>
+    /// <inheritdoc cref="IIoService.SafeCloseWorkspace"/>
     public async Task<bool> SafeCloseWorkspace(
         Workspace wsp,
         Interaction<string, Uri?> saveAs,
@@ -151,13 +122,8 @@ public class IoService(ISolutionProvider solutionProvider, TabProvider tabProvid
         }
     }
 
-    /// <summary>
-    /// Save a solution file, displaying a SaveFileDialog if needed
-    /// </summary>
-    /// <param name="interaction">Interaction to use for displaying the dialog</param>
-    /// <param name="sln">Solution to save</param>
-    /// <returns>Workspace containing the document being saved</returns>
-    public static async Task<bool> SaveSolution(Interaction<string, Uri?> interaction, Solution sln)
+    /// <inheritdoc cref="IIoService.SaveSolution"/>
+    public async Task<bool> SaveSolution(Interaction<string, Uri?> interaction, Solution sln)
     {
         Log.Info($"Preparing to save solution file {sln.Title}");
         var uri = sln.SavePath ?? await interaction.Handle(sln.Title);

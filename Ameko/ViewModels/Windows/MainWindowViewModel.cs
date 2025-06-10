@@ -24,7 +24,7 @@ public partial class MainWindowViewModel : ViewModelBase
 
     private readonly IServiceProvider _serviceProvider;
     private readonly StylesManagerViewModelProvider _stylesVmProvider;
-    private readonly IoService _ioService;
+    private readonly IIoService _ioService;
     private readonly IScriptService _scriptService;
 
     #region Interactions
@@ -122,7 +122,7 @@ public partial class MainWindowViewModel : ViewModelBase
         IServiceProvider serviceProvider,
         ISolutionProvider solutionProvider,
         StylesManagerViewModelProvider stylesVmProvider,
-        IoService ioService,
+        IIoService ioService,
         IScriptService scriptService
     )
     {
