@@ -188,8 +188,7 @@ public partial class DepCtrlWindowViewModel
 
             try
             {
-                using var client = new HttpClient();
-                var repo = await Repository.Build(RepoUrlInput, client);
+                var repo = await Repository.Build(RepoUrlInput, _httpClient);
                 if (repo is null)
                 {
                     Logger.Error($"Building repository failed");

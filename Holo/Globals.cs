@@ -101,16 +101,6 @@ public class Globals : BindableBase
     /// <summary>
     /// Parse a saved globals file
     /// </summary>
-    /// <param name="savePath">Location of the globals file</param>
-    /// <returns><see cref="Globals"/> object</returns>
-    public static Globals Parse(Uri savePath)
-    {
-        return Parse(new FileSystem(), savePath);
-    }
-
-    /// <summary>
-    /// Parse a saved globals file
-    /// </summary>
     /// <param name="fileSystem">FileSystem to use</param>
     /// <param name="savePath">Location of the globals file</param>
     /// <returns><see cref="Globals"/> object</returns>

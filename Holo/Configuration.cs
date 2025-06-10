@@ -223,16 +223,6 @@ public partial class Configuration : BindableBase, IConfiguration
     /// <summary>
     /// Parse a saved configuration file
     /// </summary>
-    /// <param name="savePath">Path to the configuration file</param>
-    /// <returns><see cref="Configuration"/> object</returns>
-    public static Configuration Parse(Uri savePath)
-    {
-        return Parse(new FileSystem(), savePath);
-    }
-
-    /// <summary>
-    /// Parse a saved configuration file
-    /// </summary>
     /// <param name="fileSystem">FileSystem to use</param>
     /// <param name="savePath">Path to the configuration file</param>
     /// <returns><see cref="Configuration"/> object</returns>

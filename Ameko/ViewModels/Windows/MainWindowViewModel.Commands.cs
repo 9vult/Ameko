@@ -51,8 +51,8 @@ public partial class MainWindowViewModel : ViewModelBase
             {
                 var doc = Path.GetExtension(uri.LocalPath) switch
                 {
-                    ".ass" => new AssParser().Parse(uri),
-                    ".txt" => new TxtParser().Parse(uri),
+                    ".ass" => new AssParser().Parse(_fileSystem, uri),
+                    ".txt" => new TxtParser().Parse(_fileSystem, uri),
                     _ => throw new ArgumentOutOfRangeException(),
                 };
 

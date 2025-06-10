@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 using System;
+using System.IO.Abstractions;
 using System.Threading.Tasks;
 using Ameko.Factories;
 using Ameko.ViewModels.Windows;
@@ -18,6 +19,10 @@ public static class AmekoServiceProvider
     public static IServiceProvider Build()
     {
         var services = new ServiceCollection();
+
+        // Add HttpClient and Filesystem
+        services.AddHttpClient();
+        services.AddSingleton<IFileSystem, FileSystem>();
 
         // Register primary Holo services
         services.AddSingleton<IHoloContext, HoloContext>();

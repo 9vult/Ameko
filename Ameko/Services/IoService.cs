@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 using System;
+using System.IO.Abstractions;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Ameko.Factories;
@@ -14,7 +15,11 @@ using ReactiveUI;
 
 namespace Ameko.Services;
 
-public class IoService(ISolutionProvider solutionProvider, ITabFactory tabFactory) : IIoService
+public class IoService(
+    ISolutionProvider solutionProvider,
+    ITabFactory tabFactory,
+    IFileSystem fileSystem
+) : IIoService
 {
     private static readonly Logger Log = LogManager.GetCurrentClassLogger();
 
@@ -31,7 +36,7 @@ public class IoService(ISolutionProvider solutionProvider, ITabFactory tabFactor
         }
 
         var writer = new AssWriter(wsp.Document, ConsumerService.AmekoInfo);
-        writer.Write(uri);
+        writer.Write(fileSystem, uri);
         wsp.SavePath = uri;
         wsp.IsSaved = true;
         Log.Info($"Saved subtitle file {wsp.Title}");
@@ -51,7 +56,7 @@ public class IoService(ISolutionProvider solutionProvider, ITabFactory tabFactor
         }
 
         var writer = new AssWriter(wsp.Document, ConsumerService.AmekoInfo);
-        writer.Write(uri);
+        writer.Write(fileSystem, uri);
         wsp.SavePath = uri;
         wsp.IsSaved = true;
         Log.Info($"Saved subtitle file {wsp.Title}");
@@ -71,7 +76,7 @@ public class IoService(ISolutionProvider solutionProvider, ITabFactory tabFactor
         }
 
         var writer = new TxtWriter(wsp.Document, ConsumerService.AmekoInfo);
-        writer.Write(uri, true);
+        writer.Write(fileSystem, uri, true);
         Log.Info($"Exported {wsp.Title}");
         return true;
     }
