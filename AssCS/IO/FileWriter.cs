@@ -21,18 +21,6 @@ public abstract class FileWriter
     /// <summary>
     /// Write an ass document to file
     /// </summary>
-    /// <param name="savePath">Path to write to</param>
-    /// <param name="export"><see langword="true"/> if this write is an export</param>
-    /// <returns><see langword="true"/> if writing was successful</returns>
-    /// <exception cref="IOException">If writing fails</exception>
-    public bool Write(Uri savePath, bool export = false)
-    {
-        return Write(new FileSystem(), savePath, export);
-    }
-
-    /// <summary>
-    /// Write an ass document to file
-    /// </summary>
     /// <param name="fileSystem">FileSystem to use</param>
     /// <param name="savePath">Path to write to</param>
     /// <param name="export"><see langword="true"/> if this write is an export</param>

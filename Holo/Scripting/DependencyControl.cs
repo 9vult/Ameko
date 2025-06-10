@@ -409,16 +409,6 @@ public class DependencyControl : IDependencyControl
     /// <summary>
     /// Instantiate a Dependency Control instance
     /// </summary>
-    /// <remarks>
-    /// This constructor does not set up the base repository.
-    /// <see cref="SetUpBaseRepository"/> should be called following construction
-    /// </remarks>
-    public DependencyControl()
-        : this(new FileSystem(), new HttpClient()) { }
-
-    /// <summary>
-    /// Instantiate a Dependency Control instance
-    /// </summary>
     /// <param name="fileSystem">FileSystem to use</param>
     /// <param name="httpClient">HttpClient to use</param>
     /// <remarks>

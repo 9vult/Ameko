@@ -1,9 +1,9 @@
 ﻿// SPDX-License-Identifier: MPL-2.0
 
+using System.IO.Abstractions;
 using AssCS;
 using Holo.IO;
 using Holo.Providers;
-using Holo.Scripting;
 using NLog;
 
 namespace Holo;
@@ -41,19 +41,19 @@ public class HoloContext : BindableBase, IHoloContext
     /// </summary>
     public Globals Globals { get; }
 
-    public HoloContext()
+    public HoloContext(IFileSystem fileSystem)
     {
-        Directories.Create();
+        Directories.Create(fileSystem);
 
         Logger.Info("Initializing Holo");
 
-        Config = Configuration.Parse(Paths.Configuration);
+        Config = Configuration.Parse(fileSystem, Paths.Configuration);
         Config.Save();
 
-        Globals = Globals.Parse(Paths.Globals);
+        Globals = Globals.Parse(fileSystem, Paths.Globals);
         Globals.Save();
 
-        SolutionProvider = new SolutionProvider();
+        SolutionProvider = new SolutionProvider(fileSystem);
 
         Logger.Info("Initialization complete");
     }

@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.ObjectModel;
+using System.IO.Abstractions;
 using System.Linq;
 using System.Reactive;
 using System.Windows.Input;
@@ -25,6 +26,7 @@ public partial class MainWindowViewModel : ViewModelBase
     private readonly IStylesManagerFactory _stylesManagerFactory;
     private readonly IIoService _ioService;
     private readonly IScriptService _scriptService;
+    private readonly IFileSystem _fileSystem;
 
     #region Interactions
     // File
@@ -122,7 +124,8 @@ public partial class MainWindowViewModel : ViewModelBase
         ISolutionProvider solutionProvider,
         IStylesManagerFactory stylesManagerFactory,
         IIoService ioService,
-        IScriptService scriptService
+        IScriptService scriptService,
+        IFileSystem fileSystem
     )
     {
         _serviceProvider = serviceProvider;
@@ -130,6 +133,7 @@ public partial class MainWindowViewModel : ViewModelBase
         _stylesManagerFactory = stylesManagerFactory;
         _ioService = ioService;
         _scriptService = scriptService;
+        _fileSystem = fileSystem;
 
         #region Interactions
         // File

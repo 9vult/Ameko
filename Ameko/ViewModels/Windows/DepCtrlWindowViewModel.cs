@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.ObjectModel;
+using System.Net.Http;
 using System.Reactive;
 using System.Windows.Input;
 using Ameko.Services;
@@ -22,6 +23,7 @@ public partial class DepCtrlWindowViewModel : ViewModelBase
     private readonly IScriptService _scriptService;
     private readonly IConfiguration _configuration;
     private readonly IMessageBoxService _messageBoxService;
+    private readonly HttpClient _httpClient;
 
     private Module? _selectedStoreModule;
     private Module? _selectedInstalledModule;
@@ -105,7 +107,8 @@ public partial class DepCtrlWindowViewModel : ViewModelBase
         IDependencyControl dependencyControl,
         IScriptService scriptService,
         IConfiguration configuration,
-        IMessageBoxService messageBoxService
+        IMessageBoxService messageBoxService,
+        HttpClient httpClient
     )
     {
         DependencyControl = dependencyControl;
@@ -113,6 +116,7 @@ public partial class DepCtrlWindowViewModel : ViewModelBase
         _scriptService = scriptService;
         _configuration = configuration;
         _messageBoxService = messageBoxService;
+        _httpClient = httpClient;
 
         _repoUrlInput = string.Empty;
 

@@ -20,16 +20,6 @@ public abstract class FileParser
     /// <summary>
     /// Parse a file into a <see cref="Document"/>
     /// </summary>
-    /// <param name="savePath">Path to the file to open</param>
-    /// <returns><see cref="Document"/> at the <paramref name="savePath"/></returns>
-    public Document Parse(Uri savePath)
-    {
-        return Parse(new FileSystem(), savePath);
-    }
-
-    /// <summary>
-    /// Parse a file into a <see cref="Document"/>
-    /// </summary>
     /// <param name="fileSystem">FileSystem to use</param>
     /// <param name="savePath">Path to the file to open</param>
     /// <returns><see cref="Document"/> at the <paramref name="savePath"/></returns>

@@ -339,7 +339,7 @@ public class Solution : BindableBase
             }
 
             var parser = new AssParser();
-            var document = parser.Parse(item.Uri!);
+            var document = parser.Parse(_fileSystem, item.Uri!);
 
             item.Workspace = new Workspace(document, item.Id, item.Uri);
             _loadedWorkspaces.Add(item.Workspace);
@@ -654,14 +654,6 @@ public class Solution : BindableBase
 
         return result;
     }
-
-    /// <summary>
-    /// Initialize a solution
-    /// </summary>
-    /// <param name="isEmpty">If the solution should be created
-    /// without a default <see cref="Workspace"/></param>
-    public Solution(bool isEmpty = false)
-        : this(new FileSystem(), isEmpty) { }
 
     /// <summary>
     /// Initialize a solution

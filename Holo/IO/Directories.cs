@@ -1,5 +1,6 @@
 ﻿// SPDX-License-Identifier: MPL-2.0
 
+using System.IO.Abstractions;
 using Xdg.Directories;
 
 namespace Holo.IO;
@@ -17,15 +18,15 @@ public static class Directories
     /// <summary>
     /// Create the XDG directories if they do not already exist
     /// </summary>
-    internal static void Create()
+    internal static void Create(IFileSystem fileSystem)
     {
-        if (!Directory.Exists(DataHome))
-            Directory.CreateDirectory(DataHome);
-        if (!Directory.Exists(ConfigHome))
-            Directory.CreateDirectory(ConfigHome);
-        if (!Directory.Exists(CacheHome))
-            Directory.CreateDirectory(CacheHome);
-        if (Directory.Exists(StateHome))
-            Directory.CreateDirectory(StateHome);
+        if (!fileSystem.Directory.Exists(DataHome))
+            fileSystem.Directory.CreateDirectory(DataHome);
+        if (!fileSystem.Directory.Exists(ConfigHome))
+            fileSystem.Directory.CreateDirectory(ConfigHome);
+        if (!fileSystem.Directory.Exists(CacheHome))
+            fileSystem.Directory.CreateDirectory(CacheHome);
+        if (!fileSystem.Directory.Exists(StateHome))
+            fileSystem.Directory.CreateDirectory(StateHome);
     }
 }

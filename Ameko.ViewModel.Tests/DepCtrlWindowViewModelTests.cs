@@ -21,7 +21,8 @@ public class DepCtrlWindowViewModelTests
         [Frozen] IDependencyControl dependencyControl,
         [Frozen] IScriptService scriptService,
         [Frozen] IConfiguration configuration,
-        [Frozen] IMessageBoxService messageBoxService
+        [Frozen] IMessageBoxService messageBoxService,
+        [Frozen] HttpClient httpClient
     )
     {
         // Arrange
@@ -33,7 +34,8 @@ public class DepCtrlWindowViewModelTests
             dependencyControl,
             scriptService,
             configuration,
-            messageBoxService
+            messageBoxService,
+            httpClient
         );
 
         // Assert
@@ -45,7 +47,8 @@ public class DepCtrlWindowViewModelTests
         [Frozen] IDependencyControl dependencyControl,
         [Frozen] IScriptService scriptService,
         [Frozen] IConfiguration configuration,
-        [Frozen] IMessageBoxService messageBoxService
+        [Frozen] IMessageBoxService messageBoxService,
+        [Frozen] HttpClient httpClient
     )
     {
         // Arrange
@@ -58,7 +61,8 @@ public class DepCtrlWindowViewModelTests
             dependencyControl,
             scriptService,
             configuration,
-            messageBoxService
+            messageBoxService,
+            httpClient
         );
 
         // Assert
@@ -101,6 +105,7 @@ public class DepCtrlWindowViewModelTests
         [Frozen] IScriptService scriptService,
         [Frozen] IConfiguration configuration,
         [Frozen] IMessageBoxService messageBoxService,
+        [Frozen] HttpClient httpClient,
         Module module
     )
     {
@@ -115,7 +120,8 @@ public class DepCtrlWindowViewModelTests
             dependencyControl,
             scriptService,
             configuration,
-            messageBoxService
+            messageBoxService,
+            httpClient
         )
         {
             SelectedInstalledModule = module,
@@ -139,6 +145,7 @@ public class DepCtrlWindowViewModelTests
         [Frozen] IScriptService scriptService,
         [Frozen] IConfiguration configuration,
         [Frozen] IMessageBoxService messageBoxService,
+        [Frozen] HttpClient httpClient,
         Module module
     )
     {
@@ -153,7 +160,8 @@ public class DepCtrlWindowViewModelTests
             dependencyControl,
             scriptService,
             configuration,
-            messageBoxService
+            messageBoxService,
+            httpClient
         )
         {
             SelectedInstalledModule = module,
@@ -175,6 +183,7 @@ public class DepCtrlWindowViewModelTests
         [Frozen] IScriptService scriptService,
         [Frozen] IConfiguration configuration,
         [Frozen] IMessageBoxService messageBoxService,
+        [Frozen] HttpClient httpClient,
         Module module1,
         Module module2
     )
@@ -191,7 +200,8 @@ public class DepCtrlWindowViewModelTests
             dependencyControl,
             scriptService,
             configuration,
-            messageBoxService
+            messageBoxService,
+            httpClient
         )
         {
             SelectedInstalledModule = module1,
@@ -213,7 +223,8 @@ public class DepCtrlWindowViewModelTests
         [Frozen] IDependencyControl dependencyControl,
         [Frozen] IScriptService scriptService,
         [Frozen] IConfiguration configuration,
-        [Frozen] IMessageBoxService messageBoxService
+        [Frozen] IMessageBoxService messageBoxService,
+        [Frozen] HttpClient httpClient
     )
     {
         // Arrange
@@ -225,7 +236,8 @@ public class DepCtrlWindowViewModelTests
             dependencyControl,
             scriptService,
             configuration,
-            messageBoxService
+            messageBoxService,
+            httpClient
         );
 
         vm.ShowMessageBox.RegisterHandler(ctx => ctx.SetOutput(Unit.Default));
