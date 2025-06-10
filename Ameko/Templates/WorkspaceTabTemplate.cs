@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 using System;
-using Ameko.Providers;
+using Ameko.Factories;
 using Avalonia.Controls;
 using Avalonia.Controls.Templates;
 using Holo;
@@ -12,14 +12,14 @@ namespace Ameko.Templates;
 
 public class WorkspaceTabTemplate(IServiceProvider provider) : IDataTemplate
 {
-    private readonly TabProvider _tabProvider = provider.GetRequiredService<TabProvider>();
+    private readonly ITabFactory _tabFactory = provider.GetRequiredService<ITabFactory>();
 
     public Control Build(object? param)
     {
         if (param is not Workspace workspace)
             throw new ArgumentException("Invalid data type");
 
-        var vm = _tabProvider.Create(workspace);
+        var vm = _tabFactory.Create(workspace);
         return new TabItem { DataContext = vm };
     }
 

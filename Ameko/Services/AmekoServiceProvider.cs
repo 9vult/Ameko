@@ -2,8 +2,7 @@
 
 using System;
 using System.Threading.Tasks;
-using Ameko.Providers;
-using Ameko.Services.Interfaces;
+using Ameko.Factories;
 using Ameko.ViewModels.Windows;
 using Holo;
 using Holo.Providers;
@@ -30,7 +29,7 @@ public static class AmekoServiceProvider
         services.AddSingleton(p => p.GetRequiredService<IHoloContext>().SolutionProvider);
         services.AddSingleton(p => p.GetRequiredService<ILogProvider>().LogEntries);
 
-        // Register additional services and providers
+        // Register additional services
         services.AddSingleton<CultureService>();
         services.AddSingleton<ThemeService>();
         services.AddSingleton<IIoService, IoService>();
@@ -38,8 +37,9 @@ public static class AmekoServiceProvider
         services.AddSingleton<IScriptService, ScriptService>();
         services.AddSingleton<DependencyControl>();
 
-        services.AddSingleton<TabProvider>();
-        services.AddSingleton<StylesManagerViewModelProvider>();
+        // Register factories
+        services.AddSingleton<ITabFactory, TabFactory>();
+        services.AddSingleton<IStylesManagerFactory, StylesManagerFactory>();
 
         // Register ViewModels
         services.AddSingleton<MainWindowViewModel>();

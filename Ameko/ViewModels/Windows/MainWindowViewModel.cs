@@ -5,9 +5,8 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive;
 using System.Windows.Input;
-using Ameko.Providers;
+using Ameko.Factories;
 using Ameko.Services;
-using Ameko.Services.Interfaces;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using DynamicData;
@@ -23,7 +22,7 @@ public partial class MainWindowViewModel : ViewModelBase
     private static readonly Logger Log = LogManager.GetCurrentClassLogger();
 
     private readonly IServiceProvider _serviceProvider;
-    private readonly StylesManagerViewModelProvider _stylesVmProvider;
+    private readonly IStylesManagerFactory _stylesManagerFactory;
     private readonly IIoService _ioService;
     private readonly IScriptService _scriptService;
 
@@ -121,14 +120,14 @@ public partial class MainWindowViewModel : ViewModelBase
     public MainWindowViewModel(
         IServiceProvider serviceProvider,
         ISolutionProvider solutionProvider,
-        StylesManagerViewModelProvider stylesVmProvider,
+        IStylesManagerFactory stylesManagerFactory,
         IIoService ioService,
         IScriptService scriptService
     )
     {
         _serviceProvider = serviceProvider;
         SolutionProvider = solutionProvider;
-        _stylesVmProvider = stylesVmProvider;
+        _stylesManagerFactory = stylesManagerFactory;
         _ioService = ioService;
         _scriptService = scriptService;
 
