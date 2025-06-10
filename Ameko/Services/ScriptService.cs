@@ -28,28 +28,16 @@ public class ScriptService : IScriptService
     private readonly ObservableCollection<HoloScript> _scripts;
     private readonly Dictionary<string, HoloScript?> _scriptMap;
 
+    /// <inheritdoc cref="IScriptService.Scripts"/>
     public AssCS.Utilities.ReadOnlyObservableCollection<HoloScript> Scripts { get; }
 
-    /// <summary>
-    /// Get a script by its qualified name
-    /// </summary>
-    /// <param name="qualifiedName">Name of the script</param>
-    /// <param name="script">Script, if found</param>
-    /// <returns><see langword="true"/> if found</returns>
+    /// <inheritdoc cref="IScriptService.TryGetScript"/>
     public bool TryGetScript(string qualifiedName, [NotNullWhen(true)] out HoloScript? script)
     {
         return _scriptMap.TryGetValue(qualifiedName, out script);
     }
 
-    /// <summary>
-    /// Asynchronously execute a script or method
-    /// </summary>
-    /// <param name="qualifiedName">Name of the script or method</param>
-    /// <returns>Execution result of the script or method</returns>
-    /// <remarks>
-    /// This method attempts to execute a script first, then a method.
-    /// This relies on method names being <c>scriptName.methodName</c>.
-    /// </remarks>
+    /// <inheritdoc cref="IScriptService.ExecuteScriptAsync"/>
     public async Task<ExecutionResult> ExecuteScriptAsync(string qualifiedName)
     {
         // Try running as a script
@@ -75,10 +63,7 @@ public class ScriptService : IScriptService
         };
     }
 
-    /// <summary>
-    /// Reload scripts
-    /// </summary>
-    /// <param name="isManual">Whether to show the message box</param>
+    /// <inheritdoc cref="IScriptService.Reload"/>
     public async Task Reload(bool isManual)
     {
         Logger.Info("Reloading scripts");

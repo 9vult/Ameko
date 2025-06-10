@@ -9,6 +9,9 @@ namespace Ameko.Services.Interfaces;
 
 public interface IScriptService
 {
+    /// <summary>
+    /// List of currently-loaded scripts
+    /// </summary>
     AssCS.Utilities.ReadOnlyObservableCollection<HoloScript> Scripts { get; }
 
     /// <summary>
