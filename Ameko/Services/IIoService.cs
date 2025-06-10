@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Holo;
 using ReactiveUI;
 
-namespace Ameko.Services.Interfaces;
+namespace Ameko.Services;
 
 public interface IIoService
 {

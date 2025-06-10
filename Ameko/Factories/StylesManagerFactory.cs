@@ -4,9 +4,9 @@ using Ameko.ViewModels.Windows;
 using AssCS;
 using Holo;
 
-namespace Ameko.Providers;
+namespace Ameko.Factories;
 
-public class StylesManagerViewModelProvider(Globals globals)
+public interface IStylesManagerFactory
 {
     /// <summary>
     /// Create a new Styles Manager ViewModel for the given solution and document
@@ -14,6 +14,12 @@ public class StylesManagerViewModelProvider(Globals globals)
     /// <param name="solution">Solution for the manager</param>
     /// <param name="document">Document for the manager</param>
     /// <returns>Styles Manager ViewModel</returns>
+    StylesManagerWindowViewModel Create(Solution solution, Document document);
+}
+
+public class StylesManagerFactory(Globals globals) : IStylesManagerFactory
+{
+    /// <inheritdoc cref="IStylesManagerFactory.Create"/>
     public StylesManagerWindowViewModel Create(Solution solution, Document document)
     {
         return new StylesManagerWindowViewModel(globals, solution, document);

@@ -207,7 +207,7 @@ public partial class MainWindowViewModel : ViewModelBase
         {
             if (SolutionProvider.Current.IsWorkspaceLoaded)
             {
-                var vm = _stylesVmProvider.Create(
+                var vm = _stylesManagerFactory.Create(
                     SolutionProvider.Current,
                     SolutionProvider.Current.WorkingSpace.Document
                 );

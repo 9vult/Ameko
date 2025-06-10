@@ -4,7 +4,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Reactive;
 using System.Windows.Input;
-using Ameko.Services.Interfaces;
+using Ameko.Services;
 using Holo;
 using Holo.Scripting;
 using Holo.Scripting.Models;

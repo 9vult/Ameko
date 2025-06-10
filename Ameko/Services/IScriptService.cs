@@ -5,7 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Holo.Scripting;
 
-namespace Ameko.Services.Interfaces;
+namespace Ameko.Services;
 
 public interface IScriptService
 {
