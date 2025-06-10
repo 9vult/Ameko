@@ -101,7 +101,7 @@ public partial class App : Application
         {
             try
             {
-                var depCtrl = provider.GetRequiredService<DependencyControl>();
+                var depCtrl = provider.GetRequiredService<IDependencyControl>();
                 await depCtrl.SetUpBaseRepository();
                 await depCtrl.AddAdditionalRepositories(
                     provider.GetRequiredService<Configuration>().RepositoryUrls

@@ -70,10 +70,9 @@ public class DependencyControlTests
     public async Task SetUpBaseRepository_Handles_404()
     {
         var mockClient = new MockHttpMessageHandler();
-        mockClient
-            .When(HttpMethod.Get, DependencyControl.BaseRepositoryUrl)
-            .Respond(HttpStatusCode.NotFound);
         var dc = new DependencyControl(new FileSystem(), new HttpClient(mockClient));
+
+        mockClient.When(HttpMethod.Get, dc.BaseRepositoryUrl).Respond(HttpStatusCode.NotFound);
 
         await dc.SetUpBaseRepository();
 
@@ -85,10 +84,11 @@ public class DependencyControlTests
     public async Task SetUpBaseRepository()
     {
         var mockClient = new MockHttpMessageHandler();
-        mockClient
-            .When(HttpMethod.Get, DependencyControl.BaseRepositoryUrl)
-            .Respond("application/json", Repository1Json);
         var dc = new DependencyControl(new FileSystem(), new HttpClient(mockClient));
+
+        mockClient
+            .When(HttpMethod.Get, dc.BaseRepositoryUrl)
+            .Respond("application/json", Repository1Json);
 
         await dc.SetUpBaseRepository();
 
@@ -100,10 +100,11 @@ public class DependencyControlTests
     public async Task SetUpBaseRepository_NoInternetConnection()
     {
         var mockClient = new MockHttpMessageHandler();
-        mockClient
-            .When(HttpMethod.Get, DependencyControl.BaseRepositoryUrl)
-            .Throw(new HttpRequestException("No internet connection", new SocketException()));
         var dc = new DependencyControl(new FileSystem(), new HttpClient(mockClient));
+
+        mockClient
+            .When(HttpMethod.Get, dc.BaseRepositoryUrl)
+            .Throw(new HttpRequestException("No internet connection", new SocketException()));
 
         await dc.SetUpBaseRepository();
 
@@ -115,16 +116,16 @@ public class DependencyControlTests
     public async Task InstallModule_NoInternetConnection()
     {
         var fileSystem = new MockFileSystem();
-
         var mockClient = new MockHttpMessageHandler();
+        var dc = new DependencyControl(fileSystem, new HttpClient(mockClient));
+
         mockClient
-            .When(HttpMethod.Get, DependencyControl.BaseRepositoryUrl)
+            .When(HttpMethod.Get, dc.BaseRepositoryUrl)
             .Respond("application/json", Repository1Json);
         mockClient
             .When(HttpMethod.Get, ScriptExample1Url)
             .Throw(new HttpRequestException("No internet connection", new SocketException()));
 
-        var dc = new DependencyControl(fileSystem, new HttpClient(mockClient));
         await dc.SetUpBaseRepository();
 
         var result = await dc.InstallModule(
@@ -146,10 +147,12 @@ public class DependencyControlTests
         );
 
         var mockClient = new MockHttpMessageHandler();
-        mockClient
-            .When(HttpMethod.Get, DependencyControl.BaseRepositoryUrl)
-            .Respond("application/json", Repository1Json);
         var dc = new DependencyControl(fileSystem, new HttpClient(mockClient));
+
+        mockClient
+            .When(HttpMethod.Get, dc.BaseRepositoryUrl)
+            .Respond("application/json", Repository1Json);
+
         await dc.SetUpBaseRepository();
 
         var result = await dc.InstallModule(
@@ -163,15 +166,16 @@ public class DependencyControlTests
     public async Task InstallModule_NoDependencies()
     {
         var fileSystem = new MockFileSystem();
-
         var mockClient = new MockHttpMessageHandler();
+        var dc = new DependencyControl(fileSystem, new HttpClient(mockClient));
+
         mockClient
-            .When(HttpMethod.Get, DependencyControl.BaseRepositoryUrl)
+            .When(HttpMethod.Get, dc.BaseRepositoryUrl)
             .Respond("application/json", Repository1Json);
         mockClient
             .When(HttpMethod.Get, ScriptExample1Url)
             .Respond("application/text", ScriptExample1);
-        var dc = new DependencyControl(fileSystem, new HttpClient(mockClient));
+
         await dc.SetUpBaseRepository();
 
         var result = await dc.InstallModule(
@@ -186,12 +190,13 @@ public class DependencyControlTests
     public async Task UninstallModule_NotInstalled()
     {
         var fileSystem = new MockFileSystem();
-
         var mockClient = new MockHttpMessageHandler();
-        mockClient
-            .When(HttpMethod.Get, DependencyControl.BaseRepositoryUrl)
-            .Respond("application/json", Repository1Json);
         var dc = new DependencyControl(fileSystem, new HttpClient(mockClient));
+
+        mockClient
+            .When(HttpMethod.Get, dc.BaseRepositoryUrl)
+            .Respond("application/json", Repository1Json);
+
         await dc.SetUpBaseRepository();
 
         var result = dc.UninstallModule(
@@ -213,10 +218,12 @@ public class DependencyControlTests
         );
 
         var mockClient = new MockHttpMessageHandler();
-        mockClient
-            .When(HttpMethod.Get, DependencyControl.BaseRepositoryUrl)
-            .Respond("application/json", Repository1Json);
         var dc = new DependencyControl(fileSystem, new HttpClient(mockClient));
+
+        mockClient
+            .When(HttpMethod.Get, dc.BaseRepositoryUrl)
+            .Respond("application/json", Repository1Json);
+
         await dc.SetUpBaseRepository();
 
         var result = dc.UninstallModule(
@@ -241,10 +248,12 @@ public class DependencyControlTests
         );
 
         var mockClient = new MockHttpMessageHandler();
-        mockClient
-            .When(HttpMethod.Get, DependencyControl.BaseRepositoryUrl)
-            .Respond("application/json", Repository2Json);
         var dc = new DependencyControl(fileSystem, new HttpClient(mockClient));
+
+        mockClient
+            .When(HttpMethod.Get, dc.BaseRepositoryUrl)
+            .Respond("application/json", Repository2Json);
+
         await dc.SetUpBaseRepository();
 
         var result = dc.UninstallModule(
@@ -270,10 +279,12 @@ public class DependencyControlTests
         );
 
         var mockClient = new MockHttpMessageHandler();
-        mockClient
-            .When(HttpMethod.Get, DependencyControl.BaseRepositoryUrl)
-            .Respond("application/json", Repository2Json);
         var dc = new DependencyControl(fileSystem, new HttpClient(mockClient));
+
+        mockClient
+            .When(HttpMethod.Get, dc.BaseRepositoryUrl)
+            .Respond("application/json", Repository2Json);
+
         await dc.SetUpBaseRepository();
 
         var result = dc.UninstallModule(
@@ -298,10 +309,12 @@ public class DependencyControlTests
         );
 
         var mockClient = new MockHttpMessageHandler();
-        mockClient
-            .When(HttpMethod.Get, DependencyControl.BaseRepositoryUrl)
-            .Respond("application/json", Repository1Json);
         var dc = new DependencyControl(fileSystem, new HttpClient(mockClient));
+
+        mockClient
+            .When(HttpMethod.Get, dc.BaseRepositoryUrl)
+            .Respond("application/json", Repository1Json);
+
         await dc.SetUpBaseRepository();
 
         // Check if up to date
@@ -320,10 +333,12 @@ public class DependencyControlTests
         );
 
         var mockClient = new MockHttpMessageHandler();
-        mockClient
-            .When(HttpMethod.Get, DependencyControl.BaseRepositoryUrl)
-            .Respond("application/json", Repository1JsonUpdated);
         var dc = new DependencyControl(fileSystem, new HttpClient(mockClient));
+
+        mockClient
+            .When(HttpMethod.Get, dc.BaseRepositoryUrl)
+            .Respond("application/json", Repository1JsonUpdated);
+
         await dc.SetUpBaseRepository();
 
         // Check if up to date
@@ -342,10 +357,12 @@ public class DependencyControlTests
         );
 
         var mockClient = new MockHttpMessageHandler();
-        mockClient
-            .When(HttpMethod.Get, DependencyControl.BaseRepositoryUrl)
-            .Respond("application/json", Repository1Json);
         var dc = new DependencyControl(fileSystem, new HttpClient(mockClient));
+
+        mockClient
+            .When(HttpMethod.Get, dc.BaseRepositoryUrl)
+            .Respond("application/json", Repository1Json);
+
         await dc.SetUpBaseRepository();
 
         // Check if up to date
@@ -364,10 +381,12 @@ public class DependencyControlTests
         );
 
         var mockClient = new MockHttpMessageHandler();
-        mockClient
-            .When(HttpMethod.Get, DependencyControl.BaseRepositoryUrl)
-            .Respond("application/json", Repository1JsonUpdated);
         var dc = new DependencyControl(fileSystem, new HttpClient(mockClient));
+
+        mockClient
+            .When(HttpMethod.Get, dc.BaseRepositoryUrl)
+            .Respond("application/json", Repository1JsonUpdated);
+
         await dc.SetUpBaseRepository();
 
         // Check if up to date

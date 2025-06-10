@@ -21,6 +21,7 @@ public partial class DepCtrlWindowViewModel : ViewModelBase
 
     private readonly IScriptService _scriptService;
     private readonly Configuration _configuration;
+    private readonly IMessageBoxService _messageBoxService;
 
     private Module? _selectedStoreModule;
     private Module? _selectedInstalledModule;
@@ -38,7 +39,7 @@ public partial class DepCtrlWindowViewModel : ViewModelBase
     public ICommand AddRepositoryCommand { get; }
     public ICommand RemoveRepositoryCommand { get; }
 
-    public DependencyControl DependencyControl { get; }
+    public IDependencyControl DependencyControl { get; }
 
     public Module? SelectedStoreModule
     {
@@ -101,14 +102,17 @@ public partial class DepCtrlWindowViewModel : ViewModelBase
         && _configuration.RepositoryUrls.Contains(SelectedRepository.Url);
 
     public DepCtrlWindowViewModel(
-        DependencyControl dependencyControl,
+        IDependencyControl dependencyControl,
         IScriptService scriptService,
-        Configuration configuration
+        Configuration configuration,
+        IMessageBoxService messageBoxService
     )
     {
+        DependencyControl = dependencyControl;
+
         _scriptService = scriptService;
         _configuration = configuration;
-        DependencyControl = dependencyControl;
+        _messageBoxService = messageBoxService;
 
         _repoUrlInput = string.Empty;
 
