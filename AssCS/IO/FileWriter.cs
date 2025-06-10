@@ -45,7 +45,12 @@ public abstract class FileWriter
         if (!fileSystem.Directory.Exists(Path.GetDirectoryName(path)))
             fileSystem.Directory.CreateDirectory(Path.GetDirectoryName(path) ?? "/");
 
-        using var fs = fileSystem.FileStream.New(path, FileMode.OpenOrCreate);
+        using var fs = fileSystem.FileStream.New(
+            path,
+            FileMode.Create,
+            FileAccess.Write,
+            FileShare.None
+        );
         using var writer = new StreamWriter(fs, encoding: Encoding.UTF8);
 
         var result = Write(writer, export);

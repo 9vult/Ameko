@@ -234,10 +234,10 @@ public partial class MainWindowViewModel : ViewModelBase
     /// </summary>
     private ReactiveCommand<bool, Unit> CreateReloadScriptsCommand()
     {
-        return ReactiveCommand.Create(
-            (bool isManual) =>
+        return ReactiveCommand.CreateFromTask(
+            async (bool isManual) =>
             {
-                _scriptService.Reload(isManual);
+                await _scriptService.Reload(isManual);
             }
         );
     }
