@@ -21,7 +21,7 @@ public class DepCtrlUpToDateConverter : IValueConverter
         if (value is not Module module)
             return false;
         return !AmekoServiceProvider
-                .Provider?.GetRequiredService<DependencyControl>()
+                .Provider?.GetRequiredService<IDependencyControl>()
                 .IsModuleUpToDate(module) ?? true;
     }
 

@@ -33,9 +33,10 @@ public static class AmekoServiceProvider
         services.AddSingleton<CultureService>();
         services.AddSingleton<ThemeService>();
         services.AddSingleton<IIoService, IoService>();
+        services.AddSingleton<IMessageBoxService, MessageBoxService>();
 
         services.AddSingleton<IScriptService, ScriptService>();
-        services.AddSingleton<DependencyControl>();
+        services.AddSingleton<IDependencyControl, DependencyControl>();
 
         // Register factories
         services.AddSingleton<ITabFactory, TabFactory>();

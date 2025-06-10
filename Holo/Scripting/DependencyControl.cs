@@ -13,7 +13,7 @@ namespace Holo.Scripting;
 /// <summary>
 /// Dependency Control manages <see cref="Repository"/>s and <see cref="Module"/>s
 /// </summary>
-public class DependencyControl
+public class DependencyControl : IDependencyControl
 {
     private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -50,7 +50,7 @@ public class DependencyControl
     /// <summary>
     /// Base repository URL
     /// </summary>
-    public const string BaseRepositoryUrl = "https://dc.ameko.moe/base.json";
+    public string BaseRepositoryUrl { get; } = "https://dc.ameko.moe/base.json";
 
     /// <summary>
     /// List of available repositories

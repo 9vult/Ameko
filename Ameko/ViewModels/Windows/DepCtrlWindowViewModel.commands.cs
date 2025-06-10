@@ -27,7 +27,7 @@ public partial class DepCtrlWindowViewModel
 
             var result = await DependencyControl.InstallModule(SelectedStoreModule);
 
-            await ShowMessageBox.Handle(GetDefaultBox(result));
+            await ShowMessageBox.Handle(_messageBoxService.GetBox(result));
 
             if (result == InstallationResult.Success)
             {
@@ -51,10 +51,11 @@ public partial class DepCtrlWindowViewModel
 
             var result = DependencyControl.UninstallModule(SelectedInstalledModule);
 
-            await ShowMessageBox.Handle(GetDefaultBox(result));
+            await ShowMessageBox.Handle(_messageBoxService.GetBox(result));
 
             if (result == InstallationResult.Success)
             {
+                SelectedInstalledModule = null;
                 this.RaisePropertyChanged(nameof(InstallButtonEnabled));
                 this.RaisePropertyChanged(nameof(UninstallButtonEnabled));
 
@@ -77,7 +78,7 @@ public partial class DepCtrlWindowViewModel
             _updateCandidates.Clear();
             _updateCandidates.AddRange(DependencyControl.GetUpdateCandidates());
 
-            await ShowMessageBox.Handle(GetDefaultBox(result));
+            await ShowMessageBox.Handle(_messageBoxService.GetBox(result));
 
             if (result == InstallationResult.Success)
             {
@@ -126,7 +127,7 @@ public partial class DepCtrlWindowViewModel
             this.RaisePropertyChanged(nameof(UpdateButtonEnabled));
             this.RaisePropertyChanged(nameof(UpdateAllButtonEnabled));
 
-            await ShowMessageBox.Handle(GetDefaultBox(finalResult));
+            await ShowMessageBox.Handle(_messageBoxService.GetBox(finalResult));
 
             await _scriptService.Reload(false);
         });
@@ -155,7 +156,12 @@ public partial class DepCtrlWindowViewModel
             this.RaisePropertyChanged(nameof(UpdateButtonEnabled));
             this.RaisePropertyChanged(nameof(UpdateAllButtonEnabled));
 
-            await ShowMessageBox.Handle(GetInfoBox(I18N.Resources.DepCtrl_MsgBox_Refreshed));
+            await ShowMessageBox.Handle(
+                _messageBoxService.GetInfoBox(
+                    I18N.Resources.DepCtrlWindow_Title,
+                    I18N.Resources.DepCtrl_MsgBox_Refreshed
+                )
+            );
         });
     }
 
@@ -172,7 +178,10 @@ public partial class DepCtrlWindowViewModel
             if (_configuration.RepositoryUrls.Contains(RepoUrlInput.Trim()))
             {
                 await ShowMessageBox.Handle(
-                    GetInfoBox(I18N.Resources.DepCtrl_MsgBox_RepoAlreadyAdded)
+                    _messageBoxService.GetInfoBox(
+                        I18N.Resources.DepCtrlWindow_Title,
+                        I18N.Resources.DepCtrl_MsgBox_RepoAlreadyAdded
+                    )
                 );
                 return;
             }
@@ -184,20 +193,24 @@ public partial class DepCtrlWindowViewModel
                 if (repo is null)
                 {
                     Logger.Error($"Building repository failed");
-                    await ShowMessageBox.Handle(GetDefaultBox(InstallationResult.Failure));
+                    await ShowMessageBox.Handle(
+                        _messageBoxService.GetBox(InstallationResult.Failure)
+                    );
                     return;
                 }
 
                 _configuration.AddRepositoryUrl(RepoUrlInput);
                 await DependencyControl.SetUpBaseRepository();
                 await DependencyControl.AddAdditionalRepositories(_configuration.RepositoryUrls);
-                await ShowMessageBox.Handle(GetDefaultBox(InstallationResult.Success));
+                await ShowMessageBox.Handle(_messageBoxService.GetBox(InstallationResult.Success));
                 _repoUrlInput = string.Empty;
             }
             catch (Exception ex)
             {
                 Logger.Error(ex, "Building repository failed");
-                await ShowMessageBox.Handle(GetInfoBox(ex.Message));
+                await ShowMessageBox.Handle(
+                    _messageBoxService.GetInfoBox(I18N.Resources.DepCtrlWindow_Title, ex.Message)
+                );
             }
         });
     }
@@ -217,60 +230,15 @@ public partial class DepCtrlWindowViewModel
                 _configuration.RemoveRepositoryUrl(_selectedRepository.Url);
                 await DependencyControl.SetUpBaseRepository();
                 await DependencyControl.AddAdditionalRepositories(_configuration.RepositoryUrls);
-                await ShowMessageBox.Handle(GetDefaultBox(InstallationResult.Success));
+                await ShowMessageBox.Handle(_messageBoxService.GetBox(InstallationResult.Success));
             }
             catch (Exception ex)
             {
                 Logger.Error(ex, "Removing repository failed");
-                await ShowMessageBox.Handle(GetInfoBox(ex.Message));
+                await ShowMessageBox.Handle(
+                    _messageBoxService.GetInfoBox(I18N.Resources.DepCtrlWindow_Title, ex.Message)
+                );
             }
         });
-    }
-
-    /// <summary>
-    /// Get the default message box
-    /// </summary>
-    /// <param name="result">Result to build the box for</param>
-    /// <returns>MessageBox</returns>
-    /// <exception cref="ArgumentOutOfRangeException">Invalid result</exception>
-    private static IMsBox<ButtonResult> GetDefaultBox(InstallationResult result)
-    {
-        return MessageBoxManager.GetMessageBoxStandard(
-            I18N.Resources.DepCtrlWindow_Title,
-            result switch
-            {
-                InstallationResult.Success => I18N.Resources.DepCtrl_Result_Success,
-                InstallationResult.Failure => I18N.Resources.DepCtrl_Result_Failure,
-                InstallationResult.DependencyNotFound => I18N.Resources.DepCtrl_Result_DepNotFound,
-                InstallationResult.AlreadyInstalled =>
-                    I18N.Resources.DepCtrl_Result_AlreadyInstalled,
-                InstallationResult.FilesystemFailure => I18N.Resources.DepCtrl_Result_FS_Failure,
-                InstallationResult.NotInstalled => I18N.Resources.DepCtrl_Result_NotInstalled,
-                InstallationResult.IsRequiredDependency =>
-                    I18N.Resources.DepCtrl_Result_IsRequiredDep,
-                _ => throw new ArgumentOutOfRangeException(nameof(result)),
-            },
-            ButtonEnum.Ok,
-            result switch
-            {
-                InstallationResult.Success => Icon.Success,
-                _ => Icon.Error,
-            }
-        );
-    }
-
-    /// <summary>
-    /// Get a message box
-    /// </summary>
-    /// <param name="content">Message box content</param>
-    /// <returns>MessageBox</returns>
-    private static IMsBox<ButtonResult> GetInfoBox(string content)
-    {
-        return MessageBoxManager.GetMessageBoxStandard(
-            I18N.Resources.DepCtrlWindow_Title,
-            content,
-            ButtonEnum.Ok,
-            Icon.Info
-        );
     }
 }
