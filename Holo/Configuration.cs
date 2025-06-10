@@ -154,6 +154,7 @@ public partial class Configuration : BindableBase
     /// <param name="url">Repository to add</param>
     public void AddRepositoryUrl(string url)
     {
+        Logger.Info($"Adding repository url {url}");
         _repositoryUrls.Add(url);
         Save();
     }
@@ -165,6 +166,7 @@ public partial class Configuration : BindableBase
     /// <returns><see langword="true"/> if successful</returns>
     public bool RemoveRepositoryUrl(string url)
     {
+        Logger.Info($"Removing repository url {url}");
         var result = _repositoryUrls.Remove(url);
         Save();
         return result;

@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 using System;
+using System.Net.Http;
 using System.Reactive;
 using System.Reactive.Linq;
 using DynamicData;
-using Holo;
 using Holo.Scripting.Models;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Base;
@@ -34,7 +34,7 @@ public partial class DepCtrlWindowViewModel
                 this.RaisePropertyChanged(nameof(InstallButtonEnabled));
                 this.RaisePropertyChanged(nameof(UninstallButtonEnabled));
 
-                _scriptService.Reload(false);
+                await _scriptService.Reload(false);
             }
         });
     }
@@ -58,7 +58,7 @@ public partial class DepCtrlWindowViewModel
                 this.RaisePropertyChanged(nameof(InstallButtonEnabled));
                 this.RaisePropertyChanged(nameof(UninstallButtonEnabled));
 
-                _scriptService.Reload(false);
+                await _scriptService.Reload(false);
             }
         });
     }
@@ -87,7 +87,7 @@ public partial class DepCtrlWindowViewModel
                 this.RaisePropertyChanged(nameof(UpdateButtonEnabled));
                 this.RaisePropertyChanged(nameof(UpdateAllButtonEnabled));
 
-                _scriptService.Reload(false);
+                await _scriptService.Reload(false);
             }
         });
     }
@@ -128,7 +128,7 @@ public partial class DepCtrlWindowViewModel
 
             await ShowMessageBox.Handle(GetDefaultBox(finalResult));
 
-            _scriptService.Reload(false);
+            await _scriptService.Reload(false);
         });
     }
 
@@ -156,6 +156,74 @@ public partial class DepCtrlWindowViewModel
             this.RaisePropertyChanged(nameof(UpdateAllButtonEnabled));
 
             await ShowMessageBox.Handle(GetInfoBox(I18N.Resources.DepCtrl_MsgBox_Refreshed));
+        });
+    }
+
+    /// <summary>
+    /// Add a repository
+    /// </summary>
+    private ReactiveCommand<Unit, Unit> CreateAddRepositoryCommand()
+    {
+        return ReactiveCommand.CreateFromTask(async () =>
+        {
+            if (string.IsNullOrWhiteSpace(RepoUrlInput))
+                return;
+
+            if (_configuration.RepositoryUrls.Contains(RepoUrlInput.Trim()))
+            {
+                await ShowMessageBox.Handle(
+                    GetInfoBox(I18N.Resources.DepCtrl_MsgBox_RepoAlreadyAdded)
+                );
+                return;
+            }
+
+            try
+            {
+                using var client = new HttpClient();
+                var repo = await Repository.Build(RepoUrlInput, client);
+                if (repo is null)
+                {
+                    Logger.Error($"Building repository failed");
+                    await ShowMessageBox.Handle(GetDefaultBox(InstallationResult.Failure));
+                    return;
+                }
+
+                _configuration.AddRepositoryUrl(RepoUrlInput);
+                await DependencyControl.SetUpBaseRepository();
+                await DependencyControl.AddAdditionalRepositories(_configuration.RepositoryUrls);
+                await ShowMessageBox.Handle(GetDefaultBox(InstallationResult.Success));
+                _repoUrlInput = string.Empty;
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex, "Building repository failed");
+                await ShowMessageBox.Handle(GetInfoBox(ex.Message));
+            }
+        });
+    }
+
+    /// <summary>
+    /// Remove a repository
+    /// </summary>
+    private ReactiveCommand<Unit, Unit> CreateRemoveRepositoryCommand()
+    {
+        return ReactiveCommand.CreateFromTask(async () =>
+        {
+            if (_selectedRepository?.Url is null)
+                return;
+
+            try
+            {
+                _configuration.RemoveRepositoryUrl(_selectedRepository.Url);
+                await DependencyControl.SetUpBaseRepository();
+                await DependencyControl.AddAdditionalRepositories(_configuration.RepositoryUrls);
+                await ShowMessageBox.Handle(GetDefaultBox(InstallationResult.Success));
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex, "Removing repository failed");
+                await ShowMessageBox.Handle(GetInfoBox(ex.Message));
+            }
         });
     }
 

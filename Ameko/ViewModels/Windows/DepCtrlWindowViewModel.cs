@@ -10,12 +10,15 @@ using Holo.Scripting;
 using Holo.Scripting.Models;
 using MsBox.Avalonia.Base;
 using MsBox.Avalonia.Enums;
+using NLog;
 using ReactiveUI;
 
 namespace Ameko.ViewModels.Windows;
 
 public partial class DepCtrlWindowViewModel : ViewModelBase
 {
+    private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
     private readonly ScriptService _scriptService;
     private readonly Configuration _configuration;
 
@@ -32,6 +35,8 @@ public partial class DepCtrlWindowViewModel : ViewModelBase
     public ICommand UpdateCommand { get; }
     public ICommand UpdateAllCommand { get; }
     public ICommand RefreshCommand { get; }
+    public ICommand AddRepositoryCommand { get; }
+    public ICommand RemoveRepositoryCommand { get; }
 
     public DependencyControl DependencyControl { get; }
 
@@ -118,5 +123,7 @@ public partial class DepCtrlWindowViewModel : ViewModelBase
         UpdateCommand = CreateUpdateCommand();
         UpdateAllCommand = CreateUpdateAllCommand();
         RefreshCommand = CreateRefreshCommand();
+        AddRepositoryCommand = CreateAddRepositoryCommand();
+        RemoveRepositoryCommand = CreateRemoveRepositoryCommand();
     }
 }
