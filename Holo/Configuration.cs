@@ -185,7 +185,12 @@ public partial class Configuration : BindableBase
             if (!_fileSystem.Directory.Exists(Path.GetDirectoryName(path)))
                 _fileSystem.Directory.CreateDirectory(Path.GetDirectoryName(path) ?? "/");
 
-            using var fs = _fileSystem.FileStream.New(path, FileMode.OpenOrCreate);
+            using var fs = _fileSystem.FileStream.New(
+                path,
+                FileMode.Create,
+                FileAccess.Write,
+                FileShare.None
+            );
             using var writer = new StreamWriter(fs);
 
             var model = new ConfigurationModel
@@ -243,7 +248,12 @@ public partial class Configuration : BindableBase
             if (!fileSystem.File.Exists(path))
                 return new Configuration(fileSystem, savePath);
 
-            using var fs = fileSystem.FileStream.New(path, FileMode.OpenOrCreate);
+            using var fs = fileSystem.FileStream.New(
+                path,
+                FileMode.Open,
+                FileAccess.Read,
+                FileShare.ReadWrite
+            );
             using var reader = new StreamReader(fs);
 
             var model =

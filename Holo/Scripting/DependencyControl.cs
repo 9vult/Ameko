@@ -124,10 +124,20 @@ public class DependencyControl
                 _fileSystem.Directory.CreateDirectory(Path.GetDirectoryName(sidecar) ?? "/");
 
             await using var dlStream = await _httpClient.GetStreamAsync(module.Url);
-            await using var moduleFs = _fileSystem.FileStream.New(path, FileMode.OpenOrCreate);
+            await using var moduleFs = _fileSystem.FileStream.New(
+                path,
+                FileMode.Create,
+                FileAccess.Write,
+                FileShare.None
+            );
             await dlStream.CopyToAsync(moduleFs);
 
-            await using var sidecarFs = _fileSystem.FileStream.New(sidecar, FileMode.OpenOrCreate);
+            await using var sidecarFs = _fileSystem.FileStream.New(
+                sidecar,
+                FileMode.Create,
+                FileAccess.Write,
+                FileShare.None
+            );
             await JsonSerializer.SerializeAsync(sidecarFs, module, JsonOptions);
 
             _installedModules.Add(module);

@@ -40,7 +40,15 @@ public abstract class FileParser
         if (!fileSystem.Directory.Exists(Path.GetDirectoryName(path)))
             fileSystem.Directory.CreateDirectory(Path.GetDirectoryName(path) ?? "/");
 
-        using var fs = fileSystem.FileStream.New(path, FileMode.OpenOrCreate);
+        if (!fileSystem.File.Exists(path))
+            throw new FileNotFoundException("Document not found", path);
+
+        using var fs = fileSystem.FileStream.New(
+            path,
+            FileMode.Open,
+            FileAccess.Read,
+            FileShare.ReadWrite
+        );
         using var reader = new StreamReader(fs, encoding: Encoding.UTF8);
 
         return Parse(reader);
