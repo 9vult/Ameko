@@ -34,45 +34,53 @@ public class OverridePrototype
         AddParam(type, classification, opt);
     }
 
-    public static readonly Dictionary<string, OverridePrototype> Prototypes = [];
-
-    public static void LoadPrototypes()
+    // ReSharper disable once InconsistentNaming
+    private static readonly Lazy<Dictionary<string, OverridePrototype>> _prototypes = new(() =>
     {
-        if (Prototypes.Count > 0)
+        var dict = new Dictionary<string, OverridePrototype>();
+        LoadPrototypes(dict);
+        return dict;
+    });
+
+    public static readonly Dictionary<string, OverridePrototype> Prototypes = _prototypes.Value;
+
+    private static void LoadPrototypes(Dictionary<string, OverridePrototype> prototypes)
+    {
+        if (prototypes.Count > 0)
             return;
 
-        Prototypes.Add(
-            "\\alpha",
-            new OverridePrototype("\\alpha", VariableType.Text, ParameterType.Alpha)
+        prototypes.Add(
+            @"\alpha",
+            new OverridePrototype(@"\alpha", VariableType.Text, ParameterType.Alpha)
         );
-        Prototypes.Add(
-            "\\bord",
-            new OverridePrototype("\\bord", VariableType.Float, ParameterType.AbsoluteSize)
+        prototypes.Add(
+            @"\bord",
+            new OverridePrototype(@"\bord", VariableType.Float, ParameterType.AbsoluteSize)
         );
-        Prototypes.Add(
-            "\\xbord",
-            new OverridePrototype("\\xbord", VariableType.Float, ParameterType.AbsoluteSize)
+        prototypes.Add(
+            @"\xbord",
+            new OverridePrototype(@"\xbord", VariableType.Float, ParameterType.AbsoluteSize)
         );
-        Prototypes.Add(
-            "\\ybord",
-            new OverridePrototype("\\ybord", VariableType.Float, ParameterType.AbsoluteSize)
+        prototypes.Add(
+            @"\ybord",
+            new OverridePrototype(@"\ybord", VariableType.Float, ParameterType.AbsoluteSize)
         );
-        Prototypes.Add(
-            "\\shad",
-            new OverridePrototype("\\shad", VariableType.Float, ParameterType.AbsoluteSize)
+        prototypes.Add(
+            @"\shad",
+            new OverridePrototype(@"\shad", VariableType.Float, ParameterType.AbsoluteSize)
         );
-        Prototypes.Add(
-            "\\xshad",
-            new OverridePrototype("\\xshad", VariableType.Float, ParameterType.AbsoluteSize)
+        prototypes.Add(
+            @"\xshad",
+            new OverridePrototype(@"\xshad", VariableType.Float, ParameterType.AbsoluteSize)
         );
-        Prototypes.Add(
-            "\\yshad",
-            new OverridePrototype("\\yshad", VariableType.Float, ParameterType.AbsoluteSize)
+        prototypes.Add(
+            @"\yshad",
+            new OverridePrototype(@"\yshad", VariableType.Float, ParameterType.AbsoluteSize)
         );
-        Prototypes.Add(
-            "\\fade",
+        prototypes.Add(
+            @"\fade",
             new OverridePrototype(
-                "\\fade",
+                @"\fade",
                 [
                     new OverridePrototypeParam(VariableType.Int),
                     new OverridePrototypeParam(VariableType.Int),
@@ -84,10 +92,10 @@ public class OverridePrototype
                 ]
             )
         );
-        Prototypes.Add(
-            "\\move",
+        prototypes.Add(
+            @"\move",
             new OverridePrototype(
-                "\\move",
+                @"\move",
                 [
                     new OverridePrototypeParam(VariableType.Float, ParameterType.AbsolutePosX),
                     new OverridePrototypeParam(VariableType.Float, ParameterType.AbsolutePosY),
@@ -98,10 +106,10 @@ public class OverridePrototype
                 ]
             )
         );
-        Prototypes.Add(
-            "\\clip4",
+        prototypes.Add(
+            @"\clip4",
             new OverridePrototype(
-                "\\clip",
+                @"\clip",
                 [
                     new OverridePrototypeParam(VariableType.Int, ParameterType.AbsolutePosX),
                     new OverridePrototypeParam(VariableType.Int, ParameterType.AbsolutePosY),
@@ -110,10 +118,10 @@ public class OverridePrototype
                 ]
             )
         );
-        Prototypes.Add(
-            "\\clip2",
+        prototypes.Add(
+            @"\clip2",
             new OverridePrototype(
-                "\\clip",
+                @"\clip",
                 [
                     new OverridePrototypeParam(
                         VariableType.Int,
@@ -124,10 +132,10 @@ public class OverridePrototype
                 ]
             )
         );
-        Prototypes.Add(
-            "\\iclip4",
+        prototypes.Add(
+            @"\iclip4",
             new OverridePrototype(
-                "\\iclip",
+                @"\iclip",
                 [
                     new OverridePrototypeParam(VariableType.Int, ParameterType.AbsolutePosX),
                     new OverridePrototypeParam(VariableType.Int, ParameterType.AbsolutePosY),
@@ -136,10 +144,10 @@ public class OverridePrototype
                 ]
             )
         );
-        Prototypes.Add(
-            "\\iclip2",
+        prototypes.Add(
+            @"\iclip2",
             new OverridePrototype(
-                "\\iclip",
+                @"\iclip",
                 [
                     new OverridePrototypeParam(
                         VariableType.Int,
@@ -150,136 +158,136 @@ public class OverridePrototype
                 ]
             )
         );
-        Prototypes.Add(
-            "\\fscx",
-            new OverridePrototype("\\fscx", VariableType.Float, ParameterType.RelativeSizeX)
+        prototypes.Add(
+            @"\fscx",
+            new OverridePrototype(@"\fscx", VariableType.Float, ParameterType.RelativeSizeX)
         );
-        Prototypes.Add(
-            "\\fscy",
-            new OverridePrototype("\\fscy", VariableType.Float, ParameterType.RelativeSizeY)
+        prototypes.Add(
+            @"\fscy",
+            new OverridePrototype(@"\fscy", VariableType.Float, ParameterType.RelativeSizeY)
         );
-        Prototypes.Add(
-            "\\pos",
+        prototypes.Add(
+            @"\pos",
             new OverridePrototype(
-                "\\pos",
+                @"\pos",
                 [
                     new OverridePrototypeParam(VariableType.Float, ParameterType.AbsolutePosX),
                     new OverridePrototypeParam(VariableType.Float, ParameterType.AbsolutePosY),
                 ]
             )
         );
-        Prototypes.Add(
-            "\\org",
+        prototypes.Add(
+            @"\org",
             new OverridePrototype(
-                "\\org",
+                @"\org",
                 [
                     new OverridePrototypeParam(VariableType.Int, ParameterType.AbsolutePosX),
                     new OverridePrototypeParam(VariableType.Int, ParameterType.AbsolutePosY),
                 ]
             )
         );
-        Prototypes.Add(
-            "\\pbo",
-            new OverridePrototype("\\pbo", VariableType.Int, ParameterType.AbsolutePosY)
+        prototypes.Add(
+            @"\pbo",
+            new OverridePrototype(@"\pbo", VariableType.Int, ParameterType.AbsolutePosY)
         );
-        Prototypes.Add(
-            "\\fad",
+        prototypes.Add(
+            @"\fad",
             new OverridePrototype(
-                "\\fad",
+                @"\fad",
                 [
                     new OverridePrototypeParam(VariableType.Int, ParameterType.RelativeTimeStart),
                     new OverridePrototypeParam(VariableType.Int, ParameterType.RelativeTimeEnd),
                 ]
             )
         );
-        Prototypes.Add(
-            "\\fsp",
-            new OverridePrototype("\\fsp", VariableType.Float, ParameterType.AbsoluteSize)
+        prototypes.Add(
+            @"\fsp",
+            new OverridePrototype(@"\fsp", VariableType.Float, ParameterType.AbsoluteSize)
         );
-        Prototypes.Add("\\frx", new OverridePrototype("\\frx", VariableType.Float));
-        Prototypes.Add("\\fry", new OverridePrototype("\\fry", VariableType.Float));
-        Prototypes.Add("\\frz", new OverridePrototype("\\frz", VariableType.Float));
-        Prototypes.Add("\\fr", new OverridePrototype("\\fr", VariableType.Float));
-        Prototypes.Add("\\fax", new OverridePrototype("\\fax", VariableType.Float));
-        Prototypes.Add("\\fay", new OverridePrototype("\\fay", VariableType.Float));
-        Prototypes.Add(
-            "\\1c",
-            new OverridePrototype("\\1c", VariableType.Text, ParameterType.Color)
+        prototypes.Add(@"\frx", new OverridePrototype(@"\frx", VariableType.Float));
+        prototypes.Add(@"\fry", new OverridePrototype(@"\fry", VariableType.Float));
+        prototypes.Add(@"\frz", new OverridePrototype(@"\frz", VariableType.Float));
+        prototypes.Add(@"\fr", new OverridePrototype(@"\fr", VariableType.Float));
+        prototypes.Add(@"\fax", new OverridePrototype(@"\fax", VariableType.Float));
+        prototypes.Add(@"\fay", new OverridePrototype(@"\fay", VariableType.Float));
+        prototypes.Add(
+            @"\1c",
+            new OverridePrototype(@"\1c", VariableType.Text, ParameterType.Color)
         );
-        Prototypes.Add(
-            "\\2c",
-            new OverridePrototype("\\2c", VariableType.Text, ParameterType.Color)
+        prototypes.Add(
+            @"\2c",
+            new OverridePrototype(@"\2c", VariableType.Text, ParameterType.Color)
         );
-        Prototypes.Add(
-            "\\3c",
-            new OverridePrototype("\\3c", VariableType.Text, ParameterType.Color)
+        prototypes.Add(
+            @"\3c",
+            new OverridePrototype(@"\3c", VariableType.Text, ParameterType.Color)
         );
-        Prototypes.Add(
-            "\\4c",
-            new OverridePrototype("\\4c", VariableType.Text, ParameterType.Color)
+        prototypes.Add(
+            @"\4c",
+            new OverridePrototype(@"\4c", VariableType.Text, ParameterType.Color)
         );
-        Prototypes.Add(
-            "\\1a",
-            new OverridePrototype("\\1a", VariableType.Text, ParameterType.Alpha)
+        prototypes.Add(
+            @"\1a",
+            new OverridePrototype(@"\1a", VariableType.Text, ParameterType.Alpha)
         );
-        Prototypes.Add(
-            "\\2a",
-            new OverridePrototype("\\2a", VariableType.Text, ParameterType.Alpha)
+        prototypes.Add(
+            @"\2a",
+            new OverridePrototype(@"\2a", VariableType.Text, ParameterType.Alpha)
         );
-        Prototypes.Add(
-            "\\3a",
-            new OverridePrototype("\\3a", VariableType.Text, ParameterType.Alpha)
+        prototypes.Add(
+            @"\3a",
+            new OverridePrototype(@"\3a", VariableType.Text, ParameterType.Alpha)
         );
-        Prototypes.Add(
-            "\\4a",
-            new OverridePrototype("\\4a", VariableType.Text, ParameterType.Alpha)
+        prototypes.Add(
+            @"\4a",
+            new OverridePrototype(@"\4a", VariableType.Text, ParameterType.Alpha)
         );
-        Prototypes.Add("\\fe", new OverridePrototype("\\fe", VariableType.Text));
-        Prototypes.Add(
-            "\\ko",
-            new OverridePrototype("\\ko", VariableType.Int, ParameterType.Karaoke)
+        prototypes.Add(@"\fe", new OverridePrototype(@"\fe", VariableType.Text));
+        prototypes.Add(
+            @"\ko",
+            new OverridePrototype(@"\ko", VariableType.Int, ParameterType.Karaoke)
         );
-        Prototypes.Add(
-            "\\kf",
-            new OverridePrototype("\\kf", VariableType.Int, ParameterType.Karaoke)
+        prototypes.Add(
+            @"\kf",
+            new OverridePrototype(@"\kf", VariableType.Int, ParameterType.Karaoke)
         );
-        Prototypes.Add(
-            "\\be",
-            new OverridePrototype("\\be", VariableType.Int, ParameterType.AbsoluteSize)
+        prototypes.Add(
+            @"\be",
+            new OverridePrototype(@"\be", VariableType.Int, ParameterType.AbsoluteSize)
         );
-        Prototypes.Add(
-            "\\blur",
-            new OverridePrototype("\\blur", VariableType.Float, ParameterType.AbsoluteSize)
+        prototypes.Add(
+            @"\blur",
+            new OverridePrototype(@"\blur", VariableType.Float, ParameterType.AbsoluteSize)
         );
-        Prototypes.Add("\\fn", new OverridePrototype("\\fn", VariableType.Text));
-        Prototypes.Add("\\fs+", new OverridePrototype("\\fs+", VariableType.Float));
-        Prototypes.Add("\\fs-", new OverridePrototype("\\fs-", VariableType.Float));
-        Prototypes.Add(
-            "\\fs",
-            new OverridePrototype("\\fs", VariableType.Float, ParameterType.AbsoluteSize)
+        prototypes.Add(@"\fn", new OverridePrototype(@"\fn", VariableType.Text));
+        prototypes.Add(@"\fs+", new OverridePrototype(@"\fs+", VariableType.Float));
+        prototypes.Add(@"\fs-", new OverridePrototype(@"\fs-", VariableType.Float));
+        prototypes.Add(
+            @"\fs",
+            new OverridePrototype(@"\fs", VariableType.Float, ParameterType.AbsoluteSize)
         );
-        Prototypes.Add("\\an", new OverridePrototype("\\an", VariableType.Int));
-        Prototypes.Add("\\c", new OverridePrototype("\\c", VariableType.Text, ParameterType.Color));
-        Prototypes.Add("\\b", new OverridePrototype("\\b", VariableType.Int));
-        Prototypes.Add("\\i", new OverridePrototype("\\i", VariableType.Bool));
-        Prototypes.Add("\\u", new OverridePrototype("\\u", VariableType.Bool));
-        Prototypes.Add("\\s", new OverridePrototype("\\s", VariableType.Bool));
-        Prototypes.Add("\\a", new OverridePrototype("\\a", VariableType.Int));
-        Prototypes.Add(
-            "\\k",
-            new OverridePrototype("\\k", VariableType.Int, ParameterType.Karaoke)
+        prototypes.Add(@"\an", new OverridePrototype(@"\an", VariableType.Int));
+        prototypes.Add(@"\c", new OverridePrototype(@"\c", VariableType.Text, ParameterType.Color));
+        prototypes.Add(@"\b", new OverridePrototype(@"\b", VariableType.Int));
+        prototypes.Add(@"\i", new OverridePrototype(@"\i", VariableType.Bool));
+        prototypes.Add(@"\u", new OverridePrototype(@"\u", VariableType.Bool));
+        prototypes.Add(@"\s", new OverridePrototype(@"\s", VariableType.Bool));
+        prototypes.Add(@"\a", new OverridePrototype(@"\a", VariableType.Int));
+        prototypes.Add(
+            @"\k",
+            new OverridePrototype(@"\k", VariableType.Int, ParameterType.Karaoke)
         );
-        Prototypes.Add(
-            "\\K",
-            new OverridePrototype("\\K", VariableType.Int, ParameterType.Karaoke)
+        prototypes.Add(
+            @"\K",
+            new OverridePrototype(@"\K", VariableType.Int, ParameterType.Karaoke)
         );
-        Prototypes.Add("\\q", new OverridePrototype("\\q", VariableType.Int));
-        Prototypes.Add("\\p", new OverridePrototype("\\p", VariableType.Int));
-        Prototypes.Add("\\r", new OverridePrototype("\\r", VariableType.Int));
-        Prototypes.Add(
-            "\\t",
+        prototypes.Add(@"\q", new OverridePrototype(@"\q", VariableType.Int));
+        prototypes.Add(@"\p", new OverridePrototype(@"\p", VariableType.Int));
+        prototypes.Add(@"\r", new OverridePrototype(@"\r", VariableType.Int));
+        prototypes.Add(
+            @"\t",
             new OverridePrototype(
-                "\\t",
+                @"\t",
                 [
                     new OverridePrototypeParam(
                         VariableType.Int,

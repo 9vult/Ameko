@@ -23,8 +23,6 @@ public class OverrideTag
     /// <param name="data">Text to set</param>
     public void SetText(string data)
     {
-        OverridePrototype.LoadPrototypes();
-
         foreach (OverridePrototype p in OverridePrototype.Prototypes.Values)
         {
             if (data.StartsWith(p.Name))
