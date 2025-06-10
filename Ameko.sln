@@ -20,6 +20,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Holo.Tests", "Tests\Holo.Te
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ameko", "Ameko\Ameko.csproj", "{FA61444F-D78E-45C2-B394-46C13D1E9635}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ameko.ViewModel.Tests", "Ameko.ViewModel.Tests\Ameko.ViewModel.Tests.csproj", "{F0EF2ADA-B62B-4E45-8879-6AC05E29330D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -46,6 +48,10 @@ Global
 		{FA61444F-D78E-45C2-B394-46C13D1E9635}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FA61444F-D78E-45C2-B394-46C13D1E9635}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FA61444F-D78E-45C2-B394-46C13D1E9635}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F0EF2ADA-B62B-4E45-8879-6AC05E29330D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F0EF2ADA-B62B-4E45-8879-6AC05E29330D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F0EF2ADA-B62B-4E45-8879-6AC05E29330D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F0EF2ADA-B62B-4E45-8879-6AC05E29330D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -53,6 +59,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{1AB09F9A-0993-4176-ACE4-664E4F703BCF} = {5F2340F9-7C8A-4B1C-BB27-9322D27ED0B9}
 		{5D0083F1-9F3E-47CA-917F-1E6BA5312A10} = {5F2340F9-7C8A-4B1C-BB27-9322D27ED0B9}
+		{F0EF2ADA-B62B-4E45-8879-6AC05E29330D} = {5F2340F9-7C8A-4B1C-BB27-9322D27ED0B9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F6997F49-6443-477D-A1DC-1EDF544AC392}
