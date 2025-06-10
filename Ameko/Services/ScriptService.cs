@@ -21,7 +21,9 @@ namespace Ameko.Services;
 /// </summary>
 public class ScriptService : IScriptService
 {
-    private static readonly Uri ScriptsRoot = new(Path.Combine(Directories.DataHome, "scripts"));
+    private static readonly Uri ScriptsRoot = new(
+        Path.Combine(DirectoryService.DataHome, "scripts")
+    );
     private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
     private readonly ObservableCollection<HoloScript> _scripts;

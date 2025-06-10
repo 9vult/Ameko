@@ -2,6 +2,7 @@
 
 using System.Windows.Input;
 using Holo;
+using Holo.Configuration;
 using Holo.Providers;
 using ReactiveUI;
 

@@ -13,26 +13,25 @@ public class ConfigurationTests
     public void Constructor()
     {
         var fs = new MockFileSystem();
-        var cfg = new Configuration(fs, Paths.Configuration);
+        var cfg = new Configuration.Configuration(fs);
 
-        cfg.SavePath.ShouldNotBeNull();
-        cfg.Cps.ShouldBe(18);
+        cfg.Cps.ShouldBe<uint>(18);
         cfg.UseSoftLinebreaks.ShouldBe(false);
         cfg.AutosaveEnabled.ShouldBe(true);
-        cfg.AutosaveInterval.ShouldBe(60);
+        cfg.AutosaveInterval.ShouldBe<uint>(60);
     }
 
     [Fact]
     public void Parse_NotExists()
     {
         var fs = new MockFileSystem();
-        var cfg = Configuration.Parse(fs, Paths.Configuration);
+        var cfg = Configuration.Configuration.Parse(fs);
 
         cfg.ShouldNotBeNull();
-        cfg.Cps.ShouldBe(18);
+        cfg.Cps.ShouldBe<uint>(18);
         cfg.UseSoftLinebreaks.ShouldBe(false);
         cfg.AutosaveEnabled.ShouldBe(true);
-        cfg.AutosaveInterval.ShouldBe(60);
+        cfg.AutosaveInterval.ShouldBe<uint>(60);
     }
 
     [Fact]
@@ -44,15 +43,15 @@ public class ConfigurationTests
                 { Paths.Configuration.LocalPath, new MockFileData(ExampleConfiguration) },
             }
         );
-        var cfg = Configuration.Parse(fs, Paths.Configuration);
+        var cfg = Configuration.Configuration.Parse(fs);
 
         cfg.ShouldNotBeNull();
-        cfg.Cps.ShouldBe(12);
+        cfg.Cps.ShouldBe<uint>(12);
         cfg.CpsIncludesWhitespace.ShouldBeFalse();
         cfg.CpsIncludesPunctuation.ShouldBeFalse();
         cfg.UseSoftLinebreaks.ShouldBe(true);
         cfg.AutosaveEnabled.ShouldBe(false);
-        cfg.AutosaveInterval.ShouldBe(120);
+        cfg.AutosaveInterval.ShouldBe<uint>(120);
         cfg.LineWidthIncludesWhitespace.ShouldBeTrue();
         cfg.LineWidthIncludesPunctuation.ShouldBeTrue();
         cfg.Theme.ShouldBe(Theme.Light);
@@ -67,7 +66,7 @@ public class ConfigurationTests
                 { Paths.Configuration.LocalPath, new MockFileData(ExampleConfiguration) },
             }
         );
-        var cfg = new Configuration(fs, Paths.Configuration) { Cps = 12 };
+        var cfg = new Configuration.Configuration(fs) { Cps = 12 };
 
         var result = cfg.Save();
 
@@ -79,7 +78,7 @@ public class ConfigurationTests
     public void Save_NotExists()
     {
         var fs = new MockFileSystem();
-        var cfg = new Configuration(fs, Paths.Configuration) { Cps = 12 };
+        var cfg = new Configuration.Configuration(fs) { Cps = 12 };
 
         var result = cfg.Save();
 

@@ -6,10 +6,11 @@ using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using AssCS;
+using Holo.IO;
 using Holo.Models;
 using NLog;
 
-namespace Holo;
+namespace Holo.Configuration;
 
 /// <summary>
 /// User-controlled configuration options.
@@ -37,14 +38,13 @@ public partial class Configuration : BindableBase, IConfiguration
     /// <summary>
     /// The filesystem being used
     /// </summary>
-    /// <remarks>This allows for filesystem mocking to be used in tests</remarks>
     private readonly IFileSystem _fileSystem;
 
-    private int _cps;
+    private uint _cps;
     private bool _cpsIncludesWhitespace;
     private bool _cpsIncludesPunctuation;
     private bool _autosaveEnabled;
-    private int _autosaveInterval;
+    private uint _autosaveInterval;
     private bool _useSoftLinebreaks;
     private bool _lineWidthIncludesWhitespace;
     private bool _lineWidthIncludesPunctuation;
@@ -52,106 +52,80 @@ public partial class Configuration : BindableBase, IConfiguration
     private Theme _theme;
     private RangeObservableCollection<string> _repositoryUrls;
 
-    /// <summary>
-    /// Characters-per-second threshold
-    /// </summary>
-    /// <remarks>This value may be overloaded by <see cref="Solution.Cps"/>.</remarks>
-    public int Cps
+    //// <inheritdoc cref="IConfiguration.Cps"/>
+    public uint Cps
     {
         get => _cps;
         set => SetProperty(ref _cps, value);
     }
 
-    /// <summary>
-    /// If whitespace should be included in <see cref="Event.Cps"/> calculation
-    /// </summary>
+    /// <inheritdoc cref="IConfiguration.CpsIncludesWhitespace"/>
     public bool CpsIncludesWhitespace
     {
         get => _cpsIncludesWhitespace;
         set => SetProperty(ref _cpsIncludesWhitespace, value);
     }
 
-    /// <summary>
-    /// If punctuation should be included in <see cref="Event.Cps"/> calculation
-    /// </summary>
+    /// <inheritdoc cref="IConfiguration.CpsIncludesPunctuation"/>
     public bool CpsIncludesPunctuation
     {
         get => _cpsIncludesPunctuation;
         set => SetProperty(ref _cpsIncludesPunctuation, value);
     }
 
-    /// <summary>
-    /// Soft linebreaks preference
-    /// </summary>
-    /// <remarks>This value may be overloaded by <see cref="Solution.UseSoftLinebreaks"/>.</remarks>
+    /// <inheritdoc cref="IConfiguration.UseSoftLinebreaks"/>
     public bool UseSoftLinebreaks
     {
         get => _useSoftLinebreaks;
         set => SetProperty(ref _useSoftLinebreaks, value);
     }
 
-    /// <summary>
-    /// Whether autosave is enabled
-    /// </summary>
+    /// <inheritdoc cref="IConfiguration.AutosaveEnabled"/>
     public bool AutosaveEnabled
     {
         get => _autosaveEnabled;
         set => SetProperty(ref _autosaveEnabled, value);
     }
 
-    /// <summary>
-    /// Interval between autosave attempts, in seconds
-    /// </summary>
-    public int AutosaveInterval
+    /// <inheritdoc cref="IConfiguration.AutosaveInterval"/>
+    public uint AutosaveInterval
     {
         get => _autosaveInterval;
         set => SetProperty(ref _autosaveInterval, value);
     }
 
-    /// <summary>
-    /// If whitespace should be included in <see cref="Event.MaxLineWidth"/> calculation
-    /// </summary>
+    /// <inheritdoc cref="IConfiguration.LineWidthIncludesWhitespace"/>
     public bool LineWidthIncludesWhitespace
     {
         get => _lineWidthIncludesWhitespace;
         set => SetProperty(ref _lineWidthIncludesWhitespace, value);
     }
 
-    /// <summary>
-    /// If punctuation should be included in <see cref="Event.MaxLineWidth"/> calculation
-    /// </summary>
+    /// <inheritdoc cref="IConfiguration.LineWidthIncludesPunctuation"/>
     public bool LineWidthIncludesPunctuation
     {
         get => _lineWidthIncludesPunctuation;
         set => SetProperty(ref _lineWidthIncludesPunctuation, value);
     }
 
+    /// <inheritdoc cref="IConfiguration.Culture"/>
     public string Culture
     {
         get => _culture;
         set => SetProperty(ref _culture, value);
     }
 
-    /// <summary>
-    /// Display theme to use
-    /// </summary>
+    /// <inheritdoc cref="IConfiguration.Theme"/>
     public Theme Theme
     {
         get => _theme;
         set => SetProperty(ref _theme, value);
     }
 
-    /// <summary>
-    /// List of user-added repository URLs
-    /// </summary>
+    /// <inheritdoc cref="IConfiguration.RepositoryUrls"/>
     public ReadOnlyObservableCollection<string> RepositoryUrls { get; }
 
-    public Uri SavePath { get; }
-
-    /// <summary>
-    /// Add a repository
-    /// </summary>
-    /// <param name="url">Repository to add</param>
+    /// <inheritdoc cref="IConfiguration.AddRepositoryUrl"/>
     public void AddRepositoryUrl(string url)
     {
         Logger.Info($"Adding repository url {url}");
@@ -159,11 +133,7 @@ public partial class Configuration : BindableBase, IConfiguration
         Save();
     }
 
-    /// <summary>
-    /// Remove a repository
-    /// </summary>
-    /// <param name="url">Repository to remove</param>
-    /// <returns><see langword="true"/> if successful</returns>
+    /// <inheritdoc cref="IConfiguration.RemoveRepositoryUrl"/>
     public bool RemoveRepositoryUrl(string url)
     {
         Logger.Info($"Removing repository url {url}");
@@ -172,13 +142,10 @@ public partial class Configuration : BindableBase, IConfiguration
         return result;
     }
 
-    /// <summary>
-    /// Write the solution to file
-    /// </summary>
-    /// <returns><see langword="true"/> if saving was successful</returns>
+    /// <inheritdoc cref="IConfiguration.Save"/>
     public bool Save()
     {
-        var path = SavePath.LocalPath;
+        var path = Paths.Configuration.LocalPath;
         Logger.Info($"Writing configuration to {path}");
         try
         {
@@ -224,19 +191,18 @@ public partial class Configuration : BindableBase, IConfiguration
     /// Parse a saved configuration file
     /// </summary>
     /// <param name="fileSystem">FileSystem to use</param>
-    /// <param name="savePath">Path to the configuration file</param>
     /// <returns><see cref="Configuration"/> object</returns>
-    public static Configuration Parse(IFileSystem fileSystem, Uri savePath)
+    public static Configuration Parse(IFileSystem fileSystem)
     {
         Logger.Info("Parsing configuration");
-        var path = savePath.LocalPath;
+        var path = Paths.Configuration.LocalPath;
         try
         {
             if (!fileSystem.Directory.Exists(Path.GetDirectoryName(path)))
                 fileSystem.Directory.CreateDirectory(Path.GetDirectoryName(path) ?? "/");
 
             if (!fileSystem.File.Exists(path))
-                return new Configuration(fileSystem, savePath);
+                return new Configuration(fileSystem);
 
             using var fs = fileSystem.FileStream.New(
                 path,
@@ -250,7 +216,7 @@ public partial class Configuration : BindableBase, IConfiguration
                 JsonSerializer.Deserialize<ConfigurationModel>(reader.ReadToEnd(), JsonOptions)
                 ?? throw new InvalidDataException("Configuration model deserialization failed");
 
-            return new Configuration(fileSystem, savePath)
+            return new Configuration(fileSystem)
             {
                 _cps = model.Cps,
                 _cpsIncludesWhitespace = model.CpsIncludesWhitespace,
@@ -268,25 +234,16 @@ public partial class Configuration : BindableBase, IConfiguration
         catch (Exception ex) when (ex is IOException or JsonException)
         {
             Logger.Error(ex);
-            return new Configuration(fileSystem, savePath);
+            return new Configuration(fileSystem);
         }
     }
 
     /// <summary>
     /// Instantiate a Configuration instance
     /// </summary>
-    /// <param name="savePath">Location of the configuration file</param>
-    public Configuration(Uri savePath)
-        : this(new FileSystem(), savePath) { }
-
-    /// <summary>
-    /// Instantiate a Configuration instance
-    /// </summary>
     /// <param name="fileSystem">FileSystem to use</param>
-    /// <param name="savePath">Location of the configuration file</param>
-    public Configuration(IFileSystem fileSystem, Uri savePath)
+    public Configuration(IFileSystem fileSystem)
     {
-        SavePath = savePath;
         _fileSystem = fileSystem;
         _cps = 18;
         _useSoftLinebreaks = false;

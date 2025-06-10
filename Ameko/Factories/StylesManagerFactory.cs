@@ -3,6 +3,7 @@
 using Ameko.ViewModels.Windows;
 using AssCS;
 using Holo;
+using Holo.Configuration;
 
 namespace Ameko.Factories;
 
@@ -17,7 +18,7 @@ public interface IStylesManagerFactory
     StylesManagerWindowViewModel Create(Solution solution, Document document);
 }
 
-public class StylesManagerFactory(Globals globals) : IStylesManagerFactory
+public class StylesManagerFactory(IGlobals globals) : IStylesManagerFactory
 {
     /// <inheritdoc cref="IStylesManagerFactory.Create"/>
     public StylesManagerWindowViewModel Create(Solution solution, Document document)

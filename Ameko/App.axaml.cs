@@ -11,7 +11,7 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
-using Holo;
+using Holo.Configuration;
 using Holo.Scripting;
 using Microsoft.Extensions.DependencyInjection;
 using NLog;

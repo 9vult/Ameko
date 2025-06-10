@@ -4,40 +4,34 @@ using System.Collections.ObjectModel;
 using System.IO.Abstractions;
 using System.Text.Json;
 using AssCS;
+using Holo.IO;
 using Holo.Models;
 using NLog;
 
-namespace Holo;
+namespace Holo.Configuration;
 
 /// <summary>
 /// Container for globally-accessible objects
 /// </summary>
-public class Globals : BindableBase
+public class Globals : BindableBase, IGlobals
 {
     private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
     private static readonly JsonSerializerOptions JsonOptions = new() { IncludeFields = true };
 
     private readonly ObservableCollection<Color> _colors;
-    private readonly Uri _savePath;
 
     /// <summary>
     /// The filesystem being used
     /// </summary>
-    /// <remarks>This allows for filesystem mocking to be used in tests</remarks>
     private readonly IFileSystem _fileSystem;
 
-    /// <summary>
-    /// The globals style manager
-    /// </summary>
+    /// <inheritdoc cref="IGlobals.StyleManager"/>
     public StyleManager StyleManager { get; }
 
-    public readonly AssCS.Utilities.ReadOnlyObservableCollection<Color> Colors;
+    /// <inheritdoc cref="IGlobals.Colors"/>
+    public AssCS.Utilities.ReadOnlyObservableCollection<Color> Colors { get; }
 
-    /// <summary>
-    /// Add a global color
-    /// </summary>
-    /// <param name="color">Color to add</param>
-    /// <returns><see langword="true"/> if the color was added</returns>
+    /// <inheritdoc cref="IGlobals.AddColor"/>
     public bool AddColor(Color color)
     {
         if (_colors.Contains(color))
@@ -46,11 +40,7 @@ public class Globals : BindableBase
         return true;
     }
 
-    /// <summary>
-    /// Remove a global color
-    /// </summary>
-    /// <param name="color">Color to remove</param>
-    /// <returns><see langword="true"/> if the color was removed</returns>
+    /// <inheritdoc cref="IGlobals.RemoveColor"/>
     public bool RemoveColor(Color color)
     {
         if (!_colors.Contains(color))
@@ -59,13 +49,10 @@ public class Globals : BindableBase
         return true;
     }
 
-    /// <summary>
-    /// Write the globals to file
-    /// </summary>
-    /// <returns><see langword="true"/> if saving was successful</returns>
+    /// <inheritdoc cref="IGlobals.Save"/>
     public bool Save()
     {
-        var path = _savePath.LocalPath;
+        var path = Paths.Globals.LocalPath;
         Logger.Info($"Writing globals to {path}");
         try
         {
@@ -102,19 +89,18 @@ public class Globals : BindableBase
     /// Parse a saved globals file
     /// </summary>
     /// <param name="fileSystem">FileSystem to use</param>
-    /// <param name="savePath">Location of the globals file</param>
     /// <returns><see cref="Globals"/> object</returns>
-    public static Globals Parse(IFileSystem fileSystem, Uri savePath)
+    public static Globals Parse(IFileSystem fileSystem)
     {
         Logger.Info("Parsing globals");
-        var path = savePath.LocalPath;
+        var path = Paths.Globals.LocalPath;
         try
         {
             if (!fileSystem.Directory.Exists(Path.GetDirectoryName(path)))
                 fileSystem.Directory.CreateDirectory(Path.GetDirectoryName(path) ?? "/");
 
             if (!fileSystem.File.Exists(path))
-                return new Globals(fileSystem, savePath);
+                return new Globals(fileSystem);
 
             using var fs = fileSystem.FileStream.New(
                 path,
@@ -128,7 +114,7 @@ public class Globals : BindableBase
                 JsonSerializer.Deserialize<GlobalsModel>(reader.ReadToEnd(), JsonOptions)
                 ?? throw new InvalidDataException("Globals model deserialization failed");
 
-            var g = new Globals(fileSystem, savePath);
+            var g = new Globals(fileSystem);
             foreach (var style in model.Styles.Select(s => Style.FromAss(g.StyleManager.NextId, s)))
                 g.StyleManager.Add(style);
 
@@ -140,26 +126,17 @@ public class Globals : BindableBase
         catch (Exception ex) when (ex is IOException or JsonException)
         {
             Logger.Error(ex);
-            return new Globals(fileSystem, savePath);
+            return new Globals(fileSystem);
         }
     }
 
     /// <summary>
     /// Instantiate a Globals instance
     /// </summary>
-    /// <param name="savePath">Location of the globals file</param>
-    public Globals(Uri savePath)
-        : this(new FileSystem(), savePath) { }
-
-    /// <summary>
-    /// Instantiate a Globals instance
-    /// </summary>
     /// <param name="fileSystem">FileSystem to use</param>
-    /// <param name="savePath">Location of the globals file</param>
-    public Globals(IFileSystem fileSystem, Uri savePath)
+    public Globals(IFileSystem fileSystem)
     {
         _fileSystem = fileSystem;
-        _savePath = savePath;
         _colors = [];
 
         StyleManager = new StyleManager();

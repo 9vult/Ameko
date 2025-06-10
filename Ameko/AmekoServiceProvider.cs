@@ -2,52 +2,59 @@
 
 using System;
 using System.IO.Abstractions;
-using System.Threading.Tasks;
 using Ameko.Factories;
+using Ameko.Services;
 using Ameko.ViewModels.Windows;
-using Holo;
+using Holo.Configuration;
+using Holo.IO;
 using Holo.Providers;
 using Holo.Scripting;
 using Microsoft.Extensions.DependencyInjection;
+using NLog;
 
-namespace Ameko.Services;
+namespace Ameko;
 
 public static class AmekoServiceProvider
 {
+    private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
     public static IServiceProvider? Provider { get; private set; }
 
     public static IServiceProvider Build()
     {
         var services = new ServiceCollection();
 
-        // Add HttpClient and Filesystem
+        // --- Infrastructure ---
         services.AddHttpClient();
         services.AddSingleton<IFileSystem, FileSystem>();
-
-        // Register primary Holo services
-        services.AddSingleton<IHoloContext, HoloContext>();
         services.AddSingleton<ILogProvider, LogProvider>();
+        services.AddSingleton(p => p.GetRequiredService<ILogProvider>().LogEntries); // Log entries are part of logging infrastructure
 
-        // Register secondary Holo services
-        services.AddSingleton(p => p.GetRequiredService<IHoloContext>().Config);
-        services.AddSingleton(p => p.GetRequiredService<IHoloContext>().Globals);
-        services.AddSingleton(p => p.GetRequiredService<IHoloContext>().SolutionProvider);
-        services.AddSingleton(p => p.GetRequiredService<ILogProvider>().LogEntries);
+        // --- Configuration ---
+        services.AddSingleton<IConfiguration, Configuration>(p =>
+            Configuration.Parse(p.GetRequiredService<IFileSystem>())
+        );
+        services.AddSingleton<IGlobals, Globals>(p =>
+            Globals.Parse(p.GetRequiredService<IFileSystem>())
+        );
 
-        // Register additional services
+        // --- Application Services ---
+        // Core business logic and application-specific operations
+        services.AddSingleton<DirectoryService>();
+        services.AddSingleton<ISolutionProvider, SolutionProvider>();
+        services.AddSingleton<IScriptService, ScriptService>();
+        services.AddSingleton<IDependencyControl, DependencyControl>();
+
+        // --- Presentation Services ---
         services.AddSingleton<CultureService>();
         services.AddSingleton<ThemeService>();
         services.AddSingleton<IIoService, IoService>();
         services.AddSingleton<IMessageBoxService, MessageBoxService>();
 
-        services.AddSingleton<IScriptService, ScriptService>();
-        services.AddSingleton<IDependencyControl, DependencyControl>();
-
-        // Register factories
+        // --- Factories ---
         services.AddSingleton<ITabFactory, TabFactory>();
         services.AddSingleton<IStylesManagerFactory, StylesManagerFactory>();
 
-        // Register ViewModels
+        // --- ViewModels ---
         services.AddSingleton<MainWindowViewModel>();
         services.AddTransient<LogWindowViewModel>();
         services.AddTransient<DepCtrlWindowViewModel>();
@@ -56,6 +63,8 @@ public static class AmekoServiceProvider
 
         // Load the logger service immediately
         _ = Provider.GetRequiredService<ILogProvider>();
+
+        Logger.Info("Ameko and Holo are ready to go!");
 
         return Provider;
     }

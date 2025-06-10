@@ -6,6 +6,7 @@ using System.Globalization;
 using System.Linq;
 using System.Threading;
 using Holo;
+using Holo.Configuration;
 using NLog;
 
 namespace Ameko.Services;

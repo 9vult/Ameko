@@ -6,6 +6,7 @@ using Ameko.ViewModels.Windows;
 using AutoFixture;
 using AutoFixture.Xunit2;
 using Holo;
+using Holo.Configuration;
 using Holo.Scripting;
 using Holo.Scripting.Models;
 using NSubstitute;
