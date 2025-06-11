@@ -78,6 +78,20 @@ public interface IDependencyControl
     Task AddAdditionalRepositories(IList<string> repoUrls);
 
     /// <summary>
+    /// Add a repository and populate the <see cref="ModuleStore"/>
+    /// </summary>
+    /// <param name="repoUrl"><see cref="Repository"/> URL</param>
+    /// <returns><see langword="true"/> if the addition was successful</returns>
+    Task<InstallationResult> AddRepository(string repoUrl);
+
+    /// <summary>
+    /// Remove a repository and update the <see cref="ModuleStore"/>
+    /// </summary>
+    /// <param name="repository">Repository to remove</param>
+    /// <returns><see langword="true"/> if the removal was successful</returns>
+    InstallationResult RemoveRepository(Repository repository);
+
+    /// <summary>
     /// Set up the base repository
     /// </summary>
     /// <remarks>This clears Dependency Control</remarks>

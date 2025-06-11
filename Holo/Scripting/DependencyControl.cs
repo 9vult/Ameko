@@ -312,6 +312,15 @@ public class DependencyControl : IDependencyControl
     /// <summary>
     /// Populate the <see cref="ModuleStore"/> and the <see cref="InstalledModules"/> list
     /// </summary>
+    /// <param name="repository">Repository to gather for</param>
+    private void GatherModules(Repository repository)
+    {
+        GatherModules([repository]);
+    }
+
+    /// <summary>
+    /// Populate the <see cref="ModuleStore"/> and the <see cref="InstalledModules"/> list
+    /// </summary>
     /// <param name="repositories">Repositories to gather for. Defaults to <see cref="Repositories"/></param>
     private void GatherModules(IList<Repository>? repositories = null)
     {
@@ -381,6 +390,35 @@ public class DependencyControl : IDependencyControl
         }
         if (repoUrls.Count > 1)
             GatherModules(newRepos);
+    }
+
+    /// <inheritdoc cref="IDependencyControl.AddRepository"/>
+    public async Task<InstallationResult> AddRepository(string repoUrl)
+    {
+        var repo = await Repository.Build(repoUrl, _httpClient);
+        if (repo is null)
+            return InstallationResult.Failure;
+
+        if (_repositoryMap.ContainsKey(repo.Name))
+            return InstallationResult.AlreadyInstalled;
+
+        _repositories.Add(repo);
+        _repositoryMap.Add(repo.Name, repo);
+        GatherModules(repo);
+        return InstallationResult.Success;
+    }
+
+    /// <inheritdoc cref="IDependencyControl.RemoveRepository"/>
+    public InstallationResult RemoveRepository(Repository repository)
+    {
+        if (!_repositoryMap.Remove(repository.Name))
+            return InstallationResult.NotInstalled;
+
+        _repositories.Remove(repository);
+        _moduleMap.Clear();
+        _moduleStore.Clear();
+        GatherModules(_repositories);
+        return InstallationResult.Success;
     }
 
     /// <summary>
