@@ -6,7 +6,7 @@ using System.Linq;
 using Avalonia.Controls;
 using Avalonia.Input;
 
-namespace Ameko.Services;
+namespace Ameko.Utilities;
 
 public static class Extras
 {

@@ -6,7 +6,7 @@ using Ameko.ViewModels.Controls;
 using Holo;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Ameko.Factories;
+namespace Ameko.Utilities;
 
 public interface ITabFactory
 {

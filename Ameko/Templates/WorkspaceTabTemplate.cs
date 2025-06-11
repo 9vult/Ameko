@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 using System;
-using Ameko.Factories;
+using Ameko.Utilities;
 using Avalonia.Controls;
 using Avalonia.Controls.Templates;
 using Holo;

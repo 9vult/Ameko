@@ -2,8 +2,8 @@
 
 using System;
 using System.IO.Abstractions;
-using Ameko.Factories;
 using Ameko.Services;
+using Ameko.Utilities;
 using Ameko.ViewModels.Windows;
 using Holo.Configuration;
 using Holo.IO;
