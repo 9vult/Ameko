@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Reactive;
 using System.Reactive.Disposables;
 using Ameko.Services;
+using Ameko.Utilities;
 using Ameko.ViewModels.Controls;
 using AssCS.History;
 using Avalonia;

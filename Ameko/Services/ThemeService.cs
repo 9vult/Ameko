@@ -3,7 +3,6 @@
 using System.ComponentModel;
 using Avalonia;
 using Avalonia.Styling;
-using Holo;
 using Holo.Configuration;
 using Holo.Models;
 using NLog;

@@ -5,7 +5,7 @@ using AssCS;
 using Holo;
 using Holo.Configuration;
 
-namespace Ameko.Factories;
+namespace Ameko.Utilities;
 
 public interface IStylesManagerFactory
 {
