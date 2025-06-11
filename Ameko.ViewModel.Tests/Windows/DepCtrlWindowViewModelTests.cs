@@ -1,11 +1,9 @@
-﻿using System.Collections.ObjectModel;
-using System.Reactive;
+﻿using System.Reactive;
 using System.Reactive.Linq;
 using Ameko.Services;
 using Ameko.ViewModels.Windows;
 using AutoFixture;
 using AutoFixture.Xunit2;
-using Holo;
 using Holo.Configuration;
 using Holo.Scripting;
 using Holo.Scripting.Models;
@@ -13,7 +11,7 @@ using NSubstitute;
 using ReactiveUI;
 using Shouldly;
 
-namespace Ameko.ViewModel.Tests;
+namespace Ameko.ViewModel.Tests.Windows;
 
 public class DepCtrlWindowViewModelTests
 {
@@ -22,8 +20,7 @@ public class DepCtrlWindowViewModelTests
         [Frozen] IDependencyControl dependencyControl,
         [Frozen] IScriptService scriptService,
         [Frozen] IConfiguration configuration,
-        [Frozen] IMessageBoxService messageBoxService,
-        [Frozen] HttpClient httpClient
+        [Frozen] IMessageBoxService messageBoxService
     )
     {
         // Arrange
@@ -35,8 +32,7 @@ public class DepCtrlWindowViewModelTests
             dependencyControl,
             scriptService,
             configuration,
-            messageBoxService,
-            httpClient
+            messageBoxService
         );
 
         // Assert
@@ -48,8 +44,7 @@ public class DepCtrlWindowViewModelTests
         [Frozen] IDependencyControl dependencyControl,
         [Frozen] IScriptService scriptService,
         [Frozen] IConfiguration configuration,
-        [Frozen] IMessageBoxService messageBoxService,
-        [Frozen] HttpClient httpClient
+        [Frozen] IMessageBoxService messageBoxService
     )
     {
         // Arrange
@@ -62,8 +57,7 @@ public class DepCtrlWindowViewModelTests
             dependencyControl,
             scriptService,
             configuration,
-            messageBoxService,
-            httpClient
+            messageBoxService
         );
 
         // Assert
@@ -106,7 +100,6 @@ public class DepCtrlWindowViewModelTests
         [Frozen] IScriptService scriptService,
         [Frozen] IConfiguration configuration,
         [Frozen] IMessageBoxService messageBoxService,
-        [Frozen] HttpClient httpClient,
         Module module
     )
     {
@@ -121,8 +114,7 @@ public class DepCtrlWindowViewModelTests
             dependencyControl,
             scriptService,
             configuration,
-            messageBoxService,
-            httpClient
+            messageBoxService
         )
         {
             SelectedInstalledModule = module,
@@ -146,7 +138,6 @@ public class DepCtrlWindowViewModelTests
         [Frozen] IScriptService scriptService,
         [Frozen] IConfiguration configuration,
         [Frozen] IMessageBoxService messageBoxService,
-        [Frozen] HttpClient httpClient,
         Module module
     )
     {
@@ -161,8 +152,7 @@ public class DepCtrlWindowViewModelTests
             dependencyControl,
             scriptService,
             configuration,
-            messageBoxService,
-            httpClient
+            messageBoxService
         )
         {
             SelectedInstalledModule = module,
@@ -184,7 +174,6 @@ public class DepCtrlWindowViewModelTests
         [Frozen] IScriptService scriptService,
         [Frozen] IConfiguration configuration,
         [Frozen] IMessageBoxService messageBoxService,
-        [Frozen] HttpClient httpClient,
         Module module1,
         Module module2
     )
@@ -201,8 +190,7 @@ public class DepCtrlWindowViewModelTests
             dependencyControl,
             scriptService,
             configuration,
-            messageBoxService,
-            httpClient
+            messageBoxService
         )
         {
             SelectedInstalledModule = module1,
@@ -224,8 +212,7 @@ public class DepCtrlWindowViewModelTests
         [Frozen] IDependencyControl dependencyControl,
         [Frozen] IScriptService scriptService,
         [Frozen] IConfiguration configuration,
-        [Frozen] IMessageBoxService messageBoxService,
-        [Frozen] HttpClient httpClient
+        [Frozen] IMessageBoxService messageBoxService
     )
     {
         // Arrange
@@ -237,8 +224,7 @@ public class DepCtrlWindowViewModelTests
             dependencyControl,
             scriptService,
             configuration,
-            messageBoxService,
-            httpClient
+            messageBoxService
         );
 
         vm.ShowMessageBox.RegisterHandler(ctx => ctx.SetOutput(Unit.Default));

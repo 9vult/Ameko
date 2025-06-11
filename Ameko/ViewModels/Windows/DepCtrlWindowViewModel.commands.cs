@@ -172,45 +172,39 @@ public partial class DepCtrlWindowViewModel
     {
         return ReactiveCommand.CreateFromTask(async () =>
         {
-            if (string.IsNullOrWhiteSpace(RepoUrlInput))
+            var input = RepoUrlInput.Trim();
+            if (string.IsNullOrWhiteSpace(input))
                 return;
 
-            if (_configuration.RepositoryUrls.Contains(RepoUrlInput.Trim()))
-            {
-                await ShowMessageBox.Handle(
-                    _messageBoxService.GetInfoBox(
-                        I18N.Resources.DepCtrlWindow_Title,
-                        I18N.Resources.DepCtrl_MsgBox_RepoAlreadyAdded
-                    )
-                );
-                return;
-            }
+            Logger.Info($"Adding repository {input}");
 
-            try
+            var result = await DependencyControl.AddRepository(input);
+
+            switch (result)
             {
-                var repo = await Repository.Build(RepoUrlInput, _httpClient);
-                if (repo is null)
-                {
-                    Logger.Error($"Building repository failed");
+                case InstallationResult.Success:
+                    _configuration.AddRepositoryUrl(input);
+                    await ShowMessageBox.Handle(_messageBoxService.GetBox(result));
+                    break;
+                case InstallationResult.AlreadyInstalled:
+                    Logger.Error($"Could not add repository because it was already installed.");
                     await ShowMessageBox.Handle(
-                        _messageBoxService.GetBox(InstallationResult.Failure)
+                        _messageBoxService.GetInfoBox(
+                            I18N.Resources.DepCtrlWindow_Title,
+                            I18N.Resources.DepCtrl_Result_Repository_AlreadyInstalled
+                        )
                     );
-                    return;
-                }
-
-                _configuration.AddRepositoryUrl(RepoUrlInput);
-                await DependencyControl.SetUpBaseRepository();
-                await DependencyControl.AddAdditionalRepositories(_configuration.RepositoryUrls);
-                await ShowMessageBox.Handle(_messageBoxService.GetBox(InstallationResult.Success));
-                _repoUrlInput = string.Empty;
+                    break;
+                case InstallationResult.Failure:
+                    Logger.Error("Failed to add repository");
+                    await ShowMessageBox.Handle(_messageBoxService.GetBox(result));
+                    break;
+                default:
+                    Logger.Error("Invalid repository add response");
+                    throw new ArgumentOutOfRangeException();
             }
-            catch (Exception ex)
-            {
-                Logger.Error(ex, "Building repository failed");
-                await ShowMessageBox.Handle(
-                    _messageBoxService.GetInfoBox(I18N.Resources.DepCtrlWindow_Title, ex.Message)
-                );
-            }
+            // Clean up
+            RepoUrlInput = string.Empty;
         });
     }
 
@@ -221,12 +215,38 @@ public partial class DepCtrlWindowViewModel
     {
         return ReactiveCommand.CreateFromTask(async () =>
         {
-            if (_selectedRepository?.Url is null)
+            if (SelectedRepository?.Url is null)
                 return;
+
+            Logger.Info($"Removing repository {SelectedRepository.Name}");
+
+            var result = DependencyControl.RemoveRepository(SelectedRepository);
+
+            switch (result)
+            {
+                case InstallationResult.Success:
+                    _configuration.RemoveRepositoryUrl(SelectedRepository.Url);
+                    await ShowMessageBox.Handle(
+                        _messageBoxService.GetBox(InstallationResult.Success)
+                    );
+                    break;
+                case InstallationResult.NotInstalled:
+                    Logger.Error($"Could not remove repository because it was not installed");
+                    await ShowMessageBox.Handle(
+                        _messageBoxService.GetInfoBox(
+                            I18N.Resources.DepCtrlWindow_Title,
+                            I18N.Resources.DepCtrl_Result_Repository_NotInstalled
+                        )
+                    );
+                    break;
+                default:
+                    Logger.Error("Invalid repository remove response");
+                    throw new ArgumentOutOfRangeException();
+            }
 
             try
             {
-                _configuration.RemoveRepositoryUrl(_selectedRepository.Url);
+                _configuration.RemoveRepositoryUrl(SelectedRepository.Url);
                 await DependencyControl.SetUpBaseRepository();
                 await DependencyControl.AddAdditionalRepositories(_configuration.RepositoryUrls);
                 await ShowMessageBox.Handle(_messageBoxService.GetBox(InstallationResult.Success));
@@ -238,6 +258,8 @@ public partial class DepCtrlWindowViewModel
                     _messageBoxService.GetInfoBox(I18N.Resources.DepCtrlWindow_Title, ex.Message)
                 );
             }
+            // Clean up
+            SelectedRepository = null;
         });
     }
 }

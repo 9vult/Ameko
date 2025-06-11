@@ -24,7 +24,6 @@ public partial class DepCtrlWindowViewModel : ViewModelBase
     private readonly IScriptService _scriptService;
     private readonly IConfiguration _configuration;
     private readonly IMessageBoxService _messageBoxService;
-    private readonly HttpClient _httpClient;
 
     private Module? _selectedStoreModule;
     private Module? _selectedInstalledModule;
@@ -108,8 +107,7 @@ public partial class DepCtrlWindowViewModel : ViewModelBase
         IDependencyControl dependencyControl,
         IScriptService scriptService,
         IConfiguration configuration,
-        IMessageBoxService messageBoxService,
-        HttpClient httpClient
+        IMessageBoxService messageBoxService
     )
     {
         DependencyControl = dependencyControl;
@@ -117,7 +115,6 @@ public partial class DepCtrlWindowViewModel : ViewModelBase
         _scriptService = scriptService;
         _configuration = configuration;
         _messageBoxService = messageBoxService;
-        _httpClient = httpClient;
 
         _repoUrlInput = string.Empty;
 

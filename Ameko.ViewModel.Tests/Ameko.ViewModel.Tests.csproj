@@ -30,7 +30,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="DataAttributes\" />
+      <Folder Include="Controls\" />
     </ItemGroup>
 
 </Project>

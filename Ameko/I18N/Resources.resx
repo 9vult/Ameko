@@ -489,7 +489,10 @@
     <data name="DepCtrl_Info_Url" xml:space="preserve">
         <value>Url</value>
     </data>
-    <data name="DepCtrl_MsgBox_RepoAlreadyAdded" xml:space="preserve">
-        <value>Repository has already been added</value>
+    <data name="DepCtrl_Result_Repository_NotInstalled" xml:space="preserve">
+        <value>The repository is not installed</value>
+    </data>
+    <data name="DepCtrl_Result_Repository_AlreadyInstalled" xml:space="preserve">
+        <value>The repository is already installed!</value>
     </data>
 </root>
