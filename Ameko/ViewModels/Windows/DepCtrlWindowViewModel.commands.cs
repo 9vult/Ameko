@@ -220,7 +220,7 @@ public partial class DepCtrlWindowViewModel
 
             Logger.Info($"Removing repository {SelectedRepository.Name}");
 
-            var result = DependencyControl.RemoveRepository(SelectedRepository);
+            var result = DependencyControl.RemoveRepository(SelectedRepository.Name);
 
             switch (result)
             {

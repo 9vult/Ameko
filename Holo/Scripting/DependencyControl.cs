@@ -409,12 +409,12 @@ public class DependencyControl : IDependencyControl
     }
 
     /// <inheritdoc cref="IDependencyControl.RemoveRepository"/>
-    public InstallationResult RemoveRepository(Repository repository)
+    public InstallationResult RemoveRepository(string repositoryName)
     {
-        if (!_repositoryMap.Remove(repository.Name))
+        if (!_repositoryMap.Remove(repositoryName, out var repo))
             return InstallationResult.NotInstalled;
 
-        _repositories.Remove(repository);
+        _repositories.Remove(repo);
         _moduleMap.Clear();
         _moduleStore.Clear();
         GatherModules(_repositories);
