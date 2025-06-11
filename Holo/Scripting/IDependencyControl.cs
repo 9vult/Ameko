@@ -87,9 +87,9 @@ public interface IDependencyControl
     /// <summary>
     /// Remove a repository and update the <see cref="ModuleStore"/>
     /// </summary>
-    /// <param name="repository">Repository to remove</param>
+    /// <param name="repoName">Name of the repository to remove</param>
     /// <returns><see langword="true"/> if the removal was successful</returns>
-    InstallationResult RemoveRepository(Repository repository);
+    InstallationResult RemoveRepository(string repoName);
 
     /// <summary>
     /// Set up the base repository

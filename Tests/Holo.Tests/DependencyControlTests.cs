@@ -393,6 +393,106 @@ public class DependencyControlTests
         dc.GetUpdateCandidates().Count.ShouldBe(1);
     }
 
+    [Fact]
+    public async Task AddRepository_NoInternetConnection()
+    {
+        var fileSystem = new MockFileSystem();
+        var mockClient = new MockHttpMessageHandler();
+        var dc = new DependencyControl(fileSystem, new HttpClient(mockClient));
+
+        const string repoUrl = "https://coolrepo.com/depctrl.json";
+
+        mockClient
+            .When(HttpMethod.Get, dc.BaseRepositoryUrl)
+            .Respond("application/json", Repository1Json);
+        mockClient
+            .When(HttpMethod.Get, repoUrl)
+            .Throw(new HttpRequestException("No internet connection", new SocketException()));
+
+        await dc.SetUpBaseRepository();
+        var result = await dc.AddRepository(repoUrl);
+
+        result.ShouldBe(InstallationResult.Failure);
+    }
+
+    [Fact]
+    public async Task AddRepository_AlreadyInstalled()
+    {
+        var fileSystem = new MockFileSystem();
+        var mockClient = new MockHttpMessageHandler();
+        var dc = new DependencyControl(fileSystem, new HttpClient(mockClient));
+
+        mockClient
+            .When(HttpMethod.Get, dc.BaseRepositoryUrl)
+            .Respond("application/json", Repository1Json);
+
+        await dc.SetUpBaseRepository();
+        var result = await dc.AddRepository(dc.BaseRepositoryUrl);
+
+        result.ShouldBe(InstallationResult.AlreadyInstalled);
+    }
+
+    [Fact]
+    public async Task AddRepository()
+    {
+        var fileSystem = new MockFileSystem();
+        var mockClient = new MockHttpMessageHandler();
+        var dc = new DependencyControl(fileSystem, new HttpClient(mockClient));
+
+        const string repoUrl = "https://coolrepo.com/depctrl.json";
+
+        mockClient
+            .When(HttpMethod.Get, dc.BaseRepositoryUrl)
+            .Respond("application/json", Repository1Json);
+        mockClient.When(HttpMethod.Get, repoUrl).Respond("application/json", Repository2Json);
+
+        await dc.SetUpBaseRepository();
+        var result = await dc.AddRepository(repoUrl);
+
+        result.ShouldBe(InstallationResult.Success);
+    }
+
+    [Fact]
+    public async Task RemoveRepository_NotInstalled()
+    {
+        var fileSystem = new MockFileSystem();
+        var mockClient = new MockHttpMessageHandler();
+        var dc = new DependencyControl(fileSystem, new HttpClient(mockClient));
+
+        const string repoUrl = "https://coolrepo.com/depctrl.json";
+
+        mockClient
+            .When(HttpMethod.Get, dc.BaseRepositoryUrl)
+            .Respond("application/json", Repository1Json);
+
+        await dc.SetUpBaseRepository();
+        var result = dc.RemoveRepository("Jeff's Repository");
+
+        result.ShouldBe(InstallationResult.NotInstalled);
+    }
+
+    [Fact]
+    public async Task RemoveRepository()
+    {
+        var fileSystem = new MockFileSystem();
+        var mockClient = new MockHttpMessageHandler();
+        var dc = new DependencyControl(fileSystem, new HttpClient(mockClient));
+
+        const string repoUrl = "https://coolrepo.com/depctrl.json";
+
+        mockClient
+            .When(HttpMethod.Get, dc.BaseRepositoryUrl)
+            .Respond("application/json", Repository1Json);
+        mockClient.When(HttpMethod.Get, repoUrl).Respond("application/json", Repository2Json);
+
+        await dc.SetUpBaseRepository();
+        await dc.AddRepository(repoUrl);
+
+        var result = dc.RemoveRepository("Ameko Dependency Control Base 2");
+
+        result.ShouldBe(InstallationResult.Success);
+    }
+
     private static readonly Module TestScriptModule = new Module
     {
         Type = ModuleType.Script,
@@ -513,7 +613,7 @@ public class DependencyControlTests
 
     private const string Repository2Json = """
         {
-          "Name": "Ameko Dependency Control Base",
+          "Name": "Ameko Dependency Control Base 2",
           "Description": "Default Dependency Control repository included with Ameko",
           "Maintainer": "9volt",
           "IsBetaChannel": false,
