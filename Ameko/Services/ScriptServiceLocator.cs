@@ -50,6 +50,16 @@ public sealed class ScriptServiceLocator
     /// Thrown if the requested service type (<typeparamref name="T"/>) is not
     /// registered or is not permitted for access by scripts through this locator
     /// </exception>
+    /// <exception cref="System.InvalidOperationException">
+    /// Thrown if this method is called before the locator is initialized
+    /// </exception>
+    /// <example>
+    /// Example usage in a <see cref="HoloScript"/>:
+    /// <code>
+    /// var slnProvider = ScriptServiceLocator.Get&lt;ISolutionProvider&gt;();
+    /// var workingSpace = slnProvider.Current.WorkingSpace;
+    /// </code>
+    /// </example>
     public static T Get<T>([CallerMemberName] string callerName = "")
         where T : notnull
     {
