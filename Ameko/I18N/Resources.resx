@@ -18,9 +18,6 @@
     <resheader name="writer">
         <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     </resheader>
-    <data name="LogWindow_Title" xml:space="preserve">
-        <value>Ameko Logs</value>
-    </data>
     <data name="Menu_File" xml:space="preserve">
         <value>_File</value>
     </data>
@@ -231,38 +228,11 @@
     <data name="Menu_About" xml:space="preserve">
         <value>_About Ameko...</value>
     </data>
-    <data name="AboutWindow_Title" xml:space="preserve">
-        <value>About Ameko</value>
-    </data>
-    <data name="AboutWindow_GeneralTab" xml:space="preserve">
-        <value>General Information</value>
-    </data>
-    <data name="AboutWindow_AssetsTab" xml:space="preserve">
-        <value>Assets</value>
-    </data>
-    <data name="AboutWindow_LibrariesTab" xml:space="preserve">
-        <value>Libraries</value>
-    </data>
     <data name="SolutionExplorer_ContextMenu_Remove" xml:space="preserve">
         <value>Remove from Workspace</value>
     </data>
     <data name="SolutionExplorer_ContextMenu_Open" xml:space="preserve">
         <value>Open</value>
-    </data>
-    <data name="FileDialog_OpenSubtitle_Title" xml:space="preserve">
-        <value>Open Subtitle File</value>
-    </data>
-    <data name="FileDialog_FileType_Ass" xml:space="preserve">
-        <value>ASS Files</value>
-    </data>
-    <data name="FileDialog_SaveSubtitle_Title" xml:space="preserve">
-        <value>Save Subtitle File</value>
-    </data>
-    <data name="FileDialog_ExportSubtitle_Title" xml:space="preserve">
-        <value>Export Subtitle File</value>
-    </data>
-    <data name="FileDialog_FileType_Text" xml:space="preserve">
-        <value>Text Files</value>
     </data>
     <data name="Menu_CloseTab" xml:space="preserve">
         <value>_Close Tab</value>
@@ -270,232 +240,16 @@
     <data name="Menu_CloseSolution" xml:space="preserve">
         <value>Close Solutio_n</value>
     </data>
-    <data name="MsgBox_Save_Title" xml:space="preserve">
-        <value>Save work?</value>
-    </data>
-    <data name="MsgBox_Save_Body" xml:space="preserve">
-        <value>{0} contains unsaved work. Do you want to save?</value>
-    </data>
     <data name="Tab_CloseButton_ToolTip" xml:space="preserve">
         <value>Close Tab</value>
     </data>
-    <data name="FileDialog_FileType_Solution" xml:space="preserve">
-        <value>Ameko Solution Files</value>
-    </data>
-    <data name="FileDialog_OpenSolution_Title" xml:space="preserve">
-        <value>Open Solution File</value>
-    </data>
-    <data name="FileDialog_SaveSolution_Title" xml:space="preserve">
-        <value>Save Solution File</value>
-    </data>
-    <data name="MsgBox_RemoveDocument_Title" xml:space="preserve">
-        <value>Remove Document?</value>
-    </data>
-    <data name="MsgBox_RemoveDocument_Body" xml:space="preserve">
-        <value>Are you sure you want to remove this document from the solution?</value>
-    </data>
-    <data name="MsgBox_RemoveDirectory_Title" xml:space="preserve">
-        <value>Remove Directory?</value>
-    </data>
-    <data name="MsgBox_RemoveDirectory_Body" xml:space="preserve">
-        <value>Are you sure you want to remove this directory from the solution?</value>
-    </data>
-    <data name="StylesManager_Title" xml:space="preserve">
-        <value>Styles Manager</value>
-    </data>
-    <data name="StylesManager_GlobalStyles" xml:space="preserve">
-        <value>Global Styles</value>
-    </data>
-    <data name="StylesManager_SolutionStyles" xml:space="preserve">
-        <value>Solution Styles</value>
-    </data>
-    <data name="StylesManager_DocumentStyles" xml:space="preserve">
-        <value>Document Styles</value>
-    </data>
-    <data name="StylesManager_Button_Delete" xml:space="preserve">
-        <value>Delete</value>
-    </data>
-    <data name="StylesManager_Button_Copy" xml:space="preserve">
-        <value>Copy</value>
-    </data>
-    <data name="StylesManager_Button_Edit" xml:space="preserve">
-        <value>Edit</value>
-    </data>
-    <data name="StylesManager_Button_New" xml:space="preserve">
-        <value>New</value>
-    </data>
-    <data name="StylesManager_Button_CopyToSolution" xml:space="preserve">
-        <value>Copy to Solution</value>
-    </data>
-    <data name="StylesManager_Button_CopyToGlobal" xml:space="preserve">
-        <value>Copy to Global</value>
-    </data>
-    <data name="StylesManager_Button_CopyToDocument" xml:space="preserve">
-        <value>Copy to Document</value>
-    </data>
-    <data name="MsgBox_NameDirectory_Title" xml:space="preserve">
-        <value>Set Directory Name</value>
-    </data>
-    <data name="MsgBox_NameDirectory_Body" xml:space="preserve">
-        <value>Please choose a name for the directory:</value>
-    </data>
-    <data name="MsgBox_NameItem_Label" xml:space="preserve">
-        <value>Name:</value>
-    </data>
     <data name="SolutionExplorer_ContextMenu_Rename" xml:space="preserve">
         <value>Rename...</value>
-    </data>
-    <data name="MsgBox_NameDocument_Body" xml:space="preserve">
-        <value>Please choose a display name for the document:</value>
-    </data>
-    <data name="MsgBox_NameDocument_Title" xml:space="preserve">
-        <value>Set Document Name</value>
-    </data>
-    <data name="StylesManager_CopyAppendage" xml:space="preserve">
-        <value>Copy</value>
     </data>
     <data name="Menu_ReloadScripts" xml:space="preserve">
         <value>_Reload Scripts</value>
     </data>
     <data name="Menu_DependencyControl" xml:space="preserve">
         <value>Open _Dependency Control...</value>
-    </data>
-    <data name="MsgBox_ScriptService_Title" xml:space="preserve">
-        <value>Ameko Script Service</value>
-    </data>
-    <data name="MsgBox_ScriptService_Reload_Body" xml:space="preserve">
-        <value>Scripts reloaded successfully</value>
-    </data>
-    <data name="DepCtrlWindow_Title" xml:space="preserve">
-        <value>Ameko Dependency Control</value>
-    </data>
-    <data name="DepCtrl_ModuleStore" xml:space="preserve">
-        <value>Module Store</value>
-    </data>
-    <data name="DepCtrl_Info_Name" xml:space="preserve">
-        <value>Name</value>
-    </data>
-    <data name="DepCtrl_Info_QualifiedName" xml:space="preserve">
-        <value>Qualified Name</value>
-    </data>
-    <data name="DepCtrl_Info_Version" xml:space="preserve">
-        <value>Version</value>
-    </data>
-    <data name="DepCtrl_Info_Author" xml:space="preserve">
-        <value>Author</value>
-    </data>
-    <data name="DepCtrl_Info_Description" xml:space="preserve">
-        <value>Description</value>
-    </data>
-    <data name="DepCtrl_Info_Dependencies" xml:space="preserve">
-        <value>Dependencies</value>
-    </data>
-    <data name="DepCtrl_Info_Type" xml:space="preserve">
-        <value>Type</value>
-    </data>
-    <data name="DepCtrl_Info_NoSelection" xml:space="preserve">
-        <value>No Selection</value>
-    </data>
-    <data name="DepCtrl_InstalledModules" xml:space="preserve">
-        <value>Installed Modules</value>
-    </data>
-    <data name="DepCtrl_Info_Repository" xml:space="preserve">
-        <value>Repository</value>
-    </data>
-    <data name="DepCtrl_RepositoriesTab" xml:space="preserve">
-        <value>Repositories</value>
-    </data>
-    <data name="DepCtrl_Button_Install" xml:space="preserve">
-        <value>Install</value>
-    </data>
-    <data name="DepCtrl_Button_UpdateAll" xml:space="preserve">
-        <value>Update All</value>
-    </data>
-    <data name="DepCtrl_Button_Update" xml:space="preserve">
-        <value>Update</value>
-    </data>
-    <data name="DepCtrl_Button_Uninstall" xml:space="preserve">
-        <value>Uninstall</value>
-    </data>
-    <data name="DepCtrl_Button_Install_ToolTip" xml:space="preserve">
-        <value>Install the selected module</value>
-    </data>
-    <data name="DepCtrl_Button_UpdateAll_ToolTip" xml:space="preserve">
-        <value>Update all modules to their latest version</value>
-    </data>
-    <data name="DepCtrl_Button_Update_ToolTip" xml:space="preserve">
-        <value>Update the selected module to its latest version</value>
-    </data>
-    <data name="DepCtrl_Button_Uninstall_ToolTip" xml:space="preserve">
-        <value>Uninstall the selected module</value>
-    </data>
-    <data name="DepCtrl_Result_Success" xml:space="preserve">
-        <value>Success!</value>
-    </data>
-    <data name="DepCtrl_Result_Failure" xml:space="preserve">
-        <value>Failed!</value>
-    </data>
-    <data name="DepCtrl_Result_DepNotFound" xml:space="preserve">
-        <value>Could not find a required dependency</value>
-    </data>
-    <data name="DepCtrl_Result_AlreadyInstalled" xml:space="preserve">
-        <value>The module is already installed!</value>
-    </data>
-    <data name="DepCtrl_Result_NotInstalled" xml:space="preserve">
-        <value>The module is not installed</value>
-    </data>
-    <data name="DepCtrl_Result_FS_Failure" xml:space="preserve">
-        <value>A filesystem error occured</value>
-    </data>
-    <data name="DepCtrl_Result_IsRequiredDep" xml:space="preserve">
-        <value>This module is required by other modules</value>
-    </data>
-    <data name="DepCtrl_Update_Available_ToolTip" xml:space="preserve">
-        <value>An update is available for this module</value>
-    </data>
-    <data name="DepCtrl_Button_Refresh_ToolTip" xml:space="preserve">
-        <value>Refresh the Module Store</value>
-    </data>
-    <data name="DepCtrl_MsgBox_Refreshed" xml:space="preserve">
-        <value>Refresh successful</value>
-    </data>
-    <data name="DepCtrl_ModulesTab" xml:space="preserve">
-        <value>Modules</value>
-    </data>
-    <data name="DepCtrl_Button_RemoveRepo" xml:space="preserve">
-        <value>Remove</value>
-    </data>
-    <data name="DepCtrl_Button_AddRepo" xml:space="preserve">
-        <value>Add</value>
-    </data>
-    <data name="DepCtrl_Button_RemoveRepo_ToolTip" xml:space="preserve">
-        <value>Remove the selected repository</value>
-    </data>
-    <data name="DepCtrl_Button_AddRepo_ToolTip" xml:space="preserve">
-        <value>Add a new repository</value>
-    </data>
-    <data name="DepCtrl_Info_Maintainer" xml:space="preserve">
-        <value>Maintainer</value>
-    </data>
-    <data name="DepCtrl_Info_IsBetaChannel" xml:space="preserve">
-        <value>Beta Channel?</value>
-    </data>
-    <data name="DepCtrl_Info_SubRepoCount" xml:space="preserve">
-        <value>Sub-Repositories</value>
-    </data>
-    <data name="DepCtrl_Info_ModuleCount" xml:space="preserve">
-        <value>Modules</value>
-    </data>
-    <data name="DepCtrl_Info_Url" xml:space="preserve">
-        <value>Url</value>
-    </data>
-    <data name="DepCtrl_Result_Repository_NotInstalled" xml:space="preserve">
-        <value>The repository is not installed</value>
-    </data>
-    <data name="DepCtrl_Result_Repository_AlreadyInstalled" xml:space="preserve">
-        <value>The repository is already installed!</value>
-    </data>
-    <data name="ScriptServiceLocator_Get_UnregisteredScript" xml:space="preserve">
-        <value>Service of type {0} is not registered for use by scripts</value>
     </data>
 </root>

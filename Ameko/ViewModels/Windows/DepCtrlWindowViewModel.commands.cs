@@ -1,14 +1,10 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 using System;
-using System.Net.Http;
 using System.Reactive;
 using System.Reactive.Linq;
 using DynamicData;
 using Holo.Scripting.Models;
-using MsBox.Avalonia;
-using MsBox.Avalonia.Base;
-using MsBox.Avalonia.Enums;
 using ReactiveUI;
 
 namespace Ameko.ViewModels.Windows;
@@ -158,8 +154,8 @@ public partial class DepCtrlWindowViewModel
 
             await ShowMessageBox.Handle(
                 _messageBoxService.GetInfoBox(
-                    I18N.Resources.DepCtrlWindow_Title,
-                    I18N.Resources.DepCtrl_MsgBox_Refreshed
+                    I18N.DepCtrl.DepCtrlWindow_Title,
+                    I18N.DepCtrl.DepCtrl_MsgBox_Refreshed
                 )
             );
         });
@@ -190,8 +186,8 @@ public partial class DepCtrlWindowViewModel
                     Logger.Error($"Could not add repository because it was already installed.");
                     await ShowMessageBox.Handle(
                         _messageBoxService.GetInfoBox(
-                            I18N.Resources.DepCtrlWindow_Title,
-                            I18N.Resources.DepCtrl_Result_Repository_AlreadyInstalled
+                            I18N.DepCtrl.DepCtrlWindow_Title,
+                            I18N.DepCtrl.DepCtrl_Result_Repository_AlreadyInstalled
                         )
                     );
                     break;
@@ -234,8 +230,8 @@ public partial class DepCtrlWindowViewModel
                     Logger.Error($"Could not remove repository because it was not installed");
                     await ShowMessageBox.Handle(
                         _messageBoxService.GetInfoBox(
-                            I18N.Resources.DepCtrlWindow_Title,
-                            I18N.Resources.DepCtrl_Result_Repository_NotInstalled
+                            I18N.DepCtrl.DepCtrlWindow_Title,
+                            I18N.DepCtrl.DepCtrl_Result_Repository_NotInstalled
                         )
                     );
                     break;
@@ -255,7 +251,7 @@ public partial class DepCtrlWindowViewModel
             {
                 Logger.Error(ex, "Removing repository failed");
                 await ShowMessageBox.Handle(
-                    _messageBoxService.GetInfoBox(I18N.Resources.DepCtrlWindow_Title, ex.Message)
+                    _messageBoxService.GetInfoBox(I18N.DepCtrl.DepCtrlWindow_Title, ex.Message)
                 );
             }
             // Clean up

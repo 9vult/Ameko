@@ -13,7 +13,7 @@ public class DepCtrlDependencyConverter : IValueConverter
     {
         return value is Module module
             ? string.Join(Environment.NewLine, module.Dependencies)
-            : I18N.Resources.DepCtrl_Info_NoSelection;
+            : I18N.DepCtrl.DepCtrl_Info_NoSelection;
     }
 
     public object? ConvertBack(

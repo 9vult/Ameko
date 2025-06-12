@@ -27,15 +27,15 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         var files = await StorageProvider.OpenFilePickerAsync(
             new FilePickerOpenOptions
             {
-                Title = I18N.Resources.FileDialog_OpenSubtitle_Title,
+                Title = I18N.Other.FileDialog_OpenSubtitle_Title,
                 AllowMultiple = true,
                 FileTypeFilter =
                 [
-                    new FilePickerFileType(I18N.Resources.FileDialog_FileType_Ass)
+                    new FilePickerFileType(I18N.Other.FileDialog_FileType_Ass)
                     {
                         Patterns = ["*.ass"],
                     },
-                    new FilePickerFileType(I18N.Resources.FileDialog_FileType_Text)
+                    new FilePickerFileType(I18N.Other.FileDialog_FileType_Text)
                     {
                         Patterns = ["*.txt"],
                     },
@@ -57,10 +57,10 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         var file = await StorageProvider.SaveFilePickerAsync(
             new FilePickerSaveOptions
             {
-                Title = I18N.Resources.FileDialog_SaveSubtitle_Title,
+                Title = I18N.Other.FileDialog_SaveSubtitle_Title,
                 FileTypeChoices =
                 [
-                    new FilePickerFileType(I18N.Resources.FileDialog_FileType_Ass)
+                    new FilePickerFileType(I18N.Other.FileDialog_FileType_Ass)
                     {
                         Patterns = ["*.ass"],
                     },
@@ -88,10 +88,10 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         var file = await StorageProvider.SaveFilePickerAsync(
             new FilePickerSaveOptions
             {
-                Title = I18N.Resources.FileDialog_ExportSubtitle_Title,
+                Title = I18N.Other.FileDialog_ExportSubtitle_Title,
                 FileTypeChoices =
                 [
-                    new FilePickerFileType(I18N.Resources.FileDialog_FileType_Text)
+                    new FilePickerFileType(I18N.Other.FileDialog_FileType_Text)
                     {
                         Patterns = ["*.txt"],
                     },
@@ -117,11 +117,11 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         var files = await StorageProvider.OpenFilePickerAsync(
             new FilePickerOpenOptions
             {
-                Title = I18N.Resources.FileDialog_OpenSolution_Title,
+                Title = I18N.Other.FileDialog_OpenSolution_Title,
                 AllowMultiple = false,
                 FileTypeFilter =
                 [
-                    new FilePickerFileType(I18N.Resources.FileDialog_FileType_Solution)
+                    new FilePickerFileType(I18N.Other.FileDialog_FileType_Solution)
                     {
                         Patterns = ["*.asln"],
                     },
@@ -143,10 +143,10 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         var file = await StorageProvider.SaveFilePickerAsync(
             new FilePickerSaveOptions
             {
-                Title = I18N.Resources.FileDialog_SaveSolution_Title,
+                Title = I18N.Other.FileDialog_SaveSolution_Title,
                 FileTypeChoices =
                 [
-                    new FilePickerFileType(I18N.Resources.FileDialog_FileType_Solution)
+                    new FilePickerFileType(I18N.Other.FileDialog_FileType_Solution)
                     {
                         Patterns = ["*.asln"],
                     },

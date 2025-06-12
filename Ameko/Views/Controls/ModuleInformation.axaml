@@ -28,15 +28,15 @@
             <TextBlock Grid.Column="0"
                        Grid.Row="0"
                        Margin="0 0 5 0"
-                       Text="{x:Static i18n:Resources.DepCtrl_Info_Name}" />
+                       Text="{x:Static i18n:DepCtrl.DepCtrl_Info_Name}" />
             <TextBlock Grid.Column="1"
                        Grid.Row="0"
                        Text="{Binding DisplayName,
-                                      FallbackValue={x:Static i18n:Resources.DepCtrl_Info_NoSelection}}" />
+                                      FallbackValue={x:Static i18n:DepCtrl.DepCtrl_Info_NoSelection}}" />
             <TextBlock Grid.Column="0"
                        Grid.Row="1"
                        Margin="0 0 5 0"
-                       Text="{x:Static i18n:Resources.DepCtrl_Info_Type}" />
+                       Text="{x:Static i18n:DepCtrl.DepCtrl_Info_Type}" />
             <Grid Grid.Column="1"
                   Grid.Row="1"
                   ColumnDefinitions="Auto, *">
@@ -46,20 +46,20 @@
                                         FallbackValue={}}" />
                 <TextBlock Grid.Column="1"
                            Text="{Binding Type,
-                                          FallbackValue={x:Static i18n:Resources.DepCtrl_Info_NoSelection}}" />
+                                          FallbackValue={x:Static i18n:DepCtrl.DepCtrl_Info_NoSelection}}" />
             </Grid>
             <TextBlock Grid.Column="0"
                        Grid.Row="2"
                        Margin="0 0 5 0"
-                       Text="{x:Static i18n:Resources.DepCtrl_Info_QualifiedName}" />
+                       Text="{x:Static i18n:DepCtrl.DepCtrl_Info_QualifiedName}" />
             <TextBlock Grid.Column="1"
                        Grid.Row="2"
                        Text="{Binding QualifiedName,
-                                      FallbackValue={x:Static i18n:Resources.DepCtrl_Info_NoSelection}}" />
+                                      FallbackValue={x:Static i18n:DepCtrl.DepCtrl_Info_NoSelection}}" />
             <TextBlock Grid.Column="0"
                        Grid.Row="3"
                        Margin="0 0 5 0"
-                       Text="{x:Static i18n:Resources.DepCtrl_Info_Version}" />
+                       Text="{x:Static i18n:DepCtrl.DepCtrl_Info_Version}" />
             <Grid Grid.Column="1"
                   Grid.Row="3"
                   ColumnDefinitions="Auto, *">
@@ -67,24 +67,24 @@
                        Kind="ArrowUpThinCircleOutline"
                        Padding="0 0 5 0"
                        IsVisible="{Binding ., Converter={StaticResource UpToDateConverter}}"
-                       ToolTip.Tip="{x:Static i18n:Resources.DepCtrl_Update_Available_ToolTip}" />
+                       ToolTip.Tip="{x:Static i18n:DepCtrl.DepCtrl_Update_Available_ToolTip}" />
                 <TextBlock Grid.Column="1"
                            Text="{Binding Version,
                                           StringFormat='v{0}',
-                                          FallbackValue={x:Static i18n:Resources.DepCtrl_Info_NoSelection}}" />
+                                          FallbackValue={x:Static i18n:DepCtrl.DepCtrl_Info_NoSelection}}" />
             </Grid>
             <TextBlock Grid.Column="0"
                        Grid.Row="4"
                        Margin="0 0 2 0"
-                       Text="{x:Static i18n:Resources.DepCtrl_Info_Author}" />
+                       Text="{x:Static i18n:DepCtrl.DepCtrl_Info_Author}" />
             <TextBlock Grid.Column="1"
                        Grid.Row="4"
                        Text="{Binding Author,
-                                      FallbackValue={x:Static i18n:Resources.DepCtrl_Info_NoSelection}}" />
+                                      FallbackValue={x:Static i18n:DepCtrl.DepCtrl_Info_NoSelection}}" />
             <TextBlock Grid.Column="0"
                        Grid.Row="5"
                        Margin="0 0 5 0"
-                       Text="{x:Static i18n:Resources.DepCtrl_Info_Dependencies}" />
+                       Text="{x:Static i18n:DepCtrl.DepCtrl_Info_Dependencies}" />
             <TextBox Grid.Column="1"
                      Grid.Row="5"
                      Padding="0"
@@ -93,11 +93,11 @@
                      TextWrapping="NoWrap"
                      Text="{Binding .,
                                     Converter={StaticResource DependencyConverter},
-                                    FallbackValue={x:Static i18n:Resources.DepCtrl_Info_NoSelection}}" />
+                                    FallbackValue={x:Static i18n:DepCtrl.DepCtrl_Info_NoSelection}}" />
             <TextBlock Grid.Column="0"
                        Grid.Row="6"
                        Margin="0 0 5 0"
-                       Text="{x:Static i18n:Resources.DepCtrl_Info_Description}" />
+                       Text="{x:Static i18n:DepCtrl.DepCtrl_Info_Description}" />
             <TextBox Grid.Column="1"
                      Grid.Row="6"
                      Padding="0"
@@ -105,15 +105,15 @@
                      IsReadOnly="True"
                      TextWrapping="Wrap"
                      Text="{Binding Description,
-                                    FallbackValue={x:Static i18n:Resources.DepCtrl_Info_NoSelection}}" />
+                                    FallbackValue={x:Static i18n:DepCtrl.DepCtrl_Info_NoSelection}}" />
             <TextBlock Grid.Column="0"
                        Grid.Row="7"
                        Margin="0 0 2 0"
-                       Text="{x:Static i18n:Resources.DepCtrl_Info_Repository}" />
+                       Text="{x:Static i18n:DepCtrl.DepCtrl_Info_Repository}" />
             <TextBlock Grid.Column="1"
                        Grid.Row="7"
                        Text="{Binding Repository,
-                                      FallbackValue={x:Static i18n:Resources.DepCtrl_Info_NoSelection}}" />
+                                      FallbackValue={x:Static i18n:DepCtrl.DepCtrl_Info_NoSelection}}" />
         </Grid>
     </ScrollViewer>
 </UserControl>

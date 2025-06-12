@@ -101,8 +101,8 @@ public class IoService(
         Log.Trace($"Displaying message box because workspace {wsp.Title} is not saved");
 
         var box = MessageBoxManager.GetMessageBoxStandard(
-            title: I18N.Resources.MsgBox_Save_Title,
-            text: string.Format(I18N.Resources.MsgBox_Save_Body, wsp.Title),
+            title: I18N.Other.MsgBox_Save_Title,
+            text: string.Format(I18N.Other.MsgBox_Save_Body, wsp.Title),
             ButtonEnum.YesNoCancel
         );
         var boxResult = await box.ShowAsync();
