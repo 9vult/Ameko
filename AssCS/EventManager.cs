@@ -1,5 +1,6 @@
 ﻿// SPDX-License-Identifier: MPL-2.0
 
+using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using AssCS.Utilities;
@@ -7,13 +8,18 @@ using AssCS.Utilities;
 namespace AssCS;
 
 /// <summary>
-/// Manages the events in a document
+/// Provides mechanisms for creating, retrieving, ordering,
+/// and modifying subtitle <see cref="Event"/>s within a <see cref="Document"/>
 /// </summary>
+/// <remarks>
+/// Events are uniquely identified and maintained in a logical order
+/// for editing, rendering, and history tracking
+/// </remarks>
 public class EventManager : BindableBase
 {
     private readonly LinkedList<int> _chain;
     private readonly RangeObservableCollection<int> _currentIds;
-    private readonly Dictionary<int, Link> _events;
+    private readonly ConcurrentDictionary<int, Link> _events;
     private int _id;
 
     /// <summary>
@@ -36,16 +42,11 @@ public class EventManager : BindableBase
     public int NextId => _id++;
 
     /// <summary>
-    /// A list of all events in order
+    /// Gets a list of all current events in the document in visual order
     /// </summary>
     /// <remarks>
-    /// <para>
-    /// This method collects all events in the order specified by the
-    /// underlying LinkedList. Thus, the event order is determinate.
-    /// </para><para>
-    /// In addition, the <see cref="Event.Index"/> field is set to the event's
-    /// row number (1-indexed).
-    /// </para>
+    /// The order is determined by the internal LinkedList structure.
+    /// This accessor also assigns each event its current <see cref="Event.Index"/> (1-based)
     /// </remarks>
     public List<Event> Events =>
         _chain
@@ -69,7 +70,7 @@ public class EventManager : BindableBase
     /// in the document
     /// </summary>
     /// <remarks>
-    /// This collection can be listened to to detect changes in the
+    /// This collection can be observed to detect changes in the
     /// events in the document; For example, to re-render a subtitle grid.
     /// </remarks>
     public Utilities.ReadOnlyObservableCollection<int> CurrentIds { get; }
@@ -101,6 +102,7 @@ public class EventManager : BindableBase
     /// <summary>
     /// The last event in the document
     /// </summary>
+    /// <exception cref="ArgumentNullException">If the tail is <see langword="null"/></exception>
     public Event Tail =>
         _chain.Last is null
             ? throw new ArgumentNullException(
@@ -116,11 +118,18 @@ public class EventManager : BindableBase
     /// </summary>
     /// <param name="id">ID of the parent event</param>
     /// <param name="e">Event to add</param>
-    /// <exception cref="ArgumentException">If the ID is not found</exception>
+    /// <exception cref="ArgumentException">If the <paramref name="id"/> is not found</exception>
     /// <remarks>
     /// The new event will be inserted between the parent event and the parent's
     /// current child, if it has one.
     /// </remarks>
+    /// <example>
+    /// Insert a new event after an existing one:
+    /// <code>
+    /// var newEvent = new Event(manager.NextId) { Text = "New line" };
+    /// manager.AddAfter(existingEvent.Id, newEvent);
+    /// </code>
+    /// </example>
     public void AddAfter(int id, Event e)
     {
         if (!_events.TryGetValue(id, out var value))
@@ -140,10 +149,17 @@ public class EventManager : BindableBase
     /// </summary>
     /// <param name="id">ID of the parent event</param>
     /// <param name="list">List of events to add</param>
-    /// <exception cref="ArgumentException">If the ID is not found</exception>
+    /// <exception cref="ArgumentException">If the <paramref name="id"/> is not found</exception>
     /// <remarks>
     /// The events will be added in the order they are found in the list.
     /// </remarks>
+    /// <example>
+    /// Insert multiple new events after an existing one:
+    /// <code>
+    /// List&lt;Event&gt; newEvents = [new Event(manager.NextId), new Event(Manager.NextId)];
+    /// manager.AddAfter(existingEvent.Id, newEvents);
+    /// </code>
+    /// </example>
     public void AddAfter(int id, IList<Event> list)
     {
         if (!_events.ContainsKey(id))
@@ -169,11 +185,18 @@ public class EventManager : BindableBase
     /// </summary>
     /// <param name="id">ID of the child event</param>
     /// <param name="e">Event to add</param>
-    /// <exception cref="ArgumentException">If the ID is not found</exception>
+    /// <exception cref="ArgumentException">If the <paramref name="id"/> is not found</exception>
     /// <remarks>
     /// The new event will be inserted between the child event and the child's
     /// current parent, if it has one.
     /// </remarks>
+    /// <example>
+    /// Insert a new event before an existing one:
+    /// <code>
+    /// var newEvent = new Event(manager.NextId) { Text = "New line" };
+    /// manager.AddBefore(existingEvent.Id, newEvent);
+    /// </code>
+    /// </example>
     public void AddBefore(int id, Event e)
     {
         if (!_events.TryGetValue(id, out var value))
@@ -194,7 +217,7 @@ public class EventManager : BindableBase
     /// <param name="id">ID of the child event</param>
     /// <param name="list">Events to add</param>
     /// <param name="ascending">Order to add the events in</param>
-    /// <exception cref="ArgumentException">If the ID is not found</exception>
+    /// <exception cref="ArgumentException">If the <paramref name="id"/> is not found</exception>
     /// <remarks>
     /// The <paramref name="ascending"/> parameter controls the order the
     /// events will be added to the document.
@@ -209,6 +232,13 @@ public class EventManager : BindableBase
     /// </item>
     /// </list>
     /// </remarks>
+    /// <example>
+    /// Insert multiple new events before an existing one, in descending order:
+    /// <code>
+    /// List&lt;Event&gt; newEvents = [new Event(manager.NextId), new Event(Manager.NextId)];
+    /// manager.AddBefore(existingEvent.Id, newEvents, ascending: false);
+    /// </code>
+    /// </example>
     public void AddBefore(int id, IList<Event> list, bool ascending)
     {
         if (!_events.ContainsKey(id))
@@ -349,17 +379,21 @@ public class EventManager : BindableBase
     /// <param name="id">ID of the event to replace</param>
     /// <param name="e">New event</param>
     /// <returns>The replaced event</returns>
-    /// <exception cref="ArgumentException">If the ID is not found</exception>
+    /// <remarks>
+    /// The replacement event must have a unique ID that differs from the original.
+    /// To update an event in-place with the same ID, use <see cref="ReplaceInPlace(Event)"/>.
+    /// </remarks>
+    /// <exception cref="ArgumentException">If the <paramref name="id"/> is not found</exception>
+    /// <seealso cref="ReplaceInPlace(Event)"/>
     public Event Replace(int id, Event e)
     {
-        if (!_events.TryGetValue(id, out var link))
+        if (!_events.TryRemove(id, out var link)) // Remove the original ID
             throw new ArgumentException(
                 $"Cannot replace event id={id} because that id cannot be found."
             );
 
         var originalEvent = link.Event;
 
-        _events.Remove(id); // Remove the original ID
         link.Node.Value = e.Id; // Set the Node's value to the new ID
         _events[e.Id] = new Link(link.Node, e); // Add the new ID
         _currentIds[_currentIds.IndexOf(id)] = id; // Replace the ID in the list
@@ -370,17 +404,22 @@ public class EventManager : BindableBase
     /// <summary>
     /// Replace an event with a new version of itself
     /// </summary>
-    /// <param name="e">New event</param>
-    /// <exception cref="ArgumentException">If the ID is not found</exception>
-    public void ReplaceInplace(Event e)
+    /// <param name="event">New event</param>
+    /// <remarks>
+    /// The replacement event must have the same ID as the original.
+    /// To replace the event with one with a different ID, use <see cref="Replace(int, Event)"/>
+    /// </remarks>
+    /// <exception cref="ArgumentException">If the <paramref name="event"/> is not found</exception>
+    /// <seealso cref="Replace(int, Event)"/>
+    public void ReplaceInPlace(Event @event)
     {
-        if (!_events.TryGetValue(e.Id, out var original))
+        if (!_events.TryGetValue(@event.Id, out var original))
             throw new ArgumentException(
-                $"Cannot replace event id={e.Id} because that id cannot be found."
+                $"Cannot replace event id={@event.Id} because that id cannot be found."
             );
 
-        original.Node.Value = e.Id; // Set the LinkedList value to the new ID
-        _events[e.Id] = new Link(original.Node, e); // Add the new ID
+        original.Node.Value = @event.Id; // Set the LinkedList value to the new ID
+        _events[@event.Id] = new Link(original.Node, @event); // Add the new ID
 
         Notify();
     }
@@ -389,8 +428,13 @@ public class EventManager : BindableBase
     /// Replace events with new versions of themselves
     /// </summary>
     /// <param name="list">New events</param>
-    /// <exception cref="ArgumentException">If an ID is not found</exception>
-    public void ReplaceInplace(IEnumerable<Event> list)
+    /// <remarks>
+    /// The replacement events must have the same ID as the originals.
+    /// To replace events with ones with a different ID, use <see cref="Replace(int, Event)"/>
+    /// </remarks>
+    /// <exception cref="ArgumentException">If an event in the <paramref name="list"/> is not found</exception>
+    /// <seealso cref="Replace(int, Event)"/>
+    public void ReplaceInPlace(IEnumerable<Event> list)
     {
         foreach (var e in list)
         {
@@ -410,7 +454,7 @@ public class EventManager : BindableBase
     /// </summary>
     /// <param name="id">ID of the event to remove</param>
     /// <returns><see langword="true"/> if the event was removed</returns>
-    /// <exception cref="ArgumentException">If the ID is not found</exception>
+    /// <exception cref="ArgumentException">If the <paramref name="id"/> is not found</exception>
     public bool Remove(int id)
     {
         if (_events.Remove(id, out var link))
@@ -468,7 +512,7 @@ public class EventManager : BindableBase
     /// </summary>
     /// <param name="id">ID of the event</param>
     /// <returns>The event with the requested ID</returns>
-    /// <exception cref="ArgumentException">If the ID is not found</exception>
+    /// <exception cref="ArgumentException">If the <paramref name="id"/> is not found</exception>
     public Event Get(int id)
     {
         if (_events.TryGetValue(id, out var link))
@@ -569,6 +613,7 @@ public class EventManager : BindableBase
     /// </summary>
     /// <param name="id">ID of the parent event</param>
     /// <returns>The event after the parent</returns>
+    /// <exception cref="ArgumentOutOfRangeException">If the <paramref name="id"/> is not found</exception>
     public Event GetOrCreateAfter(int id)
     {
         if (TryGetAfter(id, out var after))
@@ -594,6 +639,7 @@ public class EventManager : BindableBase
     /// </summary>
     /// <param name="id">ID of the child event</param>
     /// <returns>The event before the child</returns>
+    /// <exception cref="ArgumentOutOfRangeException">If the <paramref name="id"/> is not found</exception>
     public Event GetOrCreateBefore(int id)
     {
         if (TryGetBefore(id, out var before))
@@ -717,8 +763,12 @@ public class EventManager : BindableBase
     }
 
     /// <summary>
-    /// Split an event on newlines, adjusted by CPS
+    /// Split an event into multiple parts
     /// </summary>
+    /// <remarks>
+    /// Segments are computed based on `\N` or `\n` line breaks.
+    /// Timing is adjusted proportionally based on characters per second.
+    /// </remarks>
     /// <param name="id">ID of the event to split</param>
     /// <returns>List of events created by the split</returns>
     public IEnumerable<Event> Split(int id)
@@ -767,6 +817,7 @@ public class EventManager : BindableBase
     /// <summary>
     /// Merge two adjacent events together
     /// </summary>
+    /// <remarks>The events must be directly adjacent</remarks>
     /// <param name="a">IDs of the first event</param>
     /// <param name="b">IDs of the second event</param>
     /// <param name="useSoftLinebreaks">Whether to use soft linebreaks or not</param>

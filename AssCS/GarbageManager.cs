@@ -1,5 +1,6 @@
 ﻿// SPDX-License-Identifier: MPL-2.0
 
+using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
 using System.Globalization;
 
@@ -10,7 +11,7 @@ namespace AssCS;
 /// </summary>
 public class GarbageManager
 {
-    private readonly Dictionary<string, GarbageEntry> _data = [];
+    private readonly ConcurrentDictionary<string, GarbageEntry> _data = [];
 
     /// <summary>
     /// Number of entries in the manager

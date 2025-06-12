@@ -1,5 +1,7 @@
 ﻿// SPDX-License-Identifier: MPL-2.0
 
+using System.Collections.Concurrent;
+
 namespace AssCS.History;
 
 /// <summary>
@@ -8,8 +10,8 @@ namespace AssCS.History;
 public class HistoryManager : BindableBase
 {
     private int _nextId;
-    private readonly Stack<ICommit> _history = [];
-    private readonly Stack<ICommit> _future = [];
+    private readonly ConcurrentStack<ICommit> _history = [];
+    private readonly ConcurrentStack<ICommit> _future = [];
 
     /// <summary>
     /// Next commit ID
@@ -88,7 +90,7 @@ public class HistoryManager : BindableBase
 
         if (!CanUndo)
             throw new InvalidOperationException("Cannot amend, no commits in the undo stack!");
-        if (_history.Peek() is not EventCommit commit)
+        if (!_history.TryPeek(out var latest) || latest is not EventCommit commit)
             throw new InvalidOperationException(
                 "Cannot amend an Event commit to a non-Event commit"
             );
@@ -151,9 +153,9 @@ public class HistoryManager : BindableBase
     /// <exception cref="InvalidOperationException">If the Undo stack is empty</exception>
     public ICommit Undo()
     {
-        if (!CanUndo)
+        if (!CanUndo || !_history.TryPop(out var commit))
             throw new InvalidOperationException("Cannot undo, no commits in the undo stack!");
-        var commit = _history.Pop();
+
         _future.Push(commit);
 
         LastCommitTime = DateTimeOffset.Now;
@@ -173,9 +175,9 @@ public class HistoryManager : BindableBase
     /// <exception cref="InvalidOperationException">If the Redo stack is empty</exception>
     public ICommit Redo()
     {
-        if (!CanRedo)
+        if (!CanRedo || !_future.TryPop(out var commit))
             throw new InvalidOperationException("Cannot redo, no commits in the redo stack!");
-        var commit = _future.Pop();
+
         _history.Push(commit);
 
         LastCommitTime = DateTimeOffset.Now;
