@@ -13,6 +13,7 @@ public partial class StyleEditorWindowViewModel : ViewModelBase
 {
     private readonly Style _backupStyle;
     private string _styleName;
+    private bool _isNameInvalid;
 
     public Style Style { get; init; }
 
@@ -20,6 +21,12 @@ public partial class StyleEditorWindowViewModel : ViewModelBase
     {
         get => _styleName;
         set => this.RaiseAndSetIfChanged(ref _styleName, value);
+    }
+
+    public bool IsNameInvalid
+    {
+        get => _isNameInvalid;
+        set => this.RaiseAndSetIfChanged(ref _isNameInvalid, value);
     }
 
     public StyleEditorWindowViewModel(Style style)

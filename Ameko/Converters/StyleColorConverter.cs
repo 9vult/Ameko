@@ -4,17 +4,15 @@ using System;
 using System.Globalization;
 using Avalonia.Data.Converters;
 using Avalonia.Media;
-using Holo.Providers;
-using Microsoft.Extensions.DependencyInjection;
 using Color = Avalonia.Media.Color;
 
 namespace Ameko.Converters;
 
+/// <summary>
+/// Converter for <see cref="AssCS.Style"/> <see cref="AssCS.Color"/> properties
+/// </summary>
 public class StyleColorConverter : IValueConverter
 {
-    private static readonly ISolutionProvider? SolutionProvider =
-        AmekoServiceProvider.Provider?.GetRequiredService<ISolutionProvider>();
-
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
         if (value is not AssCS.Color input)
