@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" id="root">
+    <xsd:element name="root" msdata:IsDataSet="true">
+            
+        </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>1.3</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Menu_File" xml:space="preserve">
+        <value>_File</value>
+    </data>
+  <data name="Menu_Edit" xml:space="preserve">
+        <value>_Edit</value>
+    </data>
+  <data name="Menu_Subtitle" xml:space="preserve">
+        <value>_Subtitle</value>
+    </data>
+  <data name="Menu_Timing" xml:space="preserve">
+        <value>_Timing</value>
+    </data>
+  <data name="Menu_Video" xml:space="preserve">
+        <value>_Video</value>
+    </data>
+  <data name="Menu_Scripts" xml:space="preserve">
+        <value>Scri_pts</value>
+    </data>
+  <data name="Menu_Layouts" xml:space="preserve">
+        <value>_Layouts</value>
+    </data>
+  <data name="Menu_Help" xml:space="preserve">
+        <value>_Help</value>
+    </data>
+  <data name="Menu_ShowLogs" xml:space="preserve">
+        <value>Show _Logs...</value>
+    </data>
+  <data name="SolutionExplorer_Header" xml:space="preserve">
+        <value>Solution Explorer</value>
+    </data>
+  <data name="Toolbox_Header" xml:space="preserve">
+        <value>Toolbox</value>
+    </data>
+  <data name="EventsGrid_Header_Start" xml:space="preserve">
+        <value>Start</value>
+    </data>
+  <data name="EventsGrid_Header_End" xml:space="preserve">
+        <value>End</value>
+    </data>
+  <data name="EventsGrid_Header_Cps" xml:space="preserve">
+        <value>CPS</value>
+    </data>
+  <data name="EventsGrid_Header_Style" xml:space="preserve">
+        <value>Style</value>
+    </data>
+  <data name="EventsGrid_Header_Actor" xml:space="preserve">
+        <value>Actor</value>
+    </data>
+  <data name="EventsGrid_Header_Effect" xml:space="preserve">
+        <value>Effect</value>
+    </data>
+  <data name="EventsGrid_Header_Content" xml:space="preserve">
+        <value>Content</value>
+    </data>
+  <data name="EventsGrid_Menu_Duplicate" xml:space="preserve">
+        <value>Duplicate</value>
+    </data>
+  <data name="EventsGrid_Menu_MergeLines" xml:space="preserve">
+        <value>Merge Lines</value>
+    </data>
+  <data name="EventsGrid_Menu_SplitLine" xml:space="preserve">
+        <value>Split Lines</value>
+    </data>
+  <data name="EventsGrid_Menu_InsertBefore" xml:space="preserve">
+        <value>Insert Before</value>
+    </data>
+  <data name="EventsGrid_Menu_InsertAfter" xml:space="preserve">
+        <value>Insert After</value>
+    </data>
+  <data name="EventsGrid_Menu_Copy" xml:space="preserve">
+        <value>Copy</value>
+    </data>
+  <data name="EventsGrid_Menu_Paste" xml:space="preserve">
+        <value>Paste</value>
+    </data>
+  <data name="EventsGrid_Menu_PasteOver" xml:space="preserve">
+        <value>Paste Over...</value>
+    </data>
+  <data name="EventsGrid_Menu_Delete" xml:space="preserve">
+        <value>Delete</value>
+    </data>
+  <data name="EventsGrid_Menu_Cut" xml:space="preserve">
+        <value>Cut</value>
+    </data>
+  <data name="Editor_IsComment_Label" xml:space="preserve">
+        <value>Comment</value>
+    </data>
+  <data name="Editor_IsComment_ToolTip" xml:space="preserve">
+        <value>Mark this line as a comment</value>
+    </data>
+  <data name="Editor_StyleBox_ToolTip" xml:space="preserve">
+        <value>Style for this line</value>
+    </data>
+  <data name="Editor_EditStyle_ToolTip" xml:space="preserve">
+        <value>Edit the current style</value>
+    </data>
+  <data name="Editor_ActorAcBox_Watermark" xml:space="preserve">
+        <value>Actor</value>
+    </data>
+  <data name="Editor_ActorAcBox_ToolTip" xml:space="preserve">
+        <value>Actor for this line</value>
+    </data>
+  <data name="Editor_EffectAcBox_Watermark" xml:space="preserve">
+        <value>Effect</value>
+    </data>
+  <data name="Editor_EffectAcBox_ToolTip" xml:space="preserve">
+        <value>Effect for this line</value>
+    </data>
+  <data name="Editor_MaxLineWidth_ToolTip" xml:space="preserve">
+        <value>Maximum width of this line</value>
+    </data>
+  <data name="Editor_LayerUpDown_ToolTip" xml:space="preserve">
+        <value>Layer</value>
+    </data>
+  <data name="Editor_StartBox_ToolTip" xml:space="preserve">
+        <value>Start time</value>
+    </data>
+  <data name="Editor_EndBox_ToolTip" xml:space="preserve">
+        <value>End time</value>
+    </data>
+  <data name="Editor_MarginLeft_ToolTip" xml:space="preserve">
+        <value>Left Margin (0 is style default)</value>
+    </data>
+  <data name="Editor_MarginRight_ToolTip" xml:space="preserve">
+        <value>Right Margin (0 is style default)</value>
+    </data>
+  <data name="Editor_MarginVertical_ToolTip" xml:space="preserve">
+        <value>Vertical Margin (0 is style default)</value>
+    </data>
+  <data name="Editor_ToggleBold_ToolTip" xml:space="preserve">
+        <value>Toggle Bold \b at cursor position</value>
+    </data>
+  <data name="Editor_ToggleItalics_ToolTip" xml:space="preserve">
+        <value>Toggle Italics \i at cursor position</value>
+    </data>
+  <data name="Editor_ToggleUnderline_ToolTip" xml:space="preserve">
+        <value>Toggle Underline \u at cursor position</value>
+    </data>
+  <data name="Editor_ToggleStrikethrough_ToolTip" xml:space="preserve">
+        <value>Toggle Strikethrough \s at cursor position</value>
+    </data>
+  <data name="Editor_SetFont_ToolTip" xml:space="preserve">
+        <value>Set Font \fn at cursor position</value>
+    </data>
+  <data name="Editor_NextOrCreate_ToolTip" xml:space="preserve">
+        <value>Move to the next line, creating a new one if needed</value>
+    </data>
+  <data name="Menu_New" xml:space="preserve">
+        <value>_New</value>
+    </data>
+  <data name="Menu_OpenSubtitle" xml:space="preserve">
+        <value>_Open Subtitle...</value>
+    </data>
+  <data name="Menu_SaveSubtitle" xml:space="preserve">
+        <value>_Save Subtitle...</value>
+    </data>
+  <data name="Menu_SaveSubtitleAs" xml:space="preserve">
+        <value>Save Subtitle _As...</value>
+    </data>
+  <data name="Menu_ExportSubtitles" xml:space="preserve">
+        <value>_Export Subtitles...</value>
+    </data>
+  <data name="Menu_OpenSolution" xml:space="preserve">
+        <value>Open _Solution...</value>
+    </data>
+  <data name="Menu_SaveSolution" xml:space="preserve">
+        <value>Save So_lution...</value>
+    </data>
+  <data name="Menu_Quit" xml:space="preserve">
+        <value>_Quit</value>
+    </data>
+  <data name="Menu_Undo" xml:space="preserve">
+        <value>_Undo</value>
+    </data>
+  <data name="Menu_Redo" xml:space="preserve">
+        <value>_Redo</value>
+    </data>
+  <data name="Menu_Search" xml:space="preserve">
+        <value>_Search...</value>
+    </data>
+  <data name="Menu_StylesManager" xml:space="preserve">
+        <value>_Styles Manager...</value>
+    </data>
+  <data name="Menu_ScriptProperties" xml:space="preserve">
+        <value>Script _Properties...</value>
+    </data>
+  <data name="Menu_Solution" xml:space="preserve">
+        <value>So_lution</value>
+    </data>
+  <data name="Menu_SolutionConfig" xml:space="preserve">
+        <value>_Configuration...</value>
+    </data>
+  <data name="Menu_ShiftTimes" xml:space="preserve">
+        <value>S_hift Times...</value>
+    </data>
+  <data name="Menu_OpenVideo" xml:space="preserve">
+        <value>_Open Video...</value>
+    </data>
+  <data name="Menu_JumpTo" xml:space="preserve">
+        <value>_Jump To...</value>
+    </data>
+  <data name="Menu_Configuration" xml:space="preserve">
+        <value>_Configuration...</value>
+    </data>
+  <data name="Menu_Keybinds" xml:space="preserve">
+        <value>_Keybinds...</value>
+    </data>
+  <data name="Menu_About" xml:space="preserve">
+        <value>_About Ameko...</value>
+    </data>
+  <data name="SolutionExplorer_ContextMenu_Remove" xml:space="preserve">
+        <value>Remove from Workspace</value>
+    </data>
+  <data name="SolutionExplorer_ContextMenu_Open" xml:space="preserve">
+        <value>Open</value>
+    </data>
+  <data name="Menu_CloseTab" xml:space="preserve">
+        <value>_Close Tab</value>
+    </data>
+  <data name="Menu_CloseSolution" xml:space="preserve">
+        <value>Close Solutio_n</value>
+    </data>
+  <data name="Tab_CloseButton_ToolTip" xml:space="preserve">
+        <value>Close Tab</value>
+    </data>
+  <data name="SolutionExplorer_ContextMenu_Rename" xml:space="preserve">
+        <value>Rename...</value>
+    </data>
+  <data name="Menu_ReloadScripts" xml:space="preserve">
+        <value>_Reload Scripts</value>
+    </data>
+  <data name="Menu_DependencyControl" xml:space="preserve">
+        <value>Open _Dependency Control...</value>
+    </data>
+</root>
