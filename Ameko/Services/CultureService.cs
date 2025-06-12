@@ -5,7 +5,6 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
-using Holo;
 using Holo.Configuration;
 using NLog;
 
@@ -25,7 +24,6 @@ public class CultureService
 
         Logger.Info($"Setting culture to {culture.Name}");
 
-        I18N.Resources.Culture = culture;
         Thread.CurrentThread.CurrentUICulture = culture;
         Thread.CurrentThread.CurrentCulture = culture;
 

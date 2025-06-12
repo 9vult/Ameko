@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+            
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="StyleEditor_WindowTitle" xml:space="preserve">
+        <value>Style Editor</value>
+    </data>
+    <data name="StyleEditor_Section_BasicInfo" xml:space="preserve">
+        <value>Basic Info</value>
+    </data>
+    <data name="StyleEditor_InvalidName" xml:space="preserve">
+        <value>Invalid name!</value>
+    </data>
+    <data name="StyleEditor_NameBox_Watermark" xml:space="preserve">
+        <value>Style Name</value>
+    </data>
+    <data name="StyleEditor_Section_Font" xml:space="preserve">
+        <value>Font</value>
+    </data>
+    <data name="StyleEditor_FontFamilyBox_Watermark" xml:space="preserve">
+        <value>Font Family</value>
+    </data>
+    <data name="StyleEditor_CheckBox_Bold" xml:space="preserve">
+        <value>Bold</value>
+    </data>
+    <data name="StyleEditor_CheckBox_Italic" xml:space="preserve">
+        <value>Italic</value>
+    </data>
+    <data name="StyleEditor_CheckBox_Underline" xml:space="preserve">
+        <value>Underline</value>
+    </data>
+    <data name="StyleEditor_CheckBox_Strikethrough" xml:space="preserve">
+        <value>Strikethrough</value>
+    </data>
+    <data name="StyleEditor_Section_Colors" xml:space="preserve">
+        <value>Colors</value>
+    </data>
+    <data name="StyleEditor_Label_Primary" xml:space="preserve">
+        <value>Primary</value>
+    </data>
+    <data name="StyleEditor_Label_Secondary" xml:space="preserve">
+        <value>Secondary</value>
+    </data>
+    <data name="StyleEditor_Label_Outline" xml:space="preserve">
+        <value>Outline</value>
+    </data>
+    <data name="StyleEditor_Label_Shadow" xml:space="preserve">
+        <value>Shadow</value>
+    </data>
+</root>
