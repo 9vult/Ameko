@@ -17,7 +17,7 @@
         Icon="/Assets/Ameko-Simplified-BG-64.ico"
         Width="600"
         Height="400"
-        Title="{x:Static i18n:Resources.LogWindow_Title}">
+        Title="{x:Static i18n:Other.LogWindow_Title}">
 
     <ListBox Name="LogList"
              ItemsSource="{Binding LogEntries}"

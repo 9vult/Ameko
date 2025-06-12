@@ -76,10 +76,7 @@ public sealed class ScriptServiceLocator
         Logger.Warn($"{callerName} attempted to get restricted service {typeof(T)}");
         throw new ArgumentOutOfRangeException(
             nameof(T),
-            string.Format(
-                I18N.Resources.ScriptServiceLocator_Get_UnregisteredScript,
-                typeof(T).Name
-            )
+            string.Format(I18N.Other.ScriptServiceLocator_Get_UnregisteredScript, typeof(T).Name)
         );
     }
 

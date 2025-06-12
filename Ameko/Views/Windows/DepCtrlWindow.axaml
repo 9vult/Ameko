@@ -19,12 +19,12 @@
         Width="700"
         Height="450"
         CanResize="False"
-        Title="{x:Static i18n:Resources.DepCtrlWindow_Title}">
+        Title="{x:Static i18n:DepCtrl.DepCtrlWindow_Title}">
     <TabControl>
-        <TabItem Header="{x:Static i18n:Resources.DepCtrl_ModulesTab}">
+        <TabItem Header="{x:Static i18n:DepCtrl.DepCtrl_ModulesTab}">
             <controls:DepCtrlModulesTab />
         </TabItem>
-        <TabItem Header="{x:Static i18n:Resources.DepCtrl_RepositoriesTab}">
+        <TabItem Header="{x:Static i18n:DepCtrl.DepCtrl_RepositoriesTab}">
             <controls:DepCtrlRepositoriesTab />
         </TabItem>
         <TabControl.Styles>

@@ -289,8 +289,8 @@ public partial class MainWindowViewModel : ViewModelBase
                 Log.Trace($"Displaying message to confirm removal of document {id} from solution");
 
                 var box = MessageBoxManager.GetMessageBoxStandard(
-                    title: I18N.Resources.MsgBox_RemoveDocument_Title,
-                    text: I18N.Resources.MsgBox_RemoveDocument_Title,
+                    title: I18N.Other.MsgBox_RemoveDocument_Title,
+                    text: I18N.Other.MsgBox_RemoveDocument_Body,
                     ButtonEnum.YesNo
                 );
                 var boxResult = await box.ShowAsync();
@@ -314,8 +314,8 @@ public partial class MainWindowViewModel : ViewModelBase
                 Log.Trace($"Displaying message to confirm removal of directory {id} from solution");
 
                 var box = MessageBoxManager.GetMessageBoxStandard(
-                    title: I18N.Resources.MsgBox_RemoveDirectory_Title,
-                    text: I18N.Resources.MsgBox_RemoveDirectory_Body,
+                    title: I18N.Other.MsgBox_RemoveDirectory_Title,
+                    text: I18N.Other.MsgBox_RemoveDirectory_Body,
                     ButtonEnum.YesNo
                 );
                 var boxResult = await box.ShowAsync();
@@ -344,15 +344,15 @@ public partial class MainWindowViewModel : ViewModelBase
                 var box = MessageBoxManager.GetMessageBoxStandard(
                     new MessageBoxStandardParams
                     {
-                        ContentTitle = I18N.Resources.MsgBox_NameDirectory_Title,
-                        ContentMessage = I18N.Resources.MsgBox_NameDirectory_Body,
+                        ContentTitle = I18N.Other.MsgBox_NameDirectory_Title,
+                        ContentMessage = I18N.Other.MsgBox_NameDirectory_Body,
                         ButtonDefinitions = ButtonEnum.OkCancel,
                         Icon = Icon.None,
                         WindowStartupLocation = WindowStartupLocation.CenterScreen,
                         InputParams = new InputParams
                         {
                             DefaultValue = dirItem.Name ?? string.Empty,
-                            Label = I18N.Resources.MsgBox_NameItem_Label,
+                            Label = I18N.Other.MsgBox_NameItem_Label,
                         },
                     }
                 );
@@ -382,15 +382,15 @@ public partial class MainWindowViewModel : ViewModelBase
                 var box = MessageBoxManager.GetMessageBoxStandard(
                     new MessageBoxStandardParams
                     {
-                        ContentTitle = I18N.Resources.MsgBox_NameDocument_Title,
-                        ContentMessage = I18N.Resources.MsgBox_NameDocument_Body,
+                        ContentTitle = I18N.Other.MsgBox_NameDocument_Title,
+                        ContentMessage = I18N.Other.MsgBox_NameDocument_Body,
                         ButtonDefinitions = ButtonEnum.OkCancel,
                         Icon = Icon.None,
                         WindowStartupLocation = WindowStartupLocation.CenterScreen,
                         InputParams = new InputParams
                         {
                             DefaultValue = docItem.Name ?? string.Empty,
-                            Label = I18N.Resources.MsgBox_NameItem_Label,
+                            Label = I18N.Other.MsgBox_NameItem_Label,
                         },
                     }
                 );

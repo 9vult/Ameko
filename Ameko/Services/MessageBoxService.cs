@@ -47,18 +47,17 @@ public class MessageBoxService : IMessageBoxService
     public IMsBox<ButtonResult> GetBox(InstallationResult result)
     {
         return MessageBoxManager.GetMessageBoxStandard(
-            I18N.Resources.DepCtrlWindow_Title,
+            I18N.DepCtrl.DepCtrlWindow_Title,
             result switch
             {
-                InstallationResult.Success => I18N.Resources.DepCtrl_Result_Success,
-                InstallationResult.Failure => I18N.Resources.DepCtrl_Result_Failure,
-                InstallationResult.DependencyNotFound => I18N.Resources.DepCtrl_Result_DepNotFound,
-                InstallationResult.AlreadyInstalled =>
-                    I18N.Resources.DepCtrl_Result_AlreadyInstalled,
-                InstallationResult.FilesystemFailure => I18N.Resources.DepCtrl_Result_FS_Failure,
-                InstallationResult.NotInstalled => I18N.Resources.DepCtrl_Result_NotInstalled,
+                InstallationResult.Success => I18N.DepCtrl.DepCtrl_Result_Success,
+                InstallationResult.Failure => I18N.DepCtrl.DepCtrl_Result_Failure,
+                InstallationResult.DependencyNotFound => I18N.DepCtrl.DepCtrl_Result_DepNotFound,
+                InstallationResult.AlreadyInstalled => I18N.DepCtrl.DepCtrl_Result_AlreadyInstalled,
+                InstallationResult.FilesystemFailure => I18N.DepCtrl.DepCtrl_Result_FS_Failure,
+                InstallationResult.NotInstalled => I18N.DepCtrl.DepCtrl_Result_NotInstalled,
                 InstallationResult.IsRequiredDependency =>
-                    I18N.Resources.DepCtrl_Result_IsRequiredDep,
+                    I18N.DepCtrl.DepCtrl_Result_IsRequiredDep,
                 _ => throw new ArgumentOutOfRangeException(nameof(result)),
             },
             ButtonEnum.Ok,

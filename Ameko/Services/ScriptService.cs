@@ -120,13 +120,13 @@ public class ScriptService : IScriptService
 
         // Display message box (if manually invoked)
         if (isManual)
-            await DisplayMessageBoxAsync(I18N.Resources.MsgBox_ScriptService_Reload_Body);
+            await DisplayMessageBoxAsync(I18N.Other.MsgBox_ScriptService_Reload_Body);
     }
 
     private static async Task DisplayMessageBoxAsync(string message)
     {
         var box = MessageBoxManager.GetMessageBoxStandard(
-            I18N.Resources.MsgBox_ScriptService_Title,
+            I18N.Other.MsgBox_ScriptService_Title,
             message
         );
         await box.ShowAsync();

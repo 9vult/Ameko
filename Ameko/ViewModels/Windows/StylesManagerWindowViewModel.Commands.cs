@@ -30,7 +30,7 @@ public partial class StylesManagerWindowViewModel : ViewModelBase
 
                 var newStyle = Style.FromStyle(manager.NextId, style);
                 while (manager.TryGet(newStyle.Name, out _))
-                    newStyle.Name += $" ({I18N.Resources.StylesManager_CopyAppendage})";
+                    newStyle.Name += $" ({I18N.StylesManager.StylesManager_CopyAppendage})";
 
                 manager.Add(newStyle);
             }

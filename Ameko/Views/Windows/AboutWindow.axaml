@@ -20,7 +20,7 @@
         Width="500"
         Height="600"
         Icon="/Assets/Ameko-Simplified-BG-64.ico"
-        Title="{x:Static i18n:Resources.AboutWindow_Title}">
+        Title="{x:Static i18n:About.AboutWindow_Title}">
     <DockPanel Margin="10">
         <StackPanel DockPanel.Dock="Top"
                     Margin="5">
@@ -36,15 +36,15 @@
                        FontSize="14" />
         </StackPanel>
         <TabControl TabStripPlacement="Bottom">
-            <TabItem Header="{x:Static i18n:Resources.AboutWindow_GeneralTab}">
+            <TabItem Header="{x:Static i18n:About.AboutWindow_GeneralTab}">
                 <md:MarkdownScrollViewer Margin="5"
                                          Source="avares://Ameko/Assets/Text/About.md" />
             </TabItem>
-            <TabItem Header="{x:Static i18n:Resources.AboutWindow_AssetsTab}">
+            <TabItem Header="{x:Static i18n:About.AboutWindow_AssetsTab}">
                 <md:MarkdownScrollViewer Margin="5"
                                          Source="avares://Ameko/Assets/Text/Assets.md" />
             </TabItem>
-            <TabItem Header="{x:Static i18n:Resources.AboutWindow_LibrariesTab}">
+            <TabItem Header="{x:Static i18n:About.AboutWindow_LibrariesTab}">
                 <md:MarkdownScrollViewer Margin="5"
                                          Source="avares://Ameko/Assets/Text/Libraries.md" />
             </TabItem>
