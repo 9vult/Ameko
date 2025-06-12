@@ -495,4 +495,7 @@
     <data name="DepCtrl_Result_Repository_AlreadyInstalled" xml:space="preserve">
         <value>The repository is already installed!</value>
     </data>
+    <data name="ScriptServiceLocator_Get_UnregisteredScript" xml:space="preserve">
+        <value>Service of type {0} is not registered for use by scripts</value>
+    </data>
 </root>
