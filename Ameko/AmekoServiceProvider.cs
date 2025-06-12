@@ -27,7 +27,7 @@ public static class AmekoServiceProvider
         services.AddHttpClient();
         services.AddSingleton<IFileSystem, FileSystem>();
         services.AddSingleton<ILogProvider, LogProvider>();
-        services.AddSingleton(p => p.GetRequiredService<ILogProvider>().LogEntries); // Log entries are part of logging infrastructure
+        services.AddSingleton(p => p.GetRequiredService<ILogProvider>().LogEntries);
 
         // --- Configuration ---
         services.AddSingleton<IConfiguration, Configuration>(p =>
@@ -41,10 +41,8 @@ public static class AmekoServiceProvider
         // Core business logic and application-specific operations
         services.AddSingleton<DirectoryService>();
         services.AddSingleton<ISolutionProvider, SolutionProvider>();
-        services.AddSingleton<IScriptService, ScriptService>();
-        services.AddSingleton<IDependencyControl, DependencyControl>();
 
-        // --- Presentation Services ---
+        // --- Presentation ---
         services.AddSingleton<CultureService>();
         services.AddSingleton<ThemeService>();
         services.AddSingleton<IIoService, IoService>();
@@ -58,6 +56,11 @@ public static class AmekoServiceProvider
         services.AddSingleton<MainWindowViewModel>();
         services.AddTransient<LogWindowViewModel>();
         services.AddTransient<DepCtrlWindowViewModel>();
+
+        // --- Scripting ---
+        services.AddSingleton<ScriptServiceLocator>();
+        services.AddSingleton<IScriptService, ScriptService>();
+        services.AddSingleton<IDependencyControl, DependencyControl>();
 
         Provider = services.BuildServiceProvider();
 
