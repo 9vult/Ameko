@@ -138,7 +138,7 @@ public class EventManagerTests
         var eB = new Event(1) { Text = "B" };
         em.AddFirst(eA);
 
-        em.ReplaceInplace(eB);
+        em.ReplaceInPlace(eB);
 
         var result = em.TryGet(eA.Id, out var outA);
         result.ShouldBeTrue();
@@ -157,7 +157,7 @@ public class EventManagerTests
         em.AddFirst(eA);
         em.AddAfter(eA.Id, eC);
 
-        em.ReplaceInplace([eB, eD]);
+        em.ReplaceInPlace([eB, eD]);
 
         var resultA = em.TryGet(eA.Id, out var outA);
         resultA.ShouldBeTrue();

@@ -46,7 +46,8 @@ public class StyleManager : BindableBase
     /// </summary>
     /// <param name="style">The style to add</param>
     /// <exception cref="ArgumentException">
-    /// If the name or ID is already in use</exception>
+    /// If the <paramref name="style"/> name or ID is already in use
+    /// </exception>
     public void Add(Style style)
     {
         if (_styles.Any(s => s.Name == style.Name || s.Id == style.Id))
@@ -95,7 +96,8 @@ public class StyleManager : BindableBase
     /// <param name="name">Name of the style</param>
     /// <returns>The style with the requested name</returns>
     /// <exception cref="ArgumentException">
-    /// If a style with the name does not exist</exception>
+    /// If a style with the given <paramref name="name"/> does not exist
+    /// </exception>
     public Style Get(string name)
     {
         var style = _styles.FirstOrDefault(s => s.Name == name);
@@ -109,8 +111,9 @@ public class StyleManager : BindableBase
     /// </summary>
     /// <param name="name">Name of the style</param>
     /// <param name="value">The style with the requested name, if it exists</param>
-    /// <returns><see langword="true"/> if the event exists in the document;
-    /// otherwise, <see langword="false"/></returns>
+    /// <returns>
+    /// <see langword="true"/> if the event exists in the document; otherwise, <see langword="false"/>
+    /// </returns>
     public bool TryGet(string name, [MaybeNullWhen(false)] out Style value)
     {
         value = _styles.FirstOrDefault(s => s.Name == name);
@@ -137,8 +140,9 @@ public class StyleManager : BindableBase
     /// </summary>
     /// <param name="id">ID of the style</param>
     /// <param name="value">The style with the requested ID, if it exists</param>
-    /// <returns><see langword="true"/> if the event exists in the document;
-    /// otherwise, <see langword="false"/></returns>
+    /// <returns>
+    /// <see langword="true"/> if the event exists in the document; otherwise, <see langword="false"/>
+    /// </returns>
     public bool TryGet(int id, [MaybeNullWhen(false)] out Style value)
     {
         value = _styles.FirstOrDefault(s => s.Id == id);

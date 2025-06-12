@@ -1,5 +1,7 @@
 ﻿// SPDX-License-Identifier: MPL-2.0
 
+using System.Collections.Concurrent;
+
 namespace AssCS;
 
 /// <summary>
@@ -7,7 +9,7 @@ namespace AssCS;
 /// </summary>
 public class ScriptInfoManager
 {
-    private readonly Dictionary<string, string> _data = [];
+    private readonly ConcurrentDictionary<string, string> _data = [];
 
     /// <summary>
     /// Number of entries in the manager
@@ -50,7 +52,7 @@ public class ScriptInfoManager
     /// <returns><see langword="true"/> if the info was removed</returns>
     public bool Remove(string key)
     {
-        return _data.Remove(key);
+        return _data.Remove(key, out _);
     }
 
     /// <summary>
