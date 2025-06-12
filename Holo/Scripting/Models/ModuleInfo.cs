@@ -3,8 +3,18 @@
 namespace Holo.Scripting.Models;
 
 /// <summary>
-/// Information about a <see cref="HoloScript"/> or <see cref="HoloLibrary"/>
+/// Basic information about a <see cref="HoloScript"/> or <see cref="HoloLibrary"/>
 /// </summary>
+/// <remarks>
+/// This contains different information than <see cref="Module"/> does.
+/// <para>
+/// <see cref="Module"/> contains display information (<see cref="Module.Description"/>, etc.)
+/// as well as <see cref="DependencyControl"/> data (<see cref="Module.Version"/>, etc.)
+/// </para><para>
+/// Meanwhile, <see cref="ModuleInfo"/> contains run-time information,
+/// like which <see cref="Submenu"/> to use.
+/// </para>
+/// </remarks>
 public class ModuleInfo
 {
     /// <summary>
@@ -22,21 +32,6 @@ public class ModuleInfo
     /// or <c>author.libraryName.lib.cs</c> for libraries
     /// </remarks>
     public required string QualifiedName { get; init; }
-
-    /// <summary>
-    /// A short description of the script
-    /// </summary>
-    public required string Description { get; init; }
-
-    /// <summary>
-    /// Name of the script author(s)
-    /// </summary>
-    public required string Author { get; init; }
-
-    /// <summary>
-    /// Major.Minor script version. Used for Dependency Control updates
-    /// </summary>
-    public required decimal Version { get; init; }
 
     /// <summary>
     /// A list of methods for export
