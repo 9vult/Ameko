@@ -669,9 +669,6 @@ public class DependencyControlTests
                     {
                         DisplayName = "Example Script 1",
                         QualifiedName = "9volt.example1",
-                        Description = "An example script for testing purposes",
-                        Author = "9volt",
-                        Version = 0.1m,
                         Exports = [],
                         LogDisplay = LogDisplay.OnError,
                     }
