@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 
-namespace Holo.Configuration;
+namespace Holo.Configuration.Keybinds;
 
 /// <summary>
 /// Represents the context a keybind is registered to

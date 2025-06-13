@@ -3,7 +3,7 @@
 using System.Collections.Concurrent;
 using NLog;
 
-namespace Holo.Configuration;
+namespace Holo.Configuration.Keybinds;
 
 public class KeybindRegistrar : IKeybindRegistrar
 {
