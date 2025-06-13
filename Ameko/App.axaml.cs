@@ -4,7 +4,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Ameko.Services;
-using Ameko.Templates;
+using Ameko.Utilities;
 using Ameko.ViewModels.Windows;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
