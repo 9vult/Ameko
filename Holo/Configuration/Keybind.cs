@@ -63,5 +63,5 @@ public class Keybind(string qualifiedName, string defaultKey, KeybindContext def
     /// <summary>
     /// If the keybind is enabled
     /// </summary>
-    public bool IsEnabled { get; internal set; }
+    public bool IsEnabled => Context != KeybindContext.None;
 }

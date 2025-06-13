@@ -65,20 +65,6 @@ public interface IKeybindRegistrar
     bool IsKeybindRegistered(string qualifiedName);
 
     /// <summary>
-    /// Enable a keybind
-    /// </summary>
-    /// <param name="qualifiedName">The name of the keybind to enable</param>
-    /// <returns><see langword="true"/> if successful</returns>
-    bool EnableKeybind(string qualifiedName);
-
-    /// <summary>
-    /// Disable a keybind
-    /// </summary>
-    /// <param name="qualifiedName">The name of the keybind to disable</param>
-    /// <returns><see langword="true"/> if successful</returns>
-    bool DisableKeybind(string qualifiedName);
-
-    /// <summary>
     /// Retrieves all keybinds that match the specified context filter
     /// </summary>
     /// <param name="filter">A combination of <see cref="KeybindContext"/> flags used to filter keybinds</param>

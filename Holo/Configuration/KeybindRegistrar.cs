@@ -95,34 +95,6 @@ public class KeybindRegistrar : IKeybindRegistrar
     }
 
     /// <inheritdoc />
-    public bool EnableKeybind(string qualifiedName)
-    {
-        if (!_keybinds.TryGetValue(qualifiedName, out var target))
-        {
-            Logger.Error($"Could not find keybind {qualifiedName}");
-            return false;
-        }
-
-        target.IsEnabled = true;
-        OnKeybindsChanged?.Invoke(this, EventArgs.Empty);
-        return true;
-    }
-
-    /// <inheritdoc />
-    public bool DisableKeybind(string qualifiedName)
-    {
-        if (!_keybinds.TryGetValue(qualifiedName, out var target))
-        {
-            Logger.Error($"Could not find keybind {qualifiedName}");
-            return false;
-        }
-
-        target.IsEnabled = true;
-        OnKeybindsChanged?.Invoke(this, EventArgs.Empty);
-        return false;
-    }
-
-    /// <inheritdoc />
     public IEnumerable<Keybind> GetKeybinds(KeybindContext filter)
     {
         return _keybinds.Values.Where(keybind => (keybind.DefaultContext & filter) != 0);
