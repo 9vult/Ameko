@@ -146,7 +146,7 @@ public partial class MainWindowViewModel : ViewModelBase
         ScriptMenuItems.Add(new Separator());
         ScriptMenuItems.Add(ScriptMenuService.GenerateReloadMenuItem(ReloadScriptsCommand));
         ScriptMenuItems.Add(ScriptMenuService.GenerateDepCtlMenuItem(ShowDependencyControlCommand));
-        Log.Trace("Finished generating scripts menu");
+        Log.Trace("Done!");
     }
 
     public MainWindowViewModel(

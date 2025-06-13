@@ -327,14 +327,14 @@ public class DependencyControl : IDependencyControl
         Logger.Trace("Gathering modules...");
         foreach (var repo in repositories ?? _repositories)
         {
-            Logger.Trace($"Gathering modules in repository '{repo.Name}'");
+            Logger.Trace($"Gathering modules in repository '{repo.Name}'...");
             foreach (var module in repo.Modules)
             {
                 module.Repository = repo.Name;
                 if (_moduleMap.TryGetValue(module.QualifiedName, out var conflict))
                 {
                     Logger.Warn(
-                        $"Conflict between {module.QualifiedName} from '{conflict.Repository}' and '{module.Repository}'"
+                        $"Conflict between {module.QualifiedName} from '{conflict.Repository}' and '{module.Repository}'!"
                     );
                     continue;
                 }
@@ -370,7 +370,7 @@ public class DependencyControl : IDependencyControl
                 }
             }
         }
-        Logger.Trace("Finished gathering modules");
+        Logger.Trace("Done!");
     }
 
     /// <summary>
@@ -390,6 +390,7 @@ public class DependencyControl : IDependencyControl
         }
         if (repoUrls.Count > 1)
             GatherModules(newRepos);
+        Logger.Info("Done!");
     }
 
     /// <inheritdoc cref="IDependencyControl.AddRepository"/>
@@ -402,6 +403,7 @@ public class DependencyControl : IDependencyControl
         if (_repositoryMap.ContainsKey(repo.Name))
             return InstallationResult.AlreadyInstalled;
 
+        Logger.Info($"Adding repository '{repo.Name}'");
         _repositories.Add(repo);
         _repositoryMap.Add(repo.Name, repo);
         GatherModules(repo);
@@ -414,6 +416,7 @@ public class DependencyControl : IDependencyControl
         if (!_repositoryMap.Remove(repositoryName, out var repo))
             return InstallationResult.NotInstalled;
 
+        Logger.Info($"Removing repository '{repositoryName}'");
         _repositories.Remove(repo);
         _moduleMap.Clear();
         _moduleStore.Clear();
@@ -427,7 +430,7 @@ public class DependencyControl : IDependencyControl
     /// <remarks>This clears Dependency Control</remarks>
     public async Task SetUpBaseRepository()
     {
-        Logger.Info("Setting up base repository");
+        Logger.Info("Setting up base repository...");
         _repositories.Clear();
         _repositoryMap.Clear();
         _installedModules.Clear();
@@ -440,6 +443,7 @@ public class DependencyControl : IDependencyControl
             await GatherRepositories(_baseRepository);
             GatherModules();
         }
+        Logger.Info("Done!");
     }
 
     #endregion Repositories

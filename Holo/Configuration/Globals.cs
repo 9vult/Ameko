@@ -53,7 +53,7 @@ public class Globals : BindableBase, IGlobals
     public bool Save()
     {
         var path = Paths.Globals.LocalPath;
-        Logger.Info($"Writing globals to {path}");
+        Logger.Info($"Writing globals to {path}...");
         try
         {
             if (!_fileSystem.Directory.Exists(Path.GetDirectoryName(path)))
@@ -76,6 +76,7 @@ public class Globals : BindableBase, IGlobals
 
             var content = JsonSerializer.Serialize(model, JsonOptions);
             writer.Write(content);
+            Logger.Info("Done!");
             return true;
         }
         catch (Exception ex) when (ex is IOException or JsonException)
@@ -92,7 +93,7 @@ public class Globals : BindableBase, IGlobals
     /// <returns><see cref="Globals"/> object</returns>
     public static Globals Parse(IFileSystem fileSystem)
     {
-        Logger.Info("Parsing globals");
+        Logger.Info("Parsing globals...");
         var path = Paths.Globals.LocalPath;
         try
         {
@@ -100,7 +101,10 @@ public class Globals : BindableBase, IGlobals
                 fileSystem.Directory.CreateDirectory(Path.GetDirectoryName(path) ?? "/");
 
             if (!fileSystem.File.Exists(path))
+            {
+                Logger.Info("Globals file does not exist, using defaults...");
                 return new Globals(fileSystem);
+            }
 
             using var fs = fileSystem.FileStream.New(
                 path,
@@ -121,11 +125,13 @@ public class Globals : BindableBase, IGlobals
             foreach (var color in model.Colors.Select(Color.FromAss))
                 g._colors.Add(color);
 
+            Logger.Info("Done!");
             return g;
         }
         catch (Exception ex) when (ex is IOException or JsonException)
         {
             Logger.Error(ex);
+            Logger.Info("Failed to parse globals, using defaults...");
             return new Globals(fileSystem);
         }
     }
