@@ -1,0 +1,3 @@
+files:
+  - source: /Ameko/I18N/*.resx
+    translation: /Ameko/I18N/%file_name%.%locale%.resx
