@@ -6,9 +6,9 @@ namespace Holo.Configuration;
 /// Represents a registered keybind
 /// </summary>
 /// <param name="qualifiedName">Unique accessor for the action the keybind is assigned to</param>
-/// <param name="key">Key combination</param>
-/// <param name="context">Contexts the keybind is registered to</param>
-public class Keybind(string qualifiedName, string key, KeybindContext context)
+/// <param name="defaultKey">Key combination</param>
+/// <param name="defaultContext">Contexts the keybind is registered to by default</param>
+public class Keybind(string qualifiedName, string defaultKey, KeybindContext defaultContext)
 {
     /// <summary>
     /// Unique accessor for the action the keybind is assigned to
@@ -22,14 +22,46 @@ public class Keybind(string qualifiedName, string key, KeybindContext context)
     public string QualifiedName { get; } = qualifiedName;
 
     /// <summary>
-    /// Key combination
+    /// Default key combination
     /// </summary>
     /// <example><c>Ctrl+Shift+S</c></example>
-    public string Key { get; } = key;
+    public string DefaultKey { get; } = defaultKey;
 
     /// <summary>
-    /// The contexts the keybind is registered to
+    /// User-set key combination
+    /// </summary>
+    /// <example><c>Ctrl+Shift+S</c></example>
+    public string? OverrideKey { get; internal set; }
+
+    /// <summary>
+    /// Effective key combination
+    /// </summary>
+    /// <returns>
+    /// <see cref="OverrideKey"/> if set, otherwise <see cref="DefaultKey"/>
+    /// </returns>
+    public string Key => OverrideKey ?? DefaultKey;
+
+    /// <summary>
+    /// The contexts the keybind is registered to by default
     /// </summary>
     /// <example><c>var contexts = KeybindContext.Editor | KeybindContext.Grid;</c></example>
-    public KeybindContext Context { get; } = context;
+    public KeybindContext DefaultContext { get; } = defaultContext;
+
+    /// <summary>
+    /// User-set contexts
+    /// </summary>
+    public KeybindContext? OverrideContext { get; internal set; }
+
+    /// <summary>
+    /// Effective contexts
+    /// </summary>
+    /// <returns>
+    /// <see cref="OverrideContext"/> if set, otherwise <see cref="DefaultContext"/>
+    /// </returns>
+    public KeybindContext Context => OverrideContext ?? DefaultContext;
+
+    /// <summary>
+    /// If the keybind is enabled
+    /// </summary>
+    public bool IsEnabled { get; internal set; }
 }

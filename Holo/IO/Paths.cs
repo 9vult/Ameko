@@ -14,4 +14,9 @@ public static class Paths
     /// Default file location for globally-accessible objects
     /// </summary>
     public static Uri Globals => new(Path.Combine(DirectoryService.ConfigHome, "globals.json"));
+
+    /// <summary>
+    /// Default file location for keybinds
+    /// </summary>
+    public static Uri Keybinds => new(Path.Combine(DirectoryService.ConfigHome, "keybinds.json"));
 }
