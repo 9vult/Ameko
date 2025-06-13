@@ -69,11 +69,29 @@ namespace Ameko.I18N {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Make a copy of the selected style.
+        /// </summary>
+        public static string StylesManager_Button_Copy_ToolTip {
+            get {
+                return ResourceManager.GetString("StylesManager_Button_Copy_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Copy to Document.
         /// </summary>
         public static string StylesManager_Button_CopyToDocument {
             get {
                 return ResourceManager.GetString("StylesManager_Button_CopyToDocument", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Copy the selected style to the open Document.
+        /// </summary>
+        public static string StylesManager_Button_CopyToDocument_ToolTip {
+            get {
+                return ResourceManager.GetString("StylesManager_Button_CopyToDocument_ToolTip", resourceCulture);
             }
         }
         
@@ -87,11 +105,29 @@ namespace Ameko.I18N {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Copy the selected style to your global styles list.
+        /// </summary>
+        public static string StylesManager_Button_CopyToGlobal_ToolTip {
+            get {
+                return ResourceManager.GetString("StylesManager_Button_CopyToGlobal_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Copy to Solution.
         /// </summary>
         public static string StylesManager_Button_CopyToSolution {
             get {
                 return ResourceManager.GetString("StylesManager_Button_CopyToSolution", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Copy the selected style to the open Solution.
+        /// </summary>
+        public static string StylesManager_Button_CopyToSolution_ToolTip {
+            get {
+                return ResourceManager.GetString("StylesManager_Button_CopyToSolution_ToolTip", resourceCulture);
             }
         }
         
@@ -105,6 +141,15 @@ namespace Ameko.I18N {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Delete the selected style.
+        /// </summary>
+        public static string StylesManager_Button_Delete_ToolTip {
+            get {
+                return ResourceManager.GetString("StylesManager_Button_Delete_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Edit.
         /// </summary>
         public static string StylesManager_Button_Edit {
@@ -114,11 +159,29 @@ namespace Ameko.I18N {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Open the selected style in the Style Editor.
+        /// </summary>
+        public static string StylesManager_Button_Edit_ToolTip {
+            get {
+                return ResourceManager.GetString("StylesManager_Button_Edit_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to New.
         /// </summary>
         public static string StylesManager_Button_New {
             get {
                 return ResourceManager.GetString("StylesManager_Button_New", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add a new style.
+        /// </summary>
+        public static string StylesManager_Button_New_ToolTip {
+            get {
+                return ResourceManager.GetString("StylesManager_Button_New_ToolTip", resourceCulture);
             }
         }
         

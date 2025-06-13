@@ -2,6 +2,7 @@
 
 using System;
 using System.Reactive;
+using System.Reactive.Linq;
 using AssCS;
 using ReactiveUI;
 
@@ -100,6 +101,31 @@ public partial class StylesManagerWindowViewModel : ViewModelBase
                 };
 
                 manager.AddOrReplace(Style.FromStyle(manager.NextId, style));
+            }
+        );
+    }
+
+    /// <summary>
+    /// Edit a style
+    /// </summary>
+    private ReactiveCommand<string, Unit> CreateEditStyleCommand()
+    {
+        return ReactiveCommand.CreateFromTask(
+            async (string input) =>
+            {
+                var (style, manager, document) = input switch
+                {
+                    "global" => (SelectedGlobalStyle, Globals.StyleManager, null),
+                    "solution" => (SelectedSolutionStyle, Solution.StyleManager, null),
+                    "document" => (SelectedDocumentStyle, Document.StyleManager, Document),
+                    _ => throw new ArgumentOutOfRangeException(nameof(input), input, null),
+                };
+
+                if (style is null)
+                    return;
+
+                var vm = new StyleEditorWindowViewModel(_configuration, style, manager, document);
+                await ShowStyleEditorWindow.Handle(vm);
             }
         );
     }
