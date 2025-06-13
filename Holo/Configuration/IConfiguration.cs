@@ -62,6 +62,11 @@ public interface IConfiguration
     Theme Theme { get; set; }
 
     /// <summary>
+    /// Use the ring-shaped color picker instead of the box-shaped one
+    /// </summary>
+    bool UseColorRing { get; set; }
+
+    /// <summary>
     /// List of user-added repository URLs
     /// </summary>
     ReadOnlyObservableCollection<string> RepositoryUrls { get; }
