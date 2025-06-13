@@ -159,4 +159,16 @@
     <data name="StyleEditor_Label_Spacing" xml:space="preserve">
         <value>Spacing</value>
     </data>
+    <data name="ColorDialog_WindowTitle" xml:space="preserve">
+        <value>Colors</value>
+    </data>
+    <data name="ColorDialog_CheckBox_UseRing" xml:space="preserve">
+        <value>Ring</value>
+    </data>
+    <data name="ColorDialog_Label_AssColor" xml:space="preserve">
+        <value>ASS Color:</value>
+    </data>
+    <data name="ColorDialog_Button_Select" xml:space="preserve">
+        <value>Select</value>
+    </data>
 </root>
