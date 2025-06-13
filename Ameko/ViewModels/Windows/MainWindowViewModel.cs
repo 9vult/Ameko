@@ -12,12 +12,14 @@ using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using DynamicData;
 using Holo;
+using Holo.Configuration.Keybinds;
 using Holo.Providers;
 using NLog;
 using ReactiveUI;
 
 namespace Ameko.ViewModels.Windows;
 
+[KeybindContext(KeybindContext.Global)]
 public partial class MainWindowViewModel : ViewModelBase
 {
     private static readonly Logger Log = LogManager.GetCurrentClassLogger();
@@ -49,29 +51,56 @@ public partial class MainWindowViewModel : ViewModelBase
 
     #region Commands
     // File
+    [KeybindTarget("ameko.document.new", "Ctrl+N")]
     public ICommand NewCommand { get; }
+
+    [KeybindTarget("ameko.document.open", "Ctrl+O")]
     public ICommand OpenSubtitleCommand { get; }
+
+    [KeybindTarget("ameko.document.save", "Ctrl+S")]
     public ICommand SaveSubtitleCommand { get; }
+
+    [KeybindTarget("ameko.document.saveAs", "Ctrl+Shift+S")]
     public ICommand SaveSubtitleAsCommand { get; }
+
+    [KeybindTarget("ameko.document.export", null, KeybindContext.None)]
     public ICommand ExportSubtitleCommand { get; }
+
+    [KeybindTarget("ameko.solution.open", null, KeybindContext.None)]
     public ICommand OpenSolutionCommand { get; }
+
+    [KeybindTarget("ameko.solution.save", null, KeybindContext.None)]
     public ICommand SaveSolutionCommand { get; }
+
+    [KeybindTarget("ameko.workspace.close", "Ctrl+W")]
     public ICommand CloseTabCommand { get; }
+
+    [KeybindTarget("ameko.application.quit", "Ctrl+Q")]
     public ICommand QuitCommand { get; }
 
     // Subtitle
+    [KeybindTarget("ameko.stylesManager.show", null, KeybindContext.None)]
     public ICommand ShowStylesManagerCommand { get; }
 
     // Scripts
+    // Command execution doesn't get a keybind. So sad :(
     public ICommand ExecuteScriptCommand { get; }
+
+    [KeybindTarget("ameko.scripts.reload", null, KeybindContext.None)]
     public ICommand ReloadScriptsCommand { get; }
+
+    [KeybindTarget("ameko.depCtrl.show", null, KeybindContext.None)]
     public ICommand ShowDependencyControlCommand { get; }
 
     // Help
+    [KeybindTarget("ameko.logs.show", "Ctrl+L")]
     public ICommand ShowLogWindowCommand { get; }
+
+    [KeybindTarget("ameko.about.show", null, KeybindContext.None)]
     public ICommand ShowAboutWindowCommand { get; }
 
     // Other
+    // These commands are specific to the solution explorer and don't need keybinds
     public ICommand RemoveDocumentFromSolutionCommand { get; }
     public ICommand RemoveDirectoryFromSolutionCommand { get; }
     public ICommand RenameDocumentCommand { get; }
@@ -79,6 +108,7 @@ public partial class MainWindowViewModel : ViewModelBase
     #endregion
 
     public ISolutionProvider SolutionProvider { get; }
+    public KeybindService KeybindService { get; }
 
     public ObservableCollection<TemplatedControl> ScriptMenuItems { get; }
 
@@ -125,7 +155,8 @@ public partial class MainWindowViewModel : ViewModelBase
         IStylesManagerFactory stylesManagerFactory,
         IIoService ioService,
         IScriptService scriptService,
-        IFileSystem fileSystem
+        IFileSystem fileSystem,
+        KeybindService keybindService
     )
     {
         _serviceProvider = serviceProvider;
@@ -134,6 +165,7 @@ public partial class MainWindowViewModel : ViewModelBase
         _ioService = ioService;
         _scriptService = scriptService;
         _fileSystem = fileSystem;
+        KeybindService = keybindService;
 
         #region Interactions
         // File

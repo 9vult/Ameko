@@ -13,6 +13,7 @@ using Avalonia.Platform.Storage;
 using Avalonia.ReactiveUI;
 using Avalonia.Styling;
 using Holo;
+using Holo.Configuration.Keybinds;
 using NLog;
 using ReactiveUI;
 
@@ -227,6 +228,14 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
                 // Help
                 ViewModel.ShowLogWindow.RegisterHandler(DoShowLogWindow);
                 ViewModel.ShowAboutWindow.RegisterHandler(DoShowAboutWindowAsync);
+
+                // Register keybinds
+                ViewModel.KeybindService.AttachKeybinds(ViewModel, this);
+                ViewModel.KeybindService.AttachScriptKeybinds(
+                    ViewModel.ExecuteScriptCommand,
+                    KeybindContext.Global,
+                    this
+                );
             }
 
             Disposable.Create(() => { }).DisposeWith(disposables);
