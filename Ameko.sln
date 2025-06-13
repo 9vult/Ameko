@@ -20,7 +20,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Holo.Tests", "Tests\Holo.Te
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ameko", "Ameko\Ameko.csproj", "{FA61444F-D78E-45C2-B394-46C13D1E9635}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ameko.ViewModel.Tests", "Ameko.ViewModel.Tests\Ameko.ViewModel.Tests.csproj", "{F0EF2ADA-B62B-4E45-8879-6AC05E29330D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ameko.ViewModel.Tests", "Tests\Ameko.ViewModel.Tests\Ameko.ViewModel.Tests.csproj", "{F0EF2ADA-B62B-4E45-8879-6AC05E29330D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

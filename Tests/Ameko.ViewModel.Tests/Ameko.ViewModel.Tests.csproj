@@ -24,9 +24,9 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Ameko\Ameko.csproj" />
-      <ProjectReference Include="..\AssCS\AssCS.csproj" />
-      <ProjectReference Include="..\Holo\Holo.csproj" />
+      <ProjectReference Include="..\..\Ameko\Ameko.csproj" />
+      <ProjectReference Include="..\..\AssCS\AssCS.csproj" />
+      <ProjectReference Include="..\..\Holo\Holo.csproj" />
     </ItemGroup>
 
     <ItemGroup>
