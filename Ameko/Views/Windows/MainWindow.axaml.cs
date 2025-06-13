@@ -230,17 +230,28 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
                 ViewModel.ShowAboutWindow.RegisterHandler(DoShowAboutWindowAsync);
 
                 // Register keybinds
-                ViewModel.KeybindService.AttachKeybinds(ViewModel, this);
-                ViewModel.KeybindService.AttachScriptKeybinds(
-                    ViewModel.ExecuteScriptCommand,
-                    KeybindContext.Global,
-                    this
-                );
+                AttachKeybinds();
+                ViewModel.KeybindService.KeybindRegistrar.OnKeybindsChanged += (_, _) =>
+                {
+                    AttachKeybinds();
+                };
             }
 
             Disposable.Create(() => { }).DisposeWith(disposables);
         });
 
         Log.Info("Main Window initialized");
+    }
+
+    private void AttachKeybinds()
+    {
+        if (ViewModel is null)
+            return;
+        ViewModel.KeybindService.AttachKeybinds(ViewModel, this);
+        ViewModel.KeybindService.AttachScriptKeybinds(
+            ViewModel.ExecuteScriptCommand,
+            KeybindContext.Global,
+            this
+        );
     }
 }

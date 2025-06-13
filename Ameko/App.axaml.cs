@@ -12,6 +12,7 @@ using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
 using Holo.Configuration;
+using Holo.Configuration.Keybinds;
 using Holo.Scripting;
 using Microsoft.Extensions.DependencyInjection;
 using NLog;
@@ -53,6 +54,7 @@ public partial class App : Application
         // Start long process loading in the background after GUI finishes loading
         Dispatcher.UIThread.Post(() =>
         {
+            InitializeKeybindService(provider);
             InitializeScriptService(provider);
             InitializeDependencyControl(provider);
         });
@@ -70,6 +72,16 @@ public partial class App : Application
         {
             BindingPlugins.DataValidators.Remove(plugin);
         }
+    }
+
+    /// <summary>
+    /// Initialize the <see cref="KeybindService"/> (and <see cref="KeybindRegistrar"/>)
+    /// </summary>
+    /// <param name="provider"></param>
+    private static void InitializeKeybindService(IServiceProvider provider)
+    {
+        // Commence keybind registration
+        _ = provider.GetRequiredService<KeybindService>();
     }
 
     /// <summary>

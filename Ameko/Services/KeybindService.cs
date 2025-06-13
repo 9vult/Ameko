@@ -21,8 +21,12 @@ public class KeybindService
 {
     private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-    private readonly IKeybindRegistrar _registrar;
     private readonly FrozenDictionary<string, (Type, string)> _commandMap;
+
+    /// <summary>
+    /// Expose the Keybind Registrar so VMs only have to pull in this service
+    /// </summary>
+    public IKeybindRegistrar KeybindRegistrar { get; }
 
     /// <summary>
     /// Attach keybinds to a ViewModel's commands
@@ -54,7 +58,7 @@ public class KeybindService
                 continue;
 
             // Find keybind associated with this qualified name
-            var keybind = _registrar.GetKeybind(qualifiedName);
+            var keybind = KeybindRegistrar.GetKeybind(qualifiedName);
 
             if (keybind?.Key is null)
                 continue;
@@ -92,7 +96,7 @@ public class KeybindService
         // Keybinds with the "ameko" prefix are assumed to be built-ins for command execution
         const string amekoPrefix = "ameko";
 
-        var scriptBindings = _registrar
+        var scriptBindings = KeybindRegistrar
             .GetKeybinds(context)
             .Where(kb =>
                 !kb.QualifiedName.StartsWith(amekoPrefix) && !string.IsNullOrWhiteSpace(kb.Key)
@@ -180,7 +184,7 @@ public class KeybindService
     /// <remarks>Initial scanning will commence automatically upon initialization</remarks>
     public KeybindService(IKeybindRegistrar registrar)
     {
-        _registrar = registrar;
+        KeybindRegistrar = registrar;
 
         // Discover the keybinds
         var metadata = ScanAllViewModelsInAssembly(typeof(App).Assembly)
@@ -188,11 +192,15 @@ public class KeybindService
             .ToList();
 
         // Register the keybinds
-        _registrar.RegisterKeybinds(
+        KeybindRegistrar.RegisterKeybinds(
             metadata
                 .Select(m => new Keybind(m.QualifiedName, m.DefaultKey, m.DefaultContext))
-                .ToList()
+                .ToList(),
+            false
         );
+
+        // Load in user keybinds
+        KeybindRegistrar.Parse();
 
         // Index the commands
         _commandMap = metadata.ToFrozenDictionary(

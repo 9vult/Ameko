@@ -1,13 +1,26 @@
 // SPDX-License-Identifier: MPL-2.0
 
 using System.Collections.Concurrent;
+using System.IO.Abstractions;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using Holo.IO;
 using NLog;
 
 namespace Holo.Configuration.Keybinds;
 
-public class KeybindRegistrar : IKeybindRegistrar
+public class KeybindRegistrar(IFileSystem fileSystem) : IKeybindRegistrar
 {
     private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+    private static readonly JsonSerializerOptions JsonOptions = new()
+    {
+        Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) },
+    };
+
+    /// <summary>
+    /// The filesystem being used
+    /// </summary>
+    private readonly IFileSystem _fileSystem = fileSystem;
 
     /// <summary>
     /// Keybind map
@@ -24,11 +37,14 @@ public class KeybindRegistrar : IKeybindRegistrar
     }
 
     /// <inheritdoc />
-    public bool RegisterKeybinds(IList<Keybind> keybinds)
+    public bool RegisterKeybinds(IList<Keybind> keybinds, bool save)
     {
         var result = keybinds.All(keybind => _keybinds.TryAdd(keybind.QualifiedName, keybind));
         if (result)
             OnKeybindsChanged?.Invoke(this, EventArgs.Empty);
+
+        if (save)
+            Save();
         return result;
     }
 
@@ -108,6 +124,93 @@ public class KeybindRegistrar : IKeybindRegistrar
             || keybind.OverrideKey is not null
             || keybind.OverrideContext is not null
         );
+    }
+
+    /// <inheritdoc />
+    public void Save()
+    {
+        var path = Paths.Keybinds.LocalPath;
+        Logger.Info($"Saving keybinds to {path}");
+        try
+        {
+            if (!_fileSystem.Directory.Exists(Path.GetDirectoryName(path)))
+                _fileSystem.Directory.CreateDirectory(Path.GetDirectoryName(path) ?? "/");
+
+            using var fs = _fileSystem.FileStream.New(
+                path,
+                FileMode.Create,
+                FileAccess.Write,
+                FileShare.None
+            );
+            using var writer = new StreamWriter(fs);
+
+            var content = JsonSerializer.Serialize(_keybinds, JsonOptions);
+            writer.Write(content);
+        }
+        catch (Exception ex) when (ex is IOException or JsonException)
+        {
+            Logger.Error(ex);
+        }
+    }
+
+    /// <inheritdoc />
+    public void Parse()
+    {
+        Logger.Info("Parsing keybinds");
+        var path = Paths.Keybinds.LocalPath;
+        try
+        {
+            if (!_fileSystem.Directory.Exists(Path.GetDirectoryName(path)))
+                _fileSystem.Directory.CreateDirectory(Path.GetDirectoryName(path) ?? "/");
+
+            if (!_fileSystem.File.Exists(path))
+            {
+                Save();
+                return;
+            }
+
+            using var fs = _fileSystem.FileStream.New(
+                path,
+                FileMode.Open,
+                FileAccess.Read,
+                FileShare.ReadWrite
+            );
+            using var reader = new StreamReader(fs);
+
+            var imports = JsonSerializer.Deserialize<Dictionary<string, Keybind>>(
+                reader.ReadToEnd(),
+                JsonOptions
+            );
+
+            if (imports is null)
+            {
+                Logger.Error("Something went wrong when parsing keybinds");
+                return;
+            }
+
+            foreach (var import in imports)
+            {
+                if (_keybinds.TryGetValue(import.Key, out var target))
+                {
+                    if (import.Value.OverrideKey is not null)
+                        target.OverrideKey = import.Value.OverrideKey;
+                    if (import.Value.OverrideContext is not null)
+                        target.OverrideContext = import.Value.OverrideContext;
+                }
+                else
+                {
+                    _keybinds.TryAdd(import.Key, import.Value);
+                }
+            }
+        }
+        catch (Exception ex) when (ex is IOException or JsonException)
+        {
+            Logger.Error(ex);
+        }
+        finally
+        {
+            OnKeybindsChanged?.Invoke(this, EventArgs.Empty);
+        }
     }
 
     /// <inheritdoc />

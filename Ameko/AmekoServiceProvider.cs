@@ -70,9 +70,6 @@ public static class AmekoServiceProvider
         // Load the logger service immediately
         _ = Provider.GetRequiredService<ILogProvider>();
 
-        // Commence keybind registration
-        _ = Provider.GetRequiredService<KeybindService>();
-
         Logger.Info("Ameko and Holo are ready to go!");
 
         return Provider;
