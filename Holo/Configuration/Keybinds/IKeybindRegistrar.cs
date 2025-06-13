@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 
-namespace Holo.Configuration;
+namespace Holo.Configuration.Keybinds;
 
 /// <summary>
 /// Provides methods for registering, retrieving,
