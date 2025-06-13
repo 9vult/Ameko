@@ -63,13 +63,13 @@ public partial class MainWindowViewModel : ViewModelBase
     [KeybindTarget("ameko.document.saveAs", "Ctrl+Shift+S")]
     public ICommand SaveSubtitleAsCommand { get; }
 
-    [KeybindTarget("ameko.document.export", null, KeybindContext.None)]
+    [KeybindTarget("ameko.document.export")]
     public ICommand ExportSubtitleCommand { get; }
 
-    [KeybindTarget("ameko.solution.open", null, KeybindContext.None)]
+    [KeybindTarget("ameko.solution.open")]
     public ICommand OpenSolutionCommand { get; }
 
-    [KeybindTarget("ameko.solution.save", null, KeybindContext.None)]
+    [KeybindTarget("ameko.solution.save")]
     public ICommand SaveSolutionCommand { get; }
 
     [KeybindTarget("ameko.workspace.close", "Ctrl+W")]
@@ -79,24 +79,24 @@ public partial class MainWindowViewModel : ViewModelBase
     public ICommand QuitCommand { get; }
 
     // Subtitle
-    [KeybindTarget("ameko.stylesManager.show", null, KeybindContext.None)]
+    [KeybindTarget("ameko.stylesManager.show")]
     public ICommand ShowStylesManagerCommand { get; }
 
     // Scripts
     // Command execution doesn't get a keybind. So sad :(
     public ICommand ExecuteScriptCommand { get; }
 
-    [KeybindTarget("ameko.scripts.reload", null, KeybindContext.None)]
+    [KeybindTarget("ameko.scripts.reload")]
     public ICommand ReloadScriptsCommand { get; }
 
-    [KeybindTarget("ameko.depCtrl.show", null, KeybindContext.None)]
+    [KeybindTarget("ameko.depCtrl.show")]
     public ICommand ShowDependencyControlCommand { get; }
 
     // Help
     [KeybindTarget("ameko.logs.show", "Ctrl+L")]
     public ICommand ShowLogWindowCommand { get; }
 
-    [KeybindTarget("ameko.about.show", null, KeybindContext.None)]
+    [KeybindTarget("ameko.about.show")]
     public ICommand ShowAboutWindowCommand { get; }
 
     // Other
