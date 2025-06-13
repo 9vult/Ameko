@@ -16,10 +16,15 @@ public partial class StyleEditorWindowViewModel : ViewModelBase
     private readonly Document? _document;
     private string _styleName;
 
-    public Style Style { get; init; }
-
     public Interaction<ColorDialogViewModel, Color?> ShowColorDialog { get; }
     public ICommand EditColorCommand { get; }
+
+    public Style Style { get; init; }
+
+    public Color PrimaryColor => Style.PrimaryColor;
+    public Color SecondaryColor => Style.SecondaryColor;
+    public Color OutlineColor => Style.OutlineColor;
+    public Color ShadowColor => Style.ShadowColor;
 
     /// <summary>
     /// Editable style name
@@ -34,7 +39,8 @@ public partial class StyleEditorWindowViewModel : ViewModelBase
     /// Determines if the <see cref="StyleName"/> is invalid
     /// </summary>
     public bool IsNameInvalid =>
-        string.IsNullOrWhiteSpace(_styleName) || _styleManager.TryGet(_styleName, out _);
+        _styleName != _backupStyle.Name
+        && (string.IsNullOrWhiteSpace(_styleName) || _styleManager.TryGet(_styleName, out _));
 
     /// <summary>
     /// Commit a style name change
@@ -84,6 +90,12 @@ public partial class StyleEditorWindowViewModel : ViewModelBase
             {
                 var vm = new ColorDialogViewModel(configuration, color);
                 _ = await ShowColorDialog.Handle(vm);
+
+                // Get the buttons to update
+                this.RaisePropertyChanged(nameof(PrimaryColor));
+                this.RaisePropertyChanged(nameof(SecondaryColor));
+                this.RaisePropertyChanged(nameof(OutlineColor));
+                this.RaisePropertyChanged(nameof(ShadowColor));
             }
         );
     }

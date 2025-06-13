@@ -84,15 +84,16 @@
                         HorizontalContentAlignment="Stretch"
                         Command="{Binding EditColorCommand}"
                         CommandParameter="{Binding Style.PrimaryColor}">
-                    <Grid RowDefinitions="*, *">
+                    <Grid RowDefinitions="*, *"
+                          Background="White">
                         <Panel Grid.Row="0"
                                Height="20"
-                               Background="{Binding Style.PrimaryColor,
+                               Background="{Binding PrimaryColor,
                                                     Converter={StaticResource ColorConverter},
                                                     ConverterParameter=false}" />
                         <Panel Grid.Row="1"
                                Height="20"
-                               Background="{Binding Style.PrimaryColor,
+                               Background="{Binding PrimaryColor,
                                                     Converter={StaticResource ColorConverter},
                                                     ConverterParameter=true}" />
                     </Grid>
@@ -110,15 +111,16 @@
                         HorizontalContentAlignment="Stretch"
                         Command="{Binding EditColorCommand}"
                         CommandParameter="{Binding Style.SecondaryColor}">
-                    <Grid RowDefinitions="*, *">
+                    <Grid RowDefinitions="*, *"
+                          Background="White">
                         <Panel Grid.Row="0"
                                Height="20"
-                               Background="{Binding Style.SecondaryColor,
+                               Background="{Binding SecondaryColor,
                                                     Converter={StaticResource ColorConverter},
                                                     ConverterParameter=false}" />
                         <Panel Grid.Row="1"
                                Height="20"
-                               Background="{Binding Style.SecondaryColor,
+                               Background="{Binding SecondaryColor,
                                                     Converter={StaticResource ColorConverter},
                                                     ConverterParameter=true}" />
                     </Grid>
@@ -136,15 +138,16 @@
                         HorizontalContentAlignment="Stretch"
                         Command="{Binding EditColorCommand}"
                         CommandParameter="{Binding Style.OutlineColor}">
-                    <Grid RowDefinitions="*, *">
+                    <Grid RowDefinitions="*, *"
+                          Background="White">
                         <Panel Grid.Row="0"
                                Height="20"
-                               Background="{Binding Style.OutlineColor,
+                               Background="{Binding OutlineColor,
                                                     Converter={StaticResource ColorConverter},
                                                     ConverterParameter=false}" />
                         <Panel Grid.Row="1"
                                Height="20"
-                               Background="{Binding Style.OutlineColor,
+                               Background="{Binding OutlineColor,
                                                     Converter={StaticResource ColorConverter},
                                                     ConverterParameter=true}" />
                     </Grid>
@@ -162,15 +165,16 @@
                         HorizontalContentAlignment="Stretch"
                         Command="{Binding EditColorCommand}"
                         CommandParameter="{Binding Style.ShadowColor}">
-                    <Grid RowDefinitions="*, *">
+                    <Grid RowDefinitions="*, *"
+                          Background="White">
                         <Panel Grid.Row="0"
                                Height="20"
-                               Background="{Binding Style.ShadowColor,
+                               Background="{Binding ShadowColor,
                                                     Converter={StaticResource ColorConverter},
                                                     ConverterParameter=false}" />
                         <Panel Grid.Row="1"
                                Height="20"
-                               Background="{Binding Style.ShadowColor,
+                               Background="{Binding ShadowColor,
                                                     Converter={StaticResource ColorConverter},
                                                     ConverterParameter=true}" />
                     </Grid>

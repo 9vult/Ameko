@@ -25,7 +25,7 @@ public partial class ColorDialogViewModel : ViewModelBase
         set
         {
             var rgb = value.ToRgb();
-            _assColor.Alpha = rgb.A;
+            _assColor.Alpha = (byte)(255 - rgb.A);
             _assColor.Red = rgb.R;
             _assColor.Green = rgb.G;
             _assColor.Blue = rgb.B;
@@ -59,12 +59,7 @@ public partial class ColorDialogViewModel : ViewModelBase
 
         _assColor = color;
         _hsvColor = new Avalonia.Media.HsvColor(
-            new Avalonia.Media.Color(
-                (byte)(255 - color.Alpha),
-                (byte)(255 - color.Red),
-                (byte)(255 - color.Green),
-                (byte)(255 - color.Blue)
-            )
+            new Avalonia.Media.Color((byte)(255 - color.Alpha), color.Red, color.Green, color.Blue)
         );
 
         SelectColorCommand = ReactiveCommand.Create(() => _assColor);

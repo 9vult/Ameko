@@ -54,4 +54,25 @@
     <data name="StylesManager_CopyAppendage" xml:space="preserve">
         <value>Copy</value>
     </data>
+    <data name="StylesManager_Button_Copy_ToolTip" xml:space="preserve">
+        <value>Make a copy of the selected style</value>
+    </data>
+    <data name="StylesManager_Button_Delete_ToolTip" xml:space="preserve">
+        <value>Delete the selected style</value>
+    </data>
+    <data name="StylesManager_Button_Edit_ToolTip" xml:space="preserve">
+        <value>Open the selected style in the Style Editor</value>
+    </data>
+    <data name="StylesManager_Button_New_ToolTip" xml:space="preserve">
+        <value>Add a new style</value>
+    </data>
+    <data name="StylesManager_Button_CopyToDocument_ToolTip" xml:space="preserve">
+        <value>Copy the selected style to the open Document</value>
+    </data>
+    <data name="StylesManager_Button_CopyToGlobal_ToolTip" xml:space="preserve">
+        <value>Copy the selected style to your global styles list</value>
+    </data>
+    <data name="StylesManager_Button_CopyToSolution_ToolTip" xml:space="preserve">
+        <value>Copy the selected style to the open Solution</value>
+    </data>
 </root>

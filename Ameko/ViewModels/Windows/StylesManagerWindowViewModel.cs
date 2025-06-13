@@ -1,5 +1,6 @@
 ﻿// SPDX-License-Identifier: GPL-3.0-only
 
+using System.Reactive;
 using System.Windows.Input;
 using AssCS;
 using Holo;
@@ -10,6 +11,8 @@ namespace Ameko.ViewModels.Windows;
 
 public partial class StylesManagerWindowViewModel : ViewModelBase
 {
+    private readonly IConfiguration _configuration;
+
     private Style? _selectedGlobalStyle;
     private Style? _selectedSolutionStyle;
     private Style? _selectedDocumentStyle;
@@ -52,6 +55,8 @@ public partial class StylesManagerWindowViewModel : ViewModelBase
     public bool SolutionButtonsEnabled => SelectedSolutionStyle is not null;
     public bool DocumentButtonsEnabled => SelectedDocumentStyle is not null;
 
+    public Interaction<StyleEditorWindowViewModel, Unit> ShowStyleEditorWindow { get; }
+
     #region Commands
     public ICommand CopyToCommand { get; }
     public ICommand DuplicateCommand { get; }
@@ -60,13 +65,23 @@ public partial class StylesManagerWindowViewModel : ViewModelBase
     public ICommand NewStyleCommand { get; }
     #endregion
 
-    public StylesManagerWindowViewModel(IGlobals globals, Solution solution, Document document)
+    public StylesManagerWindowViewModel(
+        IConfiguration configuration,
+        IGlobals globals,
+        Solution solution,
+        Document document
+    )
     {
+        _configuration = configuration;
+
         Globals = globals;
         Solution = solution;
         Document = document;
         DuplicateCommand = CreateDuplicateCommand();
         DeleteCommand = CreateDeleteCommand();
         CopyToCommand = CreateCopyToCommand();
+        EditStyleCommand = CreateEditStyleCommand();
+
+        ShowStyleEditorWindow = new Interaction<StyleEditorWindowViewModel, Unit>();
     }
 }
