@@ -47,5 +47,6 @@ public sealed class KeybindTargetAttribute : Attribute
     {
         QualifiedName = qualifiedName;
         DefaultKey = null;
+        DefaultContext = KeybindContext.None;
     }
 }

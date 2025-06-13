@@ -18,7 +18,8 @@ public interface IKeybindRegistrar
     /// Registers new keybinds or replaces existing ones with the same name
     /// </summary>
     /// <param name="keybinds">The <see cref="Keybind"/>s to register</param>
-    bool RegisterKeybinds(IList<Keybind> keybinds);
+    /// <param name="save">Whether to save after adding</param>
+    bool RegisterKeybinds(IList<Keybind> keybinds, bool save);
 
     /// <summary>
     /// Removes the keybind associated with the specified name
@@ -76,6 +77,16 @@ public interface IKeybindRegistrar
     /// </summary>
     /// <returns>Keybinds that have been overridden</returns>
     IEnumerable<Keybind> GetOverridenKeybinds();
+
+    /// <summary>
+    /// Save the current keybinds to disk
+    /// </summary>
+    void Save();
+
+    /// <summary>
+    /// Load keybinds from disk
+    /// </summary>
+    void Parse();
 
     /// <summary>
     /// Event Handler for <see cref="IKeybindRegistrar.OnKeybindsChanged"/>
