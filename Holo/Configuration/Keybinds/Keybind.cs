@@ -8,7 +8,7 @@ namespace Holo.Configuration.Keybinds;
 /// <param name="qualifiedName">Unique accessor for the action the keybind is assigned to</param>
 /// <param name="defaultKey">Key combination</param>
 /// <param name="defaultContext">Contexts the keybind is registered to by default</param>
-public class Keybind(string qualifiedName, string defaultKey, KeybindContext defaultContext)
+public class Keybind(string qualifiedName, string? defaultKey, KeybindContext defaultContext)
 {
     /// <summary>
     /// Unique accessor for the action the keybind is assigned to
@@ -25,7 +25,7 @@ public class Keybind(string qualifiedName, string defaultKey, KeybindContext def
     /// Default key combination
     /// </summary>
     /// <example><c>Ctrl+Shift+S</c></example>
-    public string DefaultKey { get; } = defaultKey;
+    public string? DefaultKey { get; } = defaultKey;
 
     /// <summary>
     /// User-set key combination
@@ -39,7 +39,7 @@ public class Keybind(string qualifiedName, string defaultKey, KeybindContext def
     /// <returns>
     /// <see cref="OverrideKey"/> if set, otherwise <see cref="DefaultKey"/>
     /// </returns>
-    public string Key => OverrideKey ?? DefaultKey;
+    public string? Key => OverrideKey ?? DefaultKey;
 
     /// <summary>
     /// The contexts the keybind is registered to by default

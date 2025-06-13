@@ -6,6 +6,7 @@ using Ameko.Services;
 using Ameko.Utilities;
 using Ameko.ViewModels.Windows;
 using Holo.Configuration;
+using Holo.Configuration.Keybinds;
 using Holo.IO;
 using Holo.Providers;
 using Holo.Scripting;
@@ -36,6 +37,8 @@ public static class AmekoServiceProvider
         services.AddSingleton<IGlobals, Globals>(p =>
             Globals.Parse(p.GetRequiredService<IFileSystem>())
         );
+        services.AddSingleton<IKeybindRegistrar, KeybindRegistrar>();
+        services.AddSingleton<KeybindScannerService>();
 
         // --- Application Services ---
         // Core business logic and application-specific operations
@@ -66,6 +69,9 @@ public static class AmekoServiceProvider
 
         // Load the logger service immediately
         _ = Provider.GetRequiredService<ILogProvider>();
+
+        // Commence keybind registration
+        _ = Provider.GetRequiredService<KeybindScannerService>();
 
         Logger.Info("Ameko and Holo are ready to go!");
 
