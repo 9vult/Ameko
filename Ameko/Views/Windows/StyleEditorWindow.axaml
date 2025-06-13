@@ -14,6 +14,7 @@
 
         x:Class="Ameko.Views.Windows.StyleEditorWindow"
         x:DataType="vm:StyleEditorWindowViewModel"
+        
         Topmost="True"
         CanResize="False"
         Width="400"
@@ -36,7 +37,7 @@
             </StackPanel>
         </HeaderedContentControl>
         <HeaderedContentControl Header="{x:Static i18n:StyleEditor.StyleEditor_Section_Font}">
-            <StackPanel>
+            <StackPanel Spacing="2">
                 <Grid ColumnDefinitions="*, *, *, *">
                     <TextBox Grid.Column="0"
                              Grid.Row="0"
@@ -80,7 +81,9 @@
                         Height="40"
                         Padding="0"
                         Margin="1"
-                        HorizontalContentAlignment="Stretch">
+                        HorizontalContentAlignment="Stretch"
+                        Command="{Binding EditColorCommand}"
+                        CommandParameter="{Binding Style.PrimaryColor}">
                     <Grid RowDefinitions="*, *">
                         <Panel Grid.Row="0"
                                Height="20"
@@ -104,7 +107,9 @@
                         Height="40"
                         Padding="0"
                         Margin="1"
-                        HorizontalContentAlignment="Stretch">
+                        HorizontalContentAlignment="Stretch"
+                        Command="{Binding EditColorCommand}"
+                        CommandParameter="{Binding Style.SecondaryColor}">
                     <Grid RowDefinitions="*, *">
                         <Panel Grid.Row="0"
                                Height="20"
@@ -128,7 +133,9 @@
                         Height="40"
                         Padding="0"
                         Margin="1"
-                        HorizontalContentAlignment="Stretch">
+                        HorizontalContentAlignment="Stretch"
+                        Command="{Binding EditColorCommand}"
+                        CommandParameter="{Binding Style.OutlineColor}">
                     <Grid RowDefinitions="*, *">
                         <Panel Grid.Row="0"
                                Height="20"
@@ -152,7 +159,9 @@
                         Height="40"
                         Padding="0"
                         Margin="1"
-                        HorizontalContentAlignment="Stretch">
+                        HorizontalContentAlignment="Stretch"
+                        Command="{Binding EditColorCommand}"
+                        CommandParameter="{Binding Style.ShadowColor}">
                     <Grid RowDefinitions="*, *">
                         <Panel Grid.Row="0"
                                Height="20"
