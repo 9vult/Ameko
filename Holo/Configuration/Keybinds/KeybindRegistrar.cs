@@ -130,7 +130,7 @@ public class KeybindRegistrar(IFileSystem fileSystem) : IKeybindRegistrar
     public void Save()
     {
         var path = Paths.Keybinds.LocalPath;
-        Logger.Info($"Saving keybinds to {path}");
+        Logger.Info($"Saving keybinds to {path}...");
         try
         {
             if (!_fileSystem.Directory.Exists(Path.GetDirectoryName(path)))
@@ -146,6 +146,7 @@ public class KeybindRegistrar(IFileSystem fileSystem) : IKeybindRegistrar
 
             var content = JsonSerializer.Serialize(_keybinds, JsonOptions);
             writer.Write(content);
+            Logger.Info("Done!");
         }
         catch (Exception ex) when (ex is IOException or JsonException)
         {
@@ -156,7 +157,7 @@ public class KeybindRegistrar(IFileSystem fileSystem) : IKeybindRegistrar
     /// <inheritdoc />
     public void Parse()
     {
-        Logger.Info("Parsing keybinds");
+        Logger.Info("Parsing keybinds...");
         var path = Paths.Keybinds.LocalPath;
         try
         {
@@ -165,6 +166,7 @@ public class KeybindRegistrar(IFileSystem fileSystem) : IKeybindRegistrar
 
             if (!_fileSystem.File.Exists(path))
             {
+                Logger.Info("Keybinds file does not exist, using defaults...");
                 Save();
                 return;
             }
@@ -184,7 +186,7 @@ public class KeybindRegistrar(IFileSystem fileSystem) : IKeybindRegistrar
 
             if (imports is null)
             {
-                Logger.Error("Something went wrong when parsing keybinds");
+                Logger.Info("Failed to parse keybinds, using defaults...");
                 return;
             }
 
@@ -202,9 +204,11 @@ public class KeybindRegistrar(IFileSystem fileSystem) : IKeybindRegistrar
                     _keybinds.TryAdd(import.Key, import.Value);
                 }
             }
+            Logger.Info("Done!");
         }
         catch (Exception ex) when (ex is IOException or JsonException)
         {
+            Logger.Info("Failed to parse keybinds, using defaults...");
             Logger.Error(ex);
         }
         finally

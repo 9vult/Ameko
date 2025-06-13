@@ -67,7 +67,7 @@ public class ScriptService : IScriptService
     /// <inheritdoc cref="IScriptService.Reload"/>
     public async Task Reload(bool isManual)
     {
-        Logger.Info("Reloading scripts");
+        Logger.Info("Reloading scripts...");
         if (!Directory.Exists(ScriptsRoot.LocalPath))
             Directory.CreateDirectory(ScriptsRoot.LocalPath);
 
@@ -81,11 +81,11 @@ public class ScriptService : IScriptService
         {
             try
             {
-                Logger.Trace($"Loading script {path}");
+                Logger.Trace($"Loading script {path}...");
                 var script = CSScript.Evaluator.LoadFile<HoloScript>(path);
                 if (script is null)
                 {
-                    Logger.Warn($"Script {path} was invalid");
+                    Logger.Warn($"Script {path} was invalid!");
                     continue;
                 }
 
@@ -100,7 +100,7 @@ public class ScriptService : IScriptService
 
         // For informational purposes
         var libCount = Directory.GetFiles(ScriptsRoot.LocalPath, "*.lib.cs").Length;
-        Logger.Info($"Reloaded {_scripts.Count} scripts ({libCount} libraries)");
+        Logger.Info($"Reloaded {loadedScripts.Count} scripts ({libCount} libraries)");
 
         // Update UI-bound collections and fire event on the UI thread for safety
         await Dispatcher.UIThread.InvokeAsync(() =>

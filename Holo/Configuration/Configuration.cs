@@ -154,7 +154,7 @@ public partial class Configuration : BindableBase, IConfiguration
     public bool Save()
     {
         var path = Paths.Configuration.LocalPath;
-        Logger.Info($"Writing configuration to {path}");
+        Logger.Info($"Writing configuration to {path}...");
         try
         {
             if (!_fileSystem.Directory.Exists(Path.GetDirectoryName(path)))
@@ -187,6 +187,7 @@ public partial class Configuration : BindableBase, IConfiguration
 
             var content = JsonSerializer.Serialize(model, JsonOptions);
             writer.Write(content);
+            Logger.Info($"Done!");
             return true;
         }
         catch (Exception ex) when (ex is IOException or JsonException)
@@ -203,7 +204,7 @@ public partial class Configuration : BindableBase, IConfiguration
     /// <returns><see cref="Configuration"/> object</returns>
     public static Configuration Parse(IFileSystem fileSystem)
     {
-        Logger.Info("Parsing configuration");
+        Logger.Info("Parsing configuration...");
         var path = Paths.Configuration.LocalPath;
         try
         {
@@ -211,7 +212,10 @@ public partial class Configuration : BindableBase, IConfiguration
                 fileSystem.Directory.CreateDirectory(Path.GetDirectoryName(path) ?? "/");
 
             if (!fileSystem.File.Exists(path))
+            {
+                Logger.Info("Configuration file does not exist, using defaults...");
                 return new Configuration(fileSystem);
+            }
 
             using var fs = fileSystem.FileStream.New(
                 path,
@@ -223,9 +227,9 @@ public partial class Configuration : BindableBase, IConfiguration
 
             var model =
                 JsonSerializer.Deserialize<ConfigurationModel>(reader.ReadToEnd(), JsonOptions)
-                ?? throw new InvalidDataException("Configuration model deserialization failed");
+                ?? throw new InvalidDataException("Configuration model deserialization failed!");
 
-            return new Configuration(fileSystem)
+            var result = new Configuration(fileSystem)
             {
                 _cps = model.Cps,
                 _cpsIncludesWhitespace = model.CpsIncludesWhitespace,
@@ -240,10 +244,13 @@ public partial class Configuration : BindableBase, IConfiguration
                 _useColorRing = model.UseColorRing,
                 _repositoryUrls = new RangeObservableCollection<string>(model.RepositoryUrls),
             };
+            Logger.Info("Done!");
+            return result;
         }
         catch (Exception ex) when (ex is IOException or JsonException)
         {
             Logger.Error(ex);
+            Logger.Info("Failed to parse configuration, using defaults...");
             return new Configuration(fileSystem);
         }
     }

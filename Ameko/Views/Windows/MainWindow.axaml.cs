@@ -240,7 +240,7 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
             Disposable.Create(() => { }).DisposeWith(disposables);
         });
 
-        Log.Info("Main Window initialized");
+        Log.Info("Done!");
     }
 
     private void AttachKeybinds()
