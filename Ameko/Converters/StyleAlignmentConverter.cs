@@ -13,10 +13,10 @@ public class StyleAlignmentConverter : IValueConverter
 {
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        if (value is not int input || parameter is not int param)
+        if (value is null || parameter is null)
             return null;
 
-        return input == param;
+        return System.Convert.ToInt32(value) == System.Convert.ToInt32(parameter);
     }
 
     public object? ConvertBack(
@@ -26,6 +26,6 @@ public class StyleAlignmentConverter : IValueConverter
         CultureInfo culture
     )
     {
-        return null;
+        return System.Convert.ToInt32(parameter);
     }
 }

@@ -17,19 +17,11 @@ public class StyleColorConverter : IValueConverter
     {
         if (value is not AssCS.Color input)
             return null;
-        if (parameter is not bool opacity)
-            opacity = false;
+        var opacity = System.Convert.ToBoolean(parameter);
 
-        Color output;
-        if (opacity)
-            output = new Color(
-                (byte)(255 - input.Alpha),
-                (byte)(255 - input.Red),
-                (byte)(255 - input.Green),
-                (byte)(255 - input.Blue)
-            );
-        else
-            output = new Color(255, input.Red, input.Green, input.Blue);
+        var output = opacity
+            ? new Color((byte)(255 - input.Alpha), input.Red, input.Green, input.Blue)
+            : new Color(255, input.Red, input.Green, input.Blue);
 
         return new SolidColorBrush(output);
     }
