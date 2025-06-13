@@ -38,7 +38,7 @@ public static class AmekoServiceProvider
             Globals.Parse(p.GetRequiredService<IFileSystem>())
         );
         services.AddSingleton<IKeybindRegistrar, KeybindRegistrar>();
-        services.AddSingleton<KeybindScannerService>();
+        services.AddSingleton<KeybindService>();
 
         // --- Application Services ---
         // Core business logic and application-specific operations
@@ -71,7 +71,7 @@ public static class AmekoServiceProvider
         _ = Provider.GetRequiredService<ILogProvider>();
 
         // Commence keybind registration
-        _ = Provider.GetRequiredService<KeybindScannerService>();
+        _ = Provider.GetRequiredService<KeybindService>();
 
         Logger.Info("Ameko and Holo are ready to go!");
 
