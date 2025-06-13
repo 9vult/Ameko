@@ -11,30 +11,30 @@ public enum KeybindContext
     /// <summary>
     /// The keybind is not registered
     /// </summary>
-    None = 0b00000,
-
-    /// <summary>
-    /// The keybind is registered for use everywhere
-    /// </summary>
-    Global = 0b00001,
+    None = 0b0000,
 
     /// <summary>
     /// The keybind is registered for use in the subtitle grid
     /// </summary>
-    Grid = 0b00010,
+    Grid = 0b0001,
 
     /// <summary>
     /// The keybind is registered for use in the editing area
     /// </summary>
-    Editor = 0b00100,
+    Editor = 0b0010,
 
     /// <summary>
     /// The keybind is registered for use in the audio area
     /// </summary>
-    Audio = 0b01000,
+    Audio = 0b0100,
 
     /// <summary>
     /// The keybind is registered for use in the video area
     /// </summary>
-    Video = 0b10000,
+    Video = 0b1000,
+
+    /// <summary>
+    /// The keybind is registered for use in all contexts
+    /// </summary>
+    Global = Grid | Editor | Audio | Video,
 }
