@@ -5,6 +5,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using AssCS.Overrides;
 using AssCS.Overrides.Blocks;
+using AssCS.Utilities;
 
 namespace AssCS;
 
@@ -246,6 +247,57 @@ public partial class Event(int id) : BindableBase, IEntry
     public bool CollidesWith(Event other)
     {
         return (Start < other.Start) ? (other.Start < End) : (Start < other.End);
+    }
+
+    /// <summary>
+    /// Set fields in this event to the fields from another event
+    /// </summary>
+    /// <param name="fields">Fields to set</param>
+    /// <param name="other">Source of new fields</param>
+    public void SetFields(EventField fields, Event other)
+    {
+        foreach (EventField field in fields.GetSetFlags())
+        {
+            switch (field)
+            {
+                case EventField.Comment:
+                    IsComment = other.IsComment;
+                    break;
+                case EventField.Layer:
+                    Layer = other.Layer;
+                    break;
+                case EventField.StartTime:
+                    Start = Time.FromTime(other.Start);
+                    break;
+                case EventField.EndTime:
+                    End = Time.FromTime(other.End);
+                    break;
+                case EventField.Style:
+                    Style = other.Style;
+                    break;
+                case EventField.Actor:
+                    Actor = other.Actor;
+                    break;
+                case EventField.MarginLeft:
+                    Margins.Left = other.Margins.Left;
+                    break;
+                case EventField.MarginRight:
+                    Margins.Right = other.Margins.Right;
+                    break;
+                case EventField.MarginVertical:
+                    Margins.Vertical = other.Margins.Vertical;
+                    break;
+                case EventField.Effect:
+                    Effect = other.Effect;
+                    break;
+                case EventField.Text:
+                    Text = other.Text;
+                    break;
+                case EventField.None:
+                default:
+                    break;
+            }
+        }
     }
 
     /// <summary>
