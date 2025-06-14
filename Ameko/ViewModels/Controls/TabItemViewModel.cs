@@ -1,13 +1,16 @@
 ﻿// SPDX-License-Identifier: GPL-3.0-only
 
 using System.Windows.Input;
+using Ameko.Services;
 using Holo;
 using Holo.Configuration;
+using Holo.Configuration.Keybinds;
 using Holo.Providers;
 using ReactiveUI;
 
 namespace Ameko.ViewModels.Controls;
 
+[KeybindContext(KeybindContext.Grid)]
 public partial class TabItemViewModel : ViewModelBase
 {
     #region Interactions
@@ -20,21 +23,42 @@ public partial class TabItemViewModel : ViewModelBase
 
     #region Commands
 
+    [KeybindTarget("ameko.event.copy", "Ctrl+C")]
     public ICommand CopyEventsCommand { get; }
+
+    [KeybindTarget("ameko.event.cut", "Ctrl+X")]
     public ICommand CutEventsCommand { get; }
+
+    [KeybindTarget("ameko.event.paste", "Ctrl+V")]
     public ICommand PasteEventsCommand { get; }
 
     // TODO: public ICommand PasteOverCommand { get; }
+    [KeybindTarget("ameko.event.duplicate", "Ctrl+D")]
     public ICommand DuplicateEventsCommand { get; }
+
+    [KeybindTarget("ameko.event.insertBefore")]
     public ICommand InsertEventBeforeCommand { get; }
+
+    [KeybindTarget("ameko.event.insertAfter")]
     public ICommand InsertEventAfterCommand { get; }
+
+    [KeybindTarget("ameko.event.merge")]
     public ICommand MergeEventsCommand { get; }
+
+    [KeybindTarget("ameko.event.split")]
     public ICommand SplitEventsCommand { get; }
+
+    [KeybindTarget("ameko.event.delete", "Shift+Delete")]
     public ICommand DeleteEventsCommand { get; }
+
+    // I don't think this needs a binding?
     public ICommand GetOrCreateAfterCommand { get; }
     public ICommand ToggleTagCommand { get; }
+    public ICommand ExecuteScriptCommand { get; }
 
     #endregion
+
+    private readonly IScriptService _scriptService;
 
     private readonly Workspace _workspace;
     private int _editBoxSelectionStart;
@@ -43,6 +67,7 @@ public partial class TabItemViewModel : ViewModelBase
     public Workspace Workspace => _workspace;
     public ISolutionProvider SolutionProvider { get; }
     public IConfiguration Configuration { get; }
+    public KeybindService KeybindService { get; }
 
     public int EditBoxSelectionStart
     {
@@ -59,6 +84,8 @@ public partial class TabItemViewModel : ViewModelBase
     public TabItemViewModel(
         ISolutionProvider solutionProvider,
         IConfiguration configuration,
+        KeybindService keybindService,
+        IScriptService scriptService,
         Workspace workspace
     )
     {
@@ -81,10 +108,14 @@ public partial class TabItemViewModel : ViewModelBase
         DeleteEventsCommand = CreateDeleteEventsCommand();
         GetOrCreateAfterCommand = CreateGetOrCreateAfterCommand();
         ToggleTagCommand = CreateToggleTagCommand();
+
+        ExecuteScriptCommand = CreateExecuteScriptCommand();
         #endregion
 
         _workspace = workspace;
+        _scriptService = scriptService;
         SolutionProvider = solutionProvider;
         Configuration = configuration;
+        KeybindService = keybindService;
     }
 }

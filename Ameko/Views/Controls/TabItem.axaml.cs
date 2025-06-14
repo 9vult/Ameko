@@ -11,6 +11,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.ReactiveUI;
 using Holo;
+using Holo.Configuration.Keybinds;
 using ReactiveUI;
 
 namespace Ameko.Views.Controls;
@@ -103,9 +104,28 @@ public partial class TabItem : ReactiveUserControl<TabItemViewModel>
                         vm.CutEvents.RegisterHandler(DoCutEventsAsync);
                         vm.PasteEvents.RegisterHandler(DoPasteEventsAsync);
                         // TODO: Paste Over
+
+                        // Register keybinds
+                        AttachGridKeybinds(vm);
+                        vm.KeybindService.KeybindRegistrar.OnKeybindsChanged += (_, _) =>
+                        {
+                            AttachGridKeybinds(vm);
+                        };
                     })
                     .DisposeWith(disposables);
             }
+        );
+    }
+
+    private void AttachGridKeybinds(TabItemViewModel? vm)
+    {
+        if (vm is null)
+            return;
+        vm.KeybindService.AttachKeybinds(vm, TabItemEventsArea);
+        vm.KeybindService.AttachScriptKeybinds(
+            vm.ExecuteScriptCommand,
+            KeybindContext.Grid,
+            TabItemEventsArea
         );
     }
 }
