@@ -252,4 +252,17 @@ public partial class TabItemViewModel : ViewModelBase
             }
         );
     }
+
+    /// <summary>
+    /// Execute a Script
+    /// </summary>
+    private ReactiveCommand<string, Unit> CreateExecuteScriptCommand()
+    {
+        return ReactiveCommand.CreateFromTask(
+            async (string qualifiedName) =>
+            {
+                await _scriptService.ExecuteScriptAsync(qualifiedName);
+            }
+        );
+    }
 }

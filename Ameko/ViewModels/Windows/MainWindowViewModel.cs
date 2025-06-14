@@ -96,7 +96,7 @@ public partial class MainWindowViewModel : ViewModelBase
     [KeybindTarget("ameko.logs.show", "Ctrl+L")]
     public ICommand ShowLogWindowCommand { get; }
 
-    [KeybindTarget("ameko.about.show")]
+    [KeybindTarget("ameko.about.show", "Shift+F1")]
     public ICommand ShowAboutWindowCommand { get; }
 
     // Other

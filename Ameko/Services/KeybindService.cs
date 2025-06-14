@@ -187,9 +187,11 @@ public class KeybindService
         KeybindRegistrar = registrar;
 
         // Discover the keybinds
+        Logger.Info("Searching for keybind targets...");
         var metadata = ScanAllViewModelsInAssembly(typeof(App).Assembly)
             .Where(m => m.DeclaringType is not null && m.MemberName is not null)
             .ToList();
+        Logger.Info($"Found {metadata.Count} targets");
 
         // Register the keybinds
         KeybindRegistrar.RegisterKeybinds(
