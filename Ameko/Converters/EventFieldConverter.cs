@@ -2,25 +2,26 @@
 
 using System;
 using System.Globalization;
+using AssCS;
 using Avalonia.Data.Converters;
 using Holo.Models;
 
 namespace Ameko.Converters;
 
 /// <summary>
-/// Converter for the flags enum <see cref="PasteOverField"/>
+/// Converter for the flags enum <see cref="EventField"/>
 /// </summary>
-public class PasteOverFieldConverter : IValueConverter
+public class EventFieldConverter : IValueConverter
 {
-    private PasteOverField? _target;
+    private EventField? _target;
 
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
         if (parameter is null || value is null)
             return null;
 
-        var mask = (PasteOverField)parameter;
-        _target = (PasteOverField)value;
+        var mask = (EventField)parameter;
+        _target = (EventField)value;
         return (mask & _target) != 0;
     }
 
@@ -33,7 +34,7 @@ public class PasteOverFieldConverter : IValueConverter
     {
         if (parameter is null)
             return null;
-        _target ^= (PasteOverField)parameter;
+        _target ^= (EventField)parameter;
         return _target;
     }
 }
