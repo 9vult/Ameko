@@ -16,6 +16,7 @@
 
         Topmost="True"
         CanResize="False"
+        WindowStartupLocation="CenterOwner"
         Width="300"
         Height="250"
         Icon="/Assets/Ameko-Simplified-BG-64.ico"
@@ -43,7 +44,8 @@
                              Content="{x:Static i18n:ShiftTimes.ShiftTimes_RB_Frames}"
                              IsChecked="{Binding ShiftType,
                                                  Converter={StaticResource EnumConverter},
-                                                 ConverterParameter={x:Static holo:ShiftTimesType.Frames}}" />
+                                                 ConverterParameter={x:Static holo:ShiftTimesType.Frames}}"
+                             IsEnabled="False" />
                 <TextBox Name="TimeBox"
                          Grid.Column="1"
                          Grid.Row="0"
@@ -116,7 +118,8 @@
             </UniformGrid>
         </HeaderedContentControl>
         <Button Margin="2 5 2 2"
-                Content="{x:Static i18n:ShiftTimes.ShiftTimes_Button_Ok}" />
+                Content="{x:Static i18n:ShiftTimes.ShiftTimes_Button_Ok}"
+                Command="{Binding ConfirmCommand}" />
     </StackPanel>
     
     <Window.Styles>

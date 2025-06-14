@@ -6,7 +6,9 @@ using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Threading.Tasks;
+using Ameko.ViewModels.Dialogs;
 using Ameko.ViewModels.Windows;
+using Ameko.Views.Dialogs;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
@@ -178,6 +180,16 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         interaction.SetOutput(Unit.Default);
     }
 
+    private async Task DoShowShiftTimesDialogAsync(
+        IInteractionContext<ShiftTimesDialogViewModel, Unit> interaction
+    )
+    {
+        Log.Trace("Displaying Shift Times dialog");
+        var window = new ShiftTimesDialog { DataContext = interaction.Input };
+        await window.ShowDialog(this);
+        interaction.SetOutput(Unit.Default);
+    }
+
     private async Task DoShowDepCtlWindowAsync(
         IInteractionContext<DepCtrlWindowViewModel, Unit> interaction
     )
@@ -223,6 +235,9 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
                 ViewModel.SaveSolutionAs.RegisterHandler(DoShowSaveSolutionAsDialogAsync);
                 // Subtitle
                 ViewModel.ShowStylesManager.RegisterHandler(DoShowStylesManager);
+                // Solution
+                // Timing
+                ViewModel.ShowShiftTimesDialog.RegisterHandler(DoShowShiftTimesDialogAsync);
                 // Scripts
                 ViewModel.ShowDependencyControl.RegisterHandler(DoShowDepCtlWindowAsync);
                 // Help
