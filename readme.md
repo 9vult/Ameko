@@ -15,8 +15,8 @@ Ameko is a subtitle editing suite for Advanced Substation Alpha (ASS) subtitles.
 
 ### Milestone 1 - MVP
 
-The primary goal for Milestone 1 is to deliver a **Minimum Viable Product (MVP)**. For Ameko, this MVP will deliver a
-feature-rich **subtitle editor** with several key features to provide a robust foundation for future extensibility.
+The primary goal for Milestone 1 is to deliver a Minimum Viable Product (MVP). For Ameko, this MVP will deliver a
+feature-rich subtitle editor with several key features to provide a robust foundation for future extensibility.
 
 - **Core Subtitle Editing:** This forms the heart of the MVP, providing essential tools for creating, manipulating, and
   styling subtitles.
@@ -26,7 +26,7 @@ feature-rich **subtitle editor** with several key features to provide a robust f
   initial video provider will be [FFMS2](https://github.com/FFMS/ffms2), and [libass](https://github.com/libass/libass/)
   will be the first subtitle renderer.
 - **Tabs and Solutions:** Ameko will feature tabs, allowing users to easily switch between multiple open subtitle files.
-  Alongside this, Ameko is introducing **Solution Files**. Solutions enable logical grouping and organization of
+  Alongside this, Ameko is introducing *Solution Files*. Solutions enable logical grouping and organization of
   subtitle files
   independent of the physical filesystem structure. Furthermore, Solutions provide a centralized place for common
   project configuration, styles, colors, and more, offering a significant improvement for teams using automated build
@@ -44,7 +44,7 @@ focus on significantly expanding its capabilities. Potential upcoming milestones
 - **Audio Integration:** Implementing audio playback and waveform and spectrum visualizations.
 - **Graphical Tools:** Tools for visually manipulating subtitles on the video.
 
-These are initial ideas — milestones will be added or removed based on user feedback, community contributions, and
+These are initial ideas—milestones will be added or removed based on user feedback, community contributions, and
 the natural progression of Ameko's development.
 
 <h2 align="center">Development</h2>
@@ -53,7 +53,7 @@ I would strongly recommend using Jetbrains Rider or Visual Studio for developmen
 
 - As a prerequisite, ensure all NuGet packages are installed.
 - To build, either click the `Build` button in your IDE, or run `dotnet build` in the project root directory.
-- The final output for debugging and running is the `Ameko` project
+- The final output for debugging and running is the `Ameko` project.
 - Ameko follows XDG directory guidelines
 
 <h2 align="center">Contributing</h2>
@@ -69,8 +69,8 @@ Before submitting a pull request, please make sure your code is properly formatt
 
 Additionally, there are some testing guidelines:
 
-- **Unit tests are required** for contributions to the Holo and AssCS projects.
-- **Tests are optional but highly appreciated** for Ameko's ViewModels and for Mizuki.
+- Unit tests are required for contributions to the Holo and AssCS projects.
+- Tests are optional, but highly appreciated, for Ameko's ViewModels and for Mizuki.
 
 <h2 align="center">Licensing</h2>
 
