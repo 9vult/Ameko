@@ -1,0 +1,145 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        d:DesignWidth="300"
+        d:DesignHeight="250"
+
+        xmlns:converters="clr-namespace:Ameko.Converters"
+        xmlns:holo="clr-namespace:Holo.Models;assembly=Holo"
+        xmlns:i18n="clr-namespace:Ameko.I18N"
+        xmlns:vm="clr-namespace:Ameko.ViewModels.Dialogs"
+
+        x:Class="Ameko.Views.Dialogs.ShiftTimesDialog"
+        x:DataType="vm:ShiftTimesDialogViewModel"
+
+        Topmost="True"
+        CanResize="False"
+        Width="300"
+        Height="250"
+        Icon="/Assets/Ameko-Simplified-BG-64.ico"
+        Title="{x:Static i18n:ShiftTimes.ShiftTimes_WindowTitle}">
+    <Window.Resources>
+        <converters:EnumConverter x:Key="EnumConverter" />
+    </Window.Resources>
+    
+    <StackPanel Margin="5 0 5 5">
+        <HeaderedContentControl Header="{x:Static i18n:ShiftTimes.ShiftTimes_Header_ShiftBy}">
+            <Grid ColumnDefinitions="Auto, *, Auto"
+                  RowDefinitions="Auto, Auto, Auto"
+                  RowSpacing="2"
+                  ColumnSpacing="5">
+                <RadioButton Grid.Column="0"
+                             Grid.Row="0"
+                             GroupName="ShiftBy"
+                             Content="{x:Static i18n:ShiftTimes.ShiftTimes_RB_Time}"
+                             IsChecked="{Binding ShiftType,
+                                                 Converter={StaticResource EnumConverter},
+                                                 ConverterParameter={x:Static holo:ShiftTimesType.Time}}" />
+                <RadioButton Grid.Column="0"
+                             Grid.Row="1"
+                             GroupName="ShiftBy"
+                             Content="{x:Static i18n:ShiftTimes.ShiftTimes_RB_Frames}"
+                             IsChecked="{Binding ShiftType,
+                                                 Converter={StaticResource EnumConverter},
+                                                 ConverterParameter={x:Static holo:ShiftTimesType.Frames}}" />
+                <TextBox Name="TimeBox"
+                         Grid.Column="1"
+                         Grid.Row="0"
+                         AcceptsReturn="False"
+                         AcceptsTab="False"
+                         Text="{Binding ShiftTime.UpdatableText}"
+                         IsEnabled="{Binding ShiftType,
+                                             Converter={StaticResource EnumConverter},
+                                             ConverterParameter={x:Static holo:ShiftTimesType.Time}}" />
+                <TextBox Name="FrameBox"
+                         Grid.Column="1"
+                         Grid.Row="1"
+                         AcceptsReturn="False"
+                         AcceptsTab="False"
+                         Text="{Binding ShiftFrames}"
+                         IsEnabled="{Binding ShiftType,
+                                             Converter={StaticResource EnumConverter},
+                                             ConverterParameter={x:Static holo:ShiftTimesType.Time}}" />
+                <RadioButton Grid.Column="2"
+                             Grid.Row="0"
+                             GroupName="ShiftDirection"
+                             Content="{x:Static i18n:ShiftTimes.ShiftTimes_RB_Forward}"
+                             IsChecked="{Binding ShiftDirection,
+                                                 Converter={StaticResource EnumConverter},
+                                                 ConverterParameter={x:Static holo:ShiftTimesDirection.Forward}}" />
+                <RadioButton Grid.Column="2"
+                             Grid.Row="1"
+                             GroupName="ShiftDirection"
+                             Content="{x:Static i18n:ShiftTimes.ShiftTimes_RB_Backward}"
+                             IsChecked="{Binding ShiftDirection,
+                                                 Converter={StaticResource EnumConverter},
+                                                 ConverterParameter={x:Static holo:ShiftTimesDirection.Backward}}" />
+            </Grid>
+        </HeaderedContentControl>
+        <HeaderedContentControl Header="{x:Static i18n:ShiftTimes.ShiftTimes_Header_Affect}">
+            <UniformGrid Columns="2"
+                         Rows="1"
+                         ColumnSpacing="5">
+                <RadioButton GroupName="Affect"
+                             Content="{x:Static i18n:ShiftTimes.ShiftTimes_RB_AllEvents}"
+                             IsChecked="{Binding ShiftFilter,
+                                                 Converter={StaticResource EnumConverter},
+                                                 ConverterParameter={x:Static holo:ShiftTimesFilter.AllEvents}}" />
+                <RadioButton GroupName="Affect"
+                             Content="{x:Static i18n:ShiftTimes.ShiftTimes_RB_SelectedEvents}"
+                             IsChecked="{Binding ShiftFilter,
+                                                 Converter={StaticResource EnumConverter},
+                                                 ConverterParameter={x:Static holo:ShiftTimesFilter.SelectedEvents}}" />
+            </UniformGrid>
+        </HeaderedContentControl>
+        <HeaderedContentControl Header="{x:Static i18n:ShiftTimes.ShiftTimes_Header_Times}">
+            <UniformGrid Columns="3"
+                         Rows="1"
+                         ColumnSpacing="5">
+                <RadioButton GroupName="Target"
+                             Content="{x:Static i18n:ShiftTimes.ShiftTimes_RB_Start}"
+                             IsChecked="{Binding ShiftTarget,
+                                                 Converter={StaticResource EnumConverter},
+                                                 ConverterParameter={x:Static holo:ShiftTimesTarget.Start}}" />
+                <RadioButton GroupName="Target"
+                             Content="{x:Static i18n:ShiftTimes.ShiftTimes_RB_End}"
+                             IsChecked="{Binding ShiftTarget,
+                                                 Converter={StaticResource EnumConverter},
+                                                 ConverterParameter={x:Static holo:ShiftTimesTarget.End}}" />
+                <RadioButton GroupName="Target"
+                             Content="{x:Static i18n:ShiftTimes.ShiftTimes_RB_Both}"
+                             IsChecked="{Binding ShiftTarget,
+                                                 Converter={StaticResource EnumConverter},
+                                                 ConverterParameter={x:Static holo:ShiftTimesTarget.Both}}" />
+            </UniformGrid>
+        </HeaderedContentControl>
+        <Button Margin="2 5 2 2"
+                Content="{x:Static i18n:ShiftTimes.ShiftTimes_Button_Ok}" />
+    </StackPanel>
+    
+    <Window.Styles>
+        <Style Selector="HeaderedContentControl">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate>
+                        <Border>
+                            <StackPanel>
+                                <ContentPresenter FontWeight="Bold"
+                                                  Margin="0 10 0 2"
+                                                  Content="{TemplateBinding Header}" />
+                                <Border BorderBrush="{TemplateBinding Foreground}"
+                                        BorderThickness="2"
+                                        CornerRadius="5">
+                                    <ContentPresenter Content="{TemplateBinding Content}"
+                                                      Padding="5" />
+                                </Border>
+                            </StackPanel>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Styles>
+</Window>
