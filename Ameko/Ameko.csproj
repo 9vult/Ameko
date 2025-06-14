@@ -100,6 +100,11 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>ShiftTimes.resx</DependentUpon>
     </Compile>
+    <Compile Update="I18N\PasteOver.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>PasteOver.resx</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Update="I18N\Resources.resx">
@@ -129,6 +134,10 @@
     <EmbeddedResource Update="I18N\ShiftTimes.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>ShiftTimes.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="I18N\PasteOver.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>PasteOver.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
 </Project>
