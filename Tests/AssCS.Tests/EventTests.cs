@@ -9,7 +9,7 @@ public class EventTests
     private const string BasicEvent =
         "Dialogue: 0,0:02:10.57,0:02:13.51,Default,Heiter,0,0,0,,It's the victorious return of the heroes' party.";
     private const string TagEvent =
-        "Dialogue: 0,0:11:34.65,0:11:37.38,Default,Frieren,0,0,0,,You're {\\i1}bald{\\i0}, there's no point in fussing.";
+        @"Dialogue: 0,0:11:34.65,0:11:37.38,Default,Frieren,0,0,0,,You're {\i1}bald{\i0}, there's no point in fussing.";
 
     [Fact]
     public void FromAss()
@@ -87,6 +87,44 @@ public class EventTests
     {
         var evt = new Event(1) { Text = "Line1--[[2]]Line2" };
         evt.TransformAssToCode().ShouldContain(Environment.NewLine + "  Line2");
+    }
+
+    [Fact]
+    public void SetFields_NoFlags()
+    {
+        var baseline = Event.FromAss(1, BasicEvent);
+        var evt1 = Event.FromAss(1, BasicEvent);
+        var evt2 = Event.FromAss(2, TagEvent);
+        const EventField fields = EventField.None;
+
+        evt1.SetFields(fields, evt2);
+
+        evt1.IsCongruentWith(baseline).ShouldBeTrue();
+    }
+
+    [Fact]
+    public void SetFields_AllFlags()
+    {
+        var baseline = Event.FromAss(1, BasicEvent);
+        var evt1 = Event.FromAss(1, BasicEvent);
+        var evt2 = Event.FromAss(2, TagEvent);
+        const EventField fields =
+            EventField.Comment
+            | EventField.Layer
+            | EventField.StartTime
+            | EventField.EndTime
+            | EventField.Style
+            | EventField.Actor
+            | EventField.MarginLeft
+            | EventField.MarginRight
+            | EventField.MarginVertical
+            | EventField.Effect
+            | EventField.Text;
+
+        evt1.SetFields(fields, evt2);
+
+        evt1.IsCongruentWith(baseline).ShouldBeFalse();
+        evt1.IsCongruentWith(evt2).ShouldBeTrue();
     }
 
     #region Cps & Line Width
