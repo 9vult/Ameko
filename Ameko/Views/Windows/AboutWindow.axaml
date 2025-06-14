@@ -15,10 +15,11 @@
         x:Class="Ameko.Views.Windows.AboutWindow"
         x:DataType="vm:AboutWindowViewModel"
 
-        Topmost="True"
-        CanResize="False"
         Width="500"
         Height="600"
+        Topmost="True"
+        CanResize="False"
+        WindowStartupLocation="CenterOwner"
         Icon="/Assets/Ameko-Simplified-BG-64.ico"
         Title="{x:Static i18n:About.AboutWindow_Title}">
     <DockPanel Margin="10">
