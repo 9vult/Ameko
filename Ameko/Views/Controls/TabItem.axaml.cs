@@ -5,7 +5,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Disposables;
 using System.Threading.Tasks;
+using Ameko.Messages;
 using Ameko.ViewModels.Controls;
+using Ameko.ViewModels.Dialogs;
+using Ameko.Views.Dialogs;
+using AssCS;
 using AssCS.History;
 using Avalonia;
 using Avalonia.Controls;
@@ -83,6 +87,22 @@ public partial class TabItem : ReactiveUserControl<TabItemViewModel>
         interaction.SetOutput(output.Split(Environment.NewLine));
     }
 
+    private async Task DoShowPasteOverDialogAsync(
+        IInteractionContext<PasteOverDialogViewModel, PasteOverDialogClosedMessage> interaction
+    )
+    {
+        var window = TopLevel.GetTopLevel(this);
+        if (window is null)
+        {
+            interaction.SetOutput(new PasteOverDialogClosedMessage(EventField.None));
+            return;
+        }
+
+        var dialog = new PasteOverDialog { DataContext = interaction.Input };
+        var result = await dialog.ShowDialog<PasteOverDialogClosedMessage>((Window)window);
+        interaction.SetOutput(result);
+    }
+
     public TabItem()
     {
         InitializeComponent();
@@ -103,7 +123,7 @@ public partial class TabItem : ReactiveUserControl<TabItemViewModel>
                         vm.CopyEvents.RegisterHandler(DoCopyEventsAsync);
                         vm.CutEvents.RegisterHandler(DoCutEventsAsync);
                         vm.PasteEvents.RegisterHandler(DoPasteEventsAsync);
-                        // TODO: Paste Over
+                        vm.ShowPasteOverDialog.RegisterHandler(DoShowPasteOverDialogAsync);
 
                         // Register keybinds
                         AttachGridKeybinds(vm);

@@ -1,6 +1,7 @@
 ﻿// SPDX-License-Identifier: GPL-3.0-only
 
 using System.Reactive;
+using Ameko.Messages;
 using Holo.Configuration;
 using ReactiveUI;
 
@@ -13,7 +14,7 @@ public partial class ColorDialogViewModel : ViewModelBase
     private Avalonia.Media.HsvColor _hsvColor;
     private bool _useRing;
 
-    public ReactiveCommand<Unit, AssCS.Color> SelectColorCommand { get; }
+    public ReactiveCommand<Unit, ColorDialogClosedMessage> SelectColorCommand { get; }
 
     public AssCS.Color Color => _assColor;
 
@@ -62,7 +63,7 @@ public partial class ColorDialogViewModel : ViewModelBase
             new Avalonia.Media.Color((byte)(255 - color.Alpha), color.Red, color.Green, color.Blue)
         );
 
-        SelectColorCommand = ReactiveCommand.Create(() => _assColor);
+        SelectColorCommand = ReactiveCommand.Create(() => new ColorDialogClosedMessage(_assColor));
 
         _useRing = configuration.UseColorRing;
     }
