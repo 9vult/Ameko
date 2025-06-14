@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MPL-2.0
 
-namespace Holo.Models;
+namespace AssCS;
 
 [Flags]
-public enum PasteOverField
+public enum EventField
 {
     None = 0,
     Comment = 1,

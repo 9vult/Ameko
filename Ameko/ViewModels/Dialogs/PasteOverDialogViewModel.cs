@@ -2,6 +2,7 @@
 
 using System.Reactive;
 using System.Windows.Input;
+using AssCS;
 using Holo.Models;
 using ReactiveUI;
 
@@ -9,9 +10,9 @@ namespace Ameko.ViewModels.Dialogs;
 
 public partial class PasteOverDialogViewModel : ViewModelBase
 {
-    private PasteOverField _fields;
+    private EventField _fields;
 
-    public PasteOverField Fields
+    public EventField Fields
     {
         get => _fields;
         set => this.RaiseAndSetIfChanged(ref _fields, value);
@@ -21,32 +22,32 @@ public partial class PasteOverDialogViewModel : ViewModelBase
     public ICommand SelectNoneCommand { get; }
     public ICommand SelectTimesCommand { get; }
     public ICommand SelectTextCommand { get; }
-    public ReactiveCommand<Unit, PasteOverField> ConfirmCommand { get; }
+    public ReactiveCommand<Unit, EventField> ConfirmCommand { get; }
 
     public PasteOverDialogViewModel()
     {
-        _fields = PasteOverField.Text;
+        _fields = EventField.Text;
 
         SelectAllCommand = ReactiveCommand.Create(() =>
             Fields =
-                PasteOverField.Comment
-                | PasteOverField.Layer
-                | PasteOverField.StartTime
-                | PasteOverField.EndTime
-                | PasteOverField.Style
-                | PasteOverField.Actor
-                | PasteOverField.MarginLeft
-                | PasteOverField.MarginRight
-                | PasteOverField.MarginVertical
-                | PasteOverField.Effect
-                | PasteOverField.Text
+                EventField.Comment
+                | EventField.Layer
+                | EventField.StartTime
+                | EventField.EndTime
+                | EventField.Style
+                | EventField.Actor
+                | EventField.MarginLeft
+                | EventField.MarginRight
+                | EventField.MarginVertical
+                | EventField.Effect
+                | EventField.Text
         );
-        SelectNoneCommand = ReactiveCommand.Create(() => Fields = PasteOverField.None);
+        SelectNoneCommand = ReactiveCommand.Create(() => Fields = EventField.None);
         SelectTimesCommand = ReactiveCommand.Create(() =>
-            Fields = PasteOverField.StartTime | PasteOverField.EndTime
+            Fields = EventField.StartTime | EventField.EndTime
         );
-        SelectTextCommand = ReactiveCommand.Create(() => Fields = PasteOverField.Text);
+        SelectTextCommand = ReactiveCommand.Create(() => Fields = EventField.Text);
 
-        ConfirmCommand = ReactiveCommand.Create<PasteOverField>(() => Fields);
+        ConfirmCommand = ReactiveCommand.Create<EventField>(() => Fields);
     }
 }
