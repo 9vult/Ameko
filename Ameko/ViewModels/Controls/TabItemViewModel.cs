@@ -1,7 +1,10 @@
 ﻿// SPDX-License-Identifier: GPL-3.0-only
 
 using System.Windows.Input;
+using Ameko.Messages;
 using Ameko.Services;
+using Ameko.ViewModels.Dialogs;
+using AssCS;
 using Holo;
 using Holo.Configuration;
 using Holo.Configuration.Keybinds;
@@ -18,6 +21,10 @@ public partial class TabItemViewModel : ViewModelBase
     public Interaction<TabItemViewModel, string?> CopyEvents { get; }
     public Interaction<TabItemViewModel, string?> CutEvents { get; }
     public Interaction<TabItemViewModel, string[]?> PasteEvents { get; }
+    public Interaction<
+        PasteOverDialogViewModel,
+        PasteOverDialogClosedMessage
+    > ShowPasteOverDialog { get; }
 
     #endregion
 
@@ -32,7 +39,9 @@ public partial class TabItemViewModel : ViewModelBase
     [KeybindTarget("ameko.event.paste", "Ctrl+V")]
     public ICommand PasteEventsCommand { get; }
 
-    // TODO: public ICommand PasteOverCommand { get; }
+    [KeybindTarget("ameko.event.pasteOver", "Ctrl+Shift+V")]
+    public ICommand PasteOverEventsCommand { get; }
+
     [KeybindTarget("ameko.event.duplicate", "Ctrl+D")]
     public ICommand DuplicateEventsCommand { get; }
 
@@ -93,13 +102,15 @@ public partial class TabItemViewModel : ViewModelBase
         CopyEvents = new Interaction<TabItemViewModel, string?>();
         CutEvents = new Interaction<TabItemViewModel, string?>();
         PasteEvents = new Interaction<TabItemViewModel, string[]?>();
+        ShowPasteOverDialog =
+            new Interaction<PasteOverDialogViewModel, PasteOverDialogClosedMessage>();
         #endregion
 
         #region Commands
         CopyEventsCommand = CreateCopyEventsCommand();
         CutEventsCommand = CreateCutEventsCommand();
         PasteEventsCommand = CreatePasteEventsCommand();
-        // TODO: Paste Over
+        PasteOverEventsCommand = CreatePasteOverEventsCommand();
         DuplicateEventsCommand = CreateDuplicateEventsCommand();
         InsertEventBeforeCommand = CreateInsertEventBeforeCommand();
         InsertEventAfterCommand = CreateInsertEventAfterCommand();

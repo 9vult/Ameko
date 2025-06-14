@@ -114,6 +114,10 @@ public class Workspace : BindableBase
             && _document.HistoryManager.LastCommitType == changeType
             && _document.HistoryManager.LastCommitTime.AddSeconds(30) > DateTimeOffset.Now; // TODO: Add an option for this
 
+        Logger.Trace(
+            $"Commiting {selection.Count} events under change {changeType} (amend={amend})"
+        );
+
         // TODO: Determine how to best include descriptions here
         foreach (var e in selection)
         {

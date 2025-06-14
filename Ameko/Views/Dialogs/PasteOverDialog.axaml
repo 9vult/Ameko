@@ -1,3 +1,5 @@
+<!-- SPDX-License-Identifier: GPL-3.0-only -->
+
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -6,8 +8,6 @@
         d:DesignWidth="300"
         d:DesignHeight="280"
 
-        xmlns:converters="clr-namespace:Ameko.Converters"
-        xmlns:assCs="clr-namespace:AssCS;assembly=AssCS"
         xmlns:i18n="clr-namespace:Ameko.I18N"
         xmlns:vm="clr-namespace:Ameko.ViewModels.Dialogs"
 
@@ -21,68 +21,43 @@
         WindowStartupLocation="CenterOwner"
         Icon="/Assets/Ameko-Simplified-BG-64.ico"
         Title="{x:Static i18n:PasteOver.PasteOver_WindowTitle}">
-    <Window.Resources>
-        <converters:EventFieldConverter x:Key="FieldConverter" />
-    </Window.Resources>
     <DockPanel Margin="3"
                VerticalSpacing="2">
         <StackPanel DockPanel.Dock="Top"
                     Spacing="2">
             <CheckBox Name="CommentBox"
                       Content="{x:Static i18n:PasteOver.PasteOver_CB_Comment}"
-                      IsChecked="{Binding Fields,
-                      Converter={StaticResource FieldConverter},
-                      ConverterParameter={x:Static assCs:EventField.Comment}}" />
+                      IsChecked="{Binding Comment}" />
             <CheckBox Name="LayerBox"
                       Content="{x:Static i18n:PasteOver.PasteOver_CB_Layer}"
-                      IsChecked="{Binding Fields,
-                      Converter={StaticResource FieldConverter},
-                      ConverterParameter={x:Static assCs:EventField.Layer}}" />
+                      IsChecked="{Binding Layer}" />
             <CheckBox Name="StartBox"
                       Content="{x:Static i18n:PasteOver.PasteOver_CB_StartTime}"
-                      IsChecked="{Binding Fields,
-                      Converter={StaticResource FieldConverter},
-                      ConverterParameter={x:Static assCs:EventField.StartTime}}" />
+                      IsChecked="{Binding StartTime}" />
             <CheckBox Name="EndBox"
                       Content="{x:Static i18n:PasteOver.PasteOver_CB_EndTime}"
-                      IsChecked="{Binding Fields,
-                      Converter={StaticResource FieldConverter},
-                      ConverterParameter={x:Static assCs:EventField.EndTime}}" />
+                      IsChecked="{Binding EndTime}" />
             <CheckBox Name="StyleBox"
                       Content="{x:Static i18n:PasteOver.PasteOver_CB_Style}"
-                      IsChecked="{Binding Fields,
-                      Converter={StaticResource FieldConverter},
-                      ConverterParameter={x:Static assCs:EventField.Style}}" />
+                      IsChecked="{Binding Style}" />
             <CheckBox Name="ActorBox"
                       Content="{x:Static i18n:PasteOver.PasteOver_CB_Actor}"
-                      IsChecked="{Binding Fields,
-                      Converter={StaticResource FieldConverter},
-                      ConverterParameter={x:Static assCs:EventField.Actor}}" />
+                      IsChecked="{Binding Actor}" />
             <CheckBox Name="MarginLeftBox"
                       Content="{x:Static i18n:PasteOver.PasteOver_CB_MarginLeft}"
-                      IsChecked="{Binding Fields,
-                      Converter={StaticResource FieldConverter},
-                      ConverterParameter={x:Static assCs:EventField.MarginLeft}}" />
+                      IsChecked="{Binding MarginLeft}" />
             <CheckBox Name="MarginRightBox"
                       Content="{x:Static i18n:PasteOver.PasteOver_CB_MarginRight}"
-                      IsChecked="{Binding Fields,
-                      Converter={StaticResource FieldConverter},
-                      ConverterParameter={x:Static assCs:EventField.MarginRight}}" />
+                      IsChecked="{Binding MarginRight}" />
             <CheckBox Name="MarginVerticalBox"
                       Content="{x:Static i18n:PasteOver.PasteOver_CB_MarginVertical}"
-                      IsChecked="{Binding Fields,
-                      Converter={StaticResource FieldConverter},
-                      ConverterParameter={x:Static assCs:EventField.MarginVertical}}" />
+                      IsChecked="{Binding MarginVertical}" />
             <CheckBox Name="EffectBox"
                       Content="{x:Static i18n:PasteOver.PasteOver_CB_Effect}"
-                      IsChecked="{Binding Fields,
-                      Converter={StaticResource FieldConverter},
-                      ConverterParameter={x:Static assCs:EventField.Effect}}" />
+                      IsChecked="{Binding Effect}" />
             <CheckBox Name="TextBox"
                       Content="{x:Static i18n:PasteOver.PasteOver_CB_Text}"
-                      IsChecked="{Binding Fields,
-                      Converter={StaticResource FieldConverter},
-                      ConverterParameter={x:Static assCs:EventField.Text}}" />
+                      IsChecked="{Binding Text}" />
         </StackPanel>
         <Grid DockPanel.Dock="Bottom"
               ColumnDefinitions="*, *, *, *"
