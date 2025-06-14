@@ -15,10 +15,11 @@
         x:Class="Ameko.Views.Windows.DepCtrlWindow"
         x:DataType="vm:DepCtrlWindowViewModel"
 
-        Icon="/Assets/Ameko-Simplified-BG-64.ico"
         Width="700"
         Height="450"
         CanResize="False"
+        WindowStartupLocation="CenterOwner"
+        Icon="/Assets/Ameko-Simplified-BG-64.ico"
         Title="{x:Static i18n:DepCtrl.DepCtrlWindow_Title}">
     <TabControl>
         <TabItem Header="{x:Static i18n:DepCtrl.DepCtrl_ModulesTab}">

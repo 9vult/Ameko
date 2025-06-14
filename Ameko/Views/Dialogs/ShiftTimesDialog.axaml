@@ -14,11 +14,11 @@
         x:Class="Ameko.Views.Dialogs.ShiftTimesDialog"
         x:DataType="vm:ShiftTimesDialogViewModel"
 
+        Width="300"
+        Height="250"
         Topmost="True"
         CanResize="False"
         WindowStartupLocation="CenterOwner"
-        Width="300"
-        Height="250"
         Icon="/Assets/Ameko-Simplified-BG-64.ico"
         Title="{x:Static i18n:ShiftTimes.ShiftTimes_WindowTitle}">
     <Window.Resources>

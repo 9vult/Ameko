@@ -15,10 +15,11 @@
         x:Class="Ameko.Views.Windows.StyleEditorWindow"
         x:DataType="vm:StyleEditorWindowViewModel"
         
-        Topmost="True"
-        CanResize="False"
         Width="400"
         Height="625"
+        Topmost="True"
+        CanResize="False"
+        WindowStartupLocation="CenterOwner"
         Icon="/Assets/Ameko-Simplified-BG-64.ico"
         Title="{x:Static i18n:StyleEditor.StyleEditor_WindowTitle}">
     <Window.Resources>
