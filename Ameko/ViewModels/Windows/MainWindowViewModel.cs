@@ -8,11 +8,13 @@ using System.Reactive;
 using System.Windows.Input;
 using Ameko.Services;
 using Ameko.Utilities;
+using Ameko.ViewModels.Dialogs;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using DynamicData;
 using Holo;
 using Holo.Configuration.Keybinds;
+using Holo.Models;
 using Holo.Providers;
 using NLog;
 using ReactiveUI;
@@ -40,6 +42,10 @@ public partial class MainWindowViewModel : ViewModelBase
 
     // Subtitle
     public Interaction<StylesManagerWindowViewModel, Unit> ShowStylesManager { get; }
+
+    // Solution
+    // Timing
+    public Interaction<ShiftTimesDialogViewModel, Unit> ShowShiftTimesDialog { get; }
 
     // Scripts
     public Interaction<DepCtrlWindowViewModel, Unit> ShowDependencyControl { get; }
@@ -81,6 +87,11 @@ public partial class MainWindowViewModel : ViewModelBase
     // Subtitle
     [KeybindTarget("ameko.stylesManager.show")]
     public ICommand ShowStylesManagerCommand { get; }
+
+    // Solution
+    // Timing
+    [KeybindTarget("ameko.document.shiftTimes", "Ctrl+I")]
+    public ICommand ShowShiftTimesDialogCommand { get; }
 
     // Scripts
     // Command execution doesn't get a keybind. So sad :(
@@ -176,6 +187,9 @@ public partial class MainWindowViewModel : ViewModelBase
         SaveSolutionAs = new Interaction<string, Uri?>();
         // Subtitle
         ShowStylesManager = new Interaction<StylesManagerWindowViewModel, Unit>();
+        // Solution
+        // Timing
+        ShowShiftTimesDialog = new Interaction<ShiftTimesDialogViewModel, Unit>();
         // Scripts
         ShowDependencyControl = new Interaction<DepCtrlWindowViewModel, Unit>();
         // Help
@@ -196,6 +210,9 @@ public partial class MainWindowViewModel : ViewModelBase
         QuitCommand = CreateQuitCommand();
         // Subtitle
         ShowStylesManagerCommand = CreateShowStylesManagerCommand();
+        // Solution
+        // Timing
+        ShowShiftTimesDialogCommand = CreateShowShiftTimesDialogCommand();
         // Scripts
         ExecuteScriptCommand = CreateExecuteScriptCommand();
         ReloadScriptsCommand = CreateReloadScriptsCommand();

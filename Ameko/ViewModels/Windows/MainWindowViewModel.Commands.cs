@@ -6,6 +6,8 @@ using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using Ameko.Services;
+using Ameko.ViewModels.Dialogs;
+using Ameko.Views.Dialogs;
 using Ameko.Views.Windows;
 using AssCS.IO;
 using Avalonia;
@@ -212,6 +214,21 @@ public partial class MainWindowViewModel : ViewModelBase
                     SolutionProvider.Current.WorkingSpace.Document
                 );
                 await ShowStylesManager.Handle(vm);
+            }
+        });
+    }
+
+    /// <summary>
+    /// Display the <see cref="ShiftTimesDialog"/>
+    /// </summary>
+    private ReactiveCommand<Unit, Unit> CreateShowShiftTimesDialogCommand()
+    {
+        return ReactiveCommand.CreateFromTask(async () =>
+        {
+            if (SolutionProvider.Current.IsWorkspaceLoaded)
+            {
+                var vm = new ShiftTimesDialogViewModel(SolutionProvider.Current.WorkingSpace);
+                await ShowShiftTimesDialog.Handle(vm);
             }
         });
     }
