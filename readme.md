@@ -49,12 +49,41 @@ the natural progression of Ameko's development.
 
 <h2 align="center">Development</h2>
 
+### Bob the Builder
+
 I would strongly recommend using Jetbrains Rider or Visual Studio for development.
 
-- As a prerequisite, ensure all NuGet packages are installed.
-- To build, either click the `Build` button in your IDE, or run `dotnet build` in the project root directory.
+#### C#
+
+- Make sure you have the .NET SDK installed.
+- Run `dotnet restore` to collect required NuGet packages.
+- To build, either click the `Build` button in your IDE, or run `dotnet build`.
+- To test, either click the `Run Tests` button in your IDE, or run `dotnet test`.
 - The final output for debugging and running is the `Ameko` project.
-- Ameko follows XDG directory guidelines
+
+#### Zig
+
+- Make sure you have Zig installed.
+- You may need to build FFMS2 and libass yourself.
+- To build, run `zig build`. To run, use `zig build run`.
+- To test, run `zig test`.
+
+### Project Components
+
+I wasn't sure where to put this section, so under "development" it goes! The Ameko project is currently comprised of 4
+components working in tandem.
+
+- **AssCS:** The backbone of the operation. AssCS is responsible for everything involving the subtitle document itself.
+  Managing events and styles, parsing tags, and reading/writing files are just part of what AssCS does. Eventually,
+  AssCS will likely be split into its own project so anyone can use it for their C# projects.
+- **Holo:** The middleware layer, primarily linking the GUI to AssCS and Mizuki. It also manages Dependency Control,
+  solutions, configuration, and pretty much everything that's not immediately GUI-related.
+- **Mizuki:** A high-performance interop library and Holo's first A/V plugin. Mizuki facilitates communication between
+  Holo and A/V libraries like FFMS and libass. By doing most of the work in a low-level language like Zig, Mizuki is
+  able to reduce the amount of calls across the managed-unmanaged border.
+- **Ameko:** Despite being the namesake of the project, effort has been made to make Ameko a thin GUI. Theoretically,
+  one should be able to build their own GUI and plug it right into Holo. Ameko's primary purpose is to facilitate data
+  transfer between the user and Holo.
 
 <h2 align="center">Contributing</h2>
 
