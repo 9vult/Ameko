@@ -5,6 +5,7 @@ using Ameko.ViewModels.Controls;
 using AssCS;
 using Avalonia.Controls;
 using Avalonia.ReactiveUI;
+using Avalonia.Threading;
 
 namespace Ameko.Views.Controls;
 
@@ -20,5 +21,13 @@ public partial class TabItemEventsArea : ReactiveUserControl<TabItemViewModel>
         var active = (Event)EventsGrid.SelectedItem;
         var selection = EventsGrid.SelectedItems.Cast<Event>().ToList();
         ViewModel?.Workspace.SelectionManager.Select(active, selection);
+
+        Dispatcher.UIThread.Post(
+            () =>
+            {
+                ViewModel?.Workspace.SelectionManager.EndSelectionChange();
+            },
+            DispatcherPriority.Background
+        );
     }
 }
