@@ -3,7 +3,7 @@
 const c = @import("c.zig").c;
 
 const std = @import("std");
-const ffms = @import("ffms.zig");
+const ffms = @import("ffms/ffms.zig");
 const common = @import("common.zig");
 
 pub fn main() !void {

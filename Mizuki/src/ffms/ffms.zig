@@ -3,8 +3,10 @@
 //! FFMS2 Interop
 
 const std = @import("std");
-const c = @import("c.zig").c;
-const common = @import("common.zig");
+const c = @import("../c.zig").c;
+const common = @import("../common.zig");
+
+const enums = @import("enums.zig");
 
 /// Get the current FFMS version
 ///
@@ -16,4 +18,9 @@ pub fn GetVersion() common.BackingVersion {
         .minor = (version >> 16) & 0xFF,
         .patch = version & 0xFFFF,
     };
+}
+
+/// Initialize FFMS
+pub fn Initialize() void {
+    c.FFMS_Init(0, 0);
 }
