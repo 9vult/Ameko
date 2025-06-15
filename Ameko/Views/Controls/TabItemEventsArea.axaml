@@ -22,7 +22,7 @@
               SelectionMode="Extended"
               VerticalScrollBarVisibility="Auto"
               ItemsSource="{Binding Workspace.Document.EventManager.Events}"
-              SelectedItem="{Binding Workspace.SelectionManager.ActiveEvent}"
+              SelectedItem="{Binding Workspace.SelectionManager.ActiveEvent, Mode=OneWay}"
               SelectionChanged="DataGrid_OnSelectionChanged">
         <DataGrid.Columns>
             <DataGridTextColumn Header="ID"
