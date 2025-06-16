@@ -8,6 +8,7 @@
              d:DesignWidth="125"
              d:DesignHeight="450"
 
+             xmlns:c="clr-namespace:Ameko.Views.Controls"
              xmlns:holo="clr-namespace:Holo.Models;assembly=Holo"
              xmlns:i18n="clr-namespace:Ameko.I18N"
              xmlns:icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
@@ -74,6 +75,15 @@
                 <TextBlock DockPanel.Dock="Top"
                            Text="{x:Static i18n:Resources.Toolbox_Header}" />
         
+            </DockPanel>
+        </TabItem>
+        
+        <TabItem Name="GitTabItem"
+                 Header="{icons:MaterialIconExt Kind=SourceBranch}">
+            <DockPanel Width="125">
+                <TextBlock DockPanel.Dock="Top"
+                           Text="{x:Static i18n:Resources.Toolbox_Header}" />
+                <c:GitToolbox />
             </DockPanel>
         </TabItem>
     </TabControl>
