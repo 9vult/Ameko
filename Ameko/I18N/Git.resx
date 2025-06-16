@@ -54,4 +54,7 @@
     <data name="Git_CommitBox_Watermark" xml:space="preserve">
         <value>Commit Message</value>
     </data>
+    <data name="Git_PotentialOwnershipIssue" xml:space="preserve">
+        <value>A .git directory was detected, but libgit2 is unable to process it. Make sure this repository is marked as "safe" in your .gitconfig.</value>
+    </data>
 </root>

@@ -32,6 +32,14 @@ public class GitService(IFileSystem fileSystem) : IGitService
         return Ready && Repository.IsValid(WorkingDirectory.LocalPath);
     }
 
+    public bool HasGitDirectory()
+    {
+        if (!Ready)
+            throw new InvalidOperationException("Working directory not set");
+
+        return fileSystem.Directory.GetDirectories(WorkingDirectory.LocalPath, ".git").Length != 0;
+    }
+
     /// <inheritdoc />
     public void InitializeRepository()
     {

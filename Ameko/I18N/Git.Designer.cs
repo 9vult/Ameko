@@ -150,6 +150,15 @@ namespace Ameko.I18N {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to A .git directory was detected, but libgit2 is unable to process it. Make sure this repository is marked as &quot;safe&quot; in your .gitconfig..
+        /// </summary>
+        public static string Git_PotentialOwnershipIssue {
+            get {
+                return ResourceManager.GetString("Git_PotentialOwnershipIssue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Staged Changes.
         /// </summary>
         public static string Git_StagedChanges {
