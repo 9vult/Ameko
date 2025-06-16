@@ -522,9 +522,11 @@ public class Solution : BindableBase
     {
         var root = dirPath.LocalPath;
         Logger.Info($"Generating solution from directory {root}...");
-        var sln = new Solution(fileSystem);
+        var sln = new Solution(fileSystem, isEmpty: true);
         if (!fileSystem.Directory.Exists(Path.GetDirectoryName(root)))
-            return sln;
+        {
+            return new Solution(fileSystem, isEmpty: false);
+        }
 
         var fileCount = 0;
         var dirCount = 0;
@@ -572,7 +574,7 @@ public class Solution : BindableBase
             }
         }
         Logger.Info($"Done! Solution contains {dirCount} directories and {fileCount} files");
-        return sln;
+        return sln.ReferencedItems.Count > 0 ? sln : new Solution(fileSystem, isEmpty: false);
     }
 
     /// <summary>
