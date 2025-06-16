@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: MPL-2.0
 
+using Holo.Models;
 using LibGit2Sharp;
 
-namespace Holo.Services;
+namespace Holo.Providers;
 
 /// <summary>
 /// Basic service for interacting with Git
@@ -14,7 +15,7 @@ public interface IGitService
     /// </summary>
     /// <param name="path">Directory path</param>
     /// <remarks>Probably the <see cref="Solution"/> directory</remarks>
-    void SetWorkingDirectory(Uri path);
+    void SetWorkingDirectory(Uri? path);
 
     /// <summary>
     /// Check if the working directory is a Git repository
@@ -38,13 +39,13 @@ public interface IGitService
     /// Get the currently-staged files
     /// </summary>
     /// <returns>Staged files</returns>
-    IEnumerable<StatusEntry> GetStagedFiles();
+    IEnumerable<GitStatusEntry> GetStagedFiles();
 
     /// <summary>
     /// Get the currently-unstaged files
     /// </summary>
     /// <returns>Unstaged files</returns>
-    IEnumerable<StatusEntry> GetUnstagedFiles();
+    IEnumerable<GitStatusEntry> GetUnstagedFiles();
 
     /// <summary>
     /// Stage files
@@ -69,23 +70,29 @@ public interface IGitService
     void Push();
 
     /// <summary>
+    /// Get the current branch
+    /// </summary>
+    /// <returns>The current branch</returns>
+    GitBranch GetCurrentBranch();
+
+    /// <summary>
     /// Get the local branches
     /// </summary>
     /// <returns>Local branches</returns>
-    IEnumerable<Branch> GetLocalBranches();
+    IEnumerable<GitBranch> GetLocalBranches();
 
     /// <summary>
     /// Get the remote branches
     /// </summary>
     /// <returns>Remote branches</returns>
-    IEnumerable<Branch> GetRemoteBranches();
+    IEnumerable<GitBranch> GetRemoteBranches();
 
     /// <summary>
     /// Create a branch
     /// </summary>
     /// <param name="name">Name of the new branch</param>
     /// <returns>The newly-created branch</returns>
-    Branch CreateBranch(string name);
+    GitBranch CreateBranch(string name);
 
     /// <summary>
     /// Switch to a different branch

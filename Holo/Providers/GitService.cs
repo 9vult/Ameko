@@ -1,30 +1,35 @@
 // SPDX-License-Identifier: MPL-2.0
 
 using System.Diagnostics.CodeAnalysis;
+using System.IO.Abstractions;
+using Holo.Models;
 using LibGit2Sharp;
 
-namespace Holo.Services;
+namespace Holo.Providers;
 
-public class GitService : IGitService
+public class GitService(IFileSystem fileSystem) : IGitService
 {
     [MemberNotNullWhen(true, nameof(WorkingDirectory))]
     private bool Ready { get; set; }
     private Uri? WorkingDirectory { get; set; }
 
     /// <inheritdoc />
-    public void SetWorkingDirectory(Uri path)
+    public void SetWorkingDirectory(Uri? path)
     {
-        WorkingDirectory = path;
+        if (path is null)
+        {
+            WorkingDirectory = null;
+            Ready = false;
+            return;
+        }
+        WorkingDirectory = new Uri(fileSystem.Path.GetDirectoryName(path.LocalPath) ?? "/");
         Ready = true;
     }
 
     /// <inheritdoc />
     public bool IsRepository()
     {
-        if (!Ready)
-            throw new InvalidOperationException("Working directory not set");
-
-        return Repository.IsValid(WorkingDirectory.LocalPath);
+        return Ready && Repository.IsValid(WorkingDirectory.LocalPath);
     }
 
     /// <inheritdoc />
@@ -49,7 +54,7 @@ public class GitService : IGitService
     }
 
     /// <inheritdoc />
-    public IEnumerable<StatusEntry> GetStagedFiles()
+    public IEnumerable<GitStatusEntry> GetStagedFiles()
     {
         if (!Ready)
             throw new InvalidOperationException("Working directory not set");
@@ -61,11 +66,12 @@ public class GitService : IGitService
             .Where(se =>
                 se.State.HasFlag(FileStatus.ModifiedInIndex)
                 || se.State.HasFlag(FileStatus.NewInIndex)
-            );
+            )
+            .Select(se => new GitStatusEntry(se.FilePath, true));
     }
 
     /// <inheritdoc />
-    public IEnumerable<StatusEntry> GetUnstagedFiles()
+    public IEnumerable<GitStatusEntry> GetUnstagedFiles()
     {
         if (!Ready)
             throw new InvalidOperationException("Working directory not set");
@@ -77,7 +83,8 @@ public class GitService : IGitService
             .Where(se =>
                 se.State.HasFlag(FileStatus.ModifiedInWorkdir)
                 || se.State.HasFlag(FileStatus.NewInWorkdir)
-            );
+            )
+            .Select(se => new GitStatusEntry(se.FilePath, false));
     }
 
     /// <inheritdoc />
@@ -147,7 +154,7 @@ public class GitService : IGitService
     }
 
     /// <inheritdoc />
-    public IEnumerable<Branch> GetLocalBranches()
+    public GitBranch GetCurrentBranch()
     {
         if (!Ready)
             throw new InvalidOperationException("Working directory not set");
@@ -155,11 +162,12 @@ public class GitService : IGitService
             throw new InvalidOperationException("Not in a repository");
 
         using var repo = new Repository(WorkingDirectory.LocalPath);
-        return repo.Branches.Where(b => !b.IsRemote);
+        var branch = repo.Head;
+        return new GitBranch(branch.FriendlyName, branch.IsRemote, branch.IsTracking);
     }
 
     /// <inheritdoc />
-    public IEnumerable<Branch> GetRemoteBranches()
+    public IEnumerable<GitBranch> GetLocalBranches()
     {
         if (!Ready)
             throw new InvalidOperationException("Working directory not set");
@@ -167,11 +175,13 @@ public class GitService : IGitService
             throw new InvalidOperationException("Not in a repository");
 
         using var repo = new Repository(WorkingDirectory.LocalPath);
-        return repo.Branches.Where(b => b.IsRemote);
+        return repo
+            .Branches.Where(b => !b.IsRemote)
+            .Select(b => new GitBranch(b.FriendlyName, false, b.IsTracking));
     }
 
     /// <inheritdoc />
-    public Branch CreateBranch(string name)
+    public IEnumerable<GitBranch> GetRemoteBranches()
     {
         if (!Ready)
             throw new InvalidOperationException("Working directory not set");
@@ -179,7 +189,22 @@ public class GitService : IGitService
             throw new InvalidOperationException("Not in a repository");
 
         using var repo = new Repository(WorkingDirectory.LocalPath);
-        return repo.CreateBranch(name);
+        return repo
+            .Branches.Where(b => b.IsRemote)
+            .Select(b => new GitBranch(b.FriendlyName, true, false));
+    }
+
+    /// <inheritdoc />
+    public GitBranch CreateBranch(string name)
+    {
+        if (!Ready)
+            throw new InvalidOperationException("Working directory not set");
+        if (!IsRepository())
+            throw new InvalidOperationException("Not in a repository");
+
+        using var repo = new Repository(WorkingDirectory.LocalPath);
+        var branch = repo.CreateBranch(name);
+        return new GitBranch(branch.FriendlyName, false, branch.IsTracking);
     }
 
     /// <inheritdoc />

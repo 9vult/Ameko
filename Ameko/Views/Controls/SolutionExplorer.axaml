@@ -80,11 +80,8 @@
         
         <TabItem Name="GitTabItem"
                  Header="{icons:MaterialIconExt Kind=SourceBranch}">
-            <DockPanel Width="125">
-                <TextBlock DockPanel.Dock="Top"
-                           Text="{x:Static i18n:Resources.Toolbox_Header}" />
-                <c:GitToolbox />
-            </DockPanel>
+            <c:GitToolbox Width="{Binding $parent[TabControl].Bounds.Width}"
+                          DataContext="{Binding  GitToolboxViewModel}" />
         </TabItem>
     </TabControl>
 </UserControl>

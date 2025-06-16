@@ -4,6 +4,7 @@ using System;
 using System.IO.Abstractions;
 using Ameko.Services;
 using Ameko.Utilities;
+using Ameko.ViewModels.Controls;
 using Ameko.ViewModels.Windows;
 using Holo.Configuration;
 using Holo.Configuration.Keybinds;
@@ -41,9 +42,9 @@ public static class AmekoServiceProvider
         services.AddSingleton<KeybindService>();
 
         // --- Application Services ---
-        // Core business logic and application-specific operations
         services.AddSingleton<DirectoryService>();
         services.AddSingleton<ISolutionProvider, SolutionProvider>();
+        services.AddSingleton<IGitService, GitService>();
 
         // --- Presentation ---
         services.AddSingleton<CultureService>();
@@ -57,6 +58,7 @@ public static class AmekoServiceProvider
 
         // --- ViewModels ---
         services.AddSingleton<MainWindowViewModel>();
+        services.AddSingleton<GitToolboxViewModel>();
         services.AddTransient<LogWindowViewModel>();
         services.AddTransient<DepCtrlWindowViewModel>();
 

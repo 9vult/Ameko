@@ -8,6 +8,7 @@ using System.Reactive;
 using System.Windows.Input;
 using Ameko.Services;
 using Ameko.Utilities;
+using Ameko.ViewModels.Controls;
 using Ameko.ViewModels.Dialogs;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
@@ -124,6 +125,7 @@ public partial class MainWindowViewModel : ViewModelBase
 
     public ISolutionProvider SolutionProvider { get; }
     public KeybindService KeybindService { get; }
+    public GitToolboxViewModel GitToolboxViewModel { get; }
 
     public ObservableCollection<TemplatedControl> ScriptMenuItems { get; }
 
@@ -171,7 +173,8 @@ public partial class MainWindowViewModel : ViewModelBase
         IIoService ioService,
         IScriptService scriptService,
         IFileSystem fileSystem,
-        KeybindService keybindService
+        KeybindService keybindService,
+        GitToolboxViewModel gitToolboxViewModel
     )
     {
         _serviceProvider = serviceProvider;
@@ -181,6 +184,7 @@ public partial class MainWindowViewModel : ViewModelBase
         _scriptService = scriptService;
         _fileSystem = fileSystem;
         KeybindService = keybindService;
+        GitToolboxViewModel = gitToolboxViewModel;
 
         #region Interactions
         // File
