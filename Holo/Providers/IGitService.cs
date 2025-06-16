@@ -81,6 +81,12 @@ public interface IGitService
     void Push();
 
     /// <summary>
+    /// Check if we can push
+    /// </summary>
+    /// <returns><see langword="true"/> if pushing is possible</returns>
+    bool CanPush();
+
+    /// <summary>
     /// Get the current branch
     /// </summary>
     /// <returns>The current branch</returns>

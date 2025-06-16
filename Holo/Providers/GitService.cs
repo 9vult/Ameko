@@ -29,7 +29,14 @@ public class GitService(IFileSystem fileSystem) : IGitService
     /// <inheritdoc />
     public bool IsRepository()
     {
-        return Ready && Repository.IsValid(WorkingDirectory.LocalPath);
+        try
+        {
+            return Ready && Repository.IsValid(WorkingDirectory.LocalPath);
+        }
+        catch (Exception)
+        {
+            return false;
+        }
     }
 
     public bool HasGitDirectory()
@@ -66,7 +73,8 @@ public class GitService(IFileSystem fileSystem) : IGitService
             let email = signature?.Email ?? "-"
             let message = commit.MessageShort ?? "-"
             let date = commit.Committer?.When ?? DateTimeOffset.MinValue
-            select new GitCommit(name, email, message, date)
+            let isMerge = commit.Parents?.Count() > 1
+            select new GitCommit(name, email, message, date, isMerge)
         ).ToList();
     }
 
@@ -184,6 +192,23 @@ public class GitService(IFileSystem fileSystem) : IGitService
     }
 
     /// <inheritdoc />
+    public bool CanPush()
+    {
+        if (!Ready)
+            throw new InvalidOperationException("Working directory not set");
+        if (!IsRepository())
+            throw new InvalidOperationException("Not in a repository");
+
+        using var repo = new Repository(WorkingDirectory.LocalPath);
+        var head = repo.Head;
+        if (!head.IsTracking)
+            return false;
+
+        var tracking = head.TrackingDetails;
+        return tracking.AheadBy is > 0;
+    }
+
+    /// <inheritdoc />
     public GitBranch GetCurrentBranch()
     {
         if (!Ready)
@@ -271,7 +296,8 @@ public class GitService(IFileSystem fileSystem) : IGitService
             commit.Author.Name,
             commit.Author.Email,
             commit.MessageShort,
-            commit.Author.When
+            commit.Author.When,
+            false
         );
     }
 

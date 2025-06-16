@@ -90,6 +90,11 @@
 			              Command="{Binding DeleteEventsCommand}" />
 		    </ContextMenu>
 	    </DataGrid.ContextMenu>
+	    <DataGrid.Styles>
+		    <Style Selector="DataGridRow">
+			    <Setter Property="Background" Value="Transparent" />
+		    </Style>
+	    </DataGrid.Styles>
     </DataGrid>
               
 </UserControl>

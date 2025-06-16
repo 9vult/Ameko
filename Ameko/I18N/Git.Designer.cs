@@ -87,6 +87,15 @@ namespace Ameko.I18N {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Push.
+        /// </summary>
+        public static string Git_Button_Push_ToolTip {
+            get {
+                return ResourceManager.GetString("Git_Button_Push_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Refresh.
         /// </summary>
         public static string Git_Button_Refresh_ToolTip {

@@ -42,19 +42,30 @@
         <!-- In repo display -->
         <DockPanel IsVisible="{Binding IsInRepo}">
             <Grid DockPanel.Dock="Bottom"
-                  ColumnDefinitions="Auto, *, Auto"
+                  ColumnDefinitions="Auto, Auto, *, Auto"
                   RowDefinitions="Auto, Auto"
+                  ColumnSpacing="2"
                   RowSpacing="4"
                   Margin="4">
+                <!-- Action buttons -->
                 <Button Grid.Column="0"
                         Grid.Row="0"
                         Padding="4"
                         Background="Transparent"
                         CornerRadius="20"
-                        Content="{icons:MaterialIconExt Kind=SourceBranchSync, Size=18}"
+                        Content="{icons:MaterialIconExt Kind=TransferDown, Size=18}"
                         ToolTip.Tip="{x:Static i18n:Git.Git_Button_Pull_ToolTip}"
                         Command="{Binding PullCommand}" />
-                <Button Grid.Column="2"
+                <Button Grid.Column="1"
+                        Grid.Row="0"
+                        Padding="4"
+                        Background="Transparent"
+                        CornerRadius="20"
+                        Content="{icons:MaterialIconExt Kind=TransferUp, Size=18}"
+                        ToolTip.Tip="{x:Static i18n:Git.Git_Button_Push_ToolTip}"
+                        Command="{Binding PushCommand}"
+                        IsEnabled="{Binding CanPush}" />
+                <Button Grid.Column="3"
                         Grid.Row="0"
                         Padding="4"
                         Background="Transparent"
@@ -66,30 +77,31 @@
                 <!-- Latest Commits -->
                 <StackPanel Grid.Column="0"
                             Grid.Row="1"
-                            Grid.ColumnSpan="3">
+                            Grid.ColumnSpan="4">
                     <TextBlock Text="{Binding LatestCommitsHeader}"
                                TextWrapping="Wrap"
                                Margin="0" />
                     <ListBox ItemsSource="{Binding LatestCommits}">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
-                                <Grid ColumnDefinitions="Auto, Auto, *"
-                                      ColumnSpacing="4"
-                                      ToolTip.Tip="{Binding Date}">
-                                    <TextBlock Grid.Column="0"
-                                               Text="{Binding Author}" />
-                                    <TextBlock Grid.Column="1"
-                                               Text="-" />
-                                    <TextBlock Grid.Column="2"
-                                               Text="{Binding Message}" />
-                                    </Grid>
+                                <StackPanel Orientation="Horizontal"
+                                            Spacing="2"
+                                            ToolTip.Tip="{Binding Date}">
+                                    <icons:MaterialIcon Kind="SourceCommit"
+                                                        IsVisible="{Binding !IsMerge}" />
+                                    <icons:MaterialIcon Kind="SourceMerge"
+                                                        IsVisible="{Binding IsMerge}" />
+                                    <TextBlock Text="{Binding Message}" />
+                                    <TextBlock Text="{Binding Author}"
+                                               Foreground="Gray"/>
+                                </StackPanel>
                             </DataTemplate>
                         </ListBox.ItemTemplate>
                     </ListBox>
                 </StackPanel>
             </Grid>
             <StackPanel Margin="5"
-                        Spacing="6">
+                        Spacing="10">
                 <!-- Commit area -->
                 <Grid ColumnDefinitions="*, Auto"
                       ColumnSpacing="2"
@@ -114,7 +126,8 @@
                         <TextBlock Grid.Column="1"
                                    Text="{Binding StagedFiles.Count}" />
                     </Grid>
-                    <ListBox ItemsSource="{Binding StagedFiles}">
+                    <ListBox ItemsSource="{Binding StagedFiles}"
+                             BorderBrush="Transparent">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <Grid ColumnDefinitions="*, Auto"
@@ -144,7 +157,8 @@
                         <TextBlock Grid.Column="1"
                                    Text="{Binding UnstagedFiles.Count}" />
                     </Grid>
-                    <ListBox ItemsSource="{Binding UnstagedFiles}">
+                    <ListBox ItemsSource="{Binding UnstagedFiles}"
+                             BorderBrush="Transparent">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <Grid ColumnDefinitions="*, Auto"

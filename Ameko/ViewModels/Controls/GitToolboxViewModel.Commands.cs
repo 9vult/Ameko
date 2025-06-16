@@ -63,6 +63,17 @@ public partial class GitToolboxViewModel : ViewModelBase
         );
     }
 
+    private ReactiveCommand<GitStatusEntry, Unit> CreatePushCommand()
+    {
+        return ReactiveCommand.Create(
+            (GitStatusEntry entry) =>
+            {
+                _gitService.Push();
+                RaisePropertyChanges();
+            }
+        );
+    }
+
     private void RaisePropertyChanges()
     {
         this.RaisePropertyChanged(nameof(IsInRepo));
@@ -74,5 +85,7 @@ public partial class GitToolboxViewModel : ViewModelBase
         this.RaisePropertyChanged(nameof(LatestCommitsHeader));
         this.RaisePropertyChanged(nameof(HasStagedChanges));
         this.RaisePropertyChanged(nameof(HasUnstagedChanges));
+        this.RaisePropertyChanged(nameof(CanPush));
+        this.RaisePropertyChanged(nameof(IsPotentialOwnershipIssue));
     }
 }
