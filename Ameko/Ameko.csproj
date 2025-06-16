@@ -105,6 +105,14 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>PasteOver.resx</DependentUpon>
     </Compile>
+    <Compile Update="I18N\Git.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Git.resx</DependentUpon>
+    </Compile>
+    <Compile Update="ViewModels\Controls\GitToolboxViewModel.Commands.cs">
+      <DependentUpon>GitToolboxViewModel.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Update="I18N\Resources.resx">
@@ -138,6 +146,10 @@
     <EmbeddedResource Update="I18N\PasteOver.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>PasteOver.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="I18N\Git.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Git.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
 </Project>
