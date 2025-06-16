@@ -132,6 +132,15 @@ namespace Ameko.I18N {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to There&apos;s nothing to commit at this time..
+        /// </summary>
+        public static string Git_NothingToCommit {
+            get {
+                return ResourceManager.GetString("Git_NothingToCommit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No Git repository detected..
         /// </summary>
         public static string Git_NotInRepo {

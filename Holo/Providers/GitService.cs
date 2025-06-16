@@ -108,6 +108,18 @@ public class GitService(IFileSystem fileSystem) : IGitService
     }
 
     /// <inheritdoc />
+    public void UnstageFiles(IEnumerable<Uri> files)
+    {
+        if (!Ready)
+            throw new InvalidOperationException("Working directory not set");
+        if (!IsRepository())
+            throw new InvalidOperationException("Not in a repository");
+
+        using var repo = new Repository(WorkingDirectory.LocalPath);
+        Commands.Unstage(repo, files.Select(f => f.LocalPath));
+    }
+
+    /// <inheritdoc />
     public void Fetch()
     {
         if (!Ready)
@@ -232,7 +244,7 @@ public class GitService(IFileSystem fileSystem) : IGitService
     }
 
     /// <inheritdoc />
-    public Commit Commit(string message, Signature author, Signature committer)
+    public Commit Commit(string message)
     {
         if (!Ready)
             throw new InvalidOperationException("Working directory not set");
@@ -243,7 +255,8 @@ public class GitService(IFileSystem fileSystem) : IGitService
             throw new InvalidOperationException("No files staged for commit");
 
         using var repo = new Repository(WorkingDirectory.LocalPath);
-        return repo.Commit(message, author, committer);
+        var signature = repo.Config.BuildSignature(DateTimeOffset.Now);
+        return repo.Commit(message, signature, signature);
     }
 
     /// <inheritdoc />

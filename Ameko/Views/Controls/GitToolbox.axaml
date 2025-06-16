@@ -6,8 +6,6 @@
              d:DesignWidth="250"
              d:DesignHeight="450"
 
-             xmlns:c="clr-namespace:Ameko.Views.Controls"
-             xmlns:holo="clr-namespace:Holo.Models;assembly=Holo"
              xmlns:i18n="clr-namespace:Ameko.I18N"
              xmlns:icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              xmlns:vm="clr-namespace:Ameko.ViewModels.Controls"
@@ -54,8 +52,10 @@
                          Text="{Binding CommitMessage}"
                          Watermark="{x:Static i18n:Git.Git_CommitBox_Watermark}" />
                 <Button Grid.Column="1"
+                        IsEnabled="{Binding CanCommit}"
                         Content="{x:Static i18n:Git.Git_Button_Commit}"
-                        ToolTip.Tip="{Binding CommitButtonToolTip}" />
+                        ToolTip.Tip="{Binding CommitButtonToolTip}"
+                        Command="{Binding CommitCommand}"/>
             </Grid>
             <!-- Staged changes -->
             <StackPanel IsVisible="{Binding HasStagedChanges}">
@@ -80,7 +80,8 @@
                                         Background="Transparent"
                                         BorderThickness="0"
                                         Content="{icons:MaterialIconExt Kind=Minus}"
-                                        ToolTip.Tip="{x:Static i18n:Git.Git_Button_Unstage_ToolTip}" />
+                                        ToolTip.Tip="{x:Static i18n:Git.Git_Button_Unstage_ToolTip}"
+                                        Command="{Binding $parent[StackPanel].((vm:GitToolboxViewModel)DataContext).UnstageCommand, FallbackValue=.}" />
                             </Grid>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
@@ -108,12 +109,16 @@
                                         Background="Transparent"
                                         BorderThickness="0"
                                         Content="{icons:MaterialIconExt Kind=Plus}"
-                                        ToolTip.Tip="{x:Static i18n:Git.Git_Button_Stage_ToolTip}" />
+                                        ToolTip.Tip="{x:Static i18n:Git.Git_Button_Stage_ToolTip}"
+                                        Command="{Binding $parent[StackPanel].((vm:GitToolboxViewModel)DataContext).StageCommand, FallbackValue=.}" />
                             </Grid>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
                 </ListBox>
             </StackPanel>
+            <TextBlock IsVisible="{Binding !AnythingToCommit}"
+                       HorizontalAlignment="Center"
+                       Text="{x:Static i18n:Git.Git_NothingToCommit}"/>
         </StackPanel>
     </Panel>
 </UserControl>

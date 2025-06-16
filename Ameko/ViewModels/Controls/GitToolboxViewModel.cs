@@ -5,6 +5,7 @@ using System.Linq;
 using System.Windows.Input;
 using Holo.Models;
 using Holo.Providers;
+using ReactiveUI;
 
 namespace Ameko.ViewModels.Controls;
 
@@ -13,16 +14,31 @@ public partial class GitToolboxViewModel : ViewModelBase
     private readonly IGitService _gitService;
     private readonly ISolutionProvider _solutionProvider;
 
+    private string _commitMessage = string.Empty;
+
     public bool IsPotentialOwnershipIssue =>
         !_gitService.IsRepository() && _gitService.HasGitDirectory();
 
     public bool IsInRepo => _gitService.IsRepository();
     public bool HasStagedChanges => StagedFiles.Count != 0;
     public bool HasUnstagedChanges => UnstagedFiles.Count != 0;
+    public bool AnythingToCommit => IsInRepo && (HasStagedChanges || HasUnstagedChanges);
+    public bool CanCommit => !string.IsNullOrWhiteSpace(_commitMessage);
 
-    public string CommitMessage { get; set; } = string.Empty;
+    public string CommitMessage
+    {
+        get => _commitMessage;
+        set
+        {
+            this.RaiseAndSetIfChanged(ref _commitMessage, value);
+            this.RaisePropertyChanged(nameof(CanCommit));
+        }
+    }
 
     public ICommand RefreshCommand { get; }
+    public ICommand StageCommand { get; }
+    public ICommand UnstageCommand { get; }
+    public ICommand CommitCommand { get; }
 
     public string CommitButtonToolTip =>
         string.Format(
@@ -41,5 +57,8 @@ public partial class GitToolboxViewModel : ViewModelBase
         _solutionProvider = solutionProvider;
 
         RefreshCommand = CreateRefreshCommand();
+        StageCommand = CreateStageCommand();
+        UnstageCommand = CreateUnstageCommand();
+        CommitCommand = CreateCommitCommand();
     }
 }
