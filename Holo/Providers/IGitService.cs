@@ -20,8 +20,14 @@ public interface IGitService
     /// <summary>
     /// Check if the working directory is a Git repository
     /// </summary>
-    /// <returns></returns>
+    /// <returns><see langword="true"/> if it is a Git repository</returns>
     bool IsRepository();
+
+    /// <summary>
+    /// Check if the working directory contains a .git directory
+    /// </summary>
+    /// <returns><see langword="true"/> if a .git directory exists</returns>
+    bool HasGitDirectory();
 
     /// <summary>
     /// Initialize a new Git repository

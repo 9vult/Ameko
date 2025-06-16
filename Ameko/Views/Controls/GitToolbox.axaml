@@ -26,6 +26,11 @@
             <TextBlock Text="{x:Static i18n:Git.Git_NotInRepo_Tutorial}"
                        TextAlignment="Center"
                        TextWrapping="Wrap"/>
+            <TextBlock IsVisible="{Binding IsPotentialOwnershipIssue}"
+                       Text="{x:Static i18n:Git.Git_PotentialOwnershipIssue}"
+                       TextWrapping="Wrap"
+                       TextAlignment="Center"
+                       Foreground="Red"/>
             <Grid ColumnDefinitions="*, Auto, *">
                 <Button Grid.Column="1"
                         Padding="2"

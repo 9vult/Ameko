@@ -13,6 +13,9 @@ public partial class GitToolboxViewModel : ViewModelBase
     private readonly IGitService _gitService;
     private readonly ISolutionProvider _solutionProvider;
 
+    public bool IsPotentialOwnershipIssue =>
+        !_gitService.IsRepository() && _gitService.HasGitDirectory();
+
     public bool IsInRepo => _gitService.IsRepository();
     public bool HasStagedChanges => StagedFiles.Count != 0;
     public bool HasUnstagedChanges => UnstagedFiles.Count != 0;
