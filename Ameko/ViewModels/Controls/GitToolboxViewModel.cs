@@ -21,6 +21,7 @@ public partial class GitToolboxViewModel : ViewModelBase
     public ICommand UnstageCommand { get; }
     public ICommand CommitCommand { get; }
     public ICommand PullCommand { get; }
+    public ICommand PushCommand { get; }
 
     public bool IsPotentialOwnershipIssue =>
         !_gitService.IsRepository() && _gitService.HasGitDirectory();
@@ -30,6 +31,7 @@ public partial class GitToolboxViewModel : ViewModelBase
     public bool HasUnstagedChanges => UnstagedFiles.Count != 0;
     public bool AnythingToCommit => IsInRepo && (HasStagedChanges || HasUnstagedChanges);
     public bool CanCommit => !string.IsNullOrWhiteSpace(_commitMessage);
+    public bool CanPush => IsInRepo && _gitService.CanPush();
 
     public string CommitMessage
     {
@@ -70,5 +72,6 @@ public partial class GitToolboxViewModel : ViewModelBase
         UnstageCommand = CreateUnstageCommand();
         CommitCommand = CreateCommitCommand();
         PullCommand = CreatePullCommand();
+        PushCommand = CreatePushCommand();
     }
 }

@@ -66,4 +66,7 @@
     <data name="Git_LatestCommits" xml:space="preserve">
         <value>Latest commits on {0}:</value>
     </data>
+    <data name="Git_Button_Push_ToolTip" xml:space="preserve">
+        <value>Push</value>
+    </data>
 </root>
