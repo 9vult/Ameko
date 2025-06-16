@@ -78,6 +78,15 @@ namespace Ameko.I18N {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Pull.
+        /// </summary>
+        public static string Git_Button_Pull_ToolTip {
+            get {
+                return ResourceManager.GetString("Git_Button_Pull_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Refresh.
         /// </summary>
         public static string Git_Button_Refresh_ToolTip {
@@ -128,6 +137,15 @@ namespace Ameko.I18N {
         public static string Git_CommitBox_Watermark {
             get {
                 return ResourceManager.GetString("Git_CommitBox_Watermark", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Latest commits on {0}:.
+        /// </summary>
+        public static string Git_LatestCommits {
+            get {
+                return ResourceManager.GetString("Git_LatestCommits", resourceCulture);
             }
         }
         
