@@ -16,6 +16,12 @@ public partial class GitToolboxViewModel : ViewModelBase
 
     private string _commitMessage = string.Empty;
 
+    public ICommand RefreshCommand { get; }
+    public ICommand StageCommand { get; }
+    public ICommand UnstageCommand { get; }
+    public ICommand CommitCommand { get; }
+    public ICommand PullCommand { get; }
+
     public bool IsPotentialOwnershipIssue =>
         !_gitService.IsRepository() && _gitService.HasGitDirectory();
 
@@ -35,14 +41,15 @@ public partial class GitToolboxViewModel : ViewModelBase
         }
     }
 
-    public ICommand RefreshCommand { get; }
-    public ICommand StageCommand { get; }
-    public ICommand UnstageCommand { get; }
-    public ICommand CommitCommand { get; }
-
     public string CommitButtonToolTip =>
         string.Format(
             I18N.Git.Git_Button_Commit_ToolTip,
+            IsInRepo ? _gitService.GetCurrentBranch().Name : "master"
+        );
+
+    public string LatestCommitsHeader =>
+        string.Format(
+            I18N.Git.Git_LatestCommits,
             IsInRepo ? _gitService.GetCurrentBranch().Name : "master"
         );
 
@@ -50,6 +57,8 @@ public partial class GitToolboxViewModel : ViewModelBase
         IsInRepo ? _gitService.GetStagedFiles().ToList() : [];
     public List<GitStatusEntry> UnstagedFiles =>
         IsInRepo ? _gitService.GetUnstagedFiles().ToList() : [];
+
+    public List<GitCommit> LatestCommits => IsInRepo ? _gitService.GetRecentCommits().ToList() : [];
 
     public GitToolboxViewModel(IGitService gitService, ISolutionProvider solutionProvider)
     {
@@ -60,5 +69,6 @@ public partial class GitToolboxViewModel : ViewModelBase
         StageCommand = CreateStageCommand();
         UnstageCommand = CreateUnstageCommand();
         CommitCommand = CreateCommitCommand();
+        PullCommand = CreatePullCommand();
     }
 }

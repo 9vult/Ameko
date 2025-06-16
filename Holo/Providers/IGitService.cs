@@ -39,7 +39,7 @@ public interface IGitService
     /// </summary>
     /// <param name="count">Number of commits to get</param>
     /// <returns>Recent commits</returns>
-    IEnumerable<Commit> GetRecentCommits(int count = 15);
+    IEnumerable<GitCommit> GetRecentCommits(int count = 15);
 
     /// <summary>
     /// Get the currently-staged files
@@ -56,14 +56,14 @@ public interface IGitService
     /// <summary>
     /// Stage files
     /// </summary>
-    /// <param name="files">Paths to the files to stage</param>
-    void StageFiles(IEnumerable<Uri> files);
+    /// <param name="files">Relative paths to the files to stage</param>
+    void StageFiles(IEnumerable<string> files);
 
     /// <summary>
     /// Stage files
     /// </summary>
-    /// <param name="files">Paths to the files to unstage</param>
-    void UnstageFiles(IEnumerable<Uri> files);
+    /// <param name="files">Relative paths to the files to unstage</param>
+    void UnstageFiles(IEnumerable<string> files);
 
     /// <summary>
     /// Fetch data from the remote
@@ -73,8 +73,7 @@ public interface IGitService
     /// <summary>
     /// Pull changes from the remote branch into the local branch
     /// </summary>
-    /// <param name="merger">Signature to use if a merge happens</param>
-    void Pull(Signature merger);
+    void Pull();
 
     /// <summary>
     /// Push from the local branch to the remote branch
@@ -117,7 +116,7 @@ public interface IGitService
     /// </summary>
     /// <param name="message">Commit message</param>
     /// <returns>The newly-created commit</returns>
-    Commit Commit(string message);
+    GitCommit Commit(string message);
 
     /// <summary>
     /// Reset the working state to a previous commit

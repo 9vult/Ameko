@@ -23,7 +23,7 @@ public partial class GitToolboxViewModel : ViewModelBase
         return ReactiveCommand.Create(
             (GitStatusEntry entry) =>
             {
-                _gitService.StageFiles([new Uri(entry.FilePath)]);
+                _gitService.StageFiles([entry.FilePath]);
                 RaisePropertyChanges();
             }
         );
@@ -34,7 +34,7 @@ public partial class GitToolboxViewModel : ViewModelBase
         return ReactiveCommand.Create(
             (GitStatusEntry entry) =>
             {
-                _gitService.UnstageFiles([new Uri(entry.FilePath)]);
+                _gitService.UnstageFiles([entry.FilePath]);
                 RaisePropertyChanges();
             }
         );
@@ -52,12 +52,27 @@ public partial class GitToolboxViewModel : ViewModelBase
         );
     }
 
+    private ReactiveCommand<GitStatusEntry, Unit> CreatePullCommand()
+    {
+        return ReactiveCommand.Create(
+            (GitStatusEntry entry) =>
+            {
+                _gitService.Pull();
+                RaisePropertyChanges();
+            }
+        );
+    }
+
     private void RaisePropertyChanges()
     {
         this.RaisePropertyChanged(nameof(IsInRepo));
         this.RaisePropertyChanged(nameof(StagedFiles));
         this.RaisePropertyChanged(nameof(UnstagedFiles));
-        this.RaisePropertyChanged(nameof(CommitButtonToolTip));
+        this.RaisePropertyChanged(nameof(LatestCommits));
         this.RaisePropertyChanged(nameof(AnythingToCommit));
+        this.RaisePropertyChanged(nameof(CommitButtonToolTip));
+        this.RaisePropertyChanged(nameof(LatestCommitsHeader));
+        this.RaisePropertyChanged(nameof(HasStagedChanges));
+        this.RaisePropertyChanged(nameof(HasUnstagedChanges));
     }
 }

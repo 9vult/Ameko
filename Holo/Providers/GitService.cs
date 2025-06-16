@@ -35,7 +35,7 @@ public class GitService(IFileSystem fileSystem) : IGitService
     public bool HasGitDirectory()
     {
         if (!Ready)
-            throw new InvalidOperationException("Working directory not set");
+            return false;
 
         return fileSystem.Directory.GetDirectories(WorkingDirectory.LocalPath, ".git").Length != 0;
     }
@@ -50,7 +50,7 @@ public class GitService(IFileSystem fileSystem) : IGitService
     }
 
     /// <inheritdoc />
-    public IEnumerable<Commit> GetRecentCommits(int count = 15)
+    public IEnumerable<GitCommit> GetRecentCommits(int count = 15)
     {
         if (!Ready)
             throw new InvalidOperationException("Working directory not set");
@@ -58,7 +58,16 @@ public class GitService(IFileSystem fileSystem) : IGitService
             throw new InvalidOperationException("Not in a repository");
 
         using var repo = new Repository(WorkingDirectory.LocalPath);
-        return repo.Commits.Take(count);
+        var latest = repo.Commits.Take(count).ToList();
+        return (
+            from commit in latest
+            let signature = commit.Author ?? commit.Committer
+            let name = signature?.Name ?? "-"
+            let email = signature?.Email ?? "-"
+            let message = commit.MessageShort ?? "-"
+            let date = commit.Committer?.When ?? DateTimeOffset.MinValue
+            select new GitCommit(name, email, message, date)
+        ).ToList();
     }
 
     /// <inheritdoc />
@@ -96,7 +105,7 @@ public class GitService(IFileSystem fileSystem) : IGitService
     }
 
     /// <inheritdoc />
-    public void StageFiles(IEnumerable<Uri> files)
+    public void StageFiles(IEnumerable<string> files)
     {
         if (!Ready)
             throw new InvalidOperationException("Working directory not set");
@@ -104,11 +113,11 @@ public class GitService(IFileSystem fileSystem) : IGitService
             throw new InvalidOperationException("Not in a repository");
 
         using var repo = new Repository(WorkingDirectory.LocalPath);
-        Commands.Stage(repo, files.Select(f => f.LocalPath));
+        Commands.Stage(repo, files);
     }
 
     /// <inheritdoc />
-    public void UnstageFiles(IEnumerable<Uri> files)
+    public void UnstageFiles(IEnumerable<string> files)
     {
         if (!Ready)
             throw new InvalidOperationException("Working directory not set");
@@ -116,7 +125,7 @@ public class GitService(IFileSystem fileSystem) : IGitService
             throw new InvalidOperationException("Not in a repository");
 
         using var repo = new Repository(WorkingDirectory.LocalPath);
-        Commands.Unstage(repo, files.Select(f => f.LocalPath));
+        Commands.Unstage(repo, files);
     }
 
     /// <inheritdoc />
@@ -141,7 +150,7 @@ public class GitService(IFileSystem fileSystem) : IGitService
     }
 
     /// <inheritdoc />
-    public void Pull(Signature merger)
+    public void Pull()
     {
         if (!Ready)
             throw new InvalidOperationException("Working directory not set");
@@ -151,6 +160,7 @@ public class GitService(IFileSystem fileSystem) : IGitService
         using var repo = new Repository(WorkingDirectory.LocalPath);
         var options = new PullOptions { FetchOptions = new FetchOptions() };
 
+        var merger = repo.Config.BuildSignature(DateTimeOffset.Now);
         Commands.Pull(repo, merger, options);
     }
 
@@ -244,7 +254,7 @@ public class GitService(IFileSystem fileSystem) : IGitService
     }
 
     /// <inheritdoc />
-    public Commit Commit(string message)
+    public GitCommit Commit(string message)
     {
         if (!Ready)
             throw new InvalidOperationException("Working directory not set");
@@ -256,7 +266,13 @@ public class GitService(IFileSystem fileSystem) : IGitService
 
         using var repo = new Repository(WorkingDirectory.LocalPath);
         var signature = repo.Config.BuildSignature(DateTimeOffset.Now);
-        return repo.Commit(message, signature, signature);
+        var commit = repo.Commit(message, signature, signature);
+        return new GitCommit(
+            commit.Author.Name,
+            commit.Author.Email,
+            commit.MessageShort,
+            commit.Author.When
+        );
     }
 
     /// <inheritdoc />
