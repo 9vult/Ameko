@@ -139,6 +139,25 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         interaction.SetOutput(null);
     }
 
+    private async Task DoShowOpenFolderAsSolutionDialogAsync(
+        IInteractionContext<Unit, Uri?> interaction
+    )
+    {
+        var dirs = await StorageProvider.OpenFolderPickerAsync(
+            new FolderPickerOpenOptions
+            {
+                Title = I18N.Other.FileDialog_OpenFolderAsSolution_Title,
+                AllowMultiple = false,
+            }
+        );
+        if (dirs.Count > 0)
+        {
+            interaction.SetOutput(dirs[0].Path);
+            return;
+        }
+        interaction.SetOutput(null);
+    }
+
     private async Task DoShowSaveSolutionAsDialogAsync(
         IInteractionContext<string, Uri?> interaction
     )
@@ -232,6 +251,9 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
                 ViewModel.SaveSubtitleAs.RegisterHandler(DoShowSaveSubtitleAsDialogAsync);
                 ViewModel.ExportSubtitle.RegisterHandler(DoShowExportSubtitleDialogAsync);
                 ViewModel.OpenSolution.RegisterHandler(DoShowOpenSolutionDialogAsync);
+                ViewModel.OpenFolderAsSolution.RegisterHandler(
+                    DoShowOpenFolderAsSolutionDialogAsync
+                );
                 ViewModel.SaveSolutionAs.RegisterHandler(DoShowSaveSolutionAsDialogAsync);
                 // Subtitle
                 ViewModel.ShowStylesManager.RegisterHandler(DoShowStylesManager);

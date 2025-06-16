@@ -521,10 +521,13 @@ public class Solution : BindableBase
     public static Solution LoadDirectory(IFileSystem fileSystem, Uri dirPath)
     {
         var root = dirPath.LocalPath;
+        Logger.Info($"Generating solution from directory {root}...");
         var sln = new Solution(fileSystem);
         if (!fileSystem.Directory.Exists(Path.GetDirectoryName(root)))
             return sln;
 
+        var fileCount = 0;
+        var dirCount = 0;
         var stack = new Stack<(string, ObservableCollection<SolutionItem>)>();
         stack.Push((root, sln._referencedItems));
 
@@ -532,14 +535,32 @@ public class Solution : BindableBase
         {
             var (currentPath, currentCollection) = stack.Pop();
 
-            // Sub-directories
+            // Subdirectories
             foreach (var subDirectory in fileSystem.Directory.EnumerateDirectories(currentPath))
             {
                 var dirName = fileSystem.Path.GetFileName(subDirectory);
+
+                // Skip .directories
+                if (dirName.StartsWith('.'))
+                {
+                    Logger.Trace($"Skipping .directory {subDirectory}");
+                    continue;
+                }
+                // Skip directories that don't have subdirectories or ass files
+                if (
+                    fileSystem.Directory.GetDirectories(subDirectory).Length == 0
+                    && fileSystem.Directory.GetFiles(subDirectory, "*.ass").Length == 0
+                )
+                {
+                    Logger.Trace($"Skipping {subDirectory} as it doesn't contain relevant files");
+                    continue;
+                }
+
                 var dirItem = new DirectoryItem { Id = sln.NextId, Name = dirName };
                 currentCollection.Add(dirItem);
 
                 stack.Push((subDirectory, dirItem.Children));
+                dirCount++;
             }
 
             // Files
@@ -547,8 +568,10 @@ public class Solution : BindableBase
             {
                 var docItem = new DocumentItem { Id = sln.NextId, Uri = new Uri(file) };
                 currentCollection.Add(docItem);
+                fileCount++;
             }
         }
+        Logger.Info($"Done! Solution contains {dirCount} directories and {fileCount} files");
         return sln;
     }
 
