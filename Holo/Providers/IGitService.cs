@@ -60,6 +60,12 @@ public interface IGitService
     void StageFiles(IEnumerable<Uri> files);
 
     /// <summary>
+    /// Stage files
+    /// </summary>
+    /// <param name="files">Paths to the files to unstage</param>
+    void UnstageFiles(IEnumerable<Uri> files);
+
+    /// <summary>
     /// Fetch data from the remote
     /// </summary>
     void Fetch();
@@ -110,10 +116,8 @@ public interface IGitService
     /// Make a commit
     /// </summary>
     /// <param name="message">Commit message</param>
-    /// <param name="author">Person who authored the changes</param>
-    /// <param name="committer">Person committing the changes</param>
     /// <returns>The newly-created commit</returns>
-    Commit Commit(string message, Signature author, Signature committer);
+    Commit Commit(string message);
 
     /// <summary>
     /// Reset the working state to a previous commit

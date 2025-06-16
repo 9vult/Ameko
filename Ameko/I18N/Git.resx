@@ -57,4 +57,7 @@
     <data name="Git_PotentialOwnershipIssue" xml:space="preserve">
         <value>A .git directory was detected, but libgit2 is unable to process it. Make sure this repository is marked as "safe" in your .gitconfig.</value>
     </data>
+    <data name="Git_NothingToCommit" xml:space="preserve">
+        <value>There's nothing to commit at this time.</value>
+    </data>
 </root>
