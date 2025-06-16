@@ -154,7 +154,41 @@ public partial class MainWindowViewModel : ViewModelBase
     }
 
     /// <summary>
-    /// Display the Open Solution File dialog
+    /// Display the Open Folder as Solution File dialog
+    /// </summary>
+    private ReactiveCommand<Unit, Unit> CreateOpenFolderAsSolutionCommand()
+    {
+        return ReactiveCommand.CreateFromTask(async () =>
+        {
+            Log.Info("Preparing to open a directory as a solution");
+            var uri = await OpenFolderAsSolution.Handle(Unit.Default);
+
+            if (uri is null)
+            {
+                Log.Info("Opening solution directory aborted");
+                return;
+            }
+
+            foreach (var wsp in SolutionProvider.Current.LoadedWorkspaces.ToArray())
+            {
+                await _ioService.SafeCloseWorkspace(wsp, SaveSubtitleAs, false);
+            }
+
+            if (SolutionProvider.Current.LoadedWorkspaces.Count > 0)
+            {
+                Log.Info(
+                    $"Opening solution directory aborted - {SolutionProvider.Current.LoadedWorkspaces.Count} workspaces remain open"
+                );
+                return;
+            }
+
+            SolutionProvider.Current = Solution.LoadDirectory(_fileSystem, uri);
+            Log.Info("Loaded solution directory");
+        });
+    }
+
+    /// <summary>
+    /// Display the Save Solution File dialog
     /// </summary>
     private ReactiveCommand<Unit, Unit> CreateSaveSolutionCommand()
     {

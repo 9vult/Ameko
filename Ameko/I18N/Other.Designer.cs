@@ -96,6 +96,15 @@ namespace Ameko.I18N {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Open Solution Folder.
+        /// </summary>
+        public static string FileDialog_OpenFolderAsSolution_Title {
+            get {
+                return ResourceManager.GetString("FileDialog_OpenFolderAsSolution_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Open Solution File.
         /// </summary>
         public static string FileDialog_OpenSolution_Title {

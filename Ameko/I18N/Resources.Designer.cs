@@ -528,6 +528,15 @@ namespace Ameko.I18N {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Open _Folder as Solution....
+        /// </summary>
+        public static string Menu_OpenSolutionFolder {
+            get {
+                return ResourceManager.GetString("Menu_OpenSolutionFolder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to _Open Subtitle....
         /// </summary>
         public static string Menu_OpenSubtitle {

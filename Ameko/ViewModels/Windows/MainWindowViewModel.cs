@@ -38,6 +38,7 @@ public partial class MainWindowViewModel : ViewModelBase
     public Interaction<string, Uri?> SaveSubtitleAs { get; }
     public Interaction<string, Uri?> ExportSubtitle { get; }
     public Interaction<Unit, Uri?> OpenSolution { get; }
+    public Interaction<Unit, Uri?> OpenFolderAsSolution { get; }
     public Interaction<string, Uri?> SaveSolutionAs { get; }
 
     // Subtitle
@@ -74,6 +75,9 @@ public partial class MainWindowViewModel : ViewModelBase
 
     [KeybindTarget("ameko.solution.open")]
     public ICommand OpenSolutionCommand { get; }
+
+    [KeybindTarget("ameko.solution.openFolder")]
+    public ICommand OpenFolderAsSolutionCommand { get; }
 
     [KeybindTarget("ameko.solution.save")]
     public ICommand SaveSolutionCommand { get; }
@@ -184,6 +188,7 @@ public partial class MainWindowViewModel : ViewModelBase
         SaveSubtitleAs = new Interaction<string, Uri?>();
         ExportSubtitle = new Interaction<string, Uri?>();
         OpenSolution = new Interaction<Unit, Uri?>();
+        OpenFolderAsSolution = new Interaction<Unit, Uri?>();
         SaveSolutionAs = new Interaction<string, Uri?>();
         // Subtitle
         ShowStylesManager = new Interaction<StylesManagerWindowViewModel, Unit>();
@@ -205,6 +210,7 @@ public partial class MainWindowViewModel : ViewModelBase
         SaveSubtitleAsCommand = CreateSaveSubtitleAsCommand();
         ExportSubtitleCommand = CreateExportSubtitleCommand();
         OpenSolutionCommand = CreateOpenSolutionCommand();
+        OpenFolderAsSolutionCommand = CreateOpenFolderAsSolutionCommand();
         SaveSolutionCommand = CreateSaveSolutionCommand();
         CloseTabCommand = CreateCloseTabCommand();
         QuitCommand = CreateQuitCommand();
