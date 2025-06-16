@@ -55,22 +55,18 @@ public interface IGitService
     /// <summary>
     /// Fetch data from the remote
     /// </summary>
-    /// <param name="remote">Remote to fetch from</param>
-    void Fetch(string remote = "origin");
+    void Fetch();
 
     /// <summary>
     /// Pull changes from the remote branch into the local branch
     /// </summary>
     /// <param name="merger">Signature to use if a merge happens</param>
-    /// <param name="remote">Remote to pull from</param>
-    void Pull(Signature merger, string remote = "origin");
+    void Pull(Signature merger);
 
     /// <summary>
     /// Push from the local branch to the remote branch
     /// </summary>
-    /// <param name="remote">Remote to push to</param>
-    /// <param name="branch">Branch to push</param>
-    void Push(string remote = "origin", string branch = "master");
+    void Push();
 
     /// <summary>
     /// Get the local branches
