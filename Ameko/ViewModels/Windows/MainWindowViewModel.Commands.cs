@@ -148,7 +148,7 @@ public partial class MainWindowViewModel : ViewModelBase
                 return;
             }
 
-            SolutionProvider.Current = Solution.Parse(uri);
+            SolutionProvider.Current = Solution.Parse(_fileSystem, uri);
             Log.Info("Loaded solution file");
         });
     }

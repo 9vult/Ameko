@@ -439,17 +439,6 @@ public class Solution : BindableBase
     /// <summary>
     /// Parse a saved solution file
     /// </summary>
-    /// <param name="filePath">Path to the solution file</param>
-    /// <returns></returns>
-    public static Solution Parse(Uri filePath)
-    {
-        using var reader = new StreamReader(filePath.LocalPath);
-        return Parse(new FileSystem(), filePath);
-    }
-
-    /// <summary>
-    /// Parse a saved solution file
-    /// </summary>
     /// <param name="fileSystem">FileSystem to use</param>
     /// <param name="savePath">Path to the solution file</param>
     /// <returns><see cref="Solution"/> object</returns>
@@ -521,6 +510,46 @@ public class Solution : BindableBase
             Logger.Error(ex);
             return new Solution(fileSystem);
         }
+    }
+
+    /// <summary>
+    /// Load a directory as a solution
+    /// </summary>
+    /// <param name="fileSystem">Filesystem to use</param>
+    /// <param name="dirPath">Path to the directory</param>
+    /// <returns>Populated solution</returns>
+    public static Solution LoadDirectory(IFileSystem fileSystem, Uri dirPath)
+    {
+        var root = dirPath.LocalPath;
+        var sln = new Solution(fileSystem);
+        if (!fileSystem.Directory.Exists(Path.GetDirectoryName(root)))
+            return sln;
+
+        var stack = new Stack<(string, ObservableCollection<SolutionItem>)>();
+        stack.Push((root, sln._referencedItems));
+
+        while (stack.Count > 0)
+        {
+            var (currentPath, currentCollection) = stack.Pop();
+
+            // Sub-directories
+            foreach (var subDirectory in fileSystem.Directory.EnumerateDirectories(currentPath))
+            {
+                var dirName = fileSystem.Path.GetFileName(subDirectory);
+                var dirItem = new DirectoryItem { Id = sln.NextId, Name = dirName };
+                currentCollection.Add(dirItem);
+
+                stack.Push((subDirectory, dirItem.Children));
+            }
+
+            // Files
+            foreach (var file in fileSystem.Directory.EnumerateFiles(currentPath, "*.ass"))
+            {
+                var docItem = new DocumentItem { Id = sln.NextId, Uri = new Uri(file) };
+                currentCollection.Add(docItem);
+            }
+        }
+        return sln;
     }
 
     /// <summary>
