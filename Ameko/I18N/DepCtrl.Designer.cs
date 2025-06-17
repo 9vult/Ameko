@@ -384,6 +384,15 @@ namespace Ameko.I18N {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The module has an invalid name.
+        /// </summary>
+        public static string DepCtrl_Result_InvalidName {
+            get {
+                return ResourceManager.GetString("DepCtrl_Result_InvalidName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This module is required by other modules.
         /// </summary>
         public static string DepCtrl_Result_IsRequiredDep {

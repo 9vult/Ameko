@@ -147,4 +147,7 @@
     <data name="DepCtrl_Result_Repository_AlreadyInstalled" xml:space="preserve">
         <value>The repository is already installed!</value>
     </data>
+    <data name="DepCtrl_Result_InvalidName" xml:space="preserve">
+        <value>The module has an invalid name</value>
+    </data>
 </root>
