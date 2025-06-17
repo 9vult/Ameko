@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.IO.Abstractions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Text.RegularExpressions;
 using Holo.IO;
 using Holo.Scripting.Models;
 using NLog;
@@ -13,7 +14,7 @@ namespace Holo.Scripting;
 /// <summary>
 /// Dependency Control manages <see cref="Repository"/>s and <see cref="Module"/>s
 /// </summary>
-public class DependencyControl : IDependencyControl
+public partial class DependencyControl : IDependencyControl
 {
     private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -89,6 +90,9 @@ public class DependencyControl : IDependencyControl
         if (IsModuleInstalled(module))
             return InstallationResult.AlreadyInstalled;
         Logger.Info($"Attempting to install module {module.QualifiedName}");
+
+        if (!ValidateQualifiedName(module.QualifiedName))
+            return InstallationResult.InvalidName;
 
         foreach (
             var dependencyName in module.Dependencies.Where(dependencyName =>
@@ -272,6 +276,16 @@ public class DependencyControl : IDependencyControl
             ),
             _ => throw new ArgumentOutOfRangeException(nameof(module)),
         };
+    }
+
+    /// <summary>
+    /// Validate the validity of a script's Qualified Name
+    /// </summary>
+    /// <param name="qualifiedName">Qualified name to check</param>
+    /// <returns><see langword="true"/> if the name is valid</returns>
+    public static bool ValidateQualifiedName(string qualifiedName)
+    {
+        return QualifiedNameRegex().IsMatch(qualifiedName);
     }
 
     #endregion Modules
@@ -475,4 +489,7 @@ public class DependencyControl : IDependencyControl
 
         Logger.Info("Initialized Dependency Control");
     }
+
+    [GeneratedRegex(@"^[a-zA-Z0-9._]+$")]
+    private static partial Regex QualifiedNameRegex();
 }

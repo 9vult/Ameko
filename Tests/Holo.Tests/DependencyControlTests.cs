@@ -39,6 +39,24 @@ public class DependencyControlTests
     }
 
     [Fact]
+    public void ValidateQualifiedName_Simple()
+    {
+        DependencyControl.ValidateQualifiedName("my.cool.script").ShouldBeTrue();
+    }
+
+    [Fact]
+    public void ValidateQualifiedName_Complex()
+    {
+        DependencyControl.ValidateQualifiedName("joe19.co_ol.script").ShouldBeTrue();
+    }
+
+    [Fact]
+    public void ValidateQualifiedName_Invalid()
+    {
+        DependencyControl.ValidateQualifiedName("joe19.co!ol.script").ShouldBeFalse();
+    }
+
+    [Fact]
     public void ModulePath_Script()
     {
         var path = DependencyControl.ModulePath(TestScriptModule);

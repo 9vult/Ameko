@@ -41,4 +41,9 @@ public enum InstallationResult
     /// The module is a dependency of another installed module
     /// </summary>
     IsRequiredDependency,
+
+    /// <summary>
+    /// The module's Qualified Name is invalid
+    /// </summary>
+    InvalidName,
 }

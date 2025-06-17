@@ -56,6 +56,7 @@ public class MessageBoxService : IMessageBoxService
                 InstallationResult.AlreadyInstalled => I18N.DepCtrl.DepCtrl_Result_AlreadyInstalled,
                 InstallationResult.FilesystemFailure => I18N.DepCtrl.DepCtrl_Result_FS_Failure,
                 InstallationResult.NotInstalled => I18N.DepCtrl.DepCtrl_Result_NotInstalled,
+                InstallationResult.InvalidName => I18N.DepCtrl.DepCtrl_Result_InvalidName,
                 InstallationResult.IsRequiredDependency =>
                     I18N.DepCtrl.DepCtrl_Result_IsRequiredDep,
                 _ => throw new ArgumentOutOfRangeException(nameof(result)),
