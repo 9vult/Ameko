@@ -7,14 +7,17 @@
              mc:Ignorable="d"
              d:DesignWidth="800"
              d:DesignHeight="450"
-
+             
+             xmlns:converters="clr-namespace:Ameko.Converters"
              xmlns:i18n="clr-namespace:Ameko.I18N"
              xmlns:icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              xmlns:vm="clr-namespace:Ameko.ViewModels.Controls"
 
              x:Class="Ameko.Views.Controls.TabItemEventsArea"
              x:DataType="vm:TabItemViewModel">
-
+	<UserControl.Resources>
+		<converters:GridPaddingConverter x:Key="PaddingConverter" />
+	</UserControl.Resources>
     <DataGrid Name="EventsGrid"
               IsReadOnly="True"
               CanUserResizeColumns="True"
@@ -93,6 +96,13 @@
 	    <DataGrid.Styles>
 		    <Style Selector="DataGridRow">
 			    <Setter Property="Background" Value="Transparent" />
+			    <Setter Property="Padding" Value="0" />
+		    </Style>
+		    <Style Selector="TextBlock">
+			    <Setter Property="Padding" Value="{Binding $parent[UserControl].((vm:TabItemViewModel)DataContext).Configuration.GridPadding,
+														   Converter={StaticResource PaddingConverter},
+														   FallbackValue=.}" />
+			    <Setter Property="Margin" Value="0 0" />
 		    </Style>
 	    </DataGrid.Styles>
     </DataGrid>

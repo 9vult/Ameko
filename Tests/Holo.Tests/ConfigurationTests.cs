@@ -100,6 +100,7 @@ public class ConfigurationTests
             "UseColorRing": false,
             "Culture": "en-US",
             "Theme": "light",
+            "GridPadding": 2,
             "RepositoryUrls": []
         }
         """;

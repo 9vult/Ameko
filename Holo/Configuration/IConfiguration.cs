@@ -62,6 +62,11 @@ public interface IConfiguration
     Theme Theme { get; set; }
 
     /// <summary>
+    /// Vertical padding in the event grid
+    /// </summary>
+    uint GridPadding { get; set; }
+
+    /// <summary>
     /// Use the ring-shaped color picker instead of the box-shaped one
     /// </summary>
     bool UseColorRing { get; set; }
