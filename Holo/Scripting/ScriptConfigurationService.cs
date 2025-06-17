@@ -67,7 +67,7 @@ public class ScriptConfigurationService(IFileSystem fileSystem) : IScriptConfigu
     {
         var qName = caller.Info.QualifiedName;
         if (!_cache.TryGetValue(qName, out var data))
-            return false;
+            _cache[qName] = data ??= Read(qName);
 
         var result = data.Remove(key);
         if (result)
@@ -79,7 +79,9 @@ public class ScriptConfigurationService(IFileSystem fileSystem) : IScriptConfigu
     public bool Contains(IHoloExecutable caller, string key)
     {
         var qName = caller.Info.QualifiedName;
-        return _cache.TryGetValue(qName, out var data) && data.ContainsKey(key);
+        if (!_cache.TryGetValue(qName, out var data))
+            _cache[qName] = data ??= Read(qName);
+        return data.ContainsKey(key);
     }
 
     /// <summary>
