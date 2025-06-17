@@ -1,24 +1,11 @@
 // SPDX-License-Identifier: MPL-2.0
 
-namespace Holo.Configuration.Layouts;
+namespace Holo.Models;
 
 /// <summary>
 /// Defines a tab layout
 /// </summary>
 public class TabLayout
-{
-    public required General General { get; init; }
-    public required Section Video { get; init; }
-    public required Section Audio { get; init; }
-    public required Section Editor { get; init; }
-    public required Section Events { get; init; }
-    public required Splitter[] Splitters { get; init; }
-}
-
-/// <summary>
-/// General information about a <see cref="TabLayout"/>
-/// </summary>
-public class General
 {
     /// <summary>
     /// Name of the layout
@@ -53,6 +40,27 @@ public class General
     /// <code>0.5*, 4, *, 4, *</code>
     /// </example>
     public required string RowDefinitions { get; init; }
+
+    /// <summary>
+    /// Video section
+    /// </summary>
+    public required Section Video { get; init; }
+
+    /// <summary>
+    /// Audio section
+    /// </summary>
+    public required Section Audio { get; init; }
+
+    /// <summary>
+    /// Editing section
+    /// </summary>
+    public required Section Editor { get; init; }
+
+    /// <summary>
+    /// Events grid section
+    /// </summary>
+    public required Section Events { get; init; }
+    public required Splitter[] Splitters { get; init; }
 }
 
 /// <summary>
@@ -81,13 +89,13 @@ public class Section
     /// Number of columns the section spans
     /// </summary>
     /// <remarks>One-indexed</remarks>
-    public required int ColumnSpan { get; init; }
+    public int ColumnSpan { get; init; } = 1;
 
     /// <summary>
     /// Number of rows the section spans
     /// </summary>
     /// <remarks>One-indexed</remarks>
-    public required int RowSpan { get; init; }
+    public int RowSpan { get; init; } = 1;
 }
 
 public class Splitter
@@ -113,11 +121,11 @@ public class Splitter
     /// Number of columns the splitter spans
     /// </summary>
     /// <remarks>One-indexed</remarks>
-    public required int ColumnSpan { get; init; }
+    public int ColumnSpan { get; init; } = 1;
 
     /// <summary>
     /// Number of rows the splitter spans
     /// </summary>
     /// <remarks>One-indexed</remarks>
-    public required int RowSpan { get; init; }
+    public int RowSpan { get; init; } = 1;
 }
