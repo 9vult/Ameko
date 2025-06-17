@@ -66,6 +66,7 @@ public static class AmekoServiceProvider
         services.AddSingleton<ScriptServiceLocator>();
         services.AddSingleton<IScriptService, ScriptService>();
         services.AddSingleton<IDependencyControl, DependencyControl>();
+        services.AddSingleton<IScriptConfigurationService, ScriptConfigurationService>();
 
         Provider = services.BuildServiceProvider();
 
