@@ -22,6 +22,5 @@ internal record ConfigurationModel
     public required string Culture;
     public required Theme Theme;
     public required uint GridPadding;
-    public required bool UseColorRing;
     public required string[] RepositoryUrls;
 }

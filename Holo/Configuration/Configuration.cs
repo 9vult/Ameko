@@ -51,7 +51,6 @@ public partial class Configuration : BindableBase, IConfiguration
     private string _culture;
     private Theme _theme;
     private uint _gridPadding;
-    private bool _useColorRing;
     private RangeObservableCollection<string> _repositoryUrls;
 
     //// <inheritdoc cref="IConfiguration.Cps"/>
@@ -130,13 +129,6 @@ public partial class Configuration : BindableBase, IConfiguration
         set => SetProperty(ref _gridPadding, value);
     }
 
-    /// <inheritdoc cref="IConfiguration.UseColorRing"/>
-    public bool UseColorRing
-    {
-        get => _useColorRing;
-        set => SetProperty(ref _useColorRing, value);
-    }
-
     /// <inheritdoc cref="IConfiguration.RepositoryUrls"/>
     public ReadOnlyObservableCollection<string> RepositoryUrls { get; }
 
@@ -189,7 +181,6 @@ public partial class Configuration : BindableBase, IConfiguration
                 Culture = _culture,
                 Theme = _theme,
                 GridPadding = _gridPadding,
-                UseColorRing = _useColorRing,
                 RepositoryUrls = RepositoryUrls.ToArray(),
             };
 
@@ -250,7 +241,6 @@ public partial class Configuration : BindableBase, IConfiguration
                 _culture = model.Culture,
                 _theme = model.Theme,
                 _gridPadding = model.GridPadding,
-                _useColorRing = model.UseColorRing,
                 _repositoryUrls = new RangeObservableCollection<string>(model.RepositoryUrls),
             };
             Logger.Info("Done!");
@@ -279,7 +269,6 @@ public partial class Configuration : BindableBase, IConfiguration
         _culture = "en-US";
         _theme = Theme.Default;
         _gridPadding = 2;
-        _useColorRing = false;
 
         RepositoryUrls = new ReadOnlyObservableCollection<string>(_repositoryUrls);
     }

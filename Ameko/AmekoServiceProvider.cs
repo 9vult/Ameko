@@ -12,6 +12,7 @@ using Holo.IO;
 using Holo.Providers;
 using Holo.Scripting;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using NLog;
 
 namespace Ameko;
@@ -34,6 +35,9 @@ public static class AmekoServiceProvider
         // --- Configuration ---
         services.AddSingleton<IConfiguration, Configuration>(p =>
             Configuration.Parse(p.GetRequiredService<IFileSystem>())
+        );
+        services.AddSingleton<IPersistence, Persistence>(p =>
+            Persistence.Parse(p.GetRequiredService<IFileSystem>())
         );
         services.AddSingleton<IGlobals, Globals>(p =>
             Globals.Parse(p.GetRequiredService<IFileSystem>())

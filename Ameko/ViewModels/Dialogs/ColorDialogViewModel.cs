@@ -9,7 +9,7 @@ namespace Ameko.ViewModels.Dialogs;
 
 public partial class ColorDialogViewModel : ViewModelBase
 {
-    private readonly IConfiguration _configuration;
+    private readonly IPersistence _persistence;
     private readonly AssCS.Color _assColor;
     private Avalonia.Media.HsvColor _hsvColor;
     private bool _useRing;
@@ -45,18 +45,18 @@ public partial class ColorDialogViewModel : ViewModelBase
         set
         {
             this.RaiseAndSetIfChanged(ref this._useRing, value);
-            _configuration.UseColorRing = value;
+            _persistence.UseColorRing = value;
         }
     }
 
     /// <summary>
     /// Initialize the Color dialog
     /// </summary>
-    /// <param name="configuration">User configuration</param>
+    /// <param name="persistence">Application persistence</param>
     /// <param name="color">Color being edited</param>
-    public ColorDialogViewModel(IConfiguration configuration, AssCS.Color color)
+    public ColorDialogViewModel(IPersistence persistence, AssCS.Color color)
     {
-        _configuration = configuration;
+        _persistence = persistence;
 
         _assColor = color;
         _hsvColor = new Avalonia.Media.HsvColor(
@@ -65,6 +65,6 @@ public partial class ColorDialogViewModel : ViewModelBase
 
         SelectColorCommand = ReactiveCommand.Create(() => new ColorDialogClosedMessage(_assColor));
 
-        _useRing = configuration.UseColorRing;
+        _useRing = persistence.UseColorRing;
     }
 }
