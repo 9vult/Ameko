@@ -36,7 +36,7 @@ public partial class App : Application
         _ = provider.GetRequiredService<CultureService>();
         _ = provider.GetRequiredService<ThemeService>();
         // May have to move this if it gets too resource-intensive
-        _ = provider.GetRequiredService<ILayoutProvider>();
+        provider.GetRequiredService<ILayoutProvider>().Reload();
 
         // Set up the tab item template
         Resources["WorkspaceTabTemplate"] = new WorkspaceTabTemplate(provider);
