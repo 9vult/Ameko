@@ -573,6 +573,15 @@ namespace Ameko.I18N {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to _Reload Layouts.
+        /// </summary>
+        public static string Menu_ReloadLayouts {
+            get {
+                return ResourceManager.GetString("Menu_ReloadLayouts", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to _Reload Scripts.
         /// </summary>
         public static string Menu_ReloadScripts {

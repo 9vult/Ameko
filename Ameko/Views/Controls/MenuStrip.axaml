@@ -88,7 +88,8 @@
         </MenuItem>
         <MenuItem Header="{x:Static i18n:Resources.Menu_Scripts}"
                   ItemsSource="{Binding ScriptMenuItems}" />
-        <MenuItem Header="{x:Static i18n:Resources.Menu_Layouts}" />
+        <MenuItem Header="{x:Static i18n:Resources.Menu_Layouts}"
+                  ItemsSource="{Binding LayoutMenuItems}"/>
         <MenuItem Header="{x:Static i18n:Resources.Menu_Help}">
             <MenuItem Header="{x:Static i18n:Resources.Menu_Configuration}"
                       Icon="{icons:MaterialIconExt Kind=CogOutline}" />
