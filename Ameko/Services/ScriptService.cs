@@ -48,8 +48,8 @@ public class ScriptService : IScriptService
         }
 
         // Try running as an exported function
-        var scriptName = qualifiedName[..qualifiedName.LastIndexOf('.')];
-        var methodName = qualifiedName[(qualifiedName.LastIndexOf('.') + 1)..];
+        var scriptName = qualifiedName[..qualifiedName.LastIndexOf('+')];
+        var methodName = qualifiedName[(qualifiedName.LastIndexOf('+') + 1)..];
         if (TryGetScript(scriptName, out script))
         {
             return await script.ExecuteAsync(methodName);
