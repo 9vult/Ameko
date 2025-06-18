@@ -9,12 +9,12 @@ public interface ILayoutProvider
     /// <summary>
     /// The current layout
     /// </summary>
-    TabLayout? Current { get; set; }
+    Layout? Current { get; set; }
 
     /// <summary>
     /// List of available layouts
     /// </summary>
-    AssCS.Utilities.ReadOnlyObservableCollection<TabLayout> Layouts { get; }
+    AssCS.Utilities.ReadOnlyObservableCollection<Layout> Layouts { get; }
 
     /// <summary>
     /// Reload layouts from disk
@@ -27,8 +27,8 @@ public interface ILayoutProvider
     /// <remarks>Also fired when reloading completes</remarks>
     event EventHandler<LayoutChangedEventArgs>? OnLayoutChanged;
 
-    public class LayoutChangedEventArgs(TabLayout? layout) : EventArgs
+    public class LayoutChangedEventArgs(Layout? layout) : EventArgs
     {
-        public TabLayout? Layout { get; } = layout;
+        public Layout? Layout { get; } = layout;
     }
 }

@@ -3,9 +3,9 @@
 namespace Holo.Models;
 
 /// <summary>
-/// Defines a tab layout
+/// Defines a layout
 /// </summary>
-public class TabLayout
+public class Layout
 {
     /// <summary>
     /// Name of the layout
@@ -42,31 +42,36 @@ public class TabLayout
     public required string RowDefinitions { get; init; }
 
     /// <summary>
+    /// Window as a whole
+    /// </summary>
+    public required WindowSection Window { get; init; }
+
+    /// <summary>
     /// Video section
     /// </summary>
-    public required Section Video { get; init; }
+    public required TabSection Video { get; init; }
 
     /// <summary>
     /// Audio section
     /// </summary>
-    public required Section Audio { get; init; }
+    public required TabSection Audio { get; init; }
 
     /// <summary>
     /// Editing section
     /// </summary>
-    public required Section Editor { get; init; }
+    public required TabSection Editor { get; init; }
 
     /// <summary>
     /// Events grid section
     /// </summary>
-    public required Section Events { get; init; }
+    public required TabSection Events { get; init; }
     public required Splitter[] Splitters { get; init; }
 }
 
 /// <summary>
-/// A section in the tab
+/// A section in a tab
 /// </summary>
-public class Section
+public class TabSection
 {
     /// <summary>
     /// If this section is visible
@@ -128,4 +133,9 @@ public class Splitter
     /// </summary>
     /// <remarks>One-indexed</remarks>
     public int RowSpan { get; init; } = 1;
+}
+
+public class WindowSection
+{
+    public required bool IsSolutionExplorerOnLeft { get; init; }
 }

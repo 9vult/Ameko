@@ -137,7 +137,7 @@ public partial class MainWindowViewModel : ViewModelBase
     public ObservableCollection<TemplatedControl> LayoutMenuItems { get; }
 
     /// <summary>
-    /// Window title
+    /// WindowSection title
     /// </summary>
     public string WindowTitle { get; } = $"Ameko {VersionService.FullLabel}";
 

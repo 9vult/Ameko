@@ -145,7 +145,7 @@ public partial class TabItem : ReactiveUserControl<TabItemViewModel>
         );
     }
 
-    private void ApplyLayout(TabItemViewModel? vm, TabLayout? layout)
+    private void ApplyLayout(TabItemViewModel? vm, Layout? layout)
     {
         if (vm is null || layout is null)
             return;
