@@ -27,13 +27,14 @@
     
     <DockPanel>
         <c:MenuStrip DockPanel.Dock="Top" />
-        <Grid>
+        <Grid Name="MainWindowGrid">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" MinWidth="100" />
                 <ColumnDefinition Width="2" />
                 <ColumnDefinition Width="*" MinWidth="500" />
             </Grid.ColumnDefinitions>
-            <c:SolutionExplorer Grid.Column="0" />
+            <c:SolutionExplorer Name="SolutionExplorer"
+                                Grid.Column="0" />
             <GridSplitter Grid.Column="1" ResizeDirection="Columns" />
             <TabControl Grid.Column="2"
                         Name="WorkspaceTabControl"

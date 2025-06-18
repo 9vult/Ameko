@@ -16,6 +16,7 @@ using Avalonia.ReactiveUI;
 using Avalonia.Styling;
 using Holo;
 using Holo.Configuration.Keybinds;
+using Holo.Models;
 using NLog;
 using ReactiveUI;
 
@@ -272,12 +273,46 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
                 {
                     AttachKeybinds();
                 };
+
+                // Apply layouts
+                ApplyLayout(ViewModel, ViewModel.LayoutProvider.Current);
+                ViewModel.LayoutProvider.OnLayoutChanged += (_, args) =>
+                {
+                    ApplyLayout(ViewModel, args.Layout);
+                };
             }
 
             Disposable.Create(() => { }).DisposeWith(disposables);
         });
 
         Log.Info("Done!");
+    }
+
+    private void ApplyLayout(MainWindowViewModel? vm, Layout? layout)
+    {
+        if (vm is null || layout is null)
+            return;
+
+        if (layout.Window.IsSolutionExplorerOnLeft)
+        {
+            var columnDefinitions = new ColumnDefinitions("Auto, 2, *");
+            columnDefinitions[0].MinWidth = 100;
+            columnDefinitions[2].MinWidth = 500;
+            MainWindowGrid.ColumnDefinitions = columnDefinitions;
+
+            SolutionExplorer.SetValue(Grid.ColumnProperty, 0);
+            WorkspaceTabControl.SetValue(Grid.ColumnProperty, 2);
+        }
+        else
+        {
+            var columnDefinitions = new ColumnDefinitions("*, 2, Auto");
+            columnDefinitions[0].MinWidth = 500;
+            columnDefinitions[2].MinWidth = 150;
+            MainWindowGrid.ColumnDefinitions = columnDefinitions;
+
+            SolutionExplorer.SetValue(Grid.ColumnProperty, 2);
+            WorkspaceTabControl.SetValue(Grid.ColumnProperty, 0);
+        }
     }
 
     private void AttachKeybinds()
