@@ -255,4 +255,7 @@
     <data name="Menu_OpenSolutionFolder" xml:space="preserve">
         <value>Open _Folder as Solution...</value>
     </data>
+    <data name="Menu_ReloadLayouts" xml:space="preserve">
+        <value>_Reload Layouts</value>
+    </data>
 </root>

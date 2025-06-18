@@ -18,6 +18,7 @@ using Holo.Configuration.Keybinds;
 using Holo.Models;
 using Holo.Providers;
 using NLog;
+using NLog.Layouts;
 using ReactiveUI;
 
 namespace Ameko.ViewModels.Windows;
@@ -25,12 +26,13 @@ namespace Ameko.ViewModels.Windows;
 [KeybindContext(KeybindContext.Global)]
 public partial class MainWindowViewModel : ViewModelBase
 {
-    private static readonly Logger Log = LogManager.GetCurrentClassLogger();
+    private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
     private readonly IServiceProvider _serviceProvider;
     private readonly IStylesManagerFactory _stylesManagerFactory;
     private readonly IIoService _ioService;
     private readonly IScriptService _scriptService;
+    private readonly ILayoutProvider _layoutProvider;
     private readonly IFileSystem _fileSystem;
 
     #region Interactions
@@ -108,6 +110,10 @@ public partial class MainWindowViewModel : ViewModelBase
     [KeybindTarget("ameko.depCtrl.show")]
     public ICommand ShowDependencyControlCommand { get; }
 
+    // Layouts
+    public ICommand SelectLayoutCommand { get; }
+    public ICommand RefreshLayoutsCommand { get; }
+
     // Help
     [KeybindTarget("ameko.logs.show", "Ctrl+L")]
     public ICommand ShowLogWindowCommand { get; }
@@ -128,6 +134,7 @@ public partial class MainWindowViewModel : ViewModelBase
     public GitToolboxViewModel GitToolboxViewModel { get; }
 
     public ObservableCollection<TemplatedControl> ScriptMenuItems { get; }
+    public ObservableCollection<TemplatedControl> LayoutMenuItems { get; }
 
     /// <summary>
     /// Window title
@@ -154,7 +161,7 @@ public partial class MainWindowViewModel : ViewModelBase
 
     private void GenerateScriptsMenu()
     {
-        Log.Trace("Regenerating scripts menu...");
+        Logger.Trace("Regenerating scripts menu...");
         ScriptMenuItems.Clear();
         ScriptMenuItems.AddRange(
             ScriptMenuService.GenerateMenuItemSource(_scriptService.Scripts, ExecuteScriptCommand)
@@ -163,7 +170,19 @@ public partial class MainWindowViewModel : ViewModelBase
         ScriptMenuItems.Add(new Separator());
         ScriptMenuItems.Add(ScriptMenuService.GenerateReloadMenuItem(ReloadScriptsCommand));
         ScriptMenuItems.Add(ScriptMenuService.GenerateDepCtlMenuItem(ShowDependencyControlCommand));
-        Log.Trace("Done!");
+        Logger.Trace("Done!");
+    }
+
+    private void GenerateLayoutsMenu()
+    {
+        Logger.Trace("Regenerating layouts menu...");
+        LayoutMenuItems.Clear();
+        LayoutMenuItems.AddRange(
+            LayoutMenuService.GenerateMenuItemSource(_layoutProvider.Layouts, SelectLayoutCommand)
+        );
+        LayoutMenuItems.Add(new Separator());
+        LayoutMenuItems.Add(LayoutMenuService.GenerateReloadMenuItem(RefreshLayoutsCommand));
+        Logger.Trace("Done!");
     }
 
     public MainWindowViewModel(
@@ -172,6 +191,7 @@ public partial class MainWindowViewModel : ViewModelBase
         IStylesManagerFactory stylesManagerFactory,
         IIoService ioService,
         IScriptService scriptService,
+        ILayoutProvider layoutProvider,
         IFileSystem fileSystem,
         KeybindService keybindService,
         GitToolboxViewModel gitToolboxViewModel
@@ -182,6 +202,7 @@ public partial class MainWindowViewModel : ViewModelBase
         _stylesManagerFactory = stylesManagerFactory;
         _ioService = ioService;
         _scriptService = scriptService;
+        _layoutProvider = layoutProvider;
         _fileSystem = fileSystem;
         KeybindService = keybindService;
         GitToolboxViewModel = gitToolboxViewModel;
@@ -227,6 +248,9 @@ public partial class MainWindowViewModel : ViewModelBase
         ExecuteScriptCommand = CreateExecuteScriptCommand();
         ReloadScriptsCommand = CreateReloadScriptsCommand();
         ShowDependencyControlCommand = CreateShowDependencyControlCommand();
+        // Layouts
+        SelectLayoutCommand = CreateSelectLayoutCommand();
+        RefreshLayoutsCommand = CreateRefreshLayoutsCommand();
         // Help
         ShowLogWindowCommand = CreateShowLogWindowCommand();
         ShowAboutWindowCommand = CreateShowAboutWindowCommand();
@@ -239,5 +263,9 @@ public partial class MainWindowViewModel : ViewModelBase
 
         ScriptMenuItems = [];
         _scriptService.OnReload += (_, _) => GenerateScriptsMenu();
+
+        LayoutMenuItems = [];
+        _layoutProvider.OnReload += (_, _) => GenerateLayoutsMenu();
+        GenerateLayoutsMenu();
     }
 }
