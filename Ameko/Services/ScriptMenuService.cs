@@ -35,15 +35,20 @@ public static class ScriptMenuService
                 Icon = new MaterialIcon { Kind = MaterialIconKind.CodeBlockBraces },
             };
 
-            if (script.Info.Submenu is not null)
+            var headless = script.Info.Headless && script.Info.Exports.Length != 0;
+
+            if (!headless) // Only add if not headless
             {
-                if (!subItemsMap.ContainsKey(script.Info.Submenu))
-                    subItemsMap[script.Info.Submenu] = [];
-                subItemsMap[script.Info.Submenu].Add(menu);
-            }
-            else
-            {
-                rootItems.Add(menu);
+                if (script.Info.Submenu is not null)
+                {
+                    if (!subItemsMap.ContainsKey(script.Info.Submenu))
+                        subItemsMap[script.Info.Submenu] = [];
+                    subItemsMap[script.Info.Submenu].Add(menu);
+                }
+                else
+                {
+                    rootItems.Add(menu);
+                }
             }
 
             foreach (var methodInfo in script.Info.Exports)
