@@ -123,6 +123,9 @@ public class ScriptService : IScriptService
             await DisplayMessageBoxAsync(I18N.Other.MsgBox_ScriptService_Reload_Body);
     }
 
+    /// <inheritdoc />
+    public event EventHandler<EventArgs>? OnReload;
+
     private static async Task DisplayMessageBoxAsync(string message)
     {
         var box = MessageBoxManager.GetMessageBoxStandard(
@@ -138,6 +141,4 @@ public class ScriptService : IScriptService
         _scriptMap = [];
         Scripts = new AssCS.Utilities.ReadOnlyObservableCollection<HoloScript>(_scripts);
     }
-
-    public event IScriptService.ReloadEventHandler? OnReload;
 }

@@ -39,10 +39,5 @@ public interface IScriptService
     /// <param name="isManual">Whether to show the message box</param>
     Task Reload(bool isManual);
 
-    /// <summary>
-    /// Event Handler for <see cref="ScriptService.Reload"/>
-    /// </summary>
-    public delegate void ReloadEventHandler(object sender, EventArgs e);
-
-    event ReloadEventHandler? OnReload;
+    event EventHandler<EventArgs>? OnReload;
 }

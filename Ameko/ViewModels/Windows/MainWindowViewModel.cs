@@ -265,7 +265,7 @@ public partial class MainWindowViewModel : ViewModelBase
         _scriptService.OnReload += (_, _) => GenerateScriptsMenu();
 
         LayoutMenuItems = [];
-        _layoutProvider.OnReload += (_, _) => GenerateLayoutsMenu();
+        _layoutProvider.OnLayoutChanged += (_, _) => GenerateLayoutsMenu();
         GenerateLayoutsMenu();
     }
 }
