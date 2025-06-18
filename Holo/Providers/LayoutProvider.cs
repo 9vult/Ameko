@@ -3,7 +3,6 @@
 using System.Collections.ObjectModel;
 using System.IO.Abstractions;
 using AssCS;
-using Holo.Configuration;
 using Holo.IO;
 using Holo.Models;
 using NLog;
@@ -11,27 +10,29 @@ using Tomlet;
 
 namespace Holo.Providers;
 
-public class LayoutProvider : BindableBase
+public class LayoutProvider : BindableBase, ILayoutProvider
 {
     private static readonly Uri LayoutsRoot = new(
         Path.Combine(DirectoryService.DataHome, "layouts")
     );
     private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
     private readonly IFileSystem _fileSystem;
-    private readonly IConfiguration _configuration;
 
-    private ObservableCollection<TabLayout> _layouts;
+    private readonly ObservableCollection<TabLayout> _layouts;
     private TabLayout _currentLayout;
 
+    /// <inheritdoc />
     public TabLayout Current
     {
         get => _currentLayout;
         set => SetProperty(ref _currentLayout, value);
     }
 
-    public AssCS.Utilities.ReadOnlyObservableCollection<TabLayout> Layouts;
+    /// <inheritdoc />
+    public AssCS.Utilities.ReadOnlyObservableCollection<TabLayout> Layouts { get; }
 
-    public void ReloadLayouts()
+    /// <inheritdoc />
+    public void Reload()
     {
         Logger.Info("Reloading Layouts...");
         if (!_fileSystem.Directory.Exists(LayoutsRoot.LocalPath))
@@ -80,6 +81,7 @@ public class LayoutProvider : BindableBase
             var content = TomletMain.TomlStringFrom(DefaultLayout);
             writer.Write(content);
             Logger.Info("Done!");
+            OnReload?.Invoke(this, EventArgs.Empty);
         }
         catch (Exception e)
         {
@@ -88,17 +90,23 @@ public class LayoutProvider : BindableBase
         }
     }
 
-    public LayoutProvider(IFileSystem fileSystem, IConfiguration configuration)
+    /// <summary>
+    /// Initialize the layout provider
+    /// </summary>
+    /// <param name="fileSystem">Filesystem to use</param>
+    public LayoutProvider(IFileSystem fileSystem)
     {
         _fileSystem = fileSystem;
-        _configuration = configuration;
         _layouts = [];
         Layouts = new AssCS.Utilities.ReadOnlyObservableCollection<TabLayout>(_layouts);
 
-        ReloadLayouts();
+        Reload();
 
         _currentLayout = _layouts.FirstOrDefault(l => l.Name == "Default") ?? _layouts.First();
     }
+
+    /// <inheritdoc />
+    public event ILayoutProvider.ReloadEventHandler? OnReload;
 
     private static TabLayout DefaultLayout =>
         new()
@@ -128,7 +136,7 @@ public class LayoutProvider : BindableBase
             },
             Events = new Section
             {
-                IsVisible = false,
+                IsVisible = true,
                 Column = 0,
                 Row = 4,
                 ColumnSpan = 3,

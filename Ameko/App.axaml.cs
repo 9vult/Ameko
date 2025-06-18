@@ -13,6 +13,7 @@ using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
 using Holo.Configuration;
 using Holo.Configuration.Keybinds;
+using Holo.Providers;
 using Holo.Scripting;
 using Microsoft.Extensions.DependencyInjection;
 using NLog;
@@ -31,9 +32,11 @@ public partial class App : Application
     {
         var provider = AmekoServiceProvider.Build();
 
-        // Activate the culture and theme services
+        // Activate some key services
         _ = provider.GetRequiredService<CultureService>();
         _ = provider.GetRequiredService<ThemeService>();
+        // May have to move this if it gets too resource-intensive
+        _ = provider.GetRequiredService<ILayoutProvider>();
 
         // Set up the tab item template
         Resources["WorkspaceTabTemplate"] = new WorkspaceTabTemplate(provider);
