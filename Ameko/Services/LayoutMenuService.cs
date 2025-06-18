@@ -15,7 +15,7 @@ namespace Ameko.Services;
 public class LayoutMenuService
 {
     public static List<MenuItem> GenerateMenuItemSource(
-        IList<TabLayout> layouts,
+        IList<Layout> layouts,
         ICommand selectLayoutCommand
     )
     {

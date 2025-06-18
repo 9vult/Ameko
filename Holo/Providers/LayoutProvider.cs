@@ -18,11 +18,11 @@ public class LayoutProvider : BindableBase, ILayoutProvider
     private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
     private readonly IFileSystem _fileSystem;
 
-    private readonly ObservableCollection<TabLayout> _layouts;
-    private TabLayout? _currentLayout;
+    private readonly ObservableCollection<Layout> _layouts;
+    private Layout? _currentLayout;
 
     /// <inheritdoc />
-    public TabLayout? Current
+    public Layout? Current
     {
         get => _currentLayout;
         set
@@ -33,7 +33,7 @@ public class LayoutProvider : BindableBase, ILayoutProvider
     }
 
     /// <inheritdoc />
-    public AssCS.Utilities.ReadOnlyObservableCollection<TabLayout> Layouts { get; }
+    public AssCS.Utilities.ReadOnlyObservableCollection<Layout> Layouts { get; }
 
     /// <inheritdoc />
     public void Reload()
@@ -58,7 +58,7 @@ public class LayoutProvider : BindableBase, ILayoutProvider
                 );
                 using var reader = new StreamReader(readFs);
 
-                var layout = TomletMain.To<TabLayout>(reader.ReadToEnd());
+                var layout = TomletMain.To<Layout>(reader.ReadToEnd());
                 _layouts.Add(layout);
             }
             catch (Exception ex)
@@ -120,40 +120,41 @@ public class LayoutProvider : BindableBase, ILayoutProvider
     {
         _fileSystem = fileSystem;
         _layouts = [];
-        Layouts = new AssCS.Utilities.ReadOnlyObservableCollection<TabLayout>(_layouts);
+        Layouts = new AssCS.Utilities.ReadOnlyObservableCollection<Layout>(_layouts);
 
         Reload();
 
         _currentLayout = _layouts.FirstOrDefault(l => l.Name == "Default") ?? _layouts.First();
     }
 
-    private static TabLayout DefaultLayout =>
+    private static Layout DefaultLayout =>
         new()
         {
             Name = "Default",
             Author = "9volt",
             ColumnDefinitions = "*, 2, *",
             RowDefinitions = "0.5*, 2, *, 2, *",
-            Video = new Section
+            Window = new WindowSection { IsSolutionExplorerOnLeft = true },
+            Video = new TabSection
             {
                 IsVisible = true,
                 Column = 0,
                 Row = 0,
                 RowSpan = 3,
             },
-            Audio = new Section
+            Audio = new TabSection
             {
                 IsVisible = true,
                 Column = 2,
                 Row = 0,
             },
-            Editor = new Section
+            Editor = new TabSection
             {
                 IsVisible = true,
                 Column = 2,
                 Row = 2,
             },
-            Events = new Section
+            Events = new TabSection
             {
                 IsVisible = true,
                 Column = 0,

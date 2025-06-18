@@ -221,7 +221,7 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
 
     private static void DoShowLogWindow(IInteractionContext<LogWindowViewModel, Unit> interaction)
     {
-        Log.Trace("Displaying Log Window");
+        Log.Trace("Displaying Log WindowSection");
         var window = new LogWindow { DataContext = interaction.Input };
         window.Show();
         interaction.SetOutput(Unit.Default);
@@ -231,7 +231,7 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         IInteractionContext<AboutWindowViewModel, Unit> interaction
     )
     {
-        Log.Trace("Displaying About Window");
+        Log.Trace("Displaying About WindowSection");
         var window = new AboutWindow() { DataContext = interaction.Input };
         await window.ShowDialog(this);
         interaction.SetOutput(Unit.Default);
@@ -239,7 +239,7 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
 
     public MainWindow()
     {
-        Log.Info("Initializing Main Window...");
+        Log.Info("Initializing Main WindowSection...");
         InitializeComponent();
 
         this.WhenActivated(disposables =>
