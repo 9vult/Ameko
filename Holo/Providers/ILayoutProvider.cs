@@ -9,7 +9,7 @@ public interface ILayoutProvider
     /// <summary>
     /// The current layout
     /// </summary>
-    TabLayout Current { get; set; }
+    TabLayout? Current { get; set; }
 
     /// <summary>
     /// List of available layouts
@@ -27,8 +27,8 @@ public interface ILayoutProvider
     /// <remarks>Also fired when reloading completes</remarks>
     event EventHandler<LayoutChangedEventArgs>? OnLayoutChanged;
 
-    public class LayoutChangedEventArgs(TabLayout layout) : EventArgs
+    public class LayoutChangedEventArgs(TabLayout? layout) : EventArgs
     {
-        public TabLayout Layout { get; } = layout;
+        public TabLayout? Layout { get; } = layout;
     }
 }

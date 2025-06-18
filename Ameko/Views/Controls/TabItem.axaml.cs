@@ -145,9 +145,9 @@ public partial class TabItem : ReactiveUserControl<TabItemViewModel>
         );
     }
 
-    private void ApplyLayout(TabItemViewModel? vm, TabLayout layout)
+    private void ApplyLayout(TabItemViewModel? vm, TabLayout? layout)
     {
-        if (vm is null)
+        if (vm is null || layout is null)
             return;
 
         TabItemGrid.Children.RemoveAll(TabItemGrid.Children.OfType<GridSplitter>());
