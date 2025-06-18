@@ -77,6 +77,7 @@ public partial class TabItemViewModel : ViewModelBase
     public ISolutionProvider SolutionProvider { get; }
     public IConfiguration Configuration { get; }
     public KeybindService KeybindService { get; }
+    public ILayoutProvider LayoutProvider { get; }
 
     public int EditBoxSelectionStart
     {
@@ -95,6 +96,7 @@ public partial class TabItemViewModel : ViewModelBase
         IConfiguration configuration,
         KeybindService keybindService,
         IScriptService scriptService,
+        ILayoutProvider layoutProvider,
         Workspace workspace
     )
     {
@@ -128,5 +130,6 @@ public partial class TabItemViewModel : ViewModelBase
         SolutionProvider = solutionProvider;
         Configuration = configuration;
         KeybindService = keybindService;
+        LayoutProvider = layoutProvider;
     }
 }
