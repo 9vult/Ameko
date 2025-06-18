@@ -19,10 +19,10 @@ public class LayoutProvider : BindableBase, ILayoutProvider
     private readonly IFileSystem _fileSystem;
 
     private readonly ObservableCollection<TabLayout> _layouts;
-    private TabLayout _currentLayout;
+    private TabLayout? _currentLayout;
 
     /// <inheritdoc />
-    public TabLayout Current
+    public TabLayout? Current
     {
         get => _currentLayout;
         set
@@ -68,7 +68,7 @@ public class LayoutProvider : BindableBase, ILayoutProvider
         }
         Logger.Info($"Reloaded {_layouts.Count} layouts");
 
-        if (_layouts.Any(l => l.Name == Current.Name))
+        if (Current is not null && _layouts.Any(l => l.Name == Current.Name))
         {
             OnLayoutChanged?.Invoke(this, new ILayoutProvider.LayoutChangedEventArgs(Current));
             return;
