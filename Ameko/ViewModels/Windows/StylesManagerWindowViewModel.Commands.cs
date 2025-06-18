@@ -124,7 +124,7 @@ public partial class StylesManagerWindowViewModel : ViewModelBase
                 if (style is null)
                     return;
 
-                var vm = new StyleEditorWindowViewModel(_configuration, style, manager, document);
+                var vm = new StyleEditorWindowViewModel(_persistence, style, manager, document);
                 await ShowStyleEditorWindow.Handle(vm);
             }
         );

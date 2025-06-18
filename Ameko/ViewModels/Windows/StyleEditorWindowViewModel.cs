@@ -66,12 +66,12 @@ public partial class StyleEditorWindowViewModel : ViewModelBase
     /// <summary>
     /// Initialize a style editor
     /// </summary>
-    /// <param name="configuration">User configuration</param>
+    /// <param name="persistence">Application persistence</param>
     /// <param name="style">Style being edited</param>
     /// <param name="manager">Manager the <paramref name="style"/> belongs to</param>
     /// <param name="document">Document the manager belongs to, if applicable</param>
     public StyleEditorWindowViewModel(
-        IConfiguration configuration,
+        IPersistence persistence,
         Style style,
         StyleManager manager,
         Document? document
@@ -88,7 +88,7 @@ public partial class StyleEditorWindowViewModel : ViewModelBase
         EditColorCommand = ReactiveCommand.CreateFromTask(
             async (Color color) =>
             {
-                var vm = new ColorDialogViewModel(configuration, color);
+                var vm = new ColorDialogViewModel(persistence, color);
                 _ = await ShowColorDialog.Handle(vm);
 
                 // Get the buttons to update

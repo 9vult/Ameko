@@ -11,7 +11,7 @@ namespace Ameko.ViewModels.Windows;
 
 public partial class StylesManagerWindowViewModel : ViewModelBase
 {
-    private readonly IConfiguration _configuration;
+    private readonly IPersistence _persistence;
 
     private Style? _selectedGlobalStyle;
     private Style? _selectedSolutionStyle;
@@ -66,13 +66,13 @@ public partial class StylesManagerWindowViewModel : ViewModelBase
     #endregion
 
     public StylesManagerWindowViewModel(
-        IConfiguration configuration,
+        IPersistence persistence,
         IGlobals globals,
         Solution solution,
         Document document
     )
     {
-        _configuration = configuration;
+        _persistence = persistence;
 
         Globals = globals;
         Solution = solution;
