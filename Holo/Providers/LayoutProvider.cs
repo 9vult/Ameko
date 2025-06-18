@@ -3,6 +3,7 @@
 using System.Collections.ObjectModel;
 using System.IO.Abstractions;
 using AssCS;
+using Holo.Configuration;
 using Holo.IO;
 using Holo.Models;
 using NLog;
@@ -17,6 +18,7 @@ public class LayoutProvider : BindableBase, ILayoutProvider
     );
     private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
     private readonly IFileSystem _fileSystem;
+    private readonly IPersistence _persistence;
 
     private readonly ObservableCollection<Layout> _layouts;
     private Layout? _currentLayout;
@@ -27,7 +29,10 @@ public class LayoutProvider : BindableBase, ILayoutProvider
         get => _currentLayout;
         set
         {
+            if (value is null)
+                return;
             SetProperty(ref _currentLayout, value);
+            _persistence.LayoutName = value.Name;
             OnLayoutChanged?.Invoke(this, new ILayoutProvider.LayoutChangedEventArgs(value));
         }
     }
@@ -68,8 +73,9 @@ public class LayoutProvider : BindableBase, ILayoutProvider
         }
         Logger.Info($"Reloaded {_layouts.Count} layouts");
 
-        if (Current is not null && _layouts.Any(l => l.Name == Current.Name))
+        if (_layouts.Any(l => l.Name == _persistence.LayoutName))
         {
+            _currentLayout = _layouts.First(l => l.Name == _persistence.LayoutName);
             OnLayoutChanged?.Invoke(this, new ILayoutProvider.LayoutChangedEventArgs(Current));
             return;
         }
@@ -126,16 +132,15 @@ public class LayoutProvider : BindableBase, ILayoutProvider
     /// Initialize the layout provider
     /// </summary>
     /// <param name="fileSystem">Filesystem to use</param>
-    public LayoutProvider(IFileSystem fileSystem)
+    /// <param name="persistence">Application persistence</param>
+    public LayoutProvider(IFileSystem fileSystem, IPersistence persistence)
     {
         _fileSystem = fileSystem;
+        _persistence = persistence;
         _layouts = [];
         Layouts = new AssCS.Utilities.ReadOnlyObservableCollection<Layout>(_layouts);
 
         Reload();
-
-        _currentLayout =
-            _layouts.FirstOrDefault(l => l.Name == DefaultLayout.Name) ?? _layouts.First();
     }
 
     #region Default Layouts
