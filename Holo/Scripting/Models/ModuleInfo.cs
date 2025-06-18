@@ -50,4 +50,10 @@ public class ModuleInfo
     /// </summary>
     /// <remarks>Only applies to <see cref="HoloScript"/>s. Will be ignored otherwise.</remarks>
     public string? Submenu { get; init; }
+
+    /// <summary>
+    /// Exclude the main entry point from the scripts menu
+    /// </summary>
+    /// <remarks>This flag will be ignored if there are no <see cref="Exports"/>.</remarks>
+    public bool Headless { get; init; } = false;
 }
