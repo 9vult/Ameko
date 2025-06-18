@@ -81,32 +81,42 @@ public class LayoutProvider : BindableBase, ILayoutProvider
             return;
         }
 
-        Logger.Info("No layouts loaded! Generating default layout...");
-        var defaultLayout = DefaultLayout;
-        _layouts.Add(defaultLayout);
-        Current = defaultLayout;
-        try
+        Logger.Info("No layouts loaded! Generating default layouts...");
+
+        foreach (
+            var defaultLayout in new[]
+            {
+                (DefaultLayout, "default"),
+                (DefaultRightSlnExplorer, "default-right"),
+                (SubsOnlyLayout, "subs-only"),
+            }
+        )
         {
-            using var writeFs = _fileSystem.FileStream.New(
-                Path.Combine(LayoutsRoot.LocalPath, "default.toml"),
-                FileMode.Create,
-                FileAccess.Write,
-                FileShare.None
-            );
-            using var writer = new StreamWriter(writeFs);
-            var content = TomletMain.TomlStringFrom(defaultLayout);
-            writer.Write(content);
-            Logger.Info("Done!");
-            OnLayoutChanged?.Invoke(
-                this,
-                new ILayoutProvider.LayoutChangedEventArgs(defaultLayout)
-            );
+            var layout = defaultLayout.Item1;
+            var fileName = $"{defaultLayout.Item2}.toml";
+            _layouts.Add(layout);
+
+            try
+            {
+                using var writeFs = _fileSystem.FileStream.New(
+                    Path.Combine(LayoutsRoot.LocalPath, fileName),
+                    FileMode.Create,
+                    FileAccess.Write,
+                    FileShare.None
+                );
+                using var writer = new StreamWriter(writeFs);
+                var content = TomletMain.TomlStringFrom(layout);
+                writer.Write(content);
+                OnLayoutChanged?.Invoke(this, new ILayoutProvider.LayoutChangedEventArgs(layout));
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
         }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            throw;
-        }
+        Logger.Info("Done!");
+        Current = _layouts.First(l => l.Name == DefaultLayout.Name);
     }
 
     /// <inheritdoc />
@@ -124,8 +134,11 @@ public class LayoutProvider : BindableBase, ILayoutProvider
 
         Reload();
 
-        _currentLayout = _layouts.FirstOrDefault(l => l.Name == "Default") ?? _layouts.First();
+        _currentLayout =
+            _layouts.FirstOrDefault(l => l.Name == DefaultLayout.Name) ?? _layouts.First();
     }
+
+    #region Default Layouts
 
     private static Layout DefaultLayout =>
         new()
@@ -185,4 +198,107 @@ public class LayoutProvider : BindableBase, ILayoutProvider
                 },
             ],
         };
+    private static Layout DefaultRightSlnExplorer =>
+        new()
+        {
+            Name = "Default (Solution Explorer on Right)",
+            Author = "9volt",
+            ColumnDefinitions = "*, 2, *",
+            RowDefinitions = "0.5*, 2, *, 2, *",
+            Window = new WindowSection { IsSolutionExplorerOnLeft = false },
+            Video = new TabSection
+            {
+                IsVisible = true,
+                Column = 0,
+                Row = 0,
+                RowSpan = 3,
+            },
+            Audio = new TabSection
+            {
+                IsVisible = true,
+                Column = 2,
+                Row = 0,
+            },
+            Editor = new TabSection
+            {
+                IsVisible = true,
+                Column = 2,
+                Row = 2,
+            },
+            Events = new TabSection
+            {
+                IsVisible = true,
+                Column = 0,
+                Row = 4,
+                ColumnSpan = 3,
+            },
+            Splitters =
+            [
+                new Splitter
+                {
+                    IsVertical = false,
+                    Column = 2,
+                    Row = 1,
+                },
+                new Splitter
+                {
+                    IsVertical = false,
+                    Column = 0,
+                    Row = 3,
+                    ColumnSpan = 3,
+                },
+                new Splitter
+                {
+                    IsVertical = true,
+                    Column = 1,
+                    Row = 0,
+                    RowSpan = 3,
+                },
+            ],
+        };
+
+    private static Layout SubsOnlyLayout =>
+        new()
+        {
+            Name = "Subs Only",
+            Author = "9volt",
+            ColumnDefinitions = "*",
+            RowDefinitions = "*, 2, 2*",
+            Window = new WindowSection { IsSolutionExplorerOnLeft = true },
+            Video = new TabSection
+            {
+                IsVisible = false,
+                Column = 0,
+                Row = 0,
+            },
+            Audio = new TabSection
+            {
+                IsVisible = false,
+                Column = 0,
+                Row = 0,
+            },
+            Editor = new TabSection
+            {
+                IsVisible = true,
+                Column = 0,
+                Row = 0,
+            },
+            Events = new TabSection
+            {
+                IsVisible = true,
+                Column = 0,
+                Row = 2,
+            },
+            Splitters =
+            [
+                new Splitter
+                {
+                    IsVertical = false,
+                    Column = 0,
+                    Row = 1,
+                },
+            ],
+        };
+
+    #endregion Default Layouts
 }
