@@ -15,8 +15,8 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Media;
 using Avalonia.ReactiveUI;
-using Holo;
 using Holo.Configuration.Keybinds;
+using Holo.Models;
 using ReactiveUI;
 
 namespace Ameko.Views.Controls;
@@ -134,10 +134,10 @@ public partial class TabItem : ReactiveUserControl<TabItemViewModel>
                         };
 
                         // Apply layouts
-                        ApplyLayout(vm);
-                        vm.LayoutProvider.OnReload += (_, _) =>
+                        ApplyLayout(vm, vm.LayoutProvider.Current);
+                        vm.LayoutProvider.OnLayoutChanged += (_, args) =>
                         {
-                            ApplyLayout(vm);
+                            ApplyLayout(vm, args.Layout);
                         };
                     })
                     .DisposeWith(disposables);
@@ -145,12 +145,10 @@ public partial class TabItem : ReactiveUserControl<TabItemViewModel>
         );
     }
 
-    private void ApplyLayout(TabItemViewModel? vm)
+    private void ApplyLayout(TabItemViewModel? vm, TabLayout layout)
     {
         if (vm is null)
             return;
-
-        var layout = vm.LayoutProvider.Current;
 
         TabItemGrid.Children.RemoveAll(TabItemGrid.Children.OfType<GridSplitter>());
 

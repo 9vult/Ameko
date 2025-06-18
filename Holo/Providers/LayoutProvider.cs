@@ -25,7 +25,11 @@ public class LayoutProvider : BindableBase, ILayoutProvider
     public TabLayout Current
     {
         get => _currentLayout;
-        set => SetProperty(ref _currentLayout, value);
+        set
+        {
+            SetProperty(ref _currentLayout, value);
+            OnLayoutChanged?.Invoke(this, new ILayoutProvider.LayoutChangedEventArgs(value));
+        }
     }
 
     /// <inheritdoc />
@@ -64,11 +68,23 @@ public class LayoutProvider : BindableBase, ILayoutProvider
         }
         Logger.Info($"Reloaded {_layouts.Count} layouts");
 
-        if (_layouts.Count > 0)
+        if (_layouts.Any(l => l.Name == Current.Name))
+        {
+            OnLayoutChanged?.Invoke(this, new ILayoutProvider.LayoutChangedEventArgs(Current));
             return;
+        }
+
+        if (_layouts.Count > 0)
+        {
+            Current = _layouts[0];
+            OnLayoutChanged?.Invoke(this, new ILayoutProvider.LayoutChangedEventArgs(Current));
+            return;
+        }
 
         Logger.Info("No layouts loaded! Generating default layout...");
-        _layouts.Add(DefaultLayout);
+        var defaultLayout = DefaultLayout;
+        _layouts.Add(defaultLayout);
+        Current = defaultLayout;
         try
         {
             using var writeFs = _fileSystem.FileStream.New(
@@ -78,10 +94,13 @@ public class LayoutProvider : BindableBase, ILayoutProvider
                 FileShare.None
             );
             using var writer = new StreamWriter(writeFs);
-            var content = TomletMain.TomlStringFrom(DefaultLayout);
+            var content = TomletMain.TomlStringFrom(defaultLayout);
             writer.Write(content);
             Logger.Info("Done!");
-            OnReload?.Invoke(this, EventArgs.Empty);
+            OnLayoutChanged?.Invoke(
+                this,
+                new ILayoutProvider.LayoutChangedEventArgs(defaultLayout)
+            );
         }
         catch (Exception e)
         {
@@ -89,6 +108,9 @@ public class LayoutProvider : BindableBase, ILayoutProvider
             throw;
         }
     }
+
+    /// <inheritdoc />
+    public event EventHandler<ILayoutProvider.LayoutChangedEventArgs>? OnLayoutChanged;
 
     /// <summary>
     /// Initialize the layout provider
@@ -104,9 +126,6 @@ public class LayoutProvider : BindableBase, ILayoutProvider
 
         _currentLayout = _layouts.FirstOrDefault(l => l.Name == "Default") ?? _layouts.First();
     }
-
-    /// <inheritdoc />
-    public event ILayoutProvider.ReloadEventHandler? OnReload;
 
     private static TabLayout DefaultLayout =>
         new()

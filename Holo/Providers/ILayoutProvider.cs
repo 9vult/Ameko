@@ -22,12 +22,13 @@ public interface ILayoutProvider
     void Reload();
 
     /// <summary>
-    /// Event fired when reloading completes
+    /// Event fired when changing layouts
     /// </summary>
-    event ReloadEventHandler? OnReload;
+    /// <remarks>Also fired when reloading completes</remarks>
+    event EventHandler<LayoutChangedEventArgs>? OnLayoutChanged;
 
-    /// <summary>
-    /// Event Handler for <see cref="Reload"/>
-    /// </summary>
-    public delegate void ReloadEventHandler(object sender, EventArgs e);
+    public class LayoutChangedEventArgs(TabLayout layout) : EventArgs
+    {
+        public TabLayout Layout { get; } = layout;
+    }
 }
