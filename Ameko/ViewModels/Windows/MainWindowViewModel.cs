@@ -15,10 +15,8 @@ using Avalonia.Controls.Primitives;
 using DynamicData;
 using Holo;
 using Holo.Configuration.Keybinds;
-using Holo.Models;
 using Holo.Providers;
 using NLog;
-using NLog.Layouts;
 using ReactiveUI;
 
 namespace Ameko.ViewModels.Windows;
@@ -32,8 +30,9 @@ public partial class MainWindowViewModel : ViewModelBase
     private readonly IStylesManagerFactory _stylesManagerFactory;
     private readonly IIoService _ioService;
     private readonly IScriptService _scriptService;
-    private readonly ILayoutProvider _layoutProvider;
     private readonly IFileSystem _fileSystem;
+
+    public ILayoutProvider LayoutProvider { get; }
 
     #region Interactions
     // File
@@ -178,7 +177,7 @@ public partial class MainWindowViewModel : ViewModelBase
         Logger.Trace("Regenerating layouts menu...");
         LayoutMenuItems.Clear();
         LayoutMenuItems.AddRange(
-            LayoutMenuService.GenerateMenuItemSource(_layoutProvider.Layouts, SelectLayoutCommand)
+            LayoutMenuService.GenerateMenuItemSource(LayoutProvider.Layouts, SelectLayoutCommand)
         );
         LayoutMenuItems.Add(new Separator());
         LayoutMenuItems.Add(LayoutMenuService.GenerateReloadMenuItem(RefreshLayoutsCommand));
@@ -202,9 +201,9 @@ public partial class MainWindowViewModel : ViewModelBase
         _stylesManagerFactory = stylesManagerFactory;
         _ioService = ioService;
         _scriptService = scriptService;
-        _layoutProvider = layoutProvider;
         _fileSystem = fileSystem;
         KeybindService = keybindService;
+        LayoutProvider = layoutProvider;
         GitToolboxViewModel = gitToolboxViewModel;
 
         #region Interactions
@@ -265,7 +264,7 @@ public partial class MainWindowViewModel : ViewModelBase
         _scriptService.OnReload += (_, _) => GenerateScriptsMenu();
 
         LayoutMenuItems = [];
-        _layoutProvider.OnLayoutChanged += (_, _) => GenerateLayoutsMenu();
+        LayoutProvider.OnLayoutChanged += (_, _) => GenerateLayoutsMenu();
         GenerateLayoutsMenu();
     }
 }

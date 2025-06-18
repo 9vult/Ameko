@@ -311,10 +311,10 @@ public partial class MainWindowViewModel : ViewModelBase
             (string name) =>
             {
                 Logger.Trace($"Switching to layout {name}");
-                var layout = _layoutProvider.Layouts.FirstOrDefault(l => l.Name == name);
+                var layout = LayoutProvider.Layouts.FirstOrDefault(l => l.Name == name);
                 if (layout is null)
                     return;
-                _layoutProvider.Current = layout;
+                LayoutProvider.Current = layout;
             }
         );
     }
@@ -323,7 +323,7 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         return ReactiveCommand.Create(() =>
         {
-            _layoutProvider.Reload();
+            LayoutProvider.Reload();
         });
     }
 
