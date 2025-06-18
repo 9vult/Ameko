@@ -49,7 +49,7 @@ public class LayoutProvider : BindableBase, ILayoutProvider
 
         _layouts.Clear();
 
-        foreach (var path in Directory.EnumerateFiles(LayoutsRoot.LocalPath, "*.toml"))
+        foreach (var path in _fileSystem.Directory.EnumerateFiles(LayoutsRoot.LocalPath, "*.toml"))
         {
             try
             {
@@ -139,8 +139,6 @@ public class LayoutProvider : BindableBase, ILayoutProvider
         _persistence = persistence;
         _layouts = [];
         Layouts = new AssCS.Utilities.ReadOnlyObservableCollection<Layout>(_layouts);
-
-        Reload();
     }
 
     #region Default Layouts
