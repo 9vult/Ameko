@@ -26,9 +26,6 @@ var err_info = c.FFMS_ErrorInfo{
     .Buffer = &err_buffer[0],
 };
 
-var gpa: std.heap.GeneralPurposeAllocator(.{}) = .init;
-const allocator = gpa.allocator();
-
 // Local variables
 var index: ?*c.FFMS_Index = null;
 var video_source: ?*c.FFMS_VideoSource = null;
@@ -37,6 +34,9 @@ var color_space_buffer = std.mem.zeroes([128]u8);
 var color_space = &color_space_buffer[0];
 var video_color_space: c_int = -1;
 var video_color_range: c_int = -1;
+
+pub var keyframes: std.ArrayList(c_int) = undefined;
+pub var time_codes: std.ArrayList(c_int) = undefined;
 
 /// Get the current FFMS version
 ///
@@ -140,8 +140,8 @@ pub fn LoadVideo(file_name: [*c]u8, color_matrix: [*c]u8) FfmsError!void {
     }
 
     // Get frame times and keyframes
-    var time_codes = std.ArrayList(c_int).init(allocator);
-    var keyframes = std.ArrayList(c_int).init(allocator);
+    time_codes = std.ArrayList(c_int).init(common.allocator);
+    keyframes = std.ArrayList(c_int).init(common.allocator);
 
     var frame_number: c_int = 0;
     while (frame_number < video_info.*.NumFrames) : (frame_number += 1) {
@@ -169,7 +169,7 @@ fn SetColorSpace(color_matrix: [*c]u8) void {
 
 /// Get tracks of the given type
 pub fn GetTracksOfType(indexer: ?*c.FFMS_Indexer, track_type: c.FFMS_TrackType) !std.AutoHashMap(c_int, [*c]const u8) {
-    var track_list = std.AutoHashMap(c_int, [*c]const u8).init(allocator);
+    var track_list = std.AutoHashMap(c_int, [*c]const u8).init(common.allocator);
     const track_count = c.FFMS_GetNumTracksI(indexer);
 
     var i: c_int = 0;
