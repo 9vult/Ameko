@@ -24,6 +24,9 @@ pub fn build(b: *std.Build) void {
     // set a preferred release mode, allowing the user to decide how to optimize.
     const optimize = b.standardOptimizeOption(.{});
 
+    // External dependencies
+    const known_folders = b.dependency("known_folders", .{}).module("known-folders");
+
     // This creates a "module", which represents a collection of source files alongside
     // some compilation options, such as optimization mode and linked system libraries.
     // Every executable or library we compile will be based on one or more modules.
@@ -46,6 +49,7 @@ pub fn build(b: *std.Build) void {
     });
 
     linkLibraries(b, lib);
+    lib.root_module.addImport("known-folders", known_folders);
 
     // This declares intent for the library to be installed into the standard
     // location when the user invokes the "install" step (the default step when
@@ -60,6 +64,7 @@ pub fn build(b: *std.Build) void {
     });
 
     linkLibraries(b, exe);
+    exe.root_module.addImport("known-folders", known_folders);
 
     // This declares intent for the executable to be installed into the
     // standard location when the user invokes the "install" step (the default
