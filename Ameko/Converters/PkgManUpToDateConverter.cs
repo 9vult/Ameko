@@ -11,7 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Ameko.Converters;
 
-public class DepCtrlUpToDateConverter : IValueConverter
+public class PkgManUpToDateConverter : IValueConverter
 {
     /// <summary>
     /// Returns <see langword="true"/> if the module is NOT up to date
@@ -21,7 +21,7 @@ public class DepCtrlUpToDateConverter : IValueConverter
         if (value is not Module module)
             return false;
         return !AmekoServiceProvider
-                .Provider?.GetRequiredService<IDependencyControl>()
+                .Provider?.GetRequiredService<IPackageManager>()
                 .IsModuleUpToDate(module) ?? true;
     }
 

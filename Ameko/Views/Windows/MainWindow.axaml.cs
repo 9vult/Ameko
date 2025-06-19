@@ -210,12 +210,12 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         interaction.SetOutput(Unit.Default);
     }
 
-    private async Task DoShowDepCtlWindowAsync(
-        IInteractionContext<DepCtrlWindowViewModel, Unit> interaction
+    private async Task DoShowPkgManWindowAsync(
+        IInteractionContext<PkgManWindowViewModel, Unit> interaction
     )
     {
         Log.Trace("Displaying Dependency Control");
-        var window = new DepCtrlWindow { DataContext = interaction.Input };
+        var window = new PkgManWindow { DataContext = interaction.Input };
         await window.ShowDialog(this);
         interaction.SetOutput(Unit.Default);
     }
@@ -262,7 +262,7 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
                 // Timing
                 ViewModel.ShowShiftTimesDialog.RegisterHandler(DoShowShiftTimesDialogAsync);
                 // Scripts
-                ViewModel.ShowDependencyControl.RegisterHandler(DoShowDepCtlWindowAsync);
+                ViewModel.ShowPackageManager.RegisterHandler(DoShowPkgManWindowAsync);
                 // Help
                 ViewModel.ShowLogWindow.RegisterHandler(DoShowLogWindow);
                 ViewModel.ShowAboutWindow.RegisterHandler(DoShowAboutWindowAsync);

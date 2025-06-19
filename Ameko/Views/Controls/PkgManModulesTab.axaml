@@ -12,11 +12,11 @@
              xmlns:controls="clr-namespace:Ameko.Views.Controls"
              xmlns:holo="clr-namespace:Holo.Scripting.Models;assembly=Holo"
              xmlns:icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
-             x:Class="Ameko.Views.Controls.DepCtrlModulesTab"
-             x:DataType="vm:DepCtrlWindowViewModel">
+             x:Class="Ameko.Views.Controls.PkgManModulesTab"
+             x:DataType="vm:PkgManWindowViewModel">
     <UserControl.Resources>
-        <converters:DepCtrlIconConverter x:Key="IconConverter" />
-        <converters:DepCtrlUpToDateConverter x:Key="UpToDateConverter" />
+        <converters:PkgManIconConverter x:Key="IconConverter" />
+        <converters:PkgManUpToDateConverter x:Key="UpToDateConverter" />
     </UserControl.Resources>
     <Grid ColumnDefinitions="*, *"
           RowDefinitions="*, 135, Auto">
@@ -27,12 +27,12 @@
                        Margin="2"
                        HorizontalAlignment="Center"
                        FontSize="16"
-                       Text="{x:Static i18n:DepCtrl.DepCtrl_ModuleStore}" />
+                       Text="{x:Static i18n:PkgMan.PkgMan_ModuleStore}" />
             <ListBox Margin="2"
                      VerticalAlignment="Stretch"
                      SelectionMode="Single"
                      SelectedItem="{Binding SelectedStoreModule}"
-                     ItemsSource="{Binding DependencyControl.ModuleStore, Mode=TwoWay}">
+                     ItemsSource="{Binding PackageManager.ModuleStore, Mode=TwoWay}">
                 <ListBox.ItemTemplate>
                     <DataTemplate x:DataType="holo:Module">
                         <Grid ColumnDefinitions="Auto, *, Auto"
@@ -59,12 +59,12 @@
                        Margin="2"
                        HorizontalAlignment="Center"
                        FontSize="16"
-                       Text="{x:Static i18n:DepCtrl.DepCtrl_InstalledModules}" />
+                       Text="{x:Static i18n:PkgMan.PkgMan_InstalledModules}" />
             <ListBox Margin="2"
                      VerticalAlignment="Stretch"
                      SelectionMode="Single"
                      SelectedItem="{Binding SelectedInstalledModule}"
-                     ItemsSource="{Binding DependencyControl.InstalledModules}">
+                     ItemsSource="{Binding PackageManager.InstalledModules}">
                 <ListBox.ItemTemplate>
                     <DataTemplate x:DataType="holo:Module">
                         <Grid ColumnDefinitions="Auto, *, Auto, Auto"
@@ -77,7 +77,7 @@
                                                 Kind="ArrowUpThinCircleOutline"
                                                 Padding="0 0 5 0"
                                                 IsVisible="{Binding ., Converter={StaticResource UpToDateConverter}}"
-                                                ToolTip.Tip="{x:Static i18n:DepCtrl.DepCtrl_Update_Available_ToolTip}" />
+                                                ToolTip.Tip="{x:Static i18n:PkgMan.PkgMan_Update_Available_ToolTip}" />
                             <TextBlock Grid.Column="2"
                                        Text="{Binding Version, StringFormat='v{0}'}" />
                         </Grid>
@@ -96,12 +96,12 @@
             <Button Grid.Column="0"
                     Margin="2 0 1 0"
                     Content="{icons:MaterialIconExt Kind=CloudRefreshOutline}"
-                    ToolTip.Tip="{x:Static i18n:DepCtrl.DepCtrl_Button_Refresh_ToolTip}"
+                    ToolTip.Tip="{x:Static i18n:PkgMan.PkgMan_Button_Refresh_ToolTip}"
                     Command="{Binding RefreshCommand}" />
             <Button Grid.Column="1"
                     Margin="1 0 2 0"
-                    Content="{x:Static i18n:DepCtrl.DepCtrl_Button_Install}"
-                    ToolTip.Tip="{x:Static i18n:DepCtrl.DepCtrl_Button_Install_ToolTip}"
+                    Content="{x:Static i18n:PkgMan.PkgMan_Button_Install}"
+                    ToolTip.Tip="{x:Static i18n:PkgMan.PkgMan_Button_Install_ToolTip}"
                     IsEnabled="{Binding InstallButtonEnabled}"
                     Command="{Binding InstallCommand}" />
         </Grid>
@@ -111,20 +111,20 @@
               ColumnDefinitions="*, Auto, Auto">
             <Button Grid.Column="0"
                     Margin="2 0 1 0"
-                    Content="{x:Static i18n:DepCtrl.DepCtrl_Button_UpdateAll}"
-                    ToolTip.Tip="{x:Static i18n:DepCtrl.DepCtrl_Button_UpdateAll_ToolTip}"
+                    Content="{x:Static i18n:PkgMan.PkgMan_Button_UpdateAll}"
+                    ToolTip.Tip="{x:Static i18n:PkgMan.PkgMan_Button_UpdateAll_ToolTip}"
                     IsEnabled="{Binding UpdateAllButtonEnabled}"
                     Command="{Binding UpdateAllCommand}" />
             <Button Grid.Column="1"
                     Margin="1 0"
-                    Content="{x:Static i18n:DepCtrl.DepCtrl_Button_Update}"
-                    ToolTip.Tip="{x:Static i18n:DepCtrl.DepCtrl_Button_Update_ToolTip}"
+                    Content="{x:Static i18n:PkgMan.PkgMan_Button_Update}"
+                    ToolTip.Tip="{x:Static i18n:PkgMan.PkgMan_Button_Update_ToolTip}"
                     IsEnabled="{Binding UpdateButtonEnabled}"
                     Command="{Binding UpdateCommand}" />
             <Button Grid.Column="2"
                     Margin="1 0 2 0"
-                    Content="{x:Static i18n:DepCtrl.DepCtrl_Button_Uninstall}"
-                    ToolTip.Tip="{x:Static i18n:DepCtrl.DepCtrl_Button_Uninstall_ToolTip}"
+                    Content="{x:Static i18n:PkgMan.PkgMan_Button_Uninstall}"
+                    ToolTip.Tip="{x:Static i18n:PkgMan.PkgMan_Button_Uninstall_ToolTip}"
                     IsEnabled="{Binding UninstallButtonEnabled}"
                     Command="{Binding UninstallCommand}" />
         </Grid>

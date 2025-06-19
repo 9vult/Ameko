@@ -5,7 +5,7 @@ using Holo.Scripting.Models;
 
 namespace Holo.Scripting;
 
-public interface IDependencyControl
+public interface IPackageManager
 {
     /// <summary>
     /// List of available repositories

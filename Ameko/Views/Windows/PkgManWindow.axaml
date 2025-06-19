@@ -12,21 +12,21 @@
         xmlns:i18n="clr-namespace:Ameko.I18N"
         xmlns:controls="clr-namespace:Ameko.Views.Controls"
 
-        x:Class="Ameko.Views.Windows.DepCtrlWindow"
-        x:DataType="vm:DepCtrlWindowViewModel"
+        x:Class="Ameko.Views.Windows.PkgManWindow"
+        x:DataType="vm:PkgManWindowViewModel"
 
         Width="700"
         Height="450"
         CanResize="False"
         WindowStartupLocation="CenterOwner"
         Icon="/Assets/Ameko-Simplified-BG-64.ico"
-        Title="{x:Static i18n:DepCtrl.DepCtrlWindow_Title}">
+        Title="{x:Static i18n:PkgMan.PkgManWindow_Title}">
     <TabControl>
-        <TabItem Header="{x:Static i18n:DepCtrl.DepCtrl_ModulesTab}">
-            <controls:DepCtrlModulesTab />
+        <TabItem Header="{x:Static i18n:PkgMan.PkgMan_ModulesTab}">
+            <controls:PkgManModulesTab />
         </TabItem>
-        <TabItem Header="{x:Static i18n:DepCtrl.DepCtrl_RepositoriesTab}">
-            <controls:DepCtrlRepositoriesTab />
+        <TabItem Header="{x:Static i18n:PkgMan.PkgMan_RepositoriesTab}">
+            <controls:PkgManRepositoriesTab />
         </TabItem>
         <TabControl.Styles>
             <Style Selector="TabItem">

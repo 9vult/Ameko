@@ -65,12 +65,12 @@ public static class AmekoServiceProvider
         services.AddSingleton<MainWindowViewModel>();
         services.AddSingleton<GitToolboxViewModel>();
         services.AddTransient<LogWindowViewModel>();
-        services.AddTransient<DepCtrlWindowViewModel>();
+        services.AddTransient<PkgManWindowViewModel>();
 
         // --- Scripting ---
         services.AddSingleton<ScriptServiceLocator>();
         services.AddSingleton<IScriptService, ScriptService>();
-        services.AddSingleton<IDependencyControl, DependencyControl>();
+        services.AddSingleton<IPackageManager, PackageManager>();
         services.AddSingleton<IScriptConfigurationService, ScriptConfigurationService>();
 
         Provider = services.BuildServiceProvider();

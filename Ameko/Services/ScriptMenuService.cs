@@ -95,13 +95,13 @@ public static class ScriptMenuService
         };
     }
 
-    public static MenuItem GenerateDepCtlMenuItem(ICommand depCtlCommand)
+    public static MenuItem GeneratePkgManMenuItem(ICommand pkgManCommand)
     {
         return new MenuItem
         {
-            Header = I18N.Resources.Menu_DependencyControl,
-            Command = depCtlCommand,
-            Icon = new MaterialIcon { Kind = MaterialIconKind.EarthArrowDown },
+            Header = I18N.Resources.Menu_PackageManager,
+            Command = pkgManCommand,
+            Icon = new MaterialIcon { Kind = MaterialIconKind.PackageVariant },
         };
     }
 }

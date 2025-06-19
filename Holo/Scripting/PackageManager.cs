@@ -12,9 +12,9 @@ using NLog;
 namespace Holo.Scripting;
 
 /// <summary>
-/// Dependency Control manages <see cref="Repository"/>s and <see cref="Module"/>s
+/// Package Manager manages <see cref="Repository"/>s and <see cref="Module"/>s
 /// </summary>
-public partial class DependencyControl : IDependencyControl
+public partial class PackageManager : IPackageManager
 {
     private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -407,7 +407,7 @@ public partial class DependencyControl : IDependencyControl
         Logger.Info("Done!");
     }
 
-    /// <inheritdoc cref="IDependencyControl.AddRepository"/>
+    /// <inheritdoc cref="IPackageManager.AddRepository"/>
     public async Task<InstallationResult> AddRepository(string repoUrl)
     {
         var repo = await Repository.Build(repoUrl, _httpClient);
@@ -424,7 +424,7 @@ public partial class DependencyControl : IDependencyControl
         return InstallationResult.Success;
     }
 
-    /// <inheritdoc cref="IDependencyControl.RemoveRepository"/>
+    /// <inheritdoc cref="IPackageManager.RemoveRepository"/>
     public InstallationResult RemoveRepository(string repositoryName)
     {
         if (!_repositoryMap.Remove(repositoryName, out var repo))
@@ -471,7 +471,7 @@ public partial class DependencyControl : IDependencyControl
     /// This constructor does not set up the base repository.
     /// <see cref="SetUpBaseRepository"/> should be called following construction
     /// </remarks>
-    public DependencyControl(IFileSystem fileSystem, HttpClient httpClient)
+    public PackageManager(IFileSystem fileSystem, HttpClient httpClient)
     {
         _fileSystem = fileSystem;
         _httpClient = httpClient;

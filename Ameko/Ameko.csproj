@@ -63,8 +63,8 @@
     <Compile Update="ViewModels\Windows\StylesManagerWindowViewModel.Commands.cs">
       <DependentUpon>StylesManagerWindowViewModel.cs</DependentUpon>
     </Compile>
-    <Compile Update="ViewModels\Windows\DepCtrlWindowViewModel.commands.cs">
-      <DependentUpon>DepCtrlWindowViewModel.cs</DependentUpon>
+    <Compile Update="ViewModels\Windows\PkgManWindowViewModel.commands.cs">
+      <DependentUpon>PkgManWindowViewModel.cs</DependentUpon>
     </Compile>
     <Compile Update="Views\Controls\RepositoryInformation.axaml.cs">
       <DependentUpon>RepositoryInformation.axaml</DependentUpon>
@@ -80,10 +80,10 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>About.resx</DependentUpon>
     </Compile>
-    <Compile Update="I18N\DepCtrl.Designer.cs">
+    <Compile Update="I18N\PkgMan.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
-      <DependentUpon>DepCtrl.resx</DependentUpon>
+      <DependentUpon>PkgMan.resx</DependentUpon>
     </Compile>
     <Compile Update="I18N\StylesManager.Designer.cs">
       <DesignTime>True</DesignTime>
@@ -127,9 +127,9 @@
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>About.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Update="I18N\DepCtrl.resx">
+    <EmbeddedResource Update="I18N\PkgMan.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>DepCtrl.Designer.cs</LastGenOutput>
+      <LastGenOutput>PkgMan.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Update="I18N\StylesManager.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
