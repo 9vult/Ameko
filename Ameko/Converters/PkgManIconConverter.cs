@@ -9,7 +9,7 @@ using Material.Icons.Avalonia;
 
 namespace Ameko.Converters;
 
-public class DepCtrlIconConverter : IValueConverter
+public class PkgManIconConverter : IValueConverter
 {
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {

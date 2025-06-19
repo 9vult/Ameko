@@ -17,7 +17,7 @@ using ReactiveUI;
 
 namespace Ameko.ViewModels.Windows;
 
-public partial class DepCtrlWindowViewModel : ViewModelBase
+public partial class PkgManWindowViewModel : ViewModelBase
 {
     private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -41,7 +41,7 @@ public partial class DepCtrlWindowViewModel : ViewModelBase
     public ICommand AddRepositoryCommand { get; }
     public ICommand RemoveRepositoryCommand { get; }
 
-    public IDependencyControl DependencyControl { get; }
+    public IPackageManager PackageManager { get; }
 
     public Module? SelectedStoreModule
     {
@@ -86,7 +86,7 @@ public partial class DepCtrlWindowViewModel : ViewModelBase
 
     public bool InstallButtonEnabled =>
         SelectedStoreModule is not null
-        && !DependencyControl.InstalledModules.Contains(SelectedStoreModule);
+        && !PackageManager.InstalledModules.Contains(SelectedStoreModule);
 
     public bool UninstallButtonEnabled => SelectedInstalledModule is not null;
 
@@ -100,17 +100,17 @@ public partial class DepCtrlWindowViewModel : ViewModelBase
 
     public bool RemoveRepoButtonEnabled =>
         SelectedRepository?.Url != null
-        && SelectedRepository.Url != DependencyControl.BaseRepositoryUrl
+        && SelectedRepository.Url != PackageManager.BaseRepositoryUrl
         && _configuration.RepositoryUrls.Contains(SelectedRepository.Url);
 
-    public DepCtrlWindowViewModel(
-        IDependencyControl dependencyControl,
+    public PkgManWindowViewModel(
+        IPackageManager packageManager,
         IScriptService scriptService,
         IConfiguration configuration,
         IMessageBoxService messageBoxService
     )
     {
-        DependencyControl = dependencyControl;
+        PackageManager = packageManager;
 
         _scriptService = scriptService;
         _configuration = configuration;
@@ -118,9 +118,7 @@ public partial class DepCtrlWindowViewModel : ViewModelBase
 
         _repoUrlInput = string.Empty;
 
-        _updateCandidates = new ObservableCollection<Module>(
-            DependencyControl.GetUpdateCandidates()
-        );
+        _updateCandidates = new ObservableCollection<Module>(PackageManager.GetUpdateCandidates());
 
         ShowMessageBox = new Interaction<IMsBox<ButtonResult>, Unit>();
 

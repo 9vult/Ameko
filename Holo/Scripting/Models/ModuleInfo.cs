@@ -9,7 +9,7 @@ namespace Holo.Scripting.Models;
 /// This contains different information than <see cref="Module"/> does.
 /// <para>
 /// <see cref="Module"/> contains display information (<see cref="Module.Description"/>, etc.)
-/// as well as <see cref="DependencyControl"/> data (<see cref="Module.Version"/>, etc.)
+/// as well as <see cref="PackageManager"/> data (<see cref="Module.Version"/>, etc.)
 /// </para><para>
 /// Meanwhile, <see cref="ModuleInfo"/> contains run-time information,
 /// like which <see cref="Submenu"/> to use.

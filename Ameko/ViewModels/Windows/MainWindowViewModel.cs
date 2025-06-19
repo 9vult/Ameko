@@ -51,7 +51,7 @@ public partial class MainWindowViewModel : ViewModelBase
     public Interaction<ShiftTimesDialogViewModel, Unit> ShowShiftTimesDialog { get; }
 
     // Scripts
-    public Interaction<DepCtrlWindowViewModel, Unit> ShowDependencyControl { get; }
+    public Interaction<PkgManWindowViewModel, Unit> ShowPackageManager { get; }
 
     // Help
     public Interaction<LogWindowViewModel, Unit> ShowLogWindow { get; }
@@ -106,8 +106,8 @@ public partial class MainWindowViewModel : ViewModelBase
     [KeybindTarget("ameko.scripts.reload")]
     public ICommand ReloadScriptsCommand { get; }
 
-    [KeybindTarget("ameko.depCtrl.show")]
-    public ICommand ShowDependencyControlCommand { get; }
+    [KeybindTarget("ameko.pkgMan.show")]
+    public ICommand ShowPackageManagerCommand { get; }
 
     // Layouts
     public ICommand SelectLayoutCommand { get; }
@@ -168,7 +168,7 @@ public partial class MainWindowViewModel : ViewModelBase
 
         ScriptMenuItems.Add(new Separator());
         ScriptMenuItems.Add(ScriptMenuService.GenerateReloadMenuItem(ReloadScriptsCommand));
-        ScriptMenuItems.Add(ScriptMenuService.GenerateDepCtlMenuItem(ShowDependencyControlCommand));
+        ScriptMenuItems.Add(ScriptMenuService.GeneratePkgManMenuItem(ShowPackageManagerCommand));
         Logger.Trace("Done!");
     }
 
@@ -220,7 +220,7 @@ public partial class MainWindowViewModel : ViewModelBase
         // Timing
         ShowShiftTimesDialog = new Interaction<ShiftTimesDialogViewModel, Unit>();
         // Scripts
-        ShowDependencyControl = new Interaction<DepCtrlWindowViewModel, Unit>();
+        ShowPackageManager = new Interaction<PkgManWindowViewModel, Unit>();
         // Help
         ShowLogWindow = new Interaction<LogWindowViewModel, Unit>();
         ShowAboutWindow = new Interaction<AboutWindowViewModel, Unit>();
@@ -246,7 +246,7 @@ public partial class MainWindowViewModel : ViewModelBase
         // Scripts
         ExecuteScriptCommand = CreateExecuteScriptCommand();
         ReloadScriptsCommand = CreateReloadScriptsCommand();
-        ShowDependencyControlCommand = CreateShowDependencyControlCommand();
+        ShowPackageManagerCommand = CreateShowPackageManagerCommand();
         // Layouts
         SelectLayoutCommand = CreateSelectLayoutCommand();
         RefreshLayoutsCommand = CreateRefreshLayoutsCommand();

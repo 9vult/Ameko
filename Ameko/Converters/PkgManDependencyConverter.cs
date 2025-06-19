@@ -7,13 +7,13 @@ using Holo.Scripting.Models;
 
 namespace Ameko.Converters;
 
-public class DepCtrlDependencyConverter : IValueConverter
+public class PkgManDependencyConverter : IValueConverter
 {
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
         return value is Module module
             ? string.Join(Environment.NewLine, module.Dependencies)
-            : I18N.DepCtrl.DepCtrl_Info_NoSelection;
+            : I18N.PkgMan.PkgMan_Info_NoSelection;
     }
 
     public object? ConvertBack(

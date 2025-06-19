@@ -59,7 +59,7 @@ public partial class App : Application
         {
             InitializeKeybindService(provider);
             InitializeScriptService(provider);
-            InitializeDependencyControl(provider);
+            InitializePackageManager(provider);
         });
     }
 
@@ -107,18 +107,18 @@ public partial class App : Application
     }
 
     /// <summary>
-    /// Initialize <see cref="DependencyControl"/>
+    /// Initialize <see cref="PackageManager"/>
     /// </summary>
     /// <param name="provider">Service Provider</param>
-    private static void InitializeDependencyControl(IServiceProvider provider)
+    private static void InitializePackageManager(IServiceProvider provider)
     {
         _ = Task.Run(async () =>
         {
             try
             {
-                var depCtrl = provider.GetRequiredService<IDependencyControl>();
-                await depCtrl.SetUpBaseRepository();
-                await depCtrl.AddAdditionalRepositories(
+                var pkgMan = provider.GetRequiredService<IPackageManager>();
+                await pkgMan.SetUpBaseRepository();
+                await pkgMan.AddAdditionalRepositories(
                     provider.GetRequiredService<IConfiguration>().RepositoryUrls
                 );
             }

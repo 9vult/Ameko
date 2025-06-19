@@ -294,14 +294,14 @@ public partial class MainWindowViewModel : ViewModelBase
     }
 
     /// <summary>
-    /// Display the <see cref="DepCtrlWindow"/>
+    /// Display the <see cref="PkgManWindow"/>
     /// </summary>
-    private ReactiveCommand<Unit, Unit> CreateShowDependencyControlCommand()
+    private ReactiveCommand<Unit, Unit> CreateShowPackageManagerCommand()
     {
         return ReactiveCommand.CreateFromTask(async () =>
         {
-            var vm = _serviceProvider.GetRequiredService<DepCtrlWindowViewModel>();
-            await ShowDependencyControl.Handle(vm);
+            var vm = _serviceProvider.GetRequiredService<PkgManWindowViewModel>();
+            await ShowPackageManager.Handle(vm);
         });
     }
 
