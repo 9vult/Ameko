@@ -6,8 +6,12 @@ const std = @import("std");
 const ffms = @import("ffms.zig");
 const common = @import("common.zig");
 
-pub export fn initialize() void {
+pub export fn Initialize() void {
     ffms.Initialize();
+}
+
+pub export fn TestGetFfmsVersion() c_int {
+    return c.FFMS_GetVersion();
 }
 
 pub export fn LoadVideo(file_name: [*c]u8, color_matrix: [*c]u8) c_int {
