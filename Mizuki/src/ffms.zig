@@ -56,7 +56,7 @@ pub fn Initialize() void {
 }
 
 /// Load a video
-pub fn LoadVideo(file_name: [*c]u8, color_matrix: [*c]u8) FfmsError!void {
+pub fn LoadVideo(file_name: [*c]u8, cache_file_name: [*c]u8, color_matrix: [*c]u8) FfmsError!void {
     const indexer = c.FFMS_CreateIndexer(file_name, &err_info);
 
     if (indexer == null) {
@@ -82,7 +82,22 @@ pub fn LoadVideo(file_name: [*c]u8, color_matrix: [*c]u8) FfmsError!void {
         track_number = 0;
     }
 
-    // TODO: Cache stuff
+    // Check if there's a cached version of the index
+    index = c.FFMS_ReadIndex(cache_file_name, &err_info);
+
+    if (index != null and c.FFMS_IndexBelongsToFile(index, file_name, &err_info)) {
+        index = null;
+    }
+
+    // Make sure the track we want is indexed
+    if (index != null and track_number >= 0) {
+        const temp_track = c.FFMS_GetTrackFromIndex(index, track_number);
+        if (c.FFMS_GetNumFrames(temp_track) <= 0) {
+            index = null;
+        }
+    }
+
+    // Get the cached index
 
     // Index the file
     index = c.FFMS_DoIndexing2(indexer, c.FFMS_IEH_ABORT, &err_info);
