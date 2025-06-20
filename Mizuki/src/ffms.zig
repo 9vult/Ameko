@@ -7,7 +7,7 @@ const c = @import("c.zig").c;
 const common = @import("common.zig");
 const known_folders = @import("known-folders");
 
-const FfmsError = error{
+pub const FfmsError = error{
     FileNotFound,
     VideoNotSupported,
     NoVideoTracks,
@@ -85,7 +85,7 @@ pub fn LoadVideo(file_name: [*c]u8, cache_file_name: [*c]u8, color_matrix: [*c]u
     // Check if there's a cached version of the index
     index = c.FFMS_ReadIndex(cache_file_name, &err_info);
 
-    if (index != null and c.FFMS_IndexBelongsToFile(index, file_name, &err_info)) {
+    if (index != null and c.FFMS_IndexBelongsToFile(index, file_name, &err_info) != 0) {
         index = null;
     }
 
