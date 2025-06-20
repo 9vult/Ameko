@@ -14,8 +14,8 @@ pub export fn TestGetFfmsVersion() c_int {
     return c.FFMS_GetVersion();
 }
 
-pub export fn LoadVideo(file_name: [*c]u8, color_matrix: [*c]u8) c_int {
-    ffms.LoadVideo(file_name, color_matrix) catch {
+pub export fn LoadVideo(file_name: [*c]u8, cache_file_name: [*c]u8, color_matrix: [*c]u8) c_int {
+    ffms.LoadVideo(file_name, cache_file_name, color_matrix) catch {
         return 0;
     };
     return 1;
