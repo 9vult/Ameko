@@ -5,6 +5,7 @@ const c = @import("c.zig").c;
 const std = @import("std");
 const ffms = @import("ffms.zig");
 const common = @import("common.zig");
+const errors = @import("errors.zig");
 
 pub export fn Initialize() void {
     ffms.Initialize();
@@ -15,10 +16,10 @@ pub export fn TestGetFfmsVersion() c_int {
 }
 
 pub export fn LoadVideo(file_name: [*c]u8, cache_file_name: [*c]u8, color_matrix: [*c]u8) c_int {
-    ffms.LoadVideo(file_name, cache_file_name, color_matrix) catch {
-        return 0;
+    ffms.LoadVideo(file_name, cache_file_name, color_matrix) catch |err| {
+        return errors.IntFromFfmsError(err);
     };
-    return 1;
+    return 0;
 }
 
 /// Get array of keyframes
