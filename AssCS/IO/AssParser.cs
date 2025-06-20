@@ -10,6 +10,8 @@ namespace AssCS.IO;
 /// </summary>
 public partial class AssParser : FileParser
 {
+    private int _currentLineNumber = 0;
+
     /// <inheritdoc/>
     protected override Document Parse(TextReader reader)
     {
@@ -19,6 +21,7 @@ public partial class AssParser : FileParser
 
         while (reader.ReadLine() is { } line)
         {
+            _currentLineNumber++;
             if (string.IsNullOrEmpty(line))
                 continue;
 
@@ -84,7 +87,7 @@ public partial class AssParser : FileParser
 
         if (!line.StartsWith("Dialogue:") && !line.StartsWith("Comment:"))
             return;
-        doc.EventManager.AddLast(Event.FromAss(doc.EventManager.NextId, line));
+        doc.EventManager.AddLast(Event.FromAss(doc.EventManager.NextId, line, _currentLineNumber));
     }
 
     /// <summary>

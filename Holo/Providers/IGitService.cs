@@ -141,4 +141,11 @@ public interface IGitService
     /// Pop the latest stash
     /// </summary>
     void StashPop();
+
+    /// <summary>
+    /// Get blame information
+    /// </summary>
+    /// <param name="filePath">Path to the file to blame</param>
+    /// <returns>Map of line numbers to blame information</returns>
+    Dictionary<int, GitBlame> Blame(Uri filePath);
 }

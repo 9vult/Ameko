@@ -344,4 +344,40 @@ public class GitService(IFileSystem fileSystem) : IGitService
 
         repo.Stashes.Pop(0);
     }
+
+    public Dictionary<int, GitBlame> Blame(Uri filePath)
+    {
+        if (!Ready)
+            throw new InvalidOperationException("Working directory not set");
+        if (!IsRepository())
+            throw new InvalidOperationException("Not in a repository");
+
+        var path = Path.GetRelativePath(WorkingDirectory.LocalPath, filePath.LocalPath);
+        var map = new Dictionary<int, GitBlame>();
+
+        using var repo = new Repository(WorkingDirectory.LocalPath);
+        var blame = repo.Blame(path);
+
+        foreach (var hunk in blame)
+        {
+            var commit = hunk.FinalCommit;
+            var signature = commit.Author ?? commit.Committer;
+            var info = new GitBlame
+            {
+                CommitSha = commit.Sha,
+                Message = commit.MessageShort,
+                Author = signature.Name,
+                Date = signature.When,
+            };
+            for (
+                var i = hunk.FinalStartLineNumber;
+                i < hunk.FinalStartLineNumber + hunk.LineCount;
+                i++
+            )
+            {
+                map[i - 1] = info; // zero-based index
+            }
+        }
+        return map;
+    }
 }

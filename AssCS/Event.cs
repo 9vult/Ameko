@@ -120,6 +120,8 @@ public partial class Event(int id) : BindableBase, IEntry
         }
     }
 
+    public int OriginalLineNumber { get; init; } = -1;
+
     /// <summary>
     /// Row number in the document
     /// </summary>
@@ -320,9 +322,10 @@ public partial class Event(int id) : BindableBase, IEntry
     /// </summary>
     /// <param name="id">ID of the event to create</param>
     /// <param name="data">Ass-formatted string</param>
+    /// <param name="originalLineNumber">Original line number in the file</param>
     /// <returns>Event object represented by the string</returns>
     /// <exception cref="ArgumentException">If the data is malformed</exception>
-    public static Event FromAss(int id, string data)
+    public static Event FromAss(int id, string data, int originalLineNumber = -1)
     {
         var match = EventRegex().Match(data);
         if (!match.Success)
@@ -345,6 +348,7 @@ public partial class Event(int id) : BindableBase, IEntry
             _effect = match.Groups[10].Value,
             _text = match.Groups[11].Value,
             LinkedExtradatas = ParseExtradata(data),
+            OriginalLineNumber = originalLineNumber,
         };
     }
 
@@ -385,7 +389,7 @@ public partial class Event(int id) : BindableBase, IEntry
     /// </remarks>
     public Event Clone()
     {
-        return FromAss(Id, AsAss());
+        return FromAss(Id, AsAss(), OriginalLineNumber);
     }
 
     /// <summary>

@@ -3,6 +3,7 @@
 using System.Collections.ObjectModel;
 using AssCS;
 using AssCS.History;
+using Holo.Models;
 using NLog;
 
 namespace Holo;
@@ -23,6 +24,7 @@ public class Workspace : BindableBase
     private readonly SelectionManager _selectionManager;
     private Uri? _savePath;
     private bool _isSaved;
+    private Dictionary<int, GitBlame>? _blames;
 
     /// <summary>
     /// The ass document in the workspace
@@ -61,6 +63,12 @@ public class Workspace : BindableBase
             SetProperty(ref _isSaved, value);
             RaisePropertyChanged(nameof(DisplayTitle));
         }
+    }
+
+    public Dictionary<int, GitBlame>? Blames
+    {
+        get => _blames;
+        set => SetProperty(ref _blames, value);
     }
 
     /// <summary>

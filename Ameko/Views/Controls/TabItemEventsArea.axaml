@@ -17,6 +17,7 @@
              x:DataType="vm:TabItemViewModel">
 	<UserControl.Resources>
 		<converters:GridPaddingConverter x:Key="PaddingConverter" />
+		<converters:BlameInfoConverter x:Key="BlameInfoConverter" />
 	</UserControl.Resources>
     <DataGrid Name="EventsGrid"
               IsReadOnly="True"
@@ -32,6 +33,21 @@
                                 Binding="{Binding Id}"
                                 IsVisible="False"
                                 CanUserResize="False" />
+            <DataGridTemplateColumn Header="Author">
+	            <DataGridTemplateColumn.CellTemplate>
+		            <DataTemplate>
+			            <TextBlock>
+				            <TextBlock.Text>
+					            <MultiBinding Converter="{StaticResource BlameInfoConverter}">
+						            <Binding Path="OriginalLineNumber" />
+						            <Binding Path="$parent[DataGrid].((vm:TabItemViewModel)DataContext).Workspace" FallbackValue="" />
+						            <Binding Path="$parent[DataGrid].((vm:TabItemViewModel)DataContext).Workspace.Blames" FallbackValue="" />
+					            </MultiBinding>
+				            </TextBlock.Text>
+			            </TextBlock>
+		            </DataTemplate>
+	            </DataGridTemplateColumn.CellTemplate>
+            </DataGridTemplateColumn>
             <DataGridTextColumn Header="#"
                                 Binding="{Binding Index}"
                                 CanUserResize="False" />
@@ -44,7 +60,6 @@
             <DataGridTextColumn Header="{x:Static i18n:Resources.EventsGrid_Header_Cps}"
                                 Binding="{Binding Cps}"
                                 CanUserResize="False">
-                
             </DataGridTextColumn>
             <DataGridTextColumn Header="{x:Static i18n:Resources.EventsGrid_Header_Style}"
                                 Binding="{Binding Style}" />

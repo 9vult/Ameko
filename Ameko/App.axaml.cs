@@ -35,6 +35,7 @@ public partial class App : Application
         // Activate some key services
         _ = provider.GetRequiredService<CultureService>();
         _ = provider.GetRequiredService<ThemeService>();
+        _ = provider.GetService<GitBlameService>();
         // May have to move this if it gets too resource-intensive
         provider.GetRequiredService<ILayoutProvider>().Reload();
 

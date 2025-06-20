@@ -49,6 +49,7 @@ public static class AmekoServiceProvider
         services.AddSingleton<DirectoryService>();
         services.AddSingleton<ISolutionProvider, SolutionProvider>();
         services.AddSingleton<IGitService, GitService>();
+        services.AddSingleton<GitBlameService>();
         services.AddSingleton<ILayoutProvider, LayoutProvider>();
 
         // --- Presentation ---
