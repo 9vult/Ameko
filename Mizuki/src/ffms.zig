@@ -85,6 +85,7 @@ pub fn LoadVideo(file_name: [*c]u8, cache_file_name: [*c]u8, color_matrix: [*c]u
     // Check if there's a cached version of the index
     index = c.FFMS_ReadIndex(cache_file_name, &err_info);
 
+    // IndexBelongsToFile returns 0 on success
     if (index != null and c.FFMS_IndexBelongsToFile(index, file_name, &err_info) != 0) {
         index = null;
     }
@@ -97,10 +98,18 @@ pub fn LoadVideo(file_name: [*c]u8, cache_file_name: [*c]u8, color_matrix: [*c]u
         }
     }
 
-    // Get the cached index
+    // If we still don't have an index, index now
+    if (index == null) {
+        // TODO: Audio handling
+        index = c.FFMS_DoIndexing2(indexer, c.FFMS_IEH_ABORT, &err_info);
 
-    // Index the file
-    index = c.FFMS_DoIndexing2(indexer, c.FFMS_IEH_ABORT, &err_info);
+        // Write the index to the cache
+        c.FFMS_WriteIndex(cache_file_name, index, &err_info);
+    } else {
+        c.FFMS_CancelIndexing(indexer);
+    }
+
+    // TODO: Clean up the cache
 
     // If no track number has been selected, use the first one
     if (track_number < 0) {
@@ -111,7 +120,7 @@ pub fn LoadVideo(file_name: [*c]u8, cache_file_name: [*c]u8, color_matrix: [*c]u
         }
     }
 
-    // TODO: Audio
+    // TODO: Audio (again)
     // const has_audio = c.FFMS_GetFirstTrackOfType(index, c.FFMS_TYPE_AUDIO, &err_info) != -1;
 
     // TODO: Add an option for unsafe seeking
@@ -154,7 +163,7 @@ pub fn LoadVideo(file_name: [*c]u8, cache_file_name: [*c]u8, color_matrix: [*c]u
         return FfmsError.GetTrackTimeBaseFailed;
     }
 
-    // Get frame times and keyframes
+    // Build list of timecodes and keyframes
     time_codes = std.ArrayList(c_int).init(common.allocator);
     keyframes = std.ArrayList(c_int).init(common.allocator);
 
