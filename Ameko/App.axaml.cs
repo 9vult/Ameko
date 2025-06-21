@@ -2,6 +2,7 @@
 
 using System;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Ameko.Services;
 using Ameko.Utilities;
@@ -13,9 +14,11 @@ using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
 using Holo.Configuration;
 using Holo.Configuration.Keybinds;
+using Holo.Plugins;
 using Holo.Scripting;
 using Microsoft.Extensions.DependencyInjection;
 using NLog;
+using SkiaSharp;
 using MainWindow = Ameko.Views.Windows.MainWindow;
 
 namespace Ameko;
@@ -47,6 +50,31 @@ public partial class App : Application
             {
                 DataContext = provider.GetRequiredService<MainWindowViewModel>(),
             };
+        }
+        // TODO: TESTING AREA
+
+        var mizuki = new MizukiSource();
+        mizuki.Initialize();
+        var loaded = mizuki.LoadVideo(
+            @"C:\Users\ame\Projects\Anime\9volt\Tsurezure Children\LazyMux\[LazyMux] Tsuredure Children - 01 (BD 1080p Main10p FLAC) [A25A8443].mkv"
+        );
+        var allocated = mizuki.AllocateFrame();
+        var gotten = mizuki.GetFrame(25, out var frame);
+
+        int size = frame.Pitch * frame.Height;
+        byte[] managedData = new byte[size];
+        Marshal.Copy(frame.FrameData, managedData, 0, size);
+
+        unsafe
+        {
+            var info = new SKImageInfo(frame.Width, frame.Height, SKColorType.Bgra8888);
+            using var bitmap = new SKBitmap();
+            var success = bitmap.InstallPixels(info, frame.FrameData, frame.Pitch, null, null);
+
+            using var image = SKImage.FromBitmap(bitmap);
+            using var encoded = image.Encode(SKEncodedImageFormat.Png, 100);
+            var result = Convert.ToBase64String(encoded.ToArray());
+            ;
         }
 
         base.OnFrameworkInitializationCompleted();

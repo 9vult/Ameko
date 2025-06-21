@@ -4,6 +4,7 @@
 
 const std = @import("std");
 const c = @import("c.zig").c;
+const frames = @import("frames.zig");
 const common = @import("common.zig");
 const known_folders = @import("known-folders");
 
@@ -17,6 +18,8 @@ pub const FfmsError = error{
     GetTrackTimeBaseFailed,
     GetFrameInfoFailed,
     OutOfMemory,
+    VideoDecodeError,
+    SettingOutputFormatFailed,
 };
 
 // Zero-init
@@ -35,8 +38,15 @@ var color_space = &color_space_buffer[0];
 var video_color_space: c_int = -1;
 var video_color_range: c_int = -1;
 
+// Public variables
+
 pub var keyframes: std.ArrayList(c_int) = undefined;
 pub var time_codes: std.ArrayList(c_int) = undefined;
+
+pub var reusable_frame: *frames.VideoFrame = undefined;
+pub var frame_width: usize = 0;
+pub var frame_height: usize = 0;
+pub var frame_pitch: usize = 0;
 
 /// Get the current FFMS version
 ///
@@ -141,6 +151,7 @@ pub fn LoadVideo(file_name: [*c]u8, cache_file_name: [*c]u8, color_matrix: [*c]u
 
     const width = temp_frame.*.EncodedWidth;
     const height = temp_frame.*.EncodedHeight;
+
     var dar: f64 = 0;
 
     // Calculate aspect ratio
@@ -153,6 +164,17 @@ pub fn LoadVideo(file_name: [*c]u8, cache_file_name: [*c]u8, color_matrix: [*c]u
     video_color_space = temp_frame.*.ColorSpace;
     video_color_range = temp_frame.*.ColorRange;
     SetColorSpace(color_matrix);
+
+    const target_formats = [2]c_int{ c.FFMS_GetPixFmt("bgra"), -1 };
+    if (c.FFMS_SetOutputFormatV2(video_source, &target_formats[0], width, height, c.FFMS_RESIZER_BICUBIC, &err_info) != 0) {
+        return FfmsError.SettingOutputFormatFailed;
+    }
+
+    // TODO: Clean up
+    const pitch_frame = c.FFMS_GetFrame(video_source, 0, &err_info);
+    frame_width = @intCast(pitch_frame.*.EncodedWidth);
+    frame_height = @intCast(pitch_frame.*.EncodedHeight);
+    frame_pitch = @intCast(pitch_frame.*.Linesize[0]);
 
     // Frame information
     const track = c.FFMS_GetTrackFromVideo(video_source);
@@ -182,8 +204,47 @@ pub fn LoadVideo(file_name: [*c]u8, cache_file_name: [*c]u8, color_matrix: [*c]u
         const timestamp = @as(c_int, @intCast(@divTrunc(frame_info.*.PTS * time_base.*.Num, time_base.*.Den)));
         try time_codes.append(timestamp);
     }
+}
 
-    // if (time_codes.items.len < 2) {}
+pub fn AllocFrame(width: usize, height: usize, pitch: usize) !*frames.VideoFrame {
+    const total_bytes = height * pitch;
+    const buffer = try common.allocator.alloc(u8, total_bytes);
+
+    const frame = try common.allocator.create(frames.VideoFrame);
+
+    frame.* = .{
+        .frame_number = -1,
+        .timestamp = 0,
+        .width = @intCast(width),
+        .height = @intCast(height),
+        .pitch = @intCast(pitch),
+        .flipped = 0,
+        .frame_data = buffer.ptr,
+        .valid = 0,
+    };
+    return frame;
+}
+
+pub fn GetFrame(frame_number: c_int, out: *frames.VideoFrame) FfmsError!void {
+    const frame = c.FFMS_GetFrame(video_source, frame_number, &err_info);
+    if (frame == null) {
+        return FfmsError.VideoDecodeError;
+    }
+
+    const src_ptr = frame.*.Data[0];
+
+    const pitch: usize = @intCast(frame.*.Linesize[0]);
+    const height: usize = @intCast(frame.*.EncodedHeight);
+    const total_bytes = pitch * height;
+
+    // Copy
+    const dst = reusable_frame.*.frame_data[0..total_bytes];
+    @memcpy(dst, src_ptr[0..total_bytes]);
+
+    reusable_frame.*.frame_number = frame_number;
+    reusable_frame.*.valid = 1;
+
+    out.* = reusable_frame.*;
 }
 
 // TODO: This thing

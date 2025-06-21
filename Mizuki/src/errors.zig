@@ -13,5 +13,7 @@ pub fn IntFromFfmsError(err: FfmsError) c_int {
         FfmsError.GetTrackTimeBaseFailed => 7,
         FfmsError.GetFrameInfoFailed => 8,
         FfmsError.OutOfMemory => 9,
+        FfmsError.VideoDecodeError => 10,
+        FfmsError.SettingOutputFormatFailed => 11,
     };
 }

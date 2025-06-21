@@ -27,6 +27,16 @@ public class MizukiSource : ISourcePlugin
         return External.LoadVideo(filename, GetCachePath(filename), string.Empty);
     }
 
+    public int AllocateFrame()
+    {
+        return External.AllocateFrame();
+    }
+
+    public int GetFrame(int frameNumber, out VideoFrame frame)
+    {
+        return External.GetFrame(frameNumber, out frame);
+    }
+
     public int[] GetTimecodes()
     {
         var ptr = External.GetTimecodes();
@@ -67,6 +77,12 @@ internal static unsafe partial class External
     );
 
     [LibraryImport("mizuki")]
+    internal static partial int GetFrame(int frameNumber, out VideoFrame frame);
+
+    [LibraryImport("mizuki")]
+    internal static partial int AllocateFrame();
+
+    [LibraryImport("mizuki")]
     internal static partial IntArray GetKeyframes();
 
     [LibraryImport("mizuki")]
@@ -74,6 +90,19 @@ internal static unsafe partial class External
 
     [LibraryImport("mizuki")]
     internal static partial void FreeIntArray(IntArray array);
+}
+
+[StructLayout(LayoutKind.Sequential)]
+public struct VideoFrame
+{
+    public int FrameNumber;
+    public long Timestamp;
+    public int Width;
+    public int Height;
+    public int Pitch;
+    public int Flipped;
+    public nint FrameData;
+    public int Valid;
 }
 
 /// <summary>
