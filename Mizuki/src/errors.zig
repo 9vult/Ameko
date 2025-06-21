@@ -10,9 +10,8 @@ pub fn IntFromFfmsError(err: FfmsError) c_int {
         FfmsError.VideoTrackLoadingFailed => 4,
         FfmsError.DecodingFirstFrameFailed => 5,
         FfmsError.GetTrackInfoFailed => 6,
-        FfmsError.GetTrackInfoFailed => 7,
+        FfmsError.GetTrackTimeBaseFailed => 7,
         FfmsError.GetFrameInfoFailed => 8,
         FfmsError.OutOfMemory => 9,
-        else => -1
     };
 }
