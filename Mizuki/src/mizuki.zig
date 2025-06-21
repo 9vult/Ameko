@@ -7,6 +7,7 @@ const ffms = @import("ffms.zig");
 const frames = @import("frames.zig");
 const common = @import("common.zig");
 const errors = @import("errors.zig");
+const buffers = @import("buffers.zig");
 
 pub export fn Initialize() void {
     ffms.Initialize();
@@ -50,8 +51,8 @@ pub export fn GetTimecodes() common.IntArray {
 }
 
 /// Allocate a frame
-pub export fn AllocateFrame() c_int {
-    ffms.reusable_frame = ffms.AllocFrame(ffms.frame_width, ffms.frame_height, ffms.frame_pitch) catch |err| {
+pub export fn AllocateBuffers(num_buffers: c_int) c_int {
+    buffers.Init(@intCast(num_buffers), ffms.frame_width, ffms.frame_height, ffms.frame_pitch) catch |err| {
         return errors.IntFromFfmsError(err);
     };
     return 0;
