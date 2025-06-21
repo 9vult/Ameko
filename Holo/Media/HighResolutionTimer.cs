@@ -63,6 +63,7 @@ public class HighResolutionTimer
     {
         Interval = interval;
         _intervals = [];
+        _isMultiInterval = false;
     }
 
     /// <summary>
