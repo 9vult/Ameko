@@ -1,6 +1,9 @@
 // SPDX-License-Identifier: MPL-2.0
 
 using System.Runtime.InteropServices;
+using System.Security.Cryptography;
+using System.Text;
+using Holo.IO;
 
 namespace Holo.Plugins;
 
@@ -9,9 +12,39 @@ namespace Holo.Plugins;
 /// </summary>
 public class MizukiSource : ISourcePlugin
 {
-    public static int GetFfmsVersion()
+    public int GetFfmsVersion()
     {
         return External.TestGetFfmsVersion();
+    }
+
+    public void Initialize()
+    {
+        External.Initialize();
+    }
+
+    public int LoadVideo(string filename)
+    {
+        return External.LoadVideo(filename, GetCachePath(filename), string.Empty);
+    }
+
+    public int[] GetTimecodes()
+    {
+        var ptr = External.GetTimecodes();
+        var timecodes = ptr.ToArray(); // Frees
+        return timecodes;
+    }
+
+    public int[] GetKeyframes()
+    {
+        var ptr = External.GetKeyframes();
+        var keyframes = ptr.ToArray(); // Frees
+        return keyframes;
+    }
+
+    private static string GetCachePath(string filePath)
+    {
+        var hash = Convert.ToBase64String(MD5.HashData(Encoding.UTF8.GetBytes(filePath)));
+        return Path.Combine(DirectoryService.CacheHome, $"{hash}.ffindex");
     }
 }
 
@@ -27,8 +60,9 @@ internal static unsafe partial class External
     internal static partial int TestGetFfmsVersion();
 
     [LibraryImport("mizuki", StringMarshalling = StringMarshalling.Utf8)]
-    internal static partial void LoadVideo(
+    internal static partial int LoadVideo(
         [MarshalAs(UnmanagedType.LPStr)] string fileName,
+        [MarshalAs(UnmanagedType.LPStr)] string cacheFileName,
         [MarshalAs(UnmanagedType.LPStr)] string colorMatrix
     );
 
