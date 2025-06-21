@@ -9,7 +9,7 @@ pub const VideoFrame = extern struct {
     height: c_int,
     pitch: c_int,
     flipped: c_int,
-    frame_data: [*]u8, // ffms_Frame.Data[0]
+    data: [*]u8, // ffms_Frame.Data[0]
     valid: c_int = 0, // bool
 };
 
@@ -20,7 +20,7 @@ pub const SubtitleFrame = extern struct {
     height: c_int,
     pitch: c_int,
     flipped: c_int,
-    frame_data: [*]u8,
+    data: [*]u8,
     valid: c_int = 0, // bool
 };
 

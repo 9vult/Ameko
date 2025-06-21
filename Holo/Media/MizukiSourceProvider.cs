@@ -27,9 +27,9 @@ public class MizukiSourceProvider : ISourceProvider
         return External.LoadVideo(filename, GetCachePath(filename), string.Empty);
     }
 
-    public int AllocateFrame()
+    public int AllocateBuffers(int numBuffers)
     {
-        return External.AllocateFrame();
+        return External.AllocateBuffers(numBuffers);
     }
 
     public int GetFrame(int frameNumber, out VideoFrame frame)
@@ -80,7 +80,7 @@ internal static unsafe partial class External
     internal static partial int GetFrame(int frameNumber, out VideoFrame frame);
 
     [LibraryImport("mizuki")]
-    internal static partial int AllocateFrame();
+    internal static partial int AllocateBuffers(int numBuffers);
 
     [LibraryImport("mizuki")]
     internal static partial IntArray GetKeyframes();
@@ -101,7 +101,7 @@ public struct VideoFrame
     public int Height;
     public int Pitch;
     public int Flipped;
-    public nint FrameData;
+    public nint Data;
     public int Valid;
 }
 

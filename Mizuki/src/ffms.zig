@@ -6,7 +6,6 @@ const std = @import("std");
 const c = @import("c.zig").c;
 const frames = @import("frames.zig");
 const common = @import("common.zig");
-const known_folders = @import("known-folders");
 
 pub const FfmsError = error{
     FileNotFound,
@@ -43,7 +42,6 @@ var video_color_range: c_int = -1;
 pub var keyframes: std.ArrayList(c_int) = undefined;
 pub var time_codes: std.ArrayList(c_int) = undefined;
 
-pub var reusable_frame: *frames.VideoFrame = undefined;
 pub var frame_width: usize = 0;
 pub var frame_height: usize = 0;
 pub var frame_pitch: usize = 0;
@@ -206,25 +204,6 @@ pub fn LoadVideo(file_name: [*c]u8, cache_file_name: [*c]u8, color_matrix: [*c]u
     }
 }
 
-pub fn AllocFrame(width: usize, height: usize, pitch: usize) !*frames.VideoFrame {
-    const total_bytes = height * pitch;
-    const buffer = try common.allocator.alloc(u8, total_bytes);
-
-    const frame = try common.allocator.create(frames.VideoFrame);
-
-    frame.* = .{
-        .frame_number = -1,
-        .timestamp = 0,
-        .width = @intCast(width),
-        .height = @intCast(height),
-        .pitch = @intCast(pitch),
-        .flipped = 0,
-        .frame_data = buffer.ptr,
-        .valid = 0,
-    };
-    return frame;
-}
-
 pub fn GetFrame(frame_number: c_int, out: *frames.VideoFrame) FfmsError!void {
     const frame = c.FFMS_GetFrame(video_source, frame_number, &err_info);
     if (frame == null) {
@@ -238,13 +217,11 @@ pub fn GetFrame(frame_number: c_int, out: *frames.VideoFrame) FfmsError!void {
     const total_bytes = pitch * height;
 
     // Copy
-    const dst = reusable_frame.*.frame_data[0..total_bytes];
+    const dst = out.*.data[0..total_bytes];
     @memcpy(dst, src_ptr[0..total_bytes]);
 
-    reusable_frame.*.frame_number = frame_number;
-    reusable_frame.*.valid = 1;
-
-    out.* = reusable_frame.*;
+    out.*.frame_number = frame_number;
+    out.*.valid = 1;
 }
 
 // TODO: This thing
