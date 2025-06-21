@@ -4,6 +4,7 @@ const c = @import("c.zig").c;
 
 const std = @import("std");
 const ffms = @import("ffms.zig");
+const frames = @import("frames.zig");
 const common = @import("common.zig");
 const errors = @import("errors.zig");
 
@@ -46,6 +47,22 @@ pub export fn GetTimecodes() common.IntArray {
         .ptr = buffer.ptr,
         .len = buffer.len,
     };
+}
+
+/// Allocate a frame
+pub export fn AllocateFrame() c_int {
+    ffms.reusable_frame = ffms.AllocFrame(ffms.frame_width, ffms.frame_height, ffms.frame_pitch) catch |err| {
+        return errors.IntFromFfmsError(err);
+    };
+    return 0;
+}
+
+/// Get a frame
+pub export fn GetFrame(frame_number: c_int, out: *frames.VideoFrame) c_int {
+    ffms.GetFrame(frame_number, out) catch |err| {
+        return errors.IntFromFfmsError(err);
+    };
+    return 0;
 }
 
 pub fn main() !void {
