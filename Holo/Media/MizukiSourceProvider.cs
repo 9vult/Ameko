@@ -5,12 +5,12 @@ using System.Security.Cryptography;
 using System.Text;
 using Holo.IO;
 
-namespace Holo.Plugins;
+namespace Holo.Media;
 
 /// <summary>
 /// Interop with the Mizuki source provider
 /// </summary>
-public class MizukiSource : ISourcePlugin
+public class MizukiSourceProvider : ISourceProvider
 {
     public int GetFfmsVersion()
     {
