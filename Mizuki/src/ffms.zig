@@ -104,7 +104,8 @@ pub fn LoadVideo(file_name: [*c]u8, cache_file_name: [*c]u8, color_matrix: [*c]u
         index = c.FFMS_DoIndexing2(indexer, c.FFMS_IEH_ABORT, &err_info);
 
         // Write the index to the cache
-        c.FFMS_WriteIndex(cache_file_name, index, &err_info);
+        // We can ignore the status of this because it doesn't really affect anything
+        _ = c.FFMS_WriteIndex(cache_file_name, index, &err_info);
     } else {
         c.FFMS_CancelIndexing(indexer);
     }
