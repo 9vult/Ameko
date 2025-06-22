@@ -252,4 +252,22 @@
     <data name="Menu_DependencyControl" xml:space="preserve">
         <value>Open _Dependency Control...</value>
     </data>
+    <data name="Video_Button_PlayPause_ToolTip" xml:space="preserve">
+        <value>Play/Pause</value>
+    </data>
+    <data name="Video_Button_PlaySelection_ToolTip" xml:space="preserve">
+        <value>Play Selection</value>
+    </data>
+    <data name="Video_Button_EnableAutoSeek_ToolTip" xml:space="preserve">
+        <value>Enable auto seek to event start</value>
+    </data>
+    <data name="Video_Button_DisableAutoSeek_ToolTip" xml:space="preserve">
+        <value>Disable auto seek to event start</value>
+    </data>
+    <data name="Video_Time_ToolTip" xml:space="preserve">
+        <value>Current Time</value>
+    </data>
+    <data name="Video_Frame_ToolTip" xml:space="preserve">
+        <value>Current Frame</value>
+    </data>
 </root>

@@ -10,7 +10,7 @@ public class MediaController : BindableBase
     private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
     private readonly ISourceProvider _provider;
     private readonly HighResolutionTimer _playback;
-    private VideoInfo _videoInfo;
+    private VideoInfo? _videoInfo;
 
     private bool _isVideoLoaded;
 
@@ -23,7 +23,7 @@ public class MediaController : BindableBase
     /// <summary>
     /// Information about the loaded video
     /// </summary>
-    public VideoInfo VideoInfo
+    public VideoInfo? VideoInfo
     {
         get => _videoInfo;
         private set => SetProperty(ref _videoInfo, value);
@@ -50,8 +50,17 @@ public class MediaController : BindableBase
     public int CurrentFrame
     {
         get => _currentFrame;
-        set => SetProperty(ref _currentFrame, value);
+        set
+        {
+            SetProperty(ref _currentFrame, value);
+            RaisePropertyChanged(nameof(CurrentTime));
+        }
     }
+
+    /// <summary>
+    /// The current frame time
+    /// </summary>
+    public Time? CurrentTime => _videoInfo?.TimeFromFrame(CurrentFrame);
 
     /// <summary>
     /// If video is currently playing
@@ -185,14 +194,13 @@ public class MediaController : BindableBase
             return false;
         }
 
-        VideoInfo = new VideoInfo
-        {
-            FrameCount = _provider.FrameCount,
-            Sar = new Rational { Numerator = 1, Denominator = 1 },
-            FrameTimes = _provider.GetTimecodes(),
-            FrameIntervals = _provider.GetFrameIntervals(),
-            Keyframes = _provider.GetKeyframes(),
-        };
+        VideoInfo = new VideoInfo(
+            frameCount: _provider.FrameCount,
+            sar: new Rational { Numerator = 1, Denominator = 1 },
+            frameTimes: _provider.GetTimecodes(),
+            frameIntervals: _provider.GetFrameIntervals(),
+            keyframes: _provider.GetKeyframes()
+        );
         IsVideoLoaded = true;
         return true;
     }
@@ -214,7 +222,6 @@ public class MediaController : BindableBase
     /// Controls playback
     /// </summary>
     /// <param name="provider">Source Provider to use</param>
-    /// <param name="videoInfo">Information about the video</param>
     public MediaController(ISourceProvider provider)
     {
         _provider = provider;
