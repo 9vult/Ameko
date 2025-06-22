@@ -4,13 +4,19 @@ using AssCS;
 
 namespace Holo.Media;
 
-public readonly struct VideoInfo
+public class VideoInfo(
+    int frameCount,
+    Rational sar,
+    int[] frameTimes,
+    int[] frameIntervals,
+    int[] keyframes
+)
 {
-    public int FrameCount { get; init; }
-    public Rational Sar { get; init; }
-    public int[] FrameTimes { get; init; }
-    public int[] FrameIntervals { get; init; }
-    public int[] Keyframes { get; init; }
+    public int FrameCount { get; } = frameCount;
+    public Rational Sar { get; init; } = sar;
+    public int[] FrameTimes { get; } = frameTimes;
+    public int[] FrameIntervals { get; } = frameIntervals;
+    public int[] Keyframes { get; } = keyframes;
 
     /// <summary>
     /// Gets the index of the frame with the largest timestamp ≤ <paramref name="millis"/>.

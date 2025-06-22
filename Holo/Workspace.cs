@@ -3,6 +3,7 @@
 using System.Collections.ObjectModel;
 using AssCS;
 using AssCS.History;
+using Holo.Media;
 using NLog;
 
 namespace Holo;
@@ -21,6 +22,7 @@ public class Workspace : BindableBase
     private readonly Document _document;
     private readonly int _id;
     private readonly SelectionManager _selectionManager;
+    private readonly MediaController _mediaController;
     private Uri? _savePath;
     private bool _isSaved;
 
@@ -35,6 +37,8 @@ public class Workspace : BindableBase
     public int Id => _id;
 
     public SelectionManager SelectionManager => _selectionManager;
+
+    public MediaController MediaController => _mediaController;
 
     /// <summary>
     /// The path the <see cref="Document"/> is saved to,
@@ -143,5 +147,6 @@ public class Workspace : BindableBase
         IsSaved = true;
 
         _selectionManager = new SelectionManager(Document.EventManager.Head);
+        _mediaController = new MediaController(new MizukiSourceProvider()); // TODO: How to genericify this
     }
 }

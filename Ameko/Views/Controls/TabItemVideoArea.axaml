@@ -4,11 +4,48 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             d:DesignWidth="640"
+             d:DesignHeight="400"
+
+             xmlns:c="clr-namespace:Ameko.Views.Controls"
              xmlns:i18n="clr-namespace:Ameko.I18N"
              xmlns:icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              xmlns:vm="clr-namespace:Ameko.ViewModels.Controls"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             
              x:Class="Ameko.Views.Controls.TabItemVideoArea"
              x:DataType="vm:TabItemViewModel">
-    Video Area
+    <DockPanel IsEnabled="{Binding Workspace.MediaController.IsVideoLoaded}">
+        <Grid DockPanel.Dock="Bottom"
+              RowDefinitions="Auto, Auto">
+            <c:SeekSlider Grid.Row="0"
+                          VerticalAlignment="Center"
+                          SmallChange="1"
+                          LargeChange="25"
+                          TickFrequency="1"
+                          TickPlacement="Outside" />
+            <StackPanel Grid.Row="1"
+                        Orientation="Horizontal"
+                        Spacing="2">
+                <Button Content="{icons:MaterialIconExt Kind=PlayPause}"
+                        ToolTip.Tip="{x:Static i18n:Resources.Video_Button_PlayPause_ToolTip}" />
+                <Button Content="{icons:MaterialIconExt Kind=SkipNext}"
+                        ToolTip.Tip="{x:Static i18n:Resources.Video_Button_PlaySelection_ToolTip}" />
+                <Button Content="{icons:MaterialIconExt Kind=MotionPlayOutline}"
+                        IsVisible="{Binding !Workspace.MediaController.IsAutoSeekEnabled}"
+                        ToolTip.Tip="{x:Static i18n:Resources.Video_Button_EnableAutoSeek_ToolTip}" />
+                <Button Content="{icons:MaterialIconExt Kind=MotionPlay}"
+                        IsVisible="{Binding Workspace.MediaController.IsAutoSeekEnabled}"
+                        ToolTip.Tip="{x:Static i18n:Resources.Video_Button_DisableAutoSeek_ToolTip}" />
+                <TextBox IsReadOnly="true"
+                         Text="{Binding Workspace.MediaController.CurrentTime.MillisecondText,
+                                        FallbackValue='0:00:00.000'}"
+                         ToolTip.Tip="{x:Static i18n:Resources.Video_Time_ToolTip}" />
+                <TextBox IsReadOnly="true"
+                         Text="{Binding Workspace.MediaController.CurrentFrame,
+                                        FallbackValue='0'}"
+                         ToolTip.Tip="{x:Static i18n:Resources.Video_Frame_ToolTip}" />
+            </StackPanel>
+        </Grid>
+    </DockPanel>
 </UserControl>
