@@ -19,6 +19,14 @@ pub fn Init(num_buffers: usize, width: usize, height: usize, pitch: usize) ffms.
     }
 }
 
+/// Free the buffers
+pub fn Deinit() void {
+    for (buffers.items) |buffer| {
+        common.allocator.destroy(buffer);
+    }
+    buffers.deinit();
+}
+
 /// Get a frame
 pub fn ProcFrame(frame_number: c_int, timestamp: c_longlong, raw: c_int, out: *frames.VideoFrame) ffms.FfmsError!void {
     _ = raw; // For sub-less frame

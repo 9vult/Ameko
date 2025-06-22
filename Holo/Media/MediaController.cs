@@ -5,12 +5,15 @@ using NLog;
 
 namespace Holo.Media;
 
-public class PlaybackController : BindableBase
+public class MediaController : BindableBase
 {
     private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
     private readonly ISourceProvider _provider;
     private readonly HighResolutionTimer _playback;
     private VideoInfo _videoInfo;
+
+    private bool _isVideoLoaded;
+
     private bool _isAutoSeekEnabled = true;
     private bool _isPlaying;
     private bool _isPaused;
@@ -23,7 +26,22 @@ public class PlaybackController : BindableBase
     public VideoInfo VideoInfo
     {
         get => _videoInfo;
-        set => SetProperty(ref _videoInfo, value);
+        private set => SetProperty(ref _videoInfo, value);
+    }
+
+    public bool IsVideoLoaded
+    {
+        get => _isVideoLoaded;
+        private set => SetProperty(ref _isVideoLoaded, value);
+    }
+
+    /// <summary>
+    /// If we should automatically seek to the start of an event when the selection changes
+    /// </summary>
+    public bool IsAutoSeekEnabled
+    {
+        get => _isAutoSeekEnabled;
+        set => SetProperty(ref _isAutoSeekEnabled, value);
     }
 
     /// <summary>
@@ -51,15 +69,6 @@ public class PlaybackController : BindableBase
     {
         get => _isPaused;
         set => SetProperty(ref _isPaused, value);
-    }
-
-    /// <summary>
-    /// If we should automatically seek to the start of an event when the selection changes
-    /// </summary>
-    public bool IsAutoSeekEnabled
-    {
-        get => _isAutoSeekEnabled;
-        set => SetProperty(ref _isAutoSeekEnabled, value);
     }
 
     /// <summary>
@@ -160,6 +169,34 @@ public class PlaybackController : BindableBase
         CurrentFrame = _videoInfo.FrameFromTime(@event.Start);
     }
 
+    public bool OpenVideo(string filePath)
+    {
+        if (!_provider.IsInitialized)
+            throw new InvalidOperationException("Provider is not initialized");
+
+        Logger.Info($"Opening video {filePath}");
+
+        if (IsVideoLoaded)
+            _provider.CloseVideo();
+
+        if (_provider.LoadVideo(filePath) != 0)
+        {
+            // TODO: Handle error
+            return false;
+        }
+
+        VideoInfo = new VideoInfo
+        {
+            FrameCount = _provider.FrameCount,
+            Sar = new Rational { Numerator = 1, Denominator = 1 },
+            FrameTimes = _provider.GetTimecodes(),
+            FrameIntervals = _provider.GetFrameIntervals(),
+            Keyframes = _provider.GetKeyframes(),
+        };
+        IsVideoLoaded = true;
+        return true;
+    }
+
     /// <summary>
     /// Advance the current frame, or stop if the <see cref="_destinationFrame"/> has been reached
     /// </summary>
@@ -178,10 +215,8 @@ public class PlaybackController : BindableBase
     /// </summary>
     /// <param name="provider">Source Provider to use</param>
     /// <param name="videoInfo">Information about the video</param>
-    public PlaybackController(ISourceProvider provider, VideoInfo videoInfo)
+    public MediaController(ISourceProvider provider)
     {
         _provider = provider;
-        _videoInfo = videoInfo;
-        _playback = new HighResolutionTimer(videoInfo.FrameIntervals);
     }
 }

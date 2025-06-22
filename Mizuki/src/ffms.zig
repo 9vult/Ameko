@@ -39,8 +39,9 @@ var video_color_range: c_int = -1;
 
 // Public variables
 
-pub var keyframes: std.ArrayList(c_int) = undefined;
-pub var time_codes: std.ArrayList(c_int) = undefined;
+pub var keyframes: []c_int = undefined;
+pub var timecodes: []c_int = undefined;
+pub var frame_intervals: []c_int = undefined;
 
 pub var frame_width: usize = 0;
 pub var frame_height: usize = 0;
@@ -185,23 +186,47 @@ pub fn LoadVideo(file_name: [*c]u8, cache_file_name: [*c]u8, color_matrix: [*c]u
     }
 
     // Build list of timecodes and keyframes
-    time_codes = std.ArrayList(c_int).init(common.allocator);
-    keyframes = std.ArrayList(c_int).init(common.allocator);
+    const frame_count = video_info.*.NumFrames;
+
+    // Allocate ArrayLists
+    var keyframes_list = std.ArrayList(c_int).init(common.allocator);
+    var timecodes_list = std.ArrayList(c_int).init(common.allocator);
+    var intervals_list = std.ArrayList(c_int).init(common.allocator);
+
+    errdefer timecodes_list.deinit();
+    errdefer keyframes_list.deinit();
+    errdefer intervals_list.deinit();
 
     var frame_number: c_int = 0;
-    while (frame_number < video_info.*.NumFrames) : (frame_number += 1) {
+    while (frame_number < frame_count) : (frame_number += 1) {
         const frame_info = c.FFMS_GetFrameInfo(track, frame_number);
         if (frame_info == null) {
             return FfmsError.GetFrameInfoFailed;
         }
 
         if (frame_info.*.KeyFrame != 0) {
-            try keyframes.append(frame_number);
+            try keyframes_list.append(frame_number);
         }
 
         const timestamp = @as(c_int, @intCast(@divTrunc(frame_info.*.PTS * time_base.*.Num, time_base.*.Den)));
-        try time_codes.append(timestamp);
+        try timecodes_list.append(timestamp);
     }
+
+    // Get the slices (de-inits the ArrayLists)
+    keyframes = keyframes_list.toOwnedSlice() catch unreachable;
+    timecodes = timecodes_list.toOwnedSlice() catch unreachable;
+
+    // Calculate frame intervals
+    var i: usize = 0;
+    while (i < frame_count) : (i += 1) {
+        if (i + 1 >= frame_count) {
+            try timecodes_list.append(0);
+        } else {
+            frame_intervals[i] = timecodes[i + 1] - timecodes[i];
+        }
+    }
+
+    frame_intervals = intervals_list.toOwnedSlice() catch unreachable;
 }
 
 pub fn GetFrame(frame_number: c_int, out: *frames.VideoFrame) FfmsError!void {

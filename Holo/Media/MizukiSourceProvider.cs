@@ -12,14 +12,21 @@ namespace Holo.Media;
 /// </summary>
 public class MizukiSourceProvider : ISourceProvider
 {
-    public int GetFfmsVersion()
-    {
-        return External.TestGetFfmsVersion();
-    }
+    /// <summary>
+    /// If this provider is initialized
+    /// </summary>
+    public bool IsInitialized { get; private set; }
+
+    /// <inheritdoc />
+    public int FrameCount { get; }
+
+    /// <inheritdoc />
+    public Rational Sar { get; }
 
     public void Initialize()
     {
         External.Initialize();
+        IsInitialized = true;
     }
 
     public int LoadVideo(string filename)
@@ -27,28 +34,47 @@ public class MizukiSourceProvider : ISourceProvider
         return External.LoadVideo(filename, GetCachePath(filename), string.Empty);
     }
 
+    public int CloseVideo()
+    {
+        return 0;
+    }
+
     public int AllocateBuffers(int numBuffers)
     {
         return External.AllocateBuffers(numBuffers);
     }
 
+    /// <inheritdoc />
+    public int FreeBuffers()
+    {
+        return External.FreeBuffers();
+    }
+
+    /// <inheritdoc />
     public int GetFrame(int frameNumber, out VideoFrame frame)
     {
         return External.GetFrame(frameNumber, out frame);
     }
 
-    public int[] GetTimecodes()
-    {
-        var ptr = External.GetTimecodes();
-        var timecodes = ptr.ToArray(); // Frees
-        return timecodes;
-    }
-
+    /// <inheritdoc />
     public int[] GetKeyframes()
     {
         var ptr = External.GetKeyframes();
-        var keyframes = ptr.ToArray(); // Frees
-        return keyframes;
+        return ptr.ToArray();
+    }
+
+    /// <inheritdoc />
+    public int[] GetTimecodes()
+    {
+        var ptr = External.GetTimecodes();
+        return ptr.ToArray();
+    }
+
+    /// <inheritdoc />
+    public int[] GetFrameIntervals()
+    {
+        var ptr = External.GetFrameIntervals();
+        return ptr.ToArray();
     }
 
     private static string GetCachePath(string filePath)
@@ -66,9 +92,6 @@ internal static unsafe partial class External
     [LibraryImport("mizuki")]
     internal static partial void Initialize();
 
-    [LibraryImport("Mizuki")]
-    internal static partial int TestGetFfmsVersion();
-
     [LibraryImport("mizuki", StringMarshalling = StringMarshalling.Utf8)]
     internal static partial int LoadVideo(
         [MarshalAs(UnmanagedType.LPStr)] string fileName,
@@ -77,10 +100,13 @@ internal static unsafe partial class External
     );
 
     [LibraryImport("mizuki")]
-    internal static partial int GetFrame(int frameNumber, out VideoFrame frame);
+    internal static partial int AllocateBuffers(int numBuffers);
 
     [LibraryImport("mizuki")]
-    internal static partial int AllocateBuffers(int numBuffers);
+    internal static partial int FreeBuffers();
+
+    [LibraryImport("mizuki")]
+    internal static partial int GetFrame(int frameNumber, out VideoFrame frame);
 
     [LibraryImport("mizuki")]
     internal static partial IntArray GetKeyframes();
@@ -89,7 +115,7 @@ internal static unsafe partial class External
     internal static partial IntArray GetTimecodes();
 
     [LibraryImport("mizuki")]
-    internal static partial void FreeIntArray(IntArray array);
+    internal static partial IntArray GetFrameIntervals();
 }
 
 [StructLayout(LayoutKind.Sequential)]
@@ -126,7 +152,6 @@ internal static class IntArrayExtensions
     {
         var managed = new int[array.Length];
         Marshal.Copy(array.Pointer, managed, 0, managed.Length);
-        External.FreeIntArray(array);
         return managed;
     }
 }

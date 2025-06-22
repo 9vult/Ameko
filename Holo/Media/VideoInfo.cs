@@ -9,7 +9,7 @@ public readonly struct VideoInfo
     public int FrameCount { get; init; }
     public Rational Sar { get; init; }
     public int[] FrameTimes { get; init; }
-    public float[] FrameIntervals { get; init; }
+    public int[] FrameIntervals { get; init; }
     public int[] Keyframes { get; init; }
 
     /// <summary>

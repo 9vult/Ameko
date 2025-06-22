@@ -13,10 +13,6 @@ pub export fn Initialize() void {
     ffms.Initialize();
 }
 
-pub export fn TestGetFfmsVersion() c_int {
-    return c.FFMS_GetVersion();
-}
-
 pub export fn LoadVideo(file_name: [*c]u8, cache_file_name: [*c]u8, color_matrix: [*c]u8) c_int {
     ffms.LoadVideo(file_name, cache_file_name, color_matrix) catch |err| {
         return errors.IntFromFfmsError(err);
@@ -24,37 +20,21 @@ pub export fn LoadVideo(file_name: [*c]u8, cache_file_name: [*c]u8, color_matrix
     return 0;
 }
 
-/// Get array of keyframes
-pub export fn GetKeyframes() common.IntArray {
-    const buffer = ffms.keyframes.toOwnedSlice() catch unreachable;
-    return .{
-        .ptr = buffer.ptr,
-        .len = buffer.len,
-    };
+pub export fn CloseVideo() c_int {
+    return 0; // TODO: implement
 }
 
-/// Free an int array
-///
-/// Should be called after retrieving an int array
-pub export fn FreeIntArray(array: common.IntArray) void {
-    const slice = @as([*]c_int, array.ptr)[0..array.len];
-    common.allocator.free(slice);
-}
-
-/// Get array of timecodes
-pub export fn GetTimecodes() common.IntArray {
-    const buffer = ffms.time_codes.toOwnedSlice() catch unreachable;
-    return .{
-        .ptr = buffer.ptr,
-        .len = buffer.len,
-    };
-}
-
-/// Allocate a frame
+/// Allocate frame buffers
 pub export fn AllocateBuffers(num_buffers: c_int) c_int {
     buffers.Init(@intCast(num_buffers), ffms.frame_width, ffms.frame_height, ffms.frame_pitch) catch |err| {
         return errors.IntFromFfmsError(err);
     };
+    return 0;
+}
+
+/// Free frame buffers
+pub export fn FreeBuffers() c_int {
+    buffers.Deinit();
     return 0;
 }
 
@@ -64,6 +44,46 @@ pub export fn GetFrame(frame_number: c_int, out: *frames.VideoFrame) c_int {
         return errors.IntFromFfmsError(err);
     };
     return 0;
+}
+
+/// Get array of keyframes
+pub export fn GetKeyframes() common.IntArray {
+    return .{
+        .ptr = ffms.keyframes.ptr,
+        .len = ffms.keyframes.len,
+    };
+}
+
+/// Get array of timecodes
+pub export fn GetTimecodes() common.IntArray {
+    return .{
+        .ptr = ffms.timecodes.ptr,
+        .len = ffms.timecodes.len,
+    };
+}
+
+// Get array of frame intervals
+pub export fn GetFrameIntervals() common.IntArray {
+    return .{
+        .ptr = ffms.frame_intervals.ptr,
+        .len = ffms.frame_intervals.len,
+    };
+}
+
+/// Free an int array
+///
+/// Call this on Deinit
+fn FreeIntArray(array: common.IntArray) void {
+    const slice = @as([*]c_int, array.ptr)[0..array.len];
+    common.allocator.free(slice);
+}
+
+/// Free a float array
+///
+/// Call this on Deinit
+fn FreeFloatArray(array: common.IntArray) void {
+    const slice = @as([*]f32, array.ptr)[0..array.len];
+    common.allocator.free(slice);
 }
 
 pub fn main() !void {
