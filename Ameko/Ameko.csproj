@@ -141,4 +141,16 @@
       <LastGenOutput>PasteOver.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <ItemGroup>
+      <MIZUKI Include="$(SolutionDir)Mizuki\zig-out\*.dll" />
+    </ItemGroup>
+    <Copy SourceFiles="@(MIZUKI)" DestinationFolder="$(TargetDir)" SkipUnchangedFiles="true" />
+  </Target>
+  <Target Name="PostPublish" AfterTargets="Publish">
+    <ItemGroup>
+      <MIZUKI Include="$(SolutionDir)Mizuki\zig-out\*.dll" />
+    </ItemGroup>
+    <Copy SourceFiles="@(MIZUKI)" DestinationFolder="$(TargetDir)" SkipUnchangedFiles="true" />
+  </Target>
 </Project>
