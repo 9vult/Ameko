@@ -14,6 +14,10 @@ public class MediaController : BindableBase
 
     private bool _isVideoLoaded;
 
+    private ScaleFactor _scaleFactor = ScaleFactor.Default;
+    private double _displayWidth;
+    private double _displayHeight;
+
     private bool _isAutoSeekEnabled = true;
     private bool _isPlaying;
     private bool _isPaused;
@@ -33,6 +37,32 @@ public class MediaController : BindableBase
     {
         get => _isVideoLoaded;
         private set => SetProperty(ref _isVideoLoaded, value);
+    }
+
+    /// <summary>
+    /// Scale factor of the viewport
+    /// </summary>
+    public ScaleFactor ScaleFactor
+    {
+        get => _scaleFactor;
+        set
+        {
+            SetProperty(ref _scaleFactor, value);
+            DisplayWidth = VideoInfo?.Width ?? 1 * _scaleFactor.Multiplier;
+            DisplayHeight = VideoInfo?.Height ?? 1 * _scaleFactor.Multiplier;
+        }
+    }
+
+    public double DisplayWidth
+    {
+        get => _displayWidth;
+        private set => SetProperty(ref _displayWidth, value);
+    }
+
+    public double DisplayHeight
+    {
+        get => _displayHeight;
+        private set => SetProperty(ref _displayHeight, value);
     }
 
     /// <summary>
@@ -106,6 +136,9 @@ public class MediaController : BindableBase
     /// </summary>
     public void PlayToEnd()
     {
+        if (_videoInfo is null)
+            throw new InvalidOperationException("Video is not loaded");
+
         Stop();
         Logger.Trace("Playing to end");
         _destinationFrame = _videoInfo.FrameCount - 1;
@@ -121,6 +154,9 @@ public class MediaController : BindableBase
     /// <param name="selection"></param>
     public void PlaySelection(IList<Event> selection)
     {
+        if (_videoInfo is null)
+            throw new InvalidOperationException("Video is not loaded");
+
         var startTime = selection.Min(e => e.Start);
         var endTime = selection.Max(e => e.End);
         Logger.Trace($"Playing selection [{startTime}, {endTime}]");
@@ -157,6 +193,8 @@ public class MediaController : BindableBase
     /// <param name="frameNumber">Frame number to seek to</param>
     public void SeekTo(int frameNumber)
     {
+        if (_videoInfo is null)
+            throw new InvalidOperationException("Video is not loaded");
         CurrentFrame = Math.Clamp(frameNumber, 0, _videoInfo.FrameCount - 1);
     }
 
@@ -194,12 +232,19 @@ public class MediaController : BindableBase
             return false;
         }
 
+        if (_provider.GetFrame(0, out var testFrame) != 0)
+        {
+            // TODO: Handle error
+        }
+
         VideoInfo = new VideoInfo(
             frameCount: _provider.FrameCount,
             sar: new Rational { Numerator = 1, Denominator = 1 },
             frameTimes: _provider.GetTimecodes(),
             frameIntervals: _provider.GetFrameIntervals(),
-            keyframes: _provider.GetKeyframes()
+            keyframes: _provider.GetKeyframes(),
+            testFrame.Width,
+            testFrame.Height
         );
         IsVideoLoaded = true;
         return true;

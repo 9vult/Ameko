@@ -9,7 +9,9 @@ public class VideoInfo(
     Rational sar,
     int[] frameTimes,
     int[] frameIntervals,
-    int[] keyframes
+    int[] keyframes,
+    int width,
+    int height
 )
 {
     public int FrameCount { get; } = frameCount;
@@ -17,6 +19,8 @@ public class VideoInfo(
     public int[] FrameTimes { get; } = frameTimes;
     public int[] FrameIntervals { get; } = frameIntervals;
     public int[] Keyframes { get; } = keyframes;
+    public int Width { get; } = width;
+    public int Height { get; } = height;
 
     /// <summary>
     /// Gets the index of the frame with the largest timestamp ≤ <paramref name="millis"/>.
