@@ -270,4 +270,10 @@
     <data name="Video_Frame_ToolTip" xml:space="preserve">
         <value>Current Frame</value>
     </data>
+    <data name="Video_LockAR" xml:space="preserve">
+        <value>Lock</value>
+    </data>
+    <data name="Video_LockAR_ToolTip" xml:space="preserve">
+        <value>Lock aspect ratio</value>
+    </data>
 </root>

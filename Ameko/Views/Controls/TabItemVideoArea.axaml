@@ -9,22 +9,28 @@
              d:DesignHeight="400"
 
              xmlns:c="clr-namespace:Ameko.Views.Controls"
+             xmlns:holo="clr-namespace:Holo.Media;assembly=Holo"
              xmlns:i18n="clr-namespace:Ameko.I18N"
              xmlns:icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              xmlns:vm="clr-namespace:Ameko.ViewModels.Controls"
-             
+
              x:Class="Ameko.Views.Controls.TabItemVideoArea"
              x:DataType="vm:TabItemViewModel">
-    <DockPanel IsEnabled="{Binding Workspace.MediaController.IsVideoLoaded}">
+    <DockPanel IsEnabled="{Binding Workspace.MediaController.IsVideoLoaded}"
+               Margin="2">
         <Grid DockPanel.Dock="Bottom"
+              ColumnDefinitions="Auto, *, Auto"
               RowDefinitions="Auto, Auto">
-            <c:SeekSlider Grid.Row="0"
+            <c:SeekSlider Grid.Column="0"
+                          Grid.Row="0"
+                          Grid.ColumnSpan="3"
                           VerticalAlignment="Center"
                           SmallChange="1"
                           LargeChange="25"
                           TickFrequency="1"
                           TickPlacement="Outside" />
-            <StackPanel Grid.Row="1"
+            <StackPanel Grid.Column="0"
+                        Grid.Row="1"
                         Orientation="Horizontal"
                         Spacing="2">
                 <Button Content="{icons:MaterialIconExt Kind=PlayPause}"
@@ -46,6 +52,31 @@
                                         FallbackValue='0'}"
                          ToolTip.Tip="{x:Static i18n:Resources.Video_Frame_ToolTip}" />
             </StackPanel>
+            <StackPanel Grid.Column="2"
+                        Grid.Row="1"
+                        Spacing="2"
+                        Orientation="Horizontal">
+                <CheckBox Content="{x:Static i18n:Resources.Video_LockAR}"
+                          ToolTip.Tip="{x:Static i18n:Resources.Video_LockAR_ToolTip}" />
+                <ComboBox ItemsSource="{x:Static holo:ScaleFactor.Scales}"
+                          SelectedItem="{Binding Workspace.MediaController.ScaleFactor}"
+                          Width="75"
+                          MaxDropDownHeight="425">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Text}" />
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+            </StackPanel>
         </Grid>
+        <ScrollViewer HorizontalScrollBarVisibility="Auto"
+                      VerticalScrollBarVisibility="Auto"
+                      IsScrollChainingEnabled="False">
+            <Panel Name="VideoTarget"
+                   Width="{Binding Workspace.MediaController.DisplayWidth, FallbackValue=0}"
+                   Height="{Binding Workspace.MediaController.DisplayHeight, FallbackValue=0}"
+                   Background="Gray" />
+        </ScrollViewer>
     </DockPanel>
 </UserControl>

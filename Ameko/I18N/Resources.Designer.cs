@@ -807,6 +807,24 @@ namespace Ameko.I18N {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Lock.
+        /// </summary>
+        public static string Video_LockAR {
+            get {
+                return ResourceManager.GetString("Video_LockAR", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Lock aspect ratio.
+        /// </summary>
+        public static string Video_LockAR_ToolTip {
+            get {
+                return ResourceManager.GetString("Video_LockAR_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Current Time.
         /// </summary>
         public static string Video_Time_ToolTip {
