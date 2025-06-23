@@ -31,7 +31,30 @@ public class ScaleFactor
             .Select(i =>
             {
                 var scale = i * 0.125;
-                return new ScaleFactor { Text = $"{scale:0.00}%", Multiplier = scale };
+                return new ScaleFactor { Text = $"{scale * 100}%", Multiplier = scale };
             })
             .ToList();
+
+    protected bool Equals(ScaleFactor other)
+    {
+        return Multiplier.Equals(other.Multiplier);
+    }
+
+    /// <inheritdoc />
+    public override bool Equals(object? obj)
+    {
+        if (obj is null)
+            return false;
+        if (ReferenceEquals(this, obj))
+            return true;
+        if (obj.GetType() != GetType())
+            return false;
+        return Equals((ScaleFactor)obj);
+    }
+
+    /// <inheritdoc />
+    public override int GetHashCode()
+    {
+        return Multiplier.GetHashCode();
+    }
 }
