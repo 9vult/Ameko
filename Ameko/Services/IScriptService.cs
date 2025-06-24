@@ -12,7 +12,7 @@ public interface IScriptService
     /// <summary>
     /// List of currently-loaded scripts
     /// </summary>
-    AssCS.Utilities.ReadOnlyObservableCollection<HoloScript> Scripts { get; }
+    AssCS.Utilities.ReadOnlyObservableCollection<IHoloExecutable> Scripts { get; }
 
     /// <summary>
     /// Get a script by its qualified name
@@ -21,6 +21,14 @@ public interface IScriptService
     /// <param name="script">Script, if found</param>
     /// <returns><see langword="true"/> if found</returns>
     bool TryGetScript(string qualifiedName, [NotNullWhen(true)] out HoloScript? script);
+
+    /// <summary>
+    /// Get a scriptlet by its qualified name
+    /// </summary>
+    /// <param name="qualifiedName">Name of the script</param>
+    /// <param name="script">Scriptlet, if found</param>
+    /// <returns><see langword="true"/> if found</returns>
+    bool TryGetScriptlet(string qualifiedName, [NotNullWhen(true)] out HoloScriptlet? script);
 
     /// <summary>
     /// Asynchronously execute a script or method

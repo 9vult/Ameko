@@ -11,6 +11,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Jint" Version="4.2.2" />
     <PackageReference Include="LibGit2Sharp" Version="0.31.0" />
     <PackageReference Include="NLog" Version="5.3.4" />
     <PackageReference Include="Samboy063.Tomlet" Version="6.1.0" />
