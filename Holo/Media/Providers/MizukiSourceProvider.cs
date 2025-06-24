@@ -5,7 +5,7 @@ using System.Security.Cryptography;
 using System.Text;
 using Holo.IO;
 
-namespace Holo.Media;
+namespace Holo.Media.Providers;
 
 /// <summary>
 /// Interop with the Mizuki source provider
@@ -80,7 +80,7 @@ public class MizukiSourceProvider : ISourceProvider
     private static string GetCachePath(string filePath)
     {
         var hash = Convert.ToBase64String(MD5.HashData(Encoding.UTF8.GetBytes(filePath)));
-        return Path.Combine(DirectoryService.CacheHome, $"{hash}.ffindex");
+        return Path.Combine(Directories.CacheHome, $"{hash}.ffindex");
     }
 }
 

@@ -24,7 +24,7 @@ public class DependencyControl : IDependencyControl
     };
 
     private static readonly Uri ModulesRoot = new Uri(
-        Path.Combine(DirectoryService.DataHome, "scripts")
+        Path.Combine(Directories.DataHome, "scripts")
     );
 
     /// <summary>

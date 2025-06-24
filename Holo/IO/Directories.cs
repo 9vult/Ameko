@@ -8,7 +8,7 @@ namespace Holo.IO;
 /// <summary>
 /// Manages the XDG directories used by Holo and Ameko
 /// </summary>
-public class DirectoryService
+public class Directories
 {
     public static string DataHome => Path.Combine(BaseDirectory.DataHome, "Ameko");
     public static string ConfigHome => Path.Combine(BaseDirectory.ConfigHome, "Ameko");
@@ -18,7 +18,7 @@ public class DirectoryService
     /// <summary>
     /// Create the XDG directories if they do not already exist
     /// </summary>
-    public DirectoryService(IFileSystem fileSystem)
+    public Directories(IFileSystem fileSystem)
     {
         if (!fileSystem.Directory.Exists(DataHome))
             fileSystem.Directory.CreateDirectory(DataHome);
