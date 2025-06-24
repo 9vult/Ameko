@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 
-namespace Holo.Media;
+namespace Holo.Media.Providers;
 
 public interface ISourceProvider
 {

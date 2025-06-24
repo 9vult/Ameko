@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using AssCS;
 using AssCS.History;
 using Holo.Media;
+using Holo.Media.Providers;
 using NLog;
 
 namespace Holo;

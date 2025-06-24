@@ -42,7 +42,7 @@ public static class AmekoServiceProvider
 
         // --- Application Services ---
         // Core business logic and application-specific operations
-        services.AddSingleton<DirectoryService>();
+        services.AddSingleton<Directories>();
         services.AddSingleton<ISolutionProvider, SolutionProvider>();
 
         // --- Presentation ---

@@ -1,9 +1,11 @@
 // SPDX-License-Identifier: MPL-2.0
 
 using AssCS;
+using Holo.Media;
+using Holo.Media.Providers;
 using NLog;
 
-namespace Holo.Media;
+namespace Holo;
 
 public class MediaController : BindableBase
 {
