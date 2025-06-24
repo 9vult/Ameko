@@ -16,7 +16,7 @@ namespace Ameko.Services;
 public static class ScriptMenuService
 {
     public static List<MenuItem> GenerateMenuItemSource(
-        IList<HoloScript> scripts,
+        IList<IHoloExecutable> scripts,
         ICommand executeScriptCommand
     )
     {
