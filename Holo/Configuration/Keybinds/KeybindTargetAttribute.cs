@@ -42,6 +42,17 @@ public sealed class KeybindTargetAttribute : Attribute
     /// Denotes a keybind target without a default keybind assigned
     /// </summary>
     /// <param name="qualifiedName">Keybind identifier</param>
+    /// <param name="defaultContext">Default keybind context</param>
+    public KeybindTargetAttribute(string qualifiedName, KeybindContext defaultContext)
+    {
+        QualifiedName = qualifiedName;
+        DefaultContext = defaultContext;
+    }
+
+    /// <summary>
+    /// Denotes a keybind target without a default keybind assigned
+    /// </summary>
+    /// <param name="qualifiedName">Keybind identifier</param>
     /// <remarks>This constructor uses the class-level context, if applicable</remarks>
     public KeybindTargetAttribute(string qualifiedName)
     {
