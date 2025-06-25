@@ -47,7 +47,7 @@ public class HighResolutionTimer
 
     private volatile bool _isMultiInterval;
     private volatile int _intervalIndex;
-    private volatile float[] _intervals;
+    private volatile long[] _intervals;
 
     /// <summary>
     /// Creates a timer with 1 [ms] interval
@@ -74,7 +74,7 @@ public class HighResolutionTimer
     /// It is the responsibility of the caller to prevent out-of-bounds exceptions.
     /// </remarks>
     /// <param name="intervals">Array of interval times in [ms]</param>
-    public HighResolutionTimer(float[] intervals)
+    public HighResolutionTimer(long[] intervals)
     {
         _intervals = intervals;
         _isMultiInterval = true;
@@ -95,6 +95,20 @@ public class HighResolutionTimer
             }
 
             _interval = value;
+        }
+    }
+
+    /// <summary>
+    /// Set the intervals for this timer
+    /// </summary>
+    public long[] Intervals
+    {
+        get => _intervals;
+        internal set
+        {
+            _intervals = value;
+            _intervalIndex = 0;
+            _isMultiInterval = true;
         }
     }
 

@@ -60,21 +60,21 @@ public class MizukiSourceProvider : ISourceProvider
     public int[] GetKeyframes()
     {
         var ptr = External.GetKeyframes();
-        return ptr.ToArray();
+        return ptr.ToIntArray();
     }
 
     /// <inheritdoc />
-    public int[] GetTimecodes()
+    public long[] GetTimecodes()
     {
         var ptr = External.GetTimecodes();
-        return ptr.ToArray();
+        return ptr.ToLongArray();
     }
 
     /// <inheritdoc />
-    public int[] GetFrameIntervals()
+    public long[] GetFrameIntervals()
     {
         var ptr = External.GetFrameIntervals();
-        return ptr.ToArray();
+        return ptr.ToLongArray();
     }
 
     private static string GetCachePath(string filePath)
@@ -109,13 +109,13 @@ internal static unsafe partial class External
     internal static partial int GetFrame(int frameNumber, out VideoFrame frame);
 
     [LibraryImport("mizuki")]
-    internal static partial IntArray GetKeyframes();
+    internal static partial UnmanagedArray GetKeyframes();
 
     [LibraryImport("mizuki")]
-    internal static partial IntArray GetTimecodes();
+    internal static partial UnmanagedArray GetTimecodes();
 
     [LibraryImport("mizuki")]
-    internal static partial IntArray GetFrameIntervals();
+    internal static partial UnmanagedArray GetFrameIntervals();
 }
 
 [StructLayout(LayoutKind.Sequential)]
@@ -135,22 +135,29 @@ public struct VideoFrame
 /// An unmanaged integer array
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
-internal struct IntArray
+internal struct UnmanagedArray
 {
     public nint Pointer;
     public nuint Length;
 }
 
-internal static class IntArrayExtensions
+internal static class UnmanagedArrayExtensions
 {
     /// <summary>
-    /// Copy an unmanaged <see cref="IntArray"/> to a managed <c>int[]</c>
+    /// Copy an unmanaged <see cref="UnmanagedArray"/> to a managed <c>int[]</c>
     /// </summary>
     /// <param name="array">Unmanaged array</param>
     /// <returns>Managed array</returns>
-    public static int[] ToArray(this IntArray array)
+    public static int[] ToIntArray(this UnmanagedArray array)
     {
         var managed = new int[array.Length];
+        Marshal.Copy(array.Pointer, managed, 0, managed.Length);
+        return managed;
+    }
+
+    public static long[] ToLongArray(this UnmanagedArray array)
+    {
+        var managed = new long[array.Length];
         Marshal.Copy(array.Pointer, managed, 0, managed.Length);
         return managed;
     }

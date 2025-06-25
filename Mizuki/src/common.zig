@@ -26,3 +26,9 @@ pub const IntArray = extern struct {
     ptr: [*c]c_int,
     len: usize,
 };
+
+/// Interoperable long array
+pub const LongArray = extern struct {
+    ptr: [*c]c_longlong,
+    len: usize,
+};

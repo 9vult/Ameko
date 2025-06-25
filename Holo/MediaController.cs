@@ -206,7 +206,8 @@ public class MediaController : BindableBase
     /// <param name="time">Time to seek to</param>
     public void SeekTo(Time time)
     {
-        CurrentFrame = _videoInfo.FrameFromTime(time);
+        if (_videoInfo is not null)
+            CurrentFrame = _videoInfo.FrameFromTime(time);
     }
 
     /// <summary>
@@ -215,7 +216,8 @@ public class MediaController : BindableBase
     /// <param name="event">Event to seek to the start of</param>
     public void SeekTo(Event @event)
     {
-        CurrentFrame = _videoInfo.FrameFromTime(@event.Start);
+        if (_videoInfo is not null)
+            CurrentFrame = _videoInfo.FrameFromTime(@event.Start);
     }
 
     public bool OpenVideo(string filePath)
@@ -248,6 +250,9 @@ public class MediaController : BindableBase
             testFrame.Width,
             testFrame.Height
         );
+
+        _playback.Intervals = VideoInfo.FrameIntervals;
+
         IsVideoLoaded = true;
         return true;
     }
@@ -272,5 +277,6 @@ public class MediaController : BindableBase
     public MediaController(ISourceProvider provider)
     {
         _provider = provider;
+        _playback = new HighResolutionTimer();
     }
 }

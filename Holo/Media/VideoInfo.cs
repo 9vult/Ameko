@@ -7,8 +7,8 @@ namespace Holo.Media;
 public class VideoInfo(
     int frameCount,
     Rational sar,
-    int[] frameTimes,
-    int[] frameIntervals,
+    long[] frameTimes,
+    long[] frameIntervals,
     int[] keyframes,
     int width,
     int height
@@ -16,8 +16,8 @@ public class VideoInfo(
 {
     public int FrameCount { get; } = frameCount;
     public Rational Sar { get; init; } = sar;
-    public int[] FrameTimes { get; } = frameTimes;
-    public int[] FrameIntervals { get; } = frameIntervals;
+    public long[] FrameTimes { get; } = frameTimes;
+    public long[] FrameIntervals { get; } = frameIntervals;
     public int[] Keyframes { get; } = keyframes;
     public int Width { get; } = width;
     public int Height { get; } = height;
@@ -54,7 +54,7 @@ public class VideoInfo(
     /// </remarks>
     /// <param name="frameNumber">Frame number</param>
     /// <returns>Time in milliseconds</returns>
-    public int MillisecondsFromFrame(int frameNumber)
+    public long MillisecondsFromFrame(int frameNumber)
     {
         return FrameTimes[Math.Clamp(frameNumber, 0, FrameTimes.Length - 1)];
     }
