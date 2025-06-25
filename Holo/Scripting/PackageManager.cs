@@ -254,6 +254,7 @@ public partial class PackageManager : IPackageManager
         {
             ModuleType.Script => Path.Combine(ModulesRoot.LocalPath, $"{qName}.cs"),
             ModuleType.Library => Path.Combine(ModulesRoot.LocalPath, $"{qName}.lib.cs"),
+            ModuleType.Scriptlet => Path.Combine(ModulesRoot.LocalPath, $"{qName}.js"),
             _ => throw new ArgumentOutOfRangeException(nameof(module)),
         };
     }
@@ -274,6 +275,7 @@ public partial class PackageManager : IPackageManager
                 "modules",
                 $"{qName}.lib.json"
             ),
+            ModuleType.Scriptlet => Path.Combine(ModulesRoot.LocalPath, "modules", $"{qName}.json"),
             _ => throw new ArgumentOutOfRangeException(nameof(module)),
         };
     }
