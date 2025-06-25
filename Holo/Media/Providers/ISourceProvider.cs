@@ -68,11 +68,11 @@ public interface ISourceProvider
     /// Timecode of each frame
     /// </summary>
     /// <returns></returns>
-    int[] GetTimecodes();
+    long[] GetTimecodes();
 
     /// <summary>
     /// How long each frame is displayed for
     /// </summary>
     /// <returns></returns>
-    int[] GetFrameIntervals();
+    long[] GetFrameIntervals();
 }

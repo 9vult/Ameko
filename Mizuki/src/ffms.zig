@@ -40,8 +40,8 @@ var video_color_range: c_int = -1;
 // Public variables
 
 pub var keyframes: []c_int = undefined;
-pub var timecodes: []c_int = undefined;
-pub var frame_intervals: []c_int = undefined;
+pub var timecodes: []c_longlong = undefined;
+pub var frame_intervals: []c_longlong = undefined;
 
 pub var frame_width: usize = 0;
 pub var frame_height: usize = 0;
@@ -190,8 +190,8 @@ pub fn LoadVideo(file_name: [*c]u8, cache_file_name: [*c]u8, color_matrix: [*c]u
 
     // Allocate ArrayLists
     var keyframes_list = std.ArrayList(c_int).init(common.allocator);
-    var timecodes_list = std.ArrayList(c_int).init(common.allocator);
-    var intervals_list = std.ArrayList(c_int).init(common.allocator);
+    var timecodes_list = std.ArrayList(c_longlong).init(common.allocator);
+    var intervals_list = std.ArrayList(c_longlong).init(common.allocator);
 
     errdefer timecodes_list.deinit();
     errdefer keyframes_list.deinit();
@@ -208,8 +208,10 @@ pub fn LoadVideo(file_name: [*c]u8, cache_file_name: [*c]u8, color_matrix: [*c]u
             try keyframes_list.append(frame_number);
         }
 
-        const timestamp = @as(c_int, @intCast(@divTrunc(frame_info.*.PTS * time_base.*.Num, time_base.*.Den)));
-        try timecodes_list.append(timestamp);
+        const wc_num = @as(f64, @floatFromInt(frame_info.*.PTS)) * @as(f64, @floatFromInt(time_base.*.Num));
+        const wc_den = @as(f64, @floatFromInt(time_base.*.Den));
+        const wallclock_ms = @as(c_longlong, @intFromFloat(wc_num / wc_den));
+        try timecodes_list.append(wallclock_ms);
     }
 
     // Get the slices (de-inits the ArrayLists)

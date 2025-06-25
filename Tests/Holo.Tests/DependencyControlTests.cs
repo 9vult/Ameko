@@ -459,8 +459,6 @@ public class DependencyControlTests
         var mockClient = new MockHttpMessageHandler();
         var dc = new DependencyControl(fileSystem, new HttpClient(mockClient));
 
-        const string repoUrl = "https://coolrepo.com/depctrl.json";
-
         mockClient
             .When(HttpMethod.Get, dc.BaseRepositoryUrl)
             .Respond("application/json", Repository1Json);

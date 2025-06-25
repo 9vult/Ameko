@@ -55,7 +55,7 @@ pub export fn GetKeyframes() common.IntArray {
 }
 
 /// Get array of timecodes
-pub export fn GetTimecodes() common.IntArray {
+pub export fn GetTimecodes() common.LongArray {
     return .{
         .ptr = ffms.timecodes.ptr,
         .len = ffms.timecodes.len,
@@ -63,7 +63,7 @@ pub export fn GetTimecodes() common.IntArray {
 }
 
 // Get array of frame intervals
-pub export fn GetFrameIntervals() common.IntArray {
+pub export fn GetFrameIntervals() common.LongArray {
     return .{
         .ptr = ffms.frame_intervals.ptr,
         .len = ffms.frame_intervals.len,
@@ -78,11 +78,11 @@ fn FreeIntArray(array: common.IntArray) void {
     common.allocator.free(slice);
 }
 
-/// Free a float array
+/// Free a long array
 ///
 /// Call this on Deinit
-fn FreeFloatArray(array: common.IntArray) void {
-    const slice = @as([*]f32, array.ptr)[0..array.len];
+fn FreeLongArray(array: common.LongArray) void {
+    const slice = @as([*]c_longlong, array.ptr)[0..array.len];
     common.allocator.free(slice);
 }
 
