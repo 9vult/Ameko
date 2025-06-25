@@ -16,4 +16,9 @@ public enum ModuleType
     /// The <see cref="Module"/> is a <see cref="HoloLibrary"/>
     /// </summary>
     Library = 1,
+
+    /// <summary>
+    /// The <see cref="Module"/> is a <see cref="HoloScriptlet"/>
+    /// </summary>
+    Scriptlet = 2,
 }

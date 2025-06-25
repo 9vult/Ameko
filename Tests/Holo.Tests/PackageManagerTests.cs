@@ -71,6 +71,13 @@ public class PackageManagerTests
     }
 
     [Fact]
+    public void ModulePath_Scriptlet()
+    {
+        var path = PackageManager.ModulePath(TestScriptletModule);
+        path.ShouldEndWith($"{TestLibraryModule.QualifiedName}.js");
+    }
+
+    [Fact]
     public void SidecarPath_Script()
     {
         var path = PackageManager.SidecarPath(TestScriptModule);
@@ -82,6 +89,13 @@ public class PackageManagerTests
     {
         var path = PackageManager.SidecarPath(TestLibraryModule);
         path.ShouldEndWith($"{TestLibraryModule.QualifiedName}.lib.json");
+    }
+
+    [Fact]
+    public void SidecarPath_Scriptlet()
+    {
+        var path = PackageManager.SidecarPath(TestScriptletModule);
+        path.ShouldEndWith($"{TestLibraryModule.QualifiedName}.json");
     }
 
     [Fact]
@@ -528,6 +542,20 @@ public class PackageManagerTests
     private static readonly Module TestLibraryModule = new Module
     {
         Type = ModuleType.Library,
+        DisplayName = "Test",
+        QualifiedName = "author.test",
+        Description = string.Empty,
+        Author = "author",
+        Version = 0,
+        IsBetaChannel = false,
+        Dependencies = [],
+        Tags = [],
+        Url = string.Empty,
+    };
+
+    private static readonly Module TestScriptletModule = new Module
+    {
+        Type = ModuleType.Scriptlet,
         DisplayName = "Test",
         QualifiedName = "author.test",
         Description = string.Empty,

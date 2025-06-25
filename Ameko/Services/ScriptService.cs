@@ -8,6 +8,8 @@ using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
 using System.Threading.Tasks;
+using Ameko.Converters;
+using AssCS.History;
 using Avalonia.Threading;
 using CSScriptLib;
 using Holo.IO;
@@ -15,6 +17,7 @@ using Holo.Providers;
 using Holo.Scripting;
 using Holo.Scripting.Models;
 using Jint;
+using Jint.Native;
 using MsBox.Avalonia;
 using NLog;
 
@@ -36,22 +39,22 @@ public class ScriptService : IScriptService
     private readonly Dictionary<string, HoloScript?> _scriptMap;
     private readonly Dictionary<string, HoloScriptlet?> _scriptletMap;
 
-    /// <inheritdoc cref="IScriptService.Scripts"/>
+    /// <inheritdoc />
     public AssCS.Utilities.ReadOnlyObservableCollection<IHoloExecutable> Scripts { get; }
 
-    /// <inheritdoc cref="IScriptService.TryGetScript"/>
+    /// <inheritdoc />
     public bool TryGetScript(string qualifiedName, [NotNullWhen(true)] out HoloScript? script)
     {
         return _scriptMap.TryGetValue(qualifiedName, out script);
     }
 
-    /// <inheritdoc cref="IScriptService.TryGetScriptlet"/>
+    /// <inheritdoc />
     public bool TryGetScriptlet(string qualifiedName, [NotNullWhen(true)] out HoloScriptlet? script)
     {
         return _scriptletMap.TryGetValue(qualifiedName, out script);
     }
 
-    /// <inheritdoc cref="IScriptService.ExecuteScriptAsync"/>
+    /// <inheritdoc />
     public async Task<ExecutionResult> ExecuteScriptAsync(string qualifiedName)
     {
         // Try running as a script
@@ -75,14 +78,19 @@ public class ScriptService : IScriptService
         // Try running a scriptlet
         if (TryGetScriptlet(qualifiedName, out var scriptlet))
         {
-            var engine = new Engine(cfg => cfg.AllowClr());
+            var engine = new Engine(cfg => cfg.AllowClr())
+                .SetValue("CommitType", typeof(CommitType))
+                .SetValue("logger", LogManager.GetLogger(scriptlet.Info.QualifiedName));
+
             var success = engine
                 .Execute(scriptlet.CompiledScript)
                 .Invoke("execute", _solutionProvider.Current);
 
-            return success.AsBoolean()
-                ? ExecutionResult.Success
-                : new ExecutionResult() { Status = ExecutionStatus.Failure };
+            return success is JsBoolean jsBool
+                ? jsBool.AsBoolean()
+                    ? ExecutionResult.Success
+                    : new ExecutionResult { Status = ExecutionStatus.Failure }
+                : ExecutionResult.Success;
         }
 
         // Not found
@@ -94,7 +102,7 @@ public class ScriptService : IScriptService
         };
     }
 
-    /// <inheritdoc cref="IScriptService.Reload"/>
+    /// <inheritdoc />
     public async Task Reload(bool isManual)
     {
         Logger.Info("Reloading scripts...");
@@ -136,6 +144,7 @@ public class ScriptService : IScriptService
         {
             try
             {
+                Logger.Trace($"Loading scriptlet {path}...");
                 await using var fs = _fileSystem.FileStream.New(
                     path,
                     FileMode.Open,
@@ -144,7 +153,7 @@ public class ScriptService : IScriptService
                 );
                 using var reader = new StreamReader(fs);
                 var compiled = Engine.PrepareScript(await reader.ReadToEndAsync());
-                var scriptletInfo = new Engine().Execute(compiled).Invoke("getInfo");
+                var scriptletInfo = new Engine().Execute(compiled).Evaluate("scriptInfo");
                 loadedScriptlets.Add(
                     new HoloScriptlet
                     {
