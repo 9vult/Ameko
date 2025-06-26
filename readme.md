@@ -101,6 +101,10 @@ Additionally, there are some testing guidelines:
 - Unit tests are required for contributions to the Holo and AssCS projects.
 - Tests are optional, but highly appreciated, for Ameko's ViewModels and for Mizuki.
 
+If you are interested in localizing Ameko into your language (Thank you!), please see
+the [Crowdin project](https://crowdin.com/project/ameko). Note: Ameko is localized via the ResX format,
+which is quite limited, such as lacking support for plurals.
+
 <h2 align="center">Licensing</h2>
 
 - The Ameko application is licensed under the GNU GPL v3 license.
