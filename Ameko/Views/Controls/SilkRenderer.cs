@@ -51,7 +51,13 @@ public class SilkRenderer : OpenGlControlBase
         _gl = GL.GetApi(gl.GetProcAddress);
         IsInitialized = true;
 
-        var version = gl.ContextInfo.Version;
+        var glVersion = gl.ContextInfo.Version;
+        var glslVersion =
+            glVersion.Type == GlProfileType.OpenGLES ? "es300"
+            : glVersion.Major == 4 ? "410"
+            : throw new OpenGlException(
+                $"OpenGL version {glVersion.Major}.{glVersion.Minor} is not supported!"
+            );
 
         _ebo = new BufferObject<uint>(_gl, Indices, BufferTargetARB.ElementArrayBuffer);
         _vbo = new BufferObject<float>(_gl, Vertices, BufferTargetARB.ArrayBuffer);
@@ -63,8 +69,8 @@ public class SilkRenderer : OpenGlControlBase
 
         _shader = new Shader(
             _gl,
-            new Uri("avares://Ameko/Assets/Shaders/video.vert"),
-            new Uri("avares://Ameko/Assets/Shaders/video.frag")
+            new Uri($"avares://Ameko/Assets/Shaders/{glslVersion}.vert"),
+            new Uri($"avares://Ameko/Assets/Shaders/{glslVersion}.frag")
         );
     }
 

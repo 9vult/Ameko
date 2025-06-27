@@ -16,7 +16,7 @@
 
              x:Class="Ameko.Views.Controls.TabItemVideoArea"
              x:DataType="vm:TabItemViewModel">
-    <DockPanel
+    <DockPanel IsEnabled="{Binding Workspace.MediaController.IsVideoLoaded}"
                Margin="2">
         <Grid DockPanel.Dock="Bottom"
               ColumnDefinitions="Auto, *, Auto"
