@@ -143,13 +143,13 @@
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <ItemGroup>
-      <MIZUKI Include="$(SolutionDir)Mizuki\zig-out\*.dll" />
+      <MIZUKI Include="$(SolutionDir)Mizuki\zig-out\*.*" />
     </ItemGroup>
     <Copy SourceFiles="@(MIZUKI)" DestinationFolder="$(TargetDir)" SkipUnchangedFiles="true" />
   </Target>
   <Target Name="PostPublish" AfterTargets="Publish">
     <ItemGroup>
-      <MIZUKI Include="$(SolutionDir)Mizuki\zig-out\*.dll" />
+      <MIZUKI Include="$(SolutionDir)Mizuki\zig-out\*.*" />
     </ItemGroup>
     <Copy SourceFiles="@(MIZUKI)" DestinationFolder="$(TargetDir)" SkipUnchangedFiles="true" />
   </Target>
