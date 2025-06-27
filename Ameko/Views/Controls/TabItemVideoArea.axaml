@@ -16,7 +16,7 @@
 
              x:Class="Ameko.Views.Controls.TabItemVideoArea"
              x:DataType="vm:TabItemViewModel">
-    <DockPanel IsEnabled="{Binding Workspace.MediaController.IsVideoLoaded}"
+    <DockPanel
                Margin="2">
         <Grid DockPanel.Dock="Bottom"
               ColumnDefinitions="Auto, *, Auto"
@@ -76,7 +76,9 @@
             <Panel Name="VideoTarget"
                    Width="{Binding Workspace.MediaController.DisplayWidth, FallbackValue=0}"
                    Height="{Binding Workspace.MediaController.DisplayHeight, FallbackValue=0}"
-                   Background="Gray" />
+                   Background="Gray">
+                <c:SilkRenderer />
+            </Panel>
         </ScrollViewer>
     </DockPanel>
 </UserControl>
