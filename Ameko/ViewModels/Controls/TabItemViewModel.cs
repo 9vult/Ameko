@@ -63,6 +63,9 @@ public partial class TabItemViewModel : ViewModelBase
     // I don't think this needs a binding?
     public ICommand GetOrCreateAfterCommand { get; }
     public ICommand ToggleTagCommand { get; }
+
+    [KeybindTarget("ameko.event.toggleComment")]
+    public ICommand ToggleCommentCommand { get; }
     public ICommand ExecuteScriptCommand { get; }
 
     #endregion
@@ -121,6 +124,7 @@ public partial class TabItemViewModel : ViewModelBase
         DeleteEventsCommand = CreateDeleteEventsCommand();
         GetOrCreateAfterCommand = CreateGetOrCreateAfterCommand();
         ToggleTagCommand = CreateToggleTagCommand();
+        ToggleCommentCommand = CreateToggleCommentCommand();
 
         ExecuteScriptCommand = CreateExecuteScriptCommand();
         #endregion
