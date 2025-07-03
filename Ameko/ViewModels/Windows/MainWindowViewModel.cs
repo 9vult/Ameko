@@ -90,6 +90,10 @@ public partial class MainWindowViewModel : ViewModelBase
     [KeybindTarget("ameko.application.quit", "Ctrl+Q")]
     public ICommand QuitCommand { get; }
 
+    // Edit
+    [KeybindTarget("ameko.document.spellCheck", "F7")]
+    public ICommand SpellcheckCommand { get; }
+
     // Subtitle
     [KeybindTarget("ameko.stylesManager.show")]
     public ICommand ShowStylesManagerCommand { get; }
@@ -130,6 +134,7 @@ public partial class MainWindowViewModel : ViewModelBase
 
     public ISolutionProvider SolutionProvider { get; }
     public KeybindService KeybindService { get; }
+    public SpellcheckService SpellcheckService { get; }
     public GitToolboxViewModel GitToolboxViewModel { get; }
 
     public ObservableCollection<TemplatedControl> ScriptMenuItems { get; }
@@ -193,6 +198,7 @@ public partial class MainWindowViewModel : ViewModelBase
         ILayoutProvider layoutProvider,
         IFileSystem fileSystem,
         KeybindService keybindService,
+        SpellcheckService spellCheckService,
         GitToolboxViewModel gitToolboxViewModel
     )
     {
@@ -203,6 +209,7 @@ public partial class MainWindowViewModel : ViewModelBase
         _scriptService = scriptService;
         _fileSystem = fileSystem;
         KeybindService = keybindService;
+        SpellcheckService = spellCheckService;
         LayoutProvider = layoutProvider;
         GitToolboxViewModel = gitToolboxViewModel;
 
@@ -238,6 +245,8 @@ public partial class MainWindowViewModel : ViewModelBase
         SaveSolutionCommand = CreateSaveSolutionCommand();
         CloseTabCommand = CreateCloseTabCommand();
         QuitCommand = CreateQuitCommand();
+        //Edit
+        SpellcheckCommand = CreateSpellcheckCommand();
         // Subtitle
         ShowStylesManagerCommand = CreateShowStylesManagerCommand();
         // Solution

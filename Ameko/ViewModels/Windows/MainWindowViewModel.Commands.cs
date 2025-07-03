@@ -235,6 +235,18 @@ public partial class MainWindowViewModel : ViewModelBase
     }
 
     /// <summary>
+    /// Run the spellchecker
+    /// </summary>
+    private ReactiveCommand<Unit, Unit> CreateSpellcheckCommand()
+    {
+        return ReactiveCommand.Create(() =>
+        {
+            var suggestions = SpellcheckService.CheckSpelling();
+            // TODO: Do something with this information
+        });
+    }
+
+    /// <summary>
     /// Display the <see cref="StylesManagerWindow"/>
     /// </summary>
     private ReactiveCommand<Unit, Unit> CreateShowStylesManagerCommand()
