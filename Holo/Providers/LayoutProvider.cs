@@ -95,6 +95,7 @@ public class LayoutProvider : BindableBase, ILayoutProvider
                 (DefaultLayout, "default"),
                 (DefaultRightSlnExplorer, "default-right"),
                 (SubsOnlyLayout, "subs-only"),
+                (PetzkuLayout, "petzku"),
             }
         )
         {
@@ -299,6 +300,65 @@ public class LayoutProvider : BindableBase, ILayoutProvider
                     IsVertical = false,
                     Column = 0,
                     Row = 1,
+                },
+            ],
+        };
+
+    private static Layout PetzkuLayout =>
+        new()
+        {
+            Name = "Petzku",
+            Author = "9volt",
+            ColumnDefinitions = "*, 2, *",
+            RowDefinitions = "0.5*, 2, *, 2, *",
+            Window = new WindowSection { IsSolutionExplorerOnLeft = true },
+            Video = new TabSection
+            {
+                IsVisible = true,
+                Column = 0,
+                Row = 0,
+                ColumnSpan = 3,
+            },
+            Audio = new TabSection
+            {
+                IsVisible = true,
+                Column = 2,
+                Row = 2,
+            },
+            Editor = new TabSection
+            {
+                IsVisible = true,
+                Column = 0,
+                Row = 2,
+            },
+            Events = new TabSection
+            {
+                IsVisible = true,
+                Column = 0,
+                Row = 4,
+                ColumnSpan = 3,
+            },
+            Splitters =
+            [
+                new Splitter
+                {
+                    IsVertical = false,
+                    Column = 0,
+                    Row = 1,
+                    ColumnSpan = 3,
+                },
+                new Splitter
+                {
+                    IsVertical = false,
+                    Column = 0,
+                    Row = 3,
+                    ColumnSpan = 3,
+                },
+                new Splitter
+                {
+                    IsVertical = true,
+                    Column = 1,
+                    Row = 2,
                 },
             ],
         };
