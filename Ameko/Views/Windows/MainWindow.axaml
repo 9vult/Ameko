@@ -46,6 +46,7 @@
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="{Binding DisplayTitle, Mode=OneWay}" />
                             <Button Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).CloseTabCommand, FallbackValue=.}"
+                                    CommandParameter="{Binding Id}"
                                     ToolTip.Tip="{x:Static i18n:Resources.Tab_CloseButton_ToolTip}">
                                 <icons:MaterialIconExt Kind="CloseBox" />
                                 <Button.Styles>

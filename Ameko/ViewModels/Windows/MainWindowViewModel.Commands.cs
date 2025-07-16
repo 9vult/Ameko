@@ -201,19 +201,22 @@ public partial class MainWindowViewModel : ViewModelBase
     /// <summary>
     /// Close the currently active tab
     /// </summary>
-    private ReactiveCommand<Unit, Unit> CreateCloseTabCommand()
+    private ReactiveCommand<int, Unit> CreateCloseTabCommand()
     {
-        return ReactiveCommand.CreateFromTask(async () =>
-        {
-            if (SolutionProvider.Current.IsWorkspaceLoaded)
+        return ReactiveCommand.CreateFromTask(
+            async (int id) =>
             {
-                Logger.Trace($"Closing tab {SolutionProvider.Current.WorkingSpace.Title}");
-                await _ioService.SafeCloseWorkspace(
-                    SolutionProvider.Current.WorkingSpace,
-                    SaveSubtitleAs
-                );
+                if (SolutionProvider.Current.IsWorkspaceLoaded)
+                {
+                    var wsp = SolutionProvider.Current.GetWorkspace(id);
+                    if (wsp is null)
+                        return;
+
+                    Logger.Trace($"Closing tab {wsp.Title}");
+                    await _ioService.SafeCloseWorkspace(wsp, SaveSubtitleAs);
+                }
             }
-        });
+        );
     }
 
     /// <summary>
