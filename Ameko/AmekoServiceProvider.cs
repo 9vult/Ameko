@@ -68,15 +68,16 @@ public static class AmekoServiceProvider
         services.AddTransient<PkgManWindowViewModel>();
 
         // --- Scripting ---
-        services.AddSingleton<ScriptServiceLocator>();
         services.AddSingleton<IScriptService, ScriptService>();
         services.AddSingleton<IPackageManager, PackageManager>();
         services.AddSingleton<IScriptConfigurationService, ScriptConfigurationService>();
+        services.AddSingleton<ScriptServiceLocator>();
 
         Provider = services.BuildServiceProvider();
 
-        // Load the logger service immediately
+        // Load the logger and locator services immediately
         _ = Provider.GetRequiredService<ILogProvider>();
+        _ = Provider.GetRequiredService<ScriptServiceLocator>();
 
         Logger.Info("Ameko and Holo are ready to go!");
 
