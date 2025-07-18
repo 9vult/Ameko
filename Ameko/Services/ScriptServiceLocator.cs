@@ -80,7 +80,7 @@ public sealed class ScriptServiceLocator
         );
     }
 
-    internal ScriptServiceLocator(
+    public ScriptServiceLocator(
         IConfiguration configuration,
         IGlobals globals,
         ISolutionProvider solutionProvider,

@@ -53,7 +53,7 @@ public static class ScriptMenuService
 
             foreach (var methodInfo in script.Info.Exports)
             {
-                var fullQualifiedName = $"{script.Info.QualifiedName}.{methodInfo.QualifiedName}";
+                var fullQualifiedName = $"{script.Info.QualifiedName}+{methodInfo.QualifiedName}";
                 var methodMenu = new MenuItem
                 {
                     Header = methodInfo.DisplayName,
