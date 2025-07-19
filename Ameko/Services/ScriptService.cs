@@ -60,7 +60,19 @@ public class ScriptService : IScriptService
         // Try running as a script
         if (TryGetScript(qualifiedName, out var script))
         {
-            return await script.ExecuteAsync();
+            try
+            {
+                return await script.ExecuteAsync();
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex, "Error executing script");
+                return new ExecutionResult
+                {
+                    Status = ExecutionStatus.Failure,
+                    Message = ex.ToString(),
+                };
+            }
         }
 
         // Try running as an exported function
@@ -71,7 +83,19 @@ public class ScriptService : IScriptService
             var methodName = qualifiedName[(qualifiedName.LastIndexOf('+') + 1)..];
             if (TryGetScript(scriptName, out script))
             {
-                return await script.ExecuteAsync(methodName);
+                try
+                {
+                    return await script.ExecuteAsync(methodName);
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error(ex, "Error executing script");
+                    return new ExecutionResult
+                    {
+                        Status = ExecutionStatus.Failure,
+                        Message = ex.ToString(),
+                    };
+                }
             }
         }
 
