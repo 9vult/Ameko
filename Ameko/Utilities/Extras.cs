@@ -13,11 +13,18 @@ public static class Extras
     /// <summary>
     /// Enumerate over the set flags in a [Flags] enum
     /// </summary>
-    /// <param name="e">Enum to evaluate</param>
+    /// <param name="value">Enum to evaluate</param>
     /// <returns>Enumerable</returns>
-    public static IEnumerable<Enum> GetFlags(this Enum e)
+    public static IEnumerable<T> GetFlags<T>(this T value)
+        where T : Enum
     {
-        return Enum.GetValues(e.GetType()).Cast<Enum>().Where(e.HasFlag);
+        var bits = Convert.ToUInt64(value);
+        foreach (T flag in Enum.GetValues(typeof(T)))
+        {
+            var flagValue = Convert.ToUInt64(flag);
+            if (flagValue != 0 && (bits & flagValue) == flagValue)
+                yield return flag;
+        }
     }
 
     /// <summary>
