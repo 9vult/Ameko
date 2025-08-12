@@ -1,0 +1,13 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+  </Folder>
+  <Folder Name="/Tests/">
+    <Project Path="Tests/Ameko.ViewModel.Tests/Ameko.ViewModel.Tests.csproj" />
+    <Project Path="Tests/AssCS.Tests/AssCS.Tests.csproj" />
+    <Project Path="Tests/Holo.Tests/Holo.Tests.csproj" />
+  </Folder>
+  <Project Path="Ameko/Ameko.csproj" />
+  <Project Path="AssCS/AssCS.csproj" />
+  <Project Path="Holo/Holo.csproj" />
+</Solution>
