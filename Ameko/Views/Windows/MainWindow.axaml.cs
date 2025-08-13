@@ -190,6 +190,30 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         interaction.SetOutput(Unit.Default);
     }
 
+    private async Task DoShowOpenVideoDialogAsync(IInteractionContext<Unit, Uri?> interaction)
+    {
+        var files = await StorageProvider.OpenFilePickerAsync(
+            new FilePickerOpenOptions
+            {
+                Title = I18N.Other.FileDialog_OpenVideo_Title,
+                AllowMultiple = false,
+                FileTypeFilter =
+                [
+                    new FilePickerFileType(I18N.Other.FileDialog_FileType_Video)
+                    {
+                        Patterns = ["*.mkv", "*.mp4", "*.m4v", "*.mov"],
+                    },
+                ],
+            }
+        );
+        if (files.Count > 0)
+        {
+            interaction.SetOutput(files[0].Path);
+            return;
+        }
+        interaction.SetOutput(null);
+    }
+
     private async Task DoShowDepCtlWindowAsync(
         IInteractionContext<DepCtrlWindowViewModel, Unit> interaction
     )
@@ -238,6 +262,8 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
                 // Solution
                 // Timing
                 ViewModel.ShowShiftTimesDialog.RegisterHandler(DoShowShiftTimesDialogAsync);
+                // Video
+                ViewModel.OpenVideo.RegisterHandler(DoShowOpenVideoDialogAsync);
                 // Scripts
                 ViewModel.ShowDependencyControl.RegisterHandler(DoShowDepCtlWindowAsync);
                 // Help

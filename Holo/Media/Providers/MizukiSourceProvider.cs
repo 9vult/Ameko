@@ -31,7 +31,7 @@ public class MizukiSourceProvider : ISourceProvider
 
     public int LoadVideo(string filename)
     {
-        return External.LoadVideo(filename, GetCachePath(filename), string.Empty);
+        return External.LoadVideo(filename, GetCachePath(filename), "bgra");
     }
 
     public int CloseVideo()

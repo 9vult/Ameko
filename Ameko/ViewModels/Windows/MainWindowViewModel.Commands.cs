@@ -9,6 +9,7 @@ using Ameko.Services;
 using Ameko.ViewModels.Dialogs;
 using Ameko.Views.Dialogs;
 using Ameko.Views.Windows;
+using AssCS;
 using AssCS.IO;
 using Avalonia;
 using Avalonia.Controls;
@@ -230,6 +231,30 @@ public partial class MainWindowViewModel : ViewModelBase
                 var vm = new ShiftTimesDialogViewModel(SolutionProvider.Current.WorkingSpace);
                 await ShowShiftTimesDialog.Handle(vm);
             }
+        });
+    }
+
+    /// <summary>
+    /// Display the Open Video dialog
+    /// </summary>
+    private ReactiveCommand<Unit, Unit> CreateOpenVideoCommand()
+    {
+        return ReactiveCommand.CreateFromTask(async () =>
+        {
+            Log.Info("Preparing to open video");
+            var uri = await OpenVideo.Handle(Unit.Default);
+
+            if (uri is null)
+                return;
+
+            var wsp = SolutionProvider.Current.WorkingSpace;
+            if (wsp is null)
+            {
+                SolutionProvider.Current.WorkingSpace = wsp =
+                    SolutionProvider.Current.AddWorkspace();
+            }
+
+            wsp.MediaController.OpenVideo(uri.LocalPath);
         });
     }
 
