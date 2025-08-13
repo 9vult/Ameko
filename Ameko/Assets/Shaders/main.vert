@@ -4,13 +4,14 @@ precision highp float;
 precision highp int;
 #endif
 
-layout(location = 0) in vec3 a_Position;
-layout(location = 1) in vec4 a_Color;
+in vec3 aPosition;
+in vec2 aTexCoord;
 
-out vec4 v_Color;
+out vec2 texCoord;
 
-void main()
+void main(void)
 {
-    gl_Position = vec4(a_Position, 1.0);
-    v_Color = a_Color;
+    texCoord = aTexCoord;
+    texCoord.y = 1.0 - texCoord.y; // Flip image
+    gl_Position = vec4(aPosition, 1.0);
 }
