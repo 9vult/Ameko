@@ -2,6 +2,7 @@
 
 using System;
 using System.IO;
+using Avalonia.OpenGL;
 using Avalonia.Platform;
 using Silk.NET.OpenGLES;
 
@@ -11,10 +12,12 @@ public class Shader : IDisposable
 {
     private readonly uint _handle;
     private readonly GL _gl;
+    private readonly GlVersion _glVersion;
 
-    public Shader(GL gl, Uri vertexPath, Uri fragmentPath)
+    public Shader(GL gl, GlVersion version, Uri vertexPath, Uri fragmentPath)
     {
         _gl = gl;
+        _glVersion = version;
 
         var vertex = LoadShader(ShaderType.VertexShader, vertexPath);
         var fragment = LoadShader(ShaderType.FragmentShader, fragmentPath);
@@ -89,8 +92,10 @@ public class Shader : IDisposable
     private uint LoadShader(ShaderType type, Uri uri)
     {
         using var reader = new StreamReader(AssetLoader.Open(uri));
+        var header = SelectGlslHeader(_glVersion);
 
-        var src = reader.ReadToEnd();
+        var src = header + reader.ReadToEnd();
+
         var handle = _gl.CreateShader(type);
         _gl.ShaderSource(handle, src);
         _gl.CompileShader(handle);
@@ -100,5 +105,21 @@ public class Shader : IDisposable
             throw new OpenGlException($"Error compiling {type} shader: {infoLog}");
 
         return handle;
+    }
+
+    /// <summary>
+    /// Select the appropriate OpenGL header
+    /// </summary>
+    /// <param name="glVersion">OpenGL version</param>
+    /// <returns>GLSL Header</returns>
+    /// <remarks>
+    /// When on a platform fronting OpenGL ES (e.g. Windows), ES headers will be provided.
+    /// Otherwise, when on a platform fronting desktop OpenGL (e.g. macOS), 150 Core will be provided.
+    /// </remarks>
+    private static string SelectGlslHeader(GlVersion glVersion)
+    {
+        if (glVersion.Type == GlProfileType.OpenGLES)
+            return "#version 300 es\n";
+        return "#version 150 core\n";
     }
 }

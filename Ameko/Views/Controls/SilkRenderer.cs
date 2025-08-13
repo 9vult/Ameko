@@ -31,18 +31,18 @@ public class SilkRenderer : OpenGlControlBase
     // csharpier-ignore
     private static readonly float[] Vertices =
     [
-        //X    Y      Z     R  G  B  A
-         0.5f,  0.5f, 0.0f, 1, 0, 0, 1,
-         0.5f, -0.5f, 0.0f, 0, 0, 0, 1,
-        -0.5f, -0.5f, 0.0f, 0, 0, 1, 1,
-        -0.5f,  0.5f, 0.5f, 0, 0, 0, 1
+        // x,    y,    z       r,    g,    b,    a
+        -0.5f,  0.5f, 0.0f,   1f,   0f,   0f,   1f,  // top-left, red
+        -0.5f, -0.5f, 0.0f,   0f,   1f,   0f,   1f,  // bottom-left, green
+         0.5f, -0.5f, 0.0f,   0f,   0f,   1f,   1f,  // bottom-right, blue
+         0.5f,  0.5f, 0.0f,   1f,   1f,   0f,   1f   // top-right, yellow
     ];
 
     // csharpier-ignore
     private static readonly uint[] Indices =
     [
-        0, 1, 3,
-        1, 2, 3
+        0, 1, 2,  // first triangle
+        0, 2, 3   // second triangle
     ];
 
     protected override void OnOpenGlInit(GlInterface gl)
@@ -51,26 +51,19 @@ public class SilkRenderer : OpenGlControlBase
         _gl = GL.GetApi(gl.GetProcAddress);
         IsInitialized = true;
 
-        var glVersion = gl.ContextInfo.Version;
-        var glslVersion =
-            glVersion.Type == GlProfileType.OpenGLES ? "es300"
-            : glVersion.Major == 4 ? "410"
-            : throw new OpenGlException(
-                $"OpenGL version {glVersion.Major}.{glVersion.Minor} is not supported!"
-            );
-
         _ebo = new BufferObject<uint>(_gl, Indices, BufferTargetARB.ElementArrayBuffer);
         _vbo = new BufferObject<float>(_gl, Vertices, BufferTargetARB.ArrayBuffer);
         _vao = new VertexArrayObject<float, uint>(_gl, _vbo, _ebo);
 
         // Tell the VAO object how to lay out the attribute pointers
-        _vao.VertexAttributePointer(0, 3, VertexAttribPointerType.Float, 7, 0);
-        _vao.VertexAttributePointer(1, 4, VertexAttribPointerType.Float, 7, 3);
+        _vao.VertexAttributePointer(0, 3, VertexAttribPointerType.Float, 7, 0); // Position
+        _vao.VertexAttributePointer(1, 4, VertexAttribPointerType.Float, 7, 3); // Color
 
         _shader = new Shader(
             _gl,
-            new Uri($"avares://Ameko/Assets/Shaders/{glslVersion}.vert"),
-            new Uri($"avares://Ameko/Assets/Shaders/{glslVersion}.frag")
+            gl.ContextInfo.Version,
+            new Uri("avares://Ameko/Assets/Shaders/main.vert"),
+            new Uri("avares://Ameko/Assets/Shaders/main.frag")
         );
     }
 
@@ -92,7 +85,7 @@ public class SilkRenderer : OpenGlControlBase
         if (!IsInitialized)
             throw new OpenGlException("OpenGL is not initialized.");
 
-        _gl.ClearColor(Color.Firebrick);
+        _gl.ClearColor(Color.Black);
         _gl.Clear((uint)(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit));
         _gl.Enable(EnableCap.DepthTest);
         _gl.Viewport(0, 0, (uint)Bounds.Width, (uint)Bounds.Height);
@@ -101,7 +94,6 @@ public class SilkRenderer : OpenGlControlBase
         _vbo.Bind();
         _vao.Bind();
         _shader.Use();
-        _shader.SetUniform("uBlue", (float)Math.Sin(DateTime.Now.Millisecond / 1000f * Math.PI));
 
         _gl.DrawElements(
             PrimitiveType.Triangles,
