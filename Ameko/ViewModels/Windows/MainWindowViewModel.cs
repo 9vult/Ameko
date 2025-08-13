@@ -47,6 +47,9 @@ public partial class MainWindowViewModel : ViewModelBase
     // Timing
     public Interaction<ShiftTimesDialogViewModel, Unit> ShowShiftTimesDialog { get; }
 
+    // Video
+    public Interaction<Unit, Uri?> OpenVideo { get; }
+
     // Scripts
     public Interaction<DepCtrlWindowViewModel, Unit> ShowDependencyControl { get; }
 
@@ -92,6 +95,10 @@ public partial class MainWindowViewModel : ViewModelBase
     // Timing
     [KeybindTarget("ameko.document.shiftTimes", "Ctrl+I")]
     public ICommand ShowShiftTimesDialogCommand { get; }
+
+    // Video
+    [KeybindTarget("ameko.video.open")]
+    public ICommand OpenVideoCommand { get; }
 
     // Scripts
     // Command execution doesn't get a keybind. So sad :(
@@ -188,6 +195,8 @@ public partial class MainWindowViewModel : ViewModelBase
         // Subtitle
         ShowStylesManager = new Interaction<StylesManagerWindowViewModel, Unit>();
         // Solution
+        // Video
+        OpenVideo = new Interaction<Unit, Uri?>();
         // Timing
         ShowShiftTimesDialog = new Interaction<ShiftTimesDialogViewModel, Unit>();
         // Scripts
@@ -213,6 +222,8 @@ public partial class MainWindowViewModel : ViewModelBase
         // Solution
         // Timing
         ShowShiftTimesDialogCommand = CreateShowShiftTimesDialogCommand();
+        // Video
+        OpenVideoCommand = CreateOpenVideoCommand();
         // Scripts
         ExecuteScriptCommand = CreateExecuteScriptCommand();
         ReloadScriptsCommand = CreateReloadScriptsCommand();

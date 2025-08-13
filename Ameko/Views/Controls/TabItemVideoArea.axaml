@@ -74,10 +74,9 @@
                       VerticalScrollBarVisibility="Auto"
                       IsScrollChainingEnabled="False">
             <Panel Name="VideoTarget"
-                   Width="64"
-                   Height="64"
+                   Width="{Binding Workspace.MediaController.DisplayWidth, FallbackValue=0}"
+                   Height="{Binding Workspace.MediaController.DisplayHeight, FallbackValue=0}"
                    Background="Gray">
-                <!-- {Binding Workspace.MediaController.DisplayHeight, FallbackValue=0} -->
                 <c:SilkRenderer />
             </Panel>
         </ScrollViewer>

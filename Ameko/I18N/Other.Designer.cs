@@ -96,6 +96,15 @@ namespace Ameko.I18N {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Video Files.
+        /// </summary>
+        public static string FileDialog_FileType_Video {
+            get {
+                return ResourceManager.GetString("FileDialog_FileType_Video", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Open Solution File.
         /// </summary>
         public static string FileDialog_OpenSolution_Title {
@@ -110,6 +119,15 @@ namespace Ameko.I18N {
         public static string FileDialog_OpenSubtitle_Title {
             get {
                 return ResourceManager.GetString("FileDialog_OpenSubtitle_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Open Video File.
+        /// </summary>
+        public static string FileDialog_OpenVideo_Title {
+            get {
+                return ResourceManager.GetString("FileDialog_OpenVideo_Title", resourceCulture);
             }
         }
         
