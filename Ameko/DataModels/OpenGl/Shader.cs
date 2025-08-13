@@ -75,11 +75,17 @@ public class Shader : IDisposable
     }
 
     /// <summary>
-    /// Dispose of the shader
+    /// Get an attribute location
     /// </summary>
-    public void Dispose()
+    /// <param name="name">Name of the attribute</param>
+    /// <returns>Index of the attribute</returns>
+    /// <exception cref="OpenGlException">If the attribute was not found</exception>
+    public uint GetAttribLocation(string name)
     {
-        _gl.DeleteProgram(_handle);
+        var location = _gl.GetAttribLocation(_handle, name);
+        if (location == -1)
+            throw new OpenGlException($"Attrib '{name}' not found on shader.");
+        return (uint)location;
     }
 
     /// <summary>
@@ -121,5 +127,20 @@ public class Shader : IDisposable
         if (glVersion.Type == GlProfileType.OpenGLES)
             return "#version 300 es\n";
         return "#version 150 core\n";
+    }
+
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            _gl.DeleteProgram(_handle);
+        }
     }
 }

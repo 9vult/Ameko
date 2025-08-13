@@ -2,7 +2,6 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Drawing;
 using Ameko.DataModels.OpenGl;
 using Avalonia.OpenGL;
 using Avalonia.OpenGL.Controls;
@@ -10,6 +9,7 @@ using Avalonia.Threading;
 using Silk.NET.OpenGLES;
 using OpenGlException = Ameko.DataModels.OpenGl.OpenGlException;
 using Shader = Ameko.DataModels.OpenGl.Shader;
+using Texture = Ameko.DataModels.OpenGl.Texture;
 
 namespace Ameko.Views.Controls;
 
@@ -20,6 +20,7 @@ public class SilkRenderer : OpenGlControlBase
     [MemberNotNullWhen(true, nameof(_ebo))]
     [MemberNotNullWhen(true, nameof(_vao))]
     [MemberNotNullWhen(true, nameof(_shader))]
+    [MemberNotNullWhen(true, nameof(_texture))]
     private new bool IsInitialized { get; set; }
 
     private GL? _gl;
@@ -27,22 +28,23 @@ public class SilkRenderer : OpenGlControlBase
     private BufferObject<uint>? _ebo;
     private VertexArrayObject<float, uint>? _vao;
     private Shader? _shader;
+    private Texture? _texture;
 
     // csharpier-ignore
     private static readonly float[] Vertices =
     [
-        // x,    y,    z       r,    g,    b,    a
-        -0.5f,  0.5f, 0.0f,   1f,   0f,   0f,   1f,  // top-left, red
-        -0.5f, -0.5f, 0.0f,   0f,   1f,   0f,   1f,  // bottom-left, green
-         0.5f, -0.5f, 0.0f,   0f,   0f,   1f,   1f,  // bottom-right, blue
-         0.5f,  0.5f, 0.0f,   1f,   1f,   0f,   1f   // top-right, yellow
+        // Position         Texture coords
+         1.0f,  1.0f, 0.0f, 1.0f, 1.0f, // top right
+         1.0f, -1.0f, 0.0f, 1.0f, 0.0f, // bottom right
+        -1.0f, -1.0f, 0.0f, 0.0f, 0.0f, // bottom left
+        -1.0f,  1.0f, 0.0f, 0.0f, 1.0f  // top left
     ];
 
     // csharpier-ignore
     private static readonly uint[] Indices =
     [
-        0, 1, 2,  // first triangle
-        0, 2, 3   // second triangle
+        0, 1, 3,  // first triangle
+        1, 2, 3   // second triangle
     ];
 
     protected override void OnOpenGlInit(GlInterface gl)
@@ -55,16 +57,20 @@ public class SilkRenderer : OpenGlControlBase
         _vbo = new BufferObject<float>(_gl, Vertices, BufferTargetARB.ArrayBuffer);
         _vao = new VertexArrayObject<float, uint>(_gl, _vbo, _ebo);
 
-        // Tell the VAO object how to lay out the attribute pointers
-        _vao.VertexAttributePointer(0, 3, VertexAttribPointerType.Float, 7, 0); // Position
-        _vao.VertexAttributePointer(1, 4, VertexAttribPointerType.Float, 7, 3); // Color
-
         _shader = new Shader(
             _gl,
             gl.ContextInfo.Version,
             new Uri("avares://Ameko/Assets/Shaders/main.vert"),
             new Uri("avares://Ameko/Assets/Shaders/main.frag")
         );
+
+        // Tell the VAO object how to lay out the attribute pointers
+        var vertexLocation = _shader.GetAttribLocation("aPosition");
+        var texCoordLocation = _shader.GetAttribLocation("aTexCoord");
+        _vao.VertexAttributePointer(vertexLocation, 3, VertexAttribPointerType.Float, 5, 0); // Position
+        _vao.VertexAttributePointer(texCoordLocation, 2, VertexAttribPointerType.Float, 5, 3); // Texture coords
+
+        _texture = new Texture(_gl);
     }
 
     protected override void OnOpenGlDeinit(GlInterface gl)
@@ -76,6 +82,7 @@ public class SilkRenderer : OpenGlControlBase
         _ebo.Dispose();
         _vao.Dispose();
         _shader.Dispose();
+        _texture.Dispose();
         base.OnOpenGlDeinit(gl);
         IsInitialized = false;
     }
@@ -85,14 +92,37 @@ public class SilkRenderer : OpenGlControlBase
         if (!IsInitialized)
             throw new OpenGlException("OpenGL is not initialized.");
 
-        _gl.ClearColor(Color.Black);
-        _gl.Clear((uint)(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit));
-        _gl.Enable(EnableCap.DepthTest);
+        const int width = 16;
+        const int height = 16;
+        const int channels = 4; // RGBA
+        Span<byte> imageData = stackalloc byte[width * height * channels];
+
+        for (var y = 0; y < height; y++)
+        {
+            for (var x = 0; x < width; x++)
+            {
+                var offset = (y * width + x) * channels;
+
+                // Checkerboard pattern
+                var isWhite = (x / 4 + y / 4) % 2 == 0;
+                imageData[offset + 0] = isWhite ? (byte)255 : (byte)0; // R
+                imageData[offset + 1] = isWhite ? (byte)255 : (byte)0; // G
+                imageData[offset + 2] = isWhite ? (byte)255 : (byte)0; // B
+                imageData[offset + 3] = 255; // A
+            }
+        }
+
+        _gl.ClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+        _gl.Clear(ClearBufferMask.ColorBufferBit);
         _gl.Viewport(0, 0, (uint)Bounds.Width, (uint)Bounds.Height);
 
         _ebo.Bind();
         _vbo.Bind();
         _vao.Bind();
+
+        _texture.Bind();
+        _texture.SetTexture(width, height, imageData);
+
         _shader.Use();
 
         _gl.DrawElements(
