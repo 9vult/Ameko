@@ -13,6 +13,7 @@ public class MediaController : BindableBase
     private readonly ISourceProvider _provider;
     private readonly HighResolutionTimer _playback;
     private VideoInfo? _videoInfo;
+    private unsafe VideoFrame* _lastFrame;
 
     private bool _isVideoLoaded;
 
@@ -236,23 +237,34 @@ public class MediaController : BindableBase
             return false;
         }
 
-        if (_provider.GetFrame(0, out var testFrame) != 0)
+        if (_provider.AllocateBuffers(2) != 0)
         {
-            // TODO: Handle error
+            return false;
         }
 
-        VideoInfo = new VideoInfo(
-            frameCount: _provider.FrameCount,
-            sar: new Rational { Numerator = 1, Denominator = 1 },
-            frameTimes: _provider.GetTimecodes(),
-            frameIntervals: _provider.GetFrameIntervals(),
-            keyframes: _provider.GetKeyframes(),
-            testFrame.Width,
-            testFrame.Height
-        );
+        unsafe
+        {
+            var testFrame = _provider.GetFrame(0);
+            if (testFrame is null)
+            {
+                // TODO: Handle error
+            }
 
-        _playback.Intervals = VideoInfo.FrameIntervals;
+            VideoInfo = new VideoInfo(
+                frameCount: _provider.FrameCount,
+                sar: new Rational { Numerator = 1, Denominator = 1 },
+                frameTimes: _provider.GetTimecodes(),
+                frameIntervals: _provider.GetFrameIntervals(),
+                keyframes: _provider.GetKeyframes(),
+                testFrame->Width,
+                testFrame->Height
+            );
 
+            _playback.Intervals = VideoInfo.FrameIntervals;
+        }
+
+        DisplayWidth = VideoInfo.Width;
+        DisplayHeight = VideoInfo.Height;
         IsVideoLoaded = true;
         return true;
     }
@@ -268,6 +280,35 @@ public class MediaController : BindableBase
             CurrentFrame++;
         else
             Stop();
+    }
+
+    public unsafe VideoFrame* GetVideoFrame()
+    {
+        if (!_provider.IsInitialized)
+            throw new InvalidOperationException("Provider is not initialized");
+        if (_videoInfo is null)
+            throw new InvalidOperationException("Video is not loaded");
+
+        if (_lastFrame is not null)
+        {
+            // Check if we can return the cached frame
+            if (_lastFrame->FrameNumber == _currentFrame)
+                return _lastFrame;
+
+            // Release the frame so we can get a new one
+            _provider.ReleaseFrame(_lastFrame);
+            _lastFrame = null;
+        }
+
+        var newFrame = _provider.GetFrame(_currentFrame);
+        if (newFrame is not null)
+        {
+            _lastFrame = newFrame;
+            return _lastFrame;
+        }
+
+        // Something went wrong
+        throw new InvalidOperationException("Failed to get video frame");
     }
 
     /// <summary>

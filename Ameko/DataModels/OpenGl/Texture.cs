@@ -34,7 +34,7 @@ public class Texture : IDisposable
     /// <param name="width">Width of the texture</param>
     /// <param name="height">Height of the texture</param>
     /// <param name="data">Pixels</param>
-    public void SetTexture(uint width, uint height, nint data)
+    public unsafe void SetTexture(uint width, uint height, byte* data)
     {
         _gl.TexImage2D(
             GLEnum.Texture2D,

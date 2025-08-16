@@ -3,9 +3,14 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using Ameko.DataModels.OpenGl;
+using Ameko.Services;
+using Avalonia;
 using Avalonia.OpenGL;
 using Avalonia.OpenGL.Controls;
 using Avalonia.Threading;
+using Holo;
+using Holo.Media.Providers;
+using Holo.Providers;
 using Silk.NET.OpenGLES;
 using OpenGlException = Ameko.DataModels.OpenGl.OpenGlException;
 using Shader = Ameko.DataModels.OpenGl.Shader;
@@ -15,6 +20,15 @@ namespace Ameko.Views.Controls;
 
 public class SilkRenderer : OpenGlControlBase
 {
+    public static readonly StyledProperty<MediaController?> MediaControllerProperty =
+        AvaloniaProperty.Register<SilkRenderer, MediaController?>(nameof(MediaController));
+
+    public MediaController? MediaController
+    {
+        get => GetValue(MediaControllerProperty);
+        set => SetValue(MediaControllerProperty, value);
+    }
+
     [MemberNotNullWhen(true, nameof(_gl))]
     [MemberNotNullWhen(true, nameof(_vbo))]
     [MemberNotNullWhen(true, nameof(_ebo))]
@@ -92,26 +106,17 @@ public class SilkRenderer : OpenGlControlBase
         if (!IsInitialized)
             throw new OpenGlException("OpenGL is not initialized.");
 
-        const int width = 16;
-        const int height = 16;
-        const int channels = 4; // RGBA
-        Span<byte> imageData = stackalloc byte[width * height * channels];
-
-        for (var y = 0; y < height; y++)
+        if (MediaController is null || !MediaController.IsVideoLoaded)
         {
-            for (var x = 0; x < width; x++)
-            {
-                var offset = (y * width + x) * channels;
-
-                // Checkerboard pattern
-                var isWhite = (x / 4 + y / 4) % 2 == 0;
-                imageData[offset + 0] = isWhite ? (byte)255 : (byte)0; // R
-                imageData[offset + 1] = isWhite ? (byte)255 : (byte)0; // G
-                imageData[offset + 2] = isWhite ? (byte)255 : (byte)0; // B
-                imageData[offset + 3] = 255; // A
-            }
+            _gl.ClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+            _gl.Clear(ClearBufferMask.ColorBufferBit);
+            _gl.Viewport(0, 0, (uint)Bounds.Width, (uint)Bounds.Height);
+            Dispatcher.UIThread.Post(RequestNextFrameRendering, DispatcherPriority.Background);
+            return;
         }
 
+        var width = (uint)MediaController.DisplayWidth;
+        var height = (uint)MediaController.DisplayHeight;
         _gl.ClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         _gl.Clear(ClearBufferMask.ColorBufferBit);
         _gl.Viewport(0, 0, (uint)Bounds.Width, (uint)Bounds.Height);
@@ -120,8 +125,9 @@ public class SilkRenderer : OpenGlControlBase
         _vbo.Bind();
         _vao.Bind();
 
+        var frame = MediaController.GetVideoFrame();
         _texture.Bind();
-        _texture.SetTexture(width, height, imageData);
+        _texture.SetTexture(width, height, frame->Data);
 
         _shader.Use();
 

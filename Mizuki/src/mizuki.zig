@@ -39,11 +39,15 @@ pub export fn FreeBuffers() c_int {
 }
 
 /// Get a frame
-pub export fn GetFrame(frame_number: c_int, out: *frames.VideoFrame) c_int {
-    ffms.GetFrame(frame_number, out) catch |err| {
-        return errors.IntFromFfmsError(err);
+pub export fn GetFrame(frame_number: c_int) ?*frames.VideoFrame {
+    return buffers.ProcFrame(frame_number, 0, 0) catch {
+        return null;
     };
-    return 0;
+}
+
+/// Release a frame
+pub export fn ReleaseFrame(frame: *frames.VideoFrame) c_int {
+    return buffers.ReleaseFrame(frame);
 }
 
 /// Get array of keyframes

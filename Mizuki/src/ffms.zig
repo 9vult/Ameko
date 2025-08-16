@@ -220,13 +220,12 @@ pub fn LoadVideo(file_name: [*c]u8, cache_file_name: [*c]u8, color_matrix: [*c]u
 
     // Calculate frame intervals
     var i: usize = 0;
-    while (i < frame_count) : (i += 1) {
-        if (i + 1 >= frame_count) {
-            try timecodes_list.append(0);
-        } else {
-            frame_intervals[i] = timecodes[i + 1] - timecodes[i];
-        }
+    while (i + 1 < frame_count) : (i += 1) {
+        try intervals_list.append(timecodes[i + 1] - timecodes[i]);
     }
+
+    // Last interval is 0
+    try intervals_list.append(0);
 
     frame_intervals = intervals_list.toOwnedSlice() catch unreachable;
 }

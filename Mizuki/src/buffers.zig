@@ -12,6 +12,7 @@ var buffers: std.ArrayList(*frames.VideoFrame) = undefined;
 pub fn Init(num_buffers: usize, width: usize, height: usize, pitch: usize) ffms.FfmsError!void {
     buffers = std.ArrayList(*frames.VideoFrame).init(common.allocator);
 
+    // Pre-allocate buffers
     var i: usize = 0;
     while (i < num_buffers) : (i += 1) {
         const frame = try AllocateFrame(width, height, pitch);
@@ -28,12 +29,12 @@ pub fn Deinit() void {
 }
 
 /// Get a frame
-pub fn ProcFrame(frame_number: c_int, timestamp: c_longlong, raw: c_int, out: *frames.VideoFrame) ffms.FfmsError!void {
+pub fn ProcFrame(frame_number: c_int, timestamp: c_longlong, raw: c_int) ffms.FfmsError!*frames.VideoFrame {
     _ = raw; // For sub-less frame
     _ = timestamp;
 
     // Find an invalid buffer or create one if needed
-    var frame: *frames.VideoFrame = undefined;
+    var frame: ?*frames.VideoFrame = null;
     for (buffers.items) |buffer| {
         if (buffer.*.valid == 0) {
             frame = buffer;
@@ -41,16 +42,27 @@ pub fn ProcFrame(frame_number: c_int, timestamp: c_longlong, raw: c_int, out: *f
         }
     }
 
-    if (frame == undefined) {
+    if (frame == null) {
+        // Clone geometry from the first buffer
         const reference = buffers.items[0];
-        frame = AllocateFrame(reference.*.width, reference.*.height, reference.*.pitch);
-        try buffers.append(frame);
+        frame = try AllocateFrame(
+            @intCast(reference.*.width),
+            @intCast(reference.*.height),
+            @intCast(reference.*.pitch),
+        );
+        try buffers.append(frame.?);
     }
 
-    try ffms.GetFrame(frame_number, frame);
+    try ffms.GetFrame(frame_number, frame.?);
 
-    out.* = frame.*;
+    frame.?.*.valid = 1;
+    return frame.?;
     // TODO: subtitles
+}
+
+pub fn ReleaseFrame(frame: *frames.VideoFrame) c_int {
+    frame.valid = 0;
+    return 0;
 }
 
 /// Allocate a new frame buffer
