@@ -77,7 +77,7 @@
                    Width="{Binding Workspace.MediaController.DisplayWidth, FallbackValue=0}"
                    Height="{Binding Workspace.MediaController.DisplayHeight, FallbackValue=0}"
                    Background="Gray">
-                <c:SilkRenderer />
+                <c:SilkRenderer MediaController="{Binding Workspace.MediaController}" />
             </Panel>
         </ScrollViewer>
     </DockPanel>

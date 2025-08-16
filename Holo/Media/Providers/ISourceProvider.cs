@@ -54,9 +54,15 @@ public interface ISourceProvider
     /// Get a frame
     /// </summary>
     /// <param name="frameNumber">Frame number to get</param>
-    /// <param name="frame">Output frame</param>
+    /// <returns>Output frame</returns>
+    unsafe VideoFrame* GetFrame(int frameNumber);
+
+    /// <summary>
+    /// Release a frame
+    /// </summary>
+    /// <param name="frame">Pointer to frame to release</param>
     /// <returns>0 on success</returns>
-    int GetFrame(int frameNumber, out VideoFrame frame);
+    unsafe int ReleaseFrame(VideoFrame* frame);
 
     /// <summary>
     /// List of keyframes
