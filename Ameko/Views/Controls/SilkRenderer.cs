@@ -3,14 +3,11 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using Ameko.DataModels.OpenGl;
-using Ameko.Services;
 using Avalonia;
 using Avalonia.OpenGL;
 using Avalonia.OpenGL.Controls;
 using Avalonia.Threading;
 using Holo;
-using Holo.Media.Providers;
-using Holo.Providers;
 using Silk.NET.OpenGLES;
 using OpenGlException = Ameko.DataModels.OpenGl.OpenGlException;
 using Shader = Ameko.DataModels.OpenGl.Shader;
@@ -44,6 +41,8 @@ public class SilkRenderer : OpenGlControlBase
     private Shader? _shader;
     private Texture? _texture;
 
+    private double scaleFactor = 1.0d;
+
     // csharpier-ignore
     private static readonly float[] Vertices =
     [
@@ -66,6 +65,8 @@ public class SilkRenderer : OpenGlControlBase
         base.OnOpenGlInit(gl);
         _gl = GL.GetApi(gl.GetProcAddress);
         IsInitialized = true;
+
+        scaleFactor = VisualRoot?.RenderScaling ?? 1.0d;
 
         _ebo = new BufferObject<uint>(_gl, Indices, BufferTargetARB.ElementArrayBuffer);
         _vbo = new BufferObject<float>(_gl, Vertices, BufferTargetARB.ArrayBuffer);
@@ -115,19 +116,22 @@ public class SilkRenderer : OpenGlControlBase
             return;
         }
 
-        var width = (uint)MediaController.DisplayWidth;
-        var height = (uint)MediaController.DisplayHeight;
+        // Texture size
+        var texWidth = (uint)MediaController.DisplayWidth;
+        var texHeight = (uint)MediaController.DisplayHeight;
+        // Viewport size
+        var vpWidth = (uint)(Bounds.Width * scaleFactor);
+        var vpHeight = (uint)(Bounds.Height * scaleFactor);
+
         _gl.ClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         _gl.Clear(ClearBufferMask.ColorBufferBit);
-        _gl.Viewport(0, 0, (uint)Bounds.Width, (uint)Bounds.Height);
+        _gl.Viewport(0, 0, vpWidth, vpHeight);
 
-        _ebo.Bind();
-        _vbo.Bind();
         _vao.Bind();
 
         var frame = MediaController.GetVideoFrame();
         _texture.Bind();
-        _texture.SetTexture(width, height, frame->Data);
+        _texture.SetTexture(texWidth, texHeight, frame->Data);
 
         _shader.Use();
 
