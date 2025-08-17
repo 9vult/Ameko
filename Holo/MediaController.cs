@@ -13,7 +13,6 @@ public class MediaController : BindableBase
     private readonly ISourceProvider _provider;
     private readonly HighResolutionTimer _playback;
     private VideoInfo? _videoInfo;
-    private unsafe VideoFrame* _lastFrame;
 
     private bool _isVideoLoaded;
 
@@ -24,7 +23,7 @@ public class MediaController : BindableBase
     private bool _isAutoSeekEnabled = true;
     private bool _isPlaying;
     private bool _isPaused;
-    private int _currentFrame;
+
     private int _destinationFrame;
 
     /// <summary>
@@ -87,6 +86,7 @@ public class MediaController : BindableBase
         {
             SetProperty(ref _currentFrame, value);
             RaisePropertyChanged(nameof(CurrentTime));
+            OnCurrentFrameChanged(value);
         }
     }
 
@@ -271,6 +271,7 @@ public class MediaController : BindableBase
             );
 
             _playback.Intervals = VideoInfo.FrameIntervals;
+            _lastFrame = testFrame;
         }
 
         DisplayWidth = VideoInfo.Width;
@@ -278,6 +279,12 @@ public class MediaController : BindableBase
         IsVideoLoaded = true;
         return true;
     }
+
+    private unsafe VideoFrame* _lastFrame;
+    private unsafe VideoFrame* _nextFrame;
+    private int _currentFrame;
+    private readonly object _frameLock = new();
+    private Task? _fetchTask;
 
     /// <summary>
     /// Advance the current frame, or stop if the <see cref="_destinationFrame"/> has been reached
@@ -292,6 +299,11 @@ public class MediaController : BindableBase
             Stop();
     }
 
+    /// <summary>
+    /// Get the current frame
+    /// </summary>
+    /// <returns>Pointer to the frame</returns>
+    /// <exception cref="InvalidOperationException">If there is no frame</exception>
     public unsafe VideoFrame* GetVideoFrame()
     {
         if (!_provider.IsInitialized)
@@ -299,26 +311,47 @@ public class MediaController : BindableBase
         if (_videoInfo is null)
             throw new InvalidOperationException("Video is not loaded");
 
+        lock (_frameLock)
+        {
+            if (_nextFrame is not null)
+            {
+                if (_lastFrame is not null)
+                    _provider.ReleaseFrame(_lastFrame);
+
+                _lastFrame = _nextFrame;
+                _nextFrame = null;
+            }
+        }
+
         if (_lastFrame is not null)
-        {
-            // Check if we can return the cached frame
-            if (_lastFrame->FrameNumber == _currentFrame)
-                return _lastFrame;
-
-            // Release the frame so we can get a new one
-            _provider.ReleaseFrame(_lastFrame);
-            _lastFrame = null;
-        }
-
-        var newFrame = _provider.GetFrame(_currentFrame);
-        if (newFrame is not null)
-        {
-            _lastFrame = newFrame;
             return _lastFrame;
-        }
 
-        // Something went wrong
-        throw new InvalidOperationException("Failed to get video frame");
+        throw new InvalidOperationException("Frame is unavailable");
+    }
+
+    /// <summary>
+    /// Asynchronously fetch the next frame
+    /// </summary>
+    /// <param name="fetchingFrame">Frame number to fetch</param>
+    private unsafe void OnCurrentFrameChanged(int fetchingFrame)
+    {
+        lock (_frameLock)
+        {
+            if (_fetchTask is null || _fetchTask.IsCompleted)
+            {
+                _fetchTask = Task.Run(() =>
+                {
+                    var frame = _provider.GetFrame(fetchingFrame);
+                    lock (_frameLock)
+                    {
+                        if (fetchingFrame == _currentFrame)
+                            _nextFrame = frame;
+                        else
+                            _provider.ReleaseFrame(frame);
+                    }
+                });
+            }
+        }
     }
 
     /// <summary>
