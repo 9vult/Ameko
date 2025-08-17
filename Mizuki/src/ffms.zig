@@ -42,6 +42,7 @@ var video_color_range: c_int = -1;
 pub var keyframes: []c_int = undefined;
 pub var timecodes: []c_longlong = undefined;
 pub var frame_intervals: []c_longlong = undefined;
+pub var frame_count: c_int = undefined;
 
 pub var frame_width: usize = 0;
 pub var frame_height: usize = 0;
@@ -186,7 +187,7 @@ pub fn LoadVideo(file_name: [*c]u8, cache_file_name: [*c]u8, color_matrix: [*c]u
     }
 
     // Build list of timecodes and keyframes
-    const frame_count = video_info.*.NumFrames;
+    frame_count = video_info.*.NumFrames;
 
     // Allocate ArrayLists
     var keyframes_list = std.ArrayList(c_int).init(common.allocator);
