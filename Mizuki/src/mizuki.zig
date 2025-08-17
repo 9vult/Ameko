@@ -50,6 +50,11 @@ pub export fn ReleaseFrame(frame: *frames.VideoFrame) c_int {
     return buffers.ReleaseFrame(frame);
 }
 
+/// Get the number of frames in the video
+pub export fn GetFrameCount() c_int {
+    return ffms.frame_count;
+}
+
 /// Get array of keyframes
 pub export fn GetKeyframes() common.IntArray {
     return .{

@@ -34,7 +34,8 @@
                         Orientation="Horizontal"
                         Spacing="2">
                 <Button Content="{icons:MaterialIconExt Kind=PlayPause}"
-                        ToolTip.Tip="{x:Static i18n:Resources.Video_Button_PlayPause_ToolTip}" />
+                        ToolTip.Tip="{x:Static i18n:Resources.Video_Button_PlayPause_ToolTip}"
+                        Command="{Binding PlayPauseCommand}" />
                 <Button Content="{icons:MaterialIconExt Kind=SkipNext}"
                         ToolTip.Tip="{x:Static i18n:Resources.Video_Button_PlaySelection_ToolTip}" />
                 <Button Content="{icons:MaterialIconExt Kind=MotionPlayOutline}"

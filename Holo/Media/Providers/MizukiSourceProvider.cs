@@ -18,7 +18,7 @@ public class MizukiSourceProvider : ISourceProvider
     public bool IsInitialized { get; private set; }
 
     /// <inheritdoc />
-    public int FrameCount { get; }
+    public int FrameCount { get; private set; }
 
     /// <inheritdoc />
     public Rational Sar { get; }
@@ -31,7 +31,13 @@ public class MizukiSourceProvider : ISourceProvider
 
     public int LoadVideo(string filename)
     {
-        return External.LoadVideo(filename, GetCachePath(filename), "bgra");
+        var status = External.LoadVideo(filename, GetCachePath(filename), "bgra");
+        if (status == 0)
+        {
+            FrameCount = External.GetFrameCount();
+        }
+
+        return status;
     }
 
     public int CloseVideo()
@@ -116,6 +122,9 @@ internal static unsafe partial class External
 
     [LibraryImport("mizuki")]
     internal static unsafe partial int ReleaseFrame(VideoFrame* frame);
+
+    [LibraryImport("mizuki")]
+    internal static partial int GetFrameCount();
 
     [LibraryImport("mizuki")]
     internal static partial UnmanagedArray GetKeyframes();

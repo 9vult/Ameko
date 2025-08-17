@@ -319,5 +319,6 @@ public class MediaController : BindableBase
     {
         _provider = provider;
         _playback = new HighResolutionTimer();
+        _playback.Elapsed += AdvanceFrame;
     }
 }
