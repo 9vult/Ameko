@@ -116,9 +116,6 @@ public class SilkRenderer : OpenGlControlBase
             return;
         }
 
-        // Texture size
-        var texWidth = (uint)MediaController.DisplayWidth;
-        var texHeight = (uint)MediaController.DisplayHeight;
         // Viewport size
         var vpWidth = (uint)(Bounds.Width * scaleFactor);
         var vpHeight = (uint)(Bounds.Height * scaleFactor);
@@ -130,6 +127,9 @@ public class SilkRenderer : OpenGlControlBase
         _vao.Bind();
 
         var frame = MediaController.GetVideoFrame();
+        var texWidth = (uint)frame->Width;
+        var texHeight = (uint)frame->Height;
+
         _texture.Bind();
         _texture.SetTexture(texWidth, texHeight, frame->Data);
 
