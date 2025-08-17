@@ -41,7 +41,7 @@ public class SilkRenderer : OpenGlControlBase
     private Shader? _shader;
     private Texture? _texture;
 
-    private double scaleFactor = 1.0d;
+    private double _scaleFactor = 1.0d;
 
     // csharpier-ignore
     private static readonly float[] Vertices =
@@ -66,7 +66,7 @@ public class SilkRenderer : OpenGlControlBase
         _gl = GL.GetApi(gl.GetProcAddress);
         IsInitialized = true;
 
-        scaleFactor = VisualRoot?.RenderScaling ?? 1.0d;
+        _scaleFactor = VisualRoot?.RenderScaling ?? 1.0d;
 
         _ebo = new BufferObject<uint>(_gl, Indices, BufferTargetARB.ElementArrayBuffer);
         _vbo = new BufferObject<float>(_gl, Vertices, BufferTargetARB.ArrayBuffer);
@@ -117,8 +117,8 @@ public class SilkRenderer : OpenGlControlBase
         }
 
         // Viewport size
-        var vpWidth = (uint)(Bounds.Width * scaleFactor);
-        var vpHeight = (uint)(Bounds.Height * scaleFactor);
+        var vpWidth = (uint)(Bounds.Width * _scaleFactor);
+        var vpHeight = (uint)(Bounds.Height * _scaleFactor);
 
         _gl.ClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         _gl.Clear(ClearBufferMask.ColorBufferBit);
