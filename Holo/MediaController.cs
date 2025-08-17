@@ -221,6 +221,16 @@ public class MediaController : BindableBase
             CurrentFrame = _videoInfo.FrameFromTime(@event.Start);
     }
 
+    /// <summary>
+    /// Seek to a frame by event if <see cref="IsAutoSeekEnabled"/>
+    /// </summary>
+    /// <param name="event">Event to seek to the start of</param>
+    public void AutoSeekTo(Event @event)
+    {
+        if (_videoInfo is not null && IsAutoSeekEnabled)
+            CurrentFrame = _videoInfo.FrameFromTime(@event.Start);
+    }
+
     public bool OpenVideo(string filePath)
     {
         if (!_provider.IsInitialized)
