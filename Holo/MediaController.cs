@@ -50,8 +50,8 @@ public class MediaController : BindableBase
         set
         {
             SetProperty(ref _scaleFactor, value);
-            DisplayWidth = VideoInfo?.Width ?? 1 * _scaleFactor.Multiplier;
-            DisplayHeight = VideoInfo?.Height ?? 1 * _scaleFactor.Multiplier;
+            DisplayWidth = (VideoInfo?.Width ?? 1) * _scaleFactor.Multiplier;
+            DisplayHeight = (VideoInfo?.Height ?? 1) * _scaleFactor.Multiplier;
         }
     }
 
