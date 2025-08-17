@@ -37,13 +37,16 @@
                         ToolTip.Tip="{x:Static i18n:Resources.Video_Button_PlayPause_ToolTip}"
                         Command="{Binding PlayPauseCommand}" />
                 <Button Content="{icons:MaterialIconExt Kind=SkipNext}"
-                        ToolTip.Tip="{x:Static i18n:Resources.Video_Button_PlaySelection_ToolTip}" />
+                        ToolTip.Tip="{x:Static i18n:Resources.Video_Button_PlaySelection_ToolTip}"
+                        Command="{Binding PlaySelectionCommand}" />
                 <Button Content="{icons:MaterialIconExt Kind=MotionPlayOutline}"
                         IsVisible="{Binding !Workspace.MediaController.IsAutoSeekEnabled}"
-                        ToolTip.Tip="{x:Static i18n:Resources.Video_Button_EnableAutoSeek_ToolTip}" />
+                        ToolTip.Tip="{x:Static i18n:Resources.Video_Button_EnableAutoSeek_ToolTip}"
+                        Command="{Binding ToggleAutoSeekCommand}" />
                 <Button Content="{icons:MaterialIconExt Kind=MotionPlay}"
                         IsVisible="{Binding Workspace.MediaController.IsAutoSeekEnabled}"
-                        ToolTip.Tip="{x:Static i18n:Resources.Video_Button_DisableAutoSeek_ToolTip}" />
+                        ToolTip.Tip="{x:Static i18n:Resources.Video_Button_DisableAutoSeek_ToolTip}"
+                        Command="{Binding ToggleAutoSeekCommand}" />
                 <TextBox IsReadOnly="true"
                          Text="{Binding Workspace.MediaController.CurrentTime.MillisecondText,
                                         FallbackValue='0:00:00.000'}"
