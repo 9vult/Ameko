@@ -8,6 +8,7 @@ using System.Reactive.Linq;
 using Ameko.ViewModels.Dialogs;
 using AssCS;
 using AssCS.History;
+using Holo.Media;
 using ReactiveUI;
 
 namespace Ameko.ViewModels.Controls;
@@ -477,6 +478,40 @@ public partial class TabItemViewModel : ViewModelBase
 
             if (nextKeyframe is not null)
                 Workspace.MediaController.SeekTo(nextKeyframe.Value);
+        });
+    }
+
+    /// <summary>
+    /// Increase video zoom level
+    /// </summary>
+    private ReactiveCommand<Unit, Unit> CreateZoomInCommand()
+    {
+        return ReactiveCommand.Create(() =>
+        {
+            if (!Workspace.MediaController.IsVideoLoaded)
+                return;
+            var scales = ScaleFactor.Scales;
+            var index = scales.IndexOf(Workspace.MediaController.ScaleFactor);
+
+            if (index < scales.Count - 1)
+                Workspace.MediaController.ScaleFactor = scales[index + 1];
+        });
+    }
+
+    /// <summary>
+    /// Decrease video zoom level
+    /// </summary>
+    private ReactiveCommand<Unit, Unit> CreateZoomOutCommand()
+    {
+        return ReactiveCommand.Create(() =>
+        {
+            if (!Workspace.MediaController.IsVideoLoaded)
+                return;
+            var scales = ScaleFactor.Scales;
+            var index = scales.IndexOf(Workspace.MediaController.ScaleFactor);
+
+            if (index > 0)
+                Workspace.MediaController.ScaleFactor = scales[index - 1];
         });
     }
 }
