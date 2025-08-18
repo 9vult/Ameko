@@ -38,7 +38,7 @@ public partial class TabItemEditorArea : ReactiveUserControl<TabItemViewModel>
         if (e.KeyModifiers.HasFlag(KeyModifiers.Shift))
         {
             var idx = EditBox.CaretIndex;
-            if (ViewModel.Workspace.SelectionManager.ActiveEvent.Actor.Contains("code"))
+            if (ViewModel.Workspace.SelectionManager.ActiveEvent.Effect.Contains("code"))
             {
                 EditBox.Text = EditBox.Text?.Insert(idx, Environment.NewLine);
                 EditBox.CaretIndex += Environment.NewLine.Length;
