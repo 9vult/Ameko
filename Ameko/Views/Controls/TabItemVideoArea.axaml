@@ -80,7 +80,8 @@
             <Panel Name="VideoTarget"
                    Width="{Binding Workspace.MediaController.DisplayWidth, FallbackValue=0, Mode=OneWay}"
                    Height="{Binding Workspace.MediaController.DisplayHeight, FallbackValue=0, Mode=OneWay}"
-                   Background="Gray">
+                   Background="Gray"
+                   PointerWheelChanged="VideoTarget_OnPointerWheelChanged">
                 <c:SilkRenderer MediaController="{Binding Workspace.MediaController}" />
             </Panel>
         </ScrollViewer>
