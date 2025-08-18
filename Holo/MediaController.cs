@@ -13,8 +13,14 @@ public class MediaController : BindableBase
     private readonly ISourceProvider _provider;
     private readonly HighResolutionTimer _playback;
     private VideoInfo? _videoInfo;
-
     private bool _isVideoLoaded;
+
+    private unsafe VideoFrame* _lastFrame;
+    private unsafe VideoFrame* _nextFrame;
+    private int _currentFrame;
+    private readonly object _frameLock = new();
+    private Task? _fetchTask;
+    private int _pendingFrame = -1;
 
     private ScaleFactor _scaleFactor = ScaleFactor.Default;
     private double _displayWidth;
@@ -280,12 +286,6 @@ public class MediaController : BindableBase
         return true;
     }
 
-    private unsafe VideoFrame* _lastFrame;
-    private unsafe VideoFrame* _nextFrame;
-    private int _currentFrame;
-    private readonly object _frameLock = new();
-    private Task? _fetchTask;
-
     /// <summary>
     /// Advance the current frame, or stop if the <see cref="_destinationFrame"/> has been reached
     /// </summary>
@@ -330,27 +330,42 @@ public class MediaController : BindableBase
     }
 
     /// <summary>
-    /// Asynchronously fetch the next frame
+    /// Queue a request for a frame
     /// </summary>
     /// <param name="fetchingFrame">Frame number to fetch</param>
     private unsafe void OnCurrentFrameChanged(int fetchingFrame)
     {
         lock (_frameLock)
         {
+            _pendingFrame = fetchingFrame;
             if (_fetchTask is null || _fetchTask.IsCompleted)
             {
-                _fetchTask = Task.Run(() =>
-                {
-                    var frame = _provider.GetFrame(fetchingFrame);
-                    lock (_frameLock)
-                    {
-                        if (fetchingFrame == _currentFrame)
-                            _nextFrame = frame;
-                        else
-                            _provider.ReleaseFrame(frame);
-                    }
-                });
+                _fetchTask = Task.Run(FetchFrame);
             }
+        }
+    }
+
+    /// <summary>
+    /// Fetch a frame
+    /// </summary>
+    private unsafe void FetchFrame()
+    {
+        int frameToFetch;
+        lock (_frameLock)
+        {
+            frameToFetch = _pendingFrame;
+            _pendingFrame = -1;
+        }
+        var frame = _provider.GetFrame(frameToFetch);
+        lock (_frameLock)
+        {
+            if (frameToFetch == _currentFrame)
+                _nextFrame = frame;
+            else
+                _provider.ReleaseFrame(frame);
+
+            if (_pendingFrame != -1)
+                _fetchTask = Task.Run(FetchFrame);
         }
     }
 
