@@ -9,7 +9,7 @@
         d:DesignHeight="250"
 
         xmlns:converters="clr-namespace:Ameko.Converters"
-        xmlns:holo="clr-namespace:Holo.Models;assembly=Holo"
+        xmlns:dm="clr-namespace:Ameko.DataModels"
         xmlns:i18n="clr-namespace:Ameko.I18N"
         xmlns:vm="clr-namespace:Ameko.ViewModels.Dialogs"
 
@@ -39,14 +39,14 @@
                              Content="{x:Static i18n:ShiftTimes.ShiftTimes_RB_Time}"
                              IsChecked="{Binding ShiftType,
                                                  Converter={StaticResource EnumConverter},
-                                                 ConverterParameter={x:Static holo:ShiftTimesType.Time}}" />
+                                                 ConverterParameter={x:Static dm:ShiftTimesType.Time}}" />
                 <RadioButton Grid.Column="0"
                              Grid.Row="1"
                              GroupName="ShiftBy"
                              Content="{x:Static i18n:ShiftTimes.ShiftTimes_RB_Frames}"
                              IsChecked="{Binding ShiftType,
                                                  Converter={StaticResource EnumConverter},
-                                                 ConverterParameter={x:Static holo:ShiftTimesType.Frames}}"
+                                                 ConverterParameter={x:Static dm:ShiftTimesType.Frames}}"
                              IsEnabled="False" />
                 <TextBox Name="TimeBox"
                          Grid.Column="1"
@@ -56,7 +56,7 @@
                          Text="{Binding ShiftTime.UpdatableText}"
                          IsEnabled="{Binding ShiftType,
                                              Converter={StaticResource EnumConverter},
-                                             ConverterParameter={x:Static holo:ShiftTimesType.Time}}" />
+                                             ConverterParameter={x:Static dm:ShiftTimesType.Time}}" />
                 <TextBox Name="FrameBox"
                          Grid.Column="1"
                          Grid.Row="1"
@@ -65,21 +65,21 @@
                          Text="{Binding ShiftFrames}"
                          IsEnabled="{Binding ShiftType,
                                              Converter={StaticResource EnumConverter},
-                                             ConverterParameter={x:Static holo:ShiftTimesType.Time}}" />
+                                             ConverterParameter={x:Static dm:ShiftTimesType.Time}}" />
                 <RadioButton Grid.Column="2"
                              Grid.Row="0"
                              GroupName="ShiftDirection"
                              Content="{x:Static i18n:ShiftTimes.ShiftTimes_RB_Forward}"
                              IsChecked="{Binding ShiftDirection,
                                                  Converter={StaticResource EnumConverter},
-                                                 ConverterParameter={x:Static holo:ShiftTimesDirection.Forward}}" />
+                                                 ConverterParameter={x:Static dm:ShiftTimesDirection.Forward}}" />
                 <RadioButton Grid.Column="2"
                              Grid.Row="1"
                              GroupName="ShiftDirection"
                              Content="{x:Static i18n:ShiftTimes.ShiftTimes_RB_Backward}"
                              IsChecked="{Binding ShiftDirection,
                                                  Converter={StaticResource EnumConverter},
-                                                 ConverterParameter={x:Static holo:ShiftTimesDirection.Backward}}" />
+                                                 ConverterParameter={x:Static dm:ShiftTimesDirection.Backward}}" />
             </Grid>
         </HeaderedContentControl>
         <HeaderedContentControl Header="{x:Static i18n:ShiftTimes.ShiftTimes_Header_Affect}">
@@ -90,12 +90,12 @@
                              Content="{x:Static i18n:ShiftTimes.ShiftTimes_RB_AllEvents}"
                              IsChecked="{Binding ShiftFilter,
                                                  Converter={StaticResource EnumConverter},
-                                                 ConverterParameter={x:Static holo:ShiftTimesFilter.AllEvents}}" />
+                                                 ConverterParameter={x:Static dm:ShiftTimesFilter.AllEvents}}" />
                 <RadioButton GroupName="Affect"
                              Content="{x:Static i18n:ShiftTimes.ShiftTimes_RB_SelectedEvents}"
                              IsChecked="{Binding ShiftFilter,
                                                  Converter={StaticResource EnumConverter},
-                                                 ConverterParameter={x:Static holo:ShiftTimesFilter.SelectedEvents}}" />
+                                                 ConverterParameter={x:Static dm:ShiftTimesFilter.SelectedEvents}}" />
             </UniformGrid>
         </HeaderedContentControl>
         <HeaderedContentControl Header="{x:Static i18n:ShiftTimes.ShiftTimes_Header_Times}">
@@ -106,17 +106,17 @@
                              Content="{x:Static i18n:ShiftTimes.ShiftTimes_RB_Start}"
                              IsChecked="{Binding ShiftTarget,
                                                  Converter={StaticResource EnumConverter},
-                                                 ConverterParameter={x:Static holo:ShiftTimesTarget.Start}}" />
+                                                 ConverterParameter={x:Static dm:ShiftTimesTarget.Start}}" />
                 <RadioButton GroupName="Target"
                              Content="{x:Static i18n:ShiftTimes.ShiftTimes_RB_End}"
                              IsChecked="{Binding ShiftTarget,
                                                  Converter={StaticResource EnumConverter},
-                                                 ConverterParameter={x:Static holo:ShiftTimesTarget.End}}" />
+                                                 ConverterParameter={x:Static dm:ShiftTimesTarget.End}}" />
                 <RadioButton GroupName="Target"
                              Content="{x:Static i18n:ShiftTimes.ShiftTimes_RB_Both}"
                              IsChecked="{Binding ShiftTarget,
                                                  Converter={StaticResource EnumConverter},
-                                                 ConverterParameter={x:Static holo:ShiftTimesTarget.Both}}" />
+                                                 ConverterParameter={x:Static dm:ShiftTimesTarget.Both}}" />
             </UniformGrid>
         </HeaderedContentControl>
         <Button Margin="2 5 2 2"

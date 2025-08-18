@@ -30,7 +30,7 @@ internal static class LoggerHelper
         {
             Layout = layout,
             FileName = Path.Combine(
-                DirectoryService.StateHome,
+                Directories.StateHome,
                 "logs",
                 $"{DateTime.Now:yyyy-MM-dd}.log"
             ),

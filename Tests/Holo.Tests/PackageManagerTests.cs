@@ -491,8 +491,6 @@ public class PackageManagerTests
         var mockClient = new MockHttpMessageHandler();
         var dc = new PackageManager(fileSystem, new HttpClient(mockClient));
 
-        const string repoUrl = "https://coolrepo.com/pkgman.json";
-
         mockClient
             .When(HttpMethod.Get, dc.BaseRepositoryUrl)
             .Respond("application/json", Repository1Json);

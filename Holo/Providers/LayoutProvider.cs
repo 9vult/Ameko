@@ -13,9 +13,7 @@ namespace Holo.Providers;
 
 public class LayoutProvider : BindableBase, ILayoutProvider
 {
-    private static readonly Uri LayoutsRoot = new(
-        Path.Combine(DirectoryService.DataHome, "layouts")
-    );
+    private static readonly Uri LayoutsRoot = new(Path.Combine(Directories.DataHome, "layouts"));
     private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
     private readonly IFileSystem _fileSystem;
     private readonly IPersistence _persistence;

@@ -81,7 +81,8 @@
         </MenuItem>
         <MenuItem Header="{x:Static i18n:Resources.Menu_Video}">
             <MenuItem Header="{x:Static i18n:Resources.Menu_OpenVideo}"
-                      Icon="{icons:MaterialIconExt Kind=MovieOpenPlus}" />
+                      Icon="{icons:MaterialIconExt Kind=MovieOpenPlus}"
+                      Command="{Binding OpenVideoCommand}" />
             <Separator />
             <MenuItem Header="{x:Static i18n:Resources.Menu_JumpTo}"
                       Icon="{icons:MaterialIconExt Kind=BullseyeArrow}" />

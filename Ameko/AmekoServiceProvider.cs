@@ -46,7 +46,7 @@ public static class AmekoServiceProvider
         services.AddSingleton<KeybindService>();
 
         // --- Application Services ---
-        services.AddSingleton<DirectoryService>();
+        services.AddSingleton<Directories>();
         services.AddSingleton<ISolutionProvider, SolutionProvider>();
         services.AddSingleton<IGitService, GitService>();
         services.AddSingleton<ILayoutProvider, LayoutProvider>();

@@ -68,6 +68,43 @@ public partial class TabItemViewModel : ViewModelBase
     public ICommand ToggleCommentCommand { get; }
     public ICommand ExecuteScriptCommand { get; }
 
+    // Video
+    [KeybindTarget("ameko.video.play", KeybindContext.Video)]
+    public ICommand PlayPauseCommand { get; }
+
+    [KeybindTarget("ameko.video.stop", KeybindContext.Video)]
+    public ICommand StopPlayingCommand { get; }
+
+    [KeybindTarget("ameko.video.playSelection", KeybindContext.Video)]
+    public ICommand PlaySelectionCommand { get; }
+
+    [KeybindTarget("ameko.video.toggleAutoSeek", KeybindContext.Video)]
+    public ICommand ToggleAutoSeekCommand { get; }
+
+    [KeybindTarget("ameko.video.frame.next", KeybindContext.Video)]
+    public ICommand NextFrameCommand { get; }
+
+    [KeybindTarget("ameko.video.frame.previous", KeybindContext.Video)]
+    public ICommand PreviousFrameCommand { get; }
+
+    [KeybindTarget("ameko.video.boundary.next", KeybindContext.Video)]
+    public ICommand NextBoundaryCommand { get; }
+
+    [KeybindTarget("ameko.video.boundary.previous", KeybindContext.Video)]
+    public ICommand PreviousBoundaryCommand { get; }
+
+    [KeybindTarget("ameko.video.keyframe.next", KeybindContext.Video)]
+    public ICommand NextKeyframeCommand { get; }
+
+    [KeybindTarget("ameko.video.keyframe.previous", KeybindContext.Video)]
+    public ICommand PreviousKeyframeCommand { get; }
+
+    [KeybindTarget("ameko.video.zoom.in", "Ctrl+OemPlus", KeybindContext.Video)]
+    public ICommand ZoomInCommand { get; }
+
+    [KeybindTarget("ameko.video.zoom.out", "Ctrl+OemMinus", KeybindContext.Video)]
+    public ICommand ZoomOutCommand { get; }
+
     #endregion
 
     private readonly IScriptService _scriptService;
@@ -127,6 +164,20 @@ public partial class TabItemViewModel : ViewModelBase
         ToggleCommentCommand = CreateToggleCommentCommand();
 
         ExecuteScriptCommand = CreateExecuteScriptCommand();
+
+        // Video
+        PlayPauseCommand = CreatePlayPauseCommand();
+        StopPlayingCommand = CreateStopPlayingCommand();
+        PlaySelectionCommand = CreatePlaySelectionCommand();
+        ToggleAutoSeekCommand = CreateToggleAutoseekCommand();
+        NextFrameCommand = CreateNextFrameCommand();
+        PreviousFrameCommand = CreatePreviousFrameCommand();
+        NextBoundaryCommand = CreateNextBoundaryCommand();
+        PreviousBoundaryCommand = CreatePreviousBoundaryCommand();
+        NextKeyframeCommand = CreateNextKeyframeCommand();
+        PreviousKeyframeCommand = CreatePreviousKeyframeCommand();
+        ZoomInCommand = CreateZoomInCommand();
+        ZoomOutCommand = CreateZoomOutCommand();
         #endregion
 
         _workspace = workspace;

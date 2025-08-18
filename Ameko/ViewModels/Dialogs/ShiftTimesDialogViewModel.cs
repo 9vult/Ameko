@@ -3,6 +3,7 @@
 using System;
 using System.Linq;
 using System.Reactive;
+using Ameko.DataModels;
 using AssCS;
 using AssCS.History;
 using Holo;
