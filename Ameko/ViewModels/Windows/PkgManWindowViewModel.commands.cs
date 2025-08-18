@@ -9,7 +9,7 @@ using ReactiveUI;
 
 namespace Ameko.ViewModels.Windows;
 
-public partial class DepCtrlWindowViewModel
+public partial class PkgManWindowViewModel
 {
     /// <summary>
     /// Install a module
@@ -21,7 +21,7 @@ public partial class DepCtrlWindowViewModel
             if (SelectedStoreModule is null)
                 return;
 
-            var result = await DependencyControl.InstallModule(SelectedStoreModule);
+            var result = await PackageManager.InstallModule(SelectedStoreModule);
 
             await ShowMessageBox.Handle(_messageBoxService.GetBox(result));
 
@@ -45,7 +45,7 @@ public partial class DepCtrlWindowViewModel
             if (SelectedInstalledModule is null)
                 return;
 
-            var result = DependencyControl.UninstallModule(SelectedInstalledModule);
+            var result = PackageManager.UninstallModule(SelectedInstalledModule);
 
             await ShowMessageBox.Handle(_messageBoxService.GetBox(result));
 
@@ -70,9 +70,9 @@ public partial class DepCtrlWindowViewModel
             if (SelectedInstalledModule is null)
                 return;
 
-            var result = await DependencyControl.UpdateModule(SelectedInstalledModule);
+            var result = await PackageManager.UpdateModule(SelectedInstalledModule);
             _updateCandidates.Clear();
-            _updateCandidates.AddRange(DependencyControl.GetUpdateCandidates());
+            _updateCandidates.AddRange(PackageManager.GetUpdateCandidates());
 
             await ShowMessageBox.Handle(_messageBoxService.GetBox(result));
 
@@ -103,7 +103,7 @@ public partial class DepCtrlWindowViewModel
 
             foreach (var module in _updateCandidates)
             {
-                var result = await DependencyControl.UpdateModule(module);
+                var result = await PackageManager.UpdateModule(module);
                 // Pick a failure, any failure
                 if (
                     finalResult == InstallationResult.Success
@@ -115,7 +115,7 @@ public partial class DepCtrlWindowViewModel
             }
 
             _updateCandidates.Clear();
-            _updateCandidates.AddRange(DependencyControl.GetUpdateCandidates());
+            _updateCandidates.AddRange(PackageManager.GetUpdateCandidates());
 
             // Raise all the properties because updates can result in installations
             this.RaisePropertyChanged(nameof(InstallButtonEnabled));
@@ -136,11 +136,11 @@ public partial class DepCtrlWindowViewModel
     {
         return ReactiveCommand.CreateFromTask(async () =>
         {
-            await DependencyControl.SetUpBaseRepository();
-            await DependencyControl.AddAdditionalRepositories(_configuration.RepositoryUrls);
+            await PackageManager.SetUpBaseRepository();
+            await PackageManager.AddAdditionalRepositories(_configuration.RepositoryUrls);
 
             _updateCandidates.Clear();
-            _updateCandidates.AddRange(DependencyControl.GetUpdateCandidates());
+            _updateCandidates.AddRange(PackageManager.GetUpdateCandidates());
 
             // Clear out
             SelectedInstalledModule = null;
@@ -154,8 +154,8 @@ public partial class DepCtrlWindowViewModel
 
             await ShowMessageBox.Handle(
                 _messageBoxService.GetInfoBox(
-                    I18N.DepCtrl.DepCtrlWindow_Title,
-                    I18N.DepCtrl.DepCtrl_MsgBox_Refreshed
+                    I18N.PkgMan.PkgManWindow_Title,
+                    I18N.PkgMan.PkgMan_MsgBox_Refreshed
                 )
             );
         });
@@ -174,7 +174,7 @@ public partial class DepCtrlWindowViewModel
 
             Logger.Info($"Adding repository {input}");
 
-            var result = await DependencyControl.AddRepository(input);
+            var result = await PackageManager.AddRepository(input);
 
             switch (result)
             {
@@ -186,8 +186,8 @@ public partial class DepCtrlWindowViewModel
                     Logger.Error($"Could not add repository because it was already installed.");
                     await ShowMessageBox.Handle(
                         _messageBoxService.GetInfoBox(
-                            I18N.DepCtrl.DepCtrlWindow_Title,
-                            I18N.DepCtrl.DepCtrl_Result_Repository_AlreadyInstalled
+                            I18N.PkgMan.PkgManWindow_Title,
+                            I18N.PkgMan.PkgMan_Result_Repository_AlreadyInstalled
                         )
                     );
                     break;
@@ -216,7 +216,7 @@ public partial class DepCtrlWindowViewModel
 
             Logger.Info($"Removing repository {SelectedRepository.Name}");
 
-            var result = DependencyControl.RemoveRepository(SelectedRepository.Name);
+            var result = PackageManager.RemoveRepository(SelectedRepository.Name);
 
             switch (result)
             {
@@ -230,8 +230,8 @@ public partial class DepCtrlWindowViewModel
                     Logger.Error($"Could not remove repository because it was not installed");
                     await ShowMessageBox.Handle(
                         _messageBoxService.GetInfoBox(
-                            I18N.DepCtrl.DepCtrlWindow_Title,
-                            I18N.DepCtrl.DepCtrl_Result_Repository_NotInstalled
+                            I18N.PkgMan.PkgManWindow_Title,
+                            I18N.PkgMan.PkgMan_Result_Repository_NotInstalled
                         )
                     );
                     break;
@@ -243,15 +243,15 @@ public partial class DepCtrlWindowViewModel
             try
             {
                 _configuration.RemoveRepositoryUrl(SelectedRepository.Url);
-                await DependencyControl.SetUpBaseRepository();
-                await DependencyControl.AddAdditionalRepositories(_configuration.RepositoryUrls);
+                await PackageManager.SetUpBaseRepository();
+                await PackageManager.AddAdditionalRepositories(_configuration.RepositoryUrls);
                 await ShowMessageBox.Handle(_messageBoxService.GetBox(InstallationResult.Success));
             }
             catch (Exception ex)
             {
                 Logger.Error(ex, "Removing repository failed");
                 await ShowMessageBox.Handle(
-                    _messageBoxService.GetInfoBox(I18N.DepCtrl.DepCtrlWindow_Title, ex.Message)
+                    _messageBoxService.GetInfoBox(I18N.PkgMan.PkgManWindow_Title, ex.Message)
                 );
             }
             // Clean up

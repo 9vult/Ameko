@@ -4,6 +4,7 @@ using System;
 using System.IO.Abstractions;
 using Ameko.Services;
 using Ameko.Utilities;
+using Ameko.ViewModels.Controls;
 using Ameko.ViewModels.Windows;
 using Holo.Configuration;
 using Holo.Configuration.Keybinds;
@@ -11,6 +12,7 @@ using Holo.IO;
 using Holo.Providers;
 using Holo.Scripting;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using NLog;
 
 namespace Ameko;
@@ -34,6 +36,9 @@ public static class AmekoServiceProvider
         services.AddSingleton<IConfiguration, Configuration>(p =>
             Configuration.Parse(p.GetRequiredService<IFileSystem>())
         );
+        services.AddSingleton<IPersistence, Persistence>(p =>
+            Persistence.Parse(p.GetRequiredService<IFileSystem>())
+        );
         services.AddSingleton<IGlobals, Globals>(p =>
             Globals.Parse(p.GetRequiredService<IFileSystem>())
         );
@@ -41,9 +46,10 @@ public static class AmekoServiceProvider
         services.AddSingleton<KeybindService>();
 
         // --- Application Services ---
-        // Core business logic and application-specific operations
         services.AddSingleton<Directories>();
         services.AddSingleton<ISolutionProvider, SolutionProvider>();
+        services.AddSingleton<IGitService, GitService>();
+        services.AddSingleton<ILayoutProvider, LayoutProvider>();
 
         // --- Presentation ---
         services.AddSingleton<CultureService>();
@@ -57,18 +63,21 @@ public static class AmekoServiceProvider
 
         // --- ViewModels ---
         services.AddSingleton<MainWindowViewModel>();
+        services.AddSingleton<GitToolboxViewModel>();
         services.AddTransient<LogWindowViewModel>();
-        services.AddTransient<DepCtrlWindowViewModel>();
+        services.AddTransient<PkgManWindowViewModel>();
 
         // --- Scripting ---
-        services.AddSingleton<ScriptServiceLocator>();
         services.AddSingleton<IScriptService, ScriptService>();
-        services.AddSingleton<IDependencyControl, DependencyControl>();
+        services.AddSingleton<IPackageManager, PackageManager>();
+        services.AddSingleton<IScriptConfigurationService, ScriptConfigurationService>();
+        services.AddSingleton<ScriptServiceLocator>();
 
         Provider = services.BuildServiceProvider();
 
-        // Load the logger service immediately
+        // Load the logger and locator services immediately
         _ = Provider.GetRequiredService<ILogProvider>();
+        _ = Provider.GetRequiredService<ScriptServiceLocator>();
 
         Logger.Info("Ameko and Holo are ready to go!");
 

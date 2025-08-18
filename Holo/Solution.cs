@@ -439,17 +439,6 @@ public class Solution : BindableBase
     /// <summary>
     /// Parse a saved solution file
     /// </summary>
-    /// <param name="filePath">Path to the solution file</param>
-    /// <returns></returns>
-    public static Solution Parse(Uri filePath)
-    {
-        using var reader = new StreamReader(filePath.LocalPath);
-        return Parse(new FileSystem(), filePath);
-    }
-
-    /// <summary>
-    /// Parse a saved solution file
-    /// </summary>
     /// <param name="fileSystem">FileSystem to use</param>
     /// <param name="savePath">Path to the solution file</param>
     /// <returns><see cref="Solution"/> object</returns>
@@ -521,6 +510,71 @@ public class Solution : BindableBase
             Logger.Error(ex);
             return new Solution(fileSystem);
         }
+    }
+
+    /// <summary>
+    /// Load a directory as a solution
+    /// </summary>
+    /// <param name="fileSystem">Filesystem to use</param>
+    /// <param name="dirPath">Path to the directory</param>
+    /// <returns>Populated solution</returns>
+    public static Solution LoadDirectory(IFileSystem fileSystem, Uri dirPath)
+    {
+        var root = dirPath.LocalPath;
+        Logger.Info($"Generating solution from directory {root}...");
+        var sln = new Solution(fileSystem, isEmpty: true);
+        if (!fileSystem.Directory.Exists(Path.GetDirectoryName(root)))
+        {
+            return new Solution(fileSystem, isEmpty: false);
+        }
+
+        var fileCount = 0;
+        var dirCount = 0;
+        var stack = new Stack<(string, ObservableCollection<SolutionItem>)>();
+        stack.Push((root, sln._referencedItems));
+
+        while (stack.Count > 0)
+        {
+            var (currentPath, currentCollection) = stack.Pop();
+
+            // Subdirectories
+            foreach (var subDirectory in fileSystem.Directory.EnumerateDirectories(currentPath))
+            {
+                var dirName = fileSystem.Path.GetFileName(subDirectory);
+
+                // Skip .directories
+                if (dirName.StartsWith('.'))
+                {
+                    Logger.Trace($"Skipping .directory {subDirectory}");
+                    continue;
+                }
+                // Skip directories that don't have subdirectories or ass files
+                if (
+                    fileSystem.Directory.GetDirectories(subDirectory).Length == 0
+                    && fileSystem.Directory.GetFiles(subDirectory, "*.ass").Length == 0
+                )
+                {
+                    Logger.Trace($"Skipping {subDirectory} as it doesn't contain relevant files");
+                    continue;
+                }
+
+                var dirItem = new DirectoryItem { Id = sln.NextId, Name = dirName };
+                currentCollection.Add(dirItem);
+
+                stack.Push((subDirectory, dirItem.Children));
+                dirCount++;
+            }
+
+            // Files
+            foreach (var file in fileSystem.Directory.EnumerateFiles(currentPath, "*.ass"))
+            {
+                var docItem = new DocumentItem { Id = sln.NextId, Uri = new Uri(file) };
+                currentCollection.Add(docItem);
+                fileCount++;
+            }
+        }
+        Logger.Info($"Done! Solution contains {dirCount} directories and {fileCount} files");
+        return sln.ReferencedItems.Count > 0 ? sln : new Solution(fileSystem, isEmpty: false);
     }
 
     /// <summary>

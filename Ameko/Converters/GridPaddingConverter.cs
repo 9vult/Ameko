@@ -2,18 +2,24 @@
 
 using System;
 using System.Globalization;
+using Avalonia;
 using Avalonia.Data.Converters;
-using Holo.Scripting.Models;
 
 namespace Ameko.Converters;
 
-public class DepCtrlDependencyConverter : IValueConverter
+/// <summary>
+/// Converter for generating padding in the events grid
+/// </summary>
+public class GridPaddingConverter : IValueConverter
 {
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        return value is Module module
-            ? string.Join(Environment.NewLine, module.Dependencies)
-            : I18N.DepCtrl.DepCtrl_Info_NoSelection;
+        if (value is not uint verticalPadding)
+            return false;
+
+        const int horizontalPadding = 4;
+
+        return new Thickness(horizontalPadding, verticalPadding);
     }
 
     public object? ConvertBack(

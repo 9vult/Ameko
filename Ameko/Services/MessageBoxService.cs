@@ -47,17 +47,17 @@ public class MessageBoxService : IMessageBoxService
     public IMsBox<ButtonResult> GetBox(InstallationResult result)
     {
         return MessageBoxManager.GetMessageBoxStandard(
-            I18N.DepCtrl.DepCtrlWindow_Title,
+            I18N.PkgMan.PkgManWindow_Title,
             result switch
             {
-                InstallationResult.Success => I18N.DepCtrl.DepCtrl_Result_Success,
-                InstallationResult.Failure => I18N.DepCtrl.DepCtrl_Result_Failure,
-                InstallationResult.DependencyNotFound => I18N.DepCtrl.DepCtrl_Result_DepNotFound,
-                InstallationResult.AlreadyInstalled => I18N.DepCtrl.DepCtrl_Result_AlreadyInstalled,
-                InstallationResult.FilesystemFailure => I18N.DepCtrl.DepCtrl_Result_FS_Failure,
-                InstallationResult.NotInstalled => I18N.DepCtrl.DepCtrl_Result_NotInstalled,
-                InstallationResult.IsRequiredDependency =>
-                    I18N.DepCtrl.DepCtrl_Result_IsRequiredDep,
+                InstallationResult.Success => I18N.PkgMan.PkgMan_Result_Success,
+                InstallationResult.Failure => I18N.PkgMan.PkgMan_Result_Failure,
+                InstallationResult.DependencyNotFound => I18N.PkgMan.PkgMan_Result_DepNotFound,
+                InstallationResult.AlreadyInstalled => I18N.PkgMan.PkgMan_Result_AlreadyInstalled,
+                InstallationResult.FilesystemFailure => I18N.PkgMan.PkgMan_Result_FS_Failure,
+                InstallationResult.NotInstalled => I18N.PkgMan.PkgMan_Result_NotInstalled,
+                InstallationResult.InvalidName => I18N.PkgMan.PkgMan_Result_InvalidName,
+                InstallationResult.IsRequiredDependency => I18N.PkgMan.PkgMan_Result_IsRequiredDep,
                 _ => throw new ArgumentOutOfRangeException(nameof(result)),
             },
             ButtonEnum.Ok,

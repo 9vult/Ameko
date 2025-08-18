@@ -45,7 +45,7 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         return ReactiveCommand.CreateFromTask(async () =>
         {
-            Log.Info("Preparing to open subtitles");
+            Logger.Info("Preparing to open subtitles");
             var uris = await OpenSubtitle.Handle(Unit.Default);
 
             Workspace? latest = null;
@@ -61,7 +61,7 @@ public partial class MainWindowViewModel : ViewModelBase
 
                 latest = SolutionProvider.Current.AddWorkspace(doc, uri);
                 latest.IsSaved = true;
-                Log.Info($"Opened subtitle file {latest.Title}");
+                Logger.Info($"Opened subtitle file {latest.Title}");
             }
 
             if (latest is not null)
@@ -127,12 +127,12 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         return ReactiveCommand.CreateFromTask(async () =>
         {
-            Log.Info("Preparing to open solution file");
+            Logger.Info("Preparing to open solution file");
             var uri = await OpenSolution.Handle(Unit.Default);
 
             if (uri is null)
             {
-                Log.Info("Opening solution file aborted");
+                Logger.Info("Opening solution file aborted");
                 return;
             }
 
@@ -143,19 +143,53 @@ public partial class MainWindowViewModel : ViewModelBase
 
             if (SolutionProvider.Current.LoadedWorkspaces.Count > 0)
             {
-                Log.Info(
+                Logger.Info(
                     $"Opening solution file aborted - {SolutionProvider.Current.LoadedWorkspaces.Count} workspaces remain open"
                 );
                 return;
             }
 
-            SolutionProvider.Current = Solution.Parse(uri);
-            Log.Info("Loaded solution file");
+            SolutionProvider.Current = Solution.Parse(_fileSystem, uri);
+            Logger.Info("Loaded solution file");
         });
     }
 
     /// <summary>
-    /// Display the Open Solution File dialog
+    /// Display the Open Folder as Solution File dialog
+    /// </summary>
+    private ReactiveCommand<Unit, Unit> CreateOpenFolderAsSolutionCommand()
+    {
+        return ReactiveCommand.CreateFromTask(async () =>
+        {
+            Logger.Info("Preparing to open a directory as a solution");
+            var uri = await OpenFolderAsSolution.Handle(Unit.Default);
+
+            if (uri is null)
+            {
+                Logger.Info("Opening solution directory aborted");
+                return;
+            }
+
+            foreach (var wsp in SolutionProvider.Current.LoadedWorkspaces.ToArray())
+            {
+                await _ioService.SafeCloseWorkspace(wsp, SaveSubtitleAs, false);
+            }
+
+            if (SolutionProvider.Current.LoadedWorkspaces.Count > 0)
+            {
+                Logger.Info(
+                    $"Opening solution directory aborted - {SolutionProvider.Current.LoadedWorkspaces.Count} workspaces remain open"
+                );
+                return;
+            }
+
+            SolutionProvider.Current = Solution.LoadDirectory(_fileSystem, uri);
+            Logger.Info("Loaded solution directory");
+        });
+    }
+
+    /// <summary>
+    /// Display the Save Solution File dialog
     /// </summary>
     private ReactiveCommand<Unit, Unit> CreateSaveSolutionCommand()
     {
@@ -168,19 +202,22 @@ public partial class MainWindowViewModel : ViewModelBase
     /// <summary>
     /// Close the currently active tab
     /// </summary>
-    private ReactiveCommand<Unit, Unit> CreateCloseTabCommand()
+    private ReactiveCommand<int, Unit> CreateCloseTabCommand()
     {
-        return ReactiveCommand.CreateFromTask(async () =>
-        {
-            if (SolutionProvider.Current.IsWorkspaceLoaded)
+        return ReactiveCommand.CreateFromTask(
+            async (int id) =>
             {
-                Log.Trace($"Closing tab {SolutionProvider.Current.WorkingSpace.Title}");
-                await _ioService.SafeCloseWorkspace(
-                    SolutionProvider.Current.WorkingSpace,
-                    SaveSubtitleAs
-                );
+                if (SolutionProvider.Current.IsWorkspaceLoaded)
+                {
+                    var wsp = SolutionProvider.Current.GetWorkspace(id);
+                    if (wsp is null)
+                        return;
+
+                    Logger.Trace($"Closing tab {wsp.Title}");
+                    await _ioService.SafeCloseWorkspace(wsp, SaveSubtitleAs);
+                }
             }
-        });
+        );
     }
 
     /// <summary>
@@ -196,7 +233,7 @@ public partial class MainWindowViewModel : ViewModelBase
             )
                 return;
 
-            Log.Info("Shutting down...");
+            Logger.Info("Shutting down...");
             desktop.Shutdown();
         });
     }
@@ -241,7 +278,7 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         return ReactiveCommand.CreateFromTask(async () =>
         {
-            Log.Info("Preparing to open video");
+            Logger.Info("Preparing to open video");
             var uri = await OpenVideo.Handle(Unit.Default);
 
             if (uri is null)
@@ -285,14 +322,36 @@ public partial class MainWindowViewModel : ViewModelBase
     }
 
     /// <summary>
-    /// Display the <see cref="DepCtrlWindow"/>
+    /// Display the <see cref="PkgManWindow"/>
     /// </summary>
-    private ReactiveCommand<Unit, Unit> CreateShowDependencyControlCommand()
+    private ReactiveCommand<Unit, Unit> CreateShowPackageManagerCommand()
     {
         return ReactiveCommand.CreateFromTask(async () =>
         {
-            var vm = _serviceProvider.GetRequiredService<DepCtrlWindowViewModel>();
-            await ShowDependencyControl.Handle(vm);
+            var vm = _serviceProvider.GetRequiredService<PkgManWindowViewModel>();
+            await ShowPackageManager.Handle(vm);
+        });
+    }
+
+    public ReactiveCommand<string, Unit> CreateSelectLayoutCommand()
+    {
+        return ReactiveCommand.Create(
+            (string name) =>
+            {
+                Logger.Trace($"Switching to layout {name}");
+                var layout = LayoutProvider.Layouts.FirstOrDefault(l => l.Name == name);
+                if (layout is null)
+                    return;
+                LayoutProvider.Current = layout;
+            }
+        );
+    }
+
+    public ReactiveCommand<Unit, Unit> CreateRefreshLayoutsCommand()
+    {
+        return ReactiveCommand.Create(() =>
+        {
+            LayoutProvider.Reload();
         });
     }
 
@@ -328,7 +387,9 @@ public partial class MainWindowViewModel : ViewModelBase
         return ReactiveCommand.CreateFromTask(
             async (int id) =>
             {
-                Log.Trace($"Displaying message to confirm removal of document {id} from solution");
+                Logger.Trace(
+                    $"Displaying message to confirm removal of document {id} from solution"
+                );
 
                 var box = MessageBoxManager.GetMessageBoxStandard(
                     title: I18N.Other.MsgBox_RemoveDocument_Title,
@@ -353,7 +414,9 @@ public partial class MainWindowViewModel : ViewModelBase
         return ReactiveCommand.CreateFromTask(
             async (int id) =>
             {
-                Log.Trace($"Displaying message to confirm removal of directory {id} from solution");
+                Logger.Trace(
+                    $"Displaying message to confirm removal of directory {id} from solution"
+                );
 
                 var box = MessageBoxManager.GetMessageBoxStandard(
                     title: I18N.Other.MsgBox_RemoveDirectory_Title,
@@ -381,7 +444,9 @@ public partial class MainWindowViewModel : ViewModelBase
                 if (SolutionProvider.Current.FindItemById(id) is not DirectoryItem dirItem)
                     return;
 
-                Log.Trace($"Displaying input box for rename of directory {id} ({dirItem.Title})");
+                Logger.Trace(
+                    $"Displaying input box for rename of directory {id} ({dirItem.Title})"
+                );
 
                 var box = MessageBoxManager.GetMessageBoxStandard(
                     new MessageBoxStandardParams
@@ -419,7 +484,7 @@ public partial class MainWindowViewModel : ViewModelBase
                 if (SolutionProvider.Current.FindItemById(id) is not DocumentItem docItem)
                     return;
 
-                Log.Trace($"Displaying input box for rename of document {id} ({docItem.Title})");
+                Logger.Trace($"Displaying input box for rename of document {id} ({docItem.Title})");
 
                 var box = MessageBoxManager.GetMessageBoxStandard(
                     new MessageBoxStandardParams

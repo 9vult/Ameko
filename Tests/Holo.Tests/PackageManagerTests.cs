@@ -11,7 +11,7 @@ using Shouldly;
 
 namespace Holo.Tests;
 
-public class DependencyControlTests
+public class PackageManagerTests
 {
     [Fact]
     public void IsModuleInstalled_True()
@@ -19,11 +19,11 @@ public class DependencyControlTests
         var fileSystem = new MockFileSystem(
             new Dictionary<string, MockFileData>
             {
-                { DependencyControl.ModulePath(TestScriptModule), new MockFileData(string.Empty) },
+                { PackageManager.ModulePath(TestScriptModule), new MockFileData(string.Empty) },
             }
         );
 
-        var dc = new DependencyControl(fileSystem, new HttpClient());
+        var dc = new PackageManager(fileSystem, new HttpClient());
 
         dc.IsModuleInstalled(TestScriptModule).ShouldBeTrue();
     }
@@ -33,44 +33,76 @@ public class DependencyControlTests
     {
         var fileSystem = new MockFileSystem();
 
-        var dc = new DependencyControl(fileSystem, new HttpClient());
+        var dc = new PackageManager(fileSystem, new HttpClient());
 
         dc.IsModuleInstalled(TestScriptModule).ShouldBeFalse();
     }
 
     [Fact]
+    public void ValidateQualifiedName_Simple()
+    {
+        PackageManager.ValidateQualifiedName("my.cool.script").ShouldBeTrue();
+    }
+
+    [Fact]
+    public void ValidateQualifiedName_Complex()
+    {
+        PackageManager.ValidateQualifiedName("joe19.co_ol.script").ShouldBeTrue();
+    }
+
+    [Fact]
+    public void ValidateQualifiedName_Invalid()
+    {
+        PackageManager.ValidateQualifiedName("joe19.co!ol.script").ShouldBeFalse();
+    }
+
+    [Fact]
     public void ModulePath_Script()
     {
-        var path = DependencyControl.ModulePath(TestScriptModule);
+        var path = PackageManager.ModulePath(TestScriptModule);
         path.ShouldEndWith($"{TestScriptModule.QualifiedName}.cs");
     }
 
     [Fact]
     public void ModulePath_Library()
     {
-        var path = DependencyControl.ModulePath(TestLibraryModule);
+        var path = PackageManager.ModulePath(TestLibraryModule);
         path.ShouldEndWith($"{TestLibraryModule.QualifiedName}.lib.cs");
+    }
+
+    [Fact]
+    public void ModulePath_Scriptlet()
+    {
+        var path = PackageManager.ModulePath(TestScriptletModule);
+        path.ShouldEndWith($"{TestLibraryModule.QualifiedName}.js");
     }
 
     [Fact]
     public void SidecarPath_Script()
     {
-        var path = DependencyControl.SidecarPath(TestScriptModule);
+        var path = PackageManager.SidecarPath(TestScriptModule);
         path.ShouldEndWith($"{TestScriptModule.QualifiedName}.json");
     }
 
     [Fact]
     public void SidecarPath_Library()
     {
-        var path = DependencyControl.SidecarPath(TestLibraryModule);
+        var path = PackageManager.SidecarPath(TestLibraryModule);
         path.ShouldEndWith($"{TestLibraryModule.QualifiedName}.lib.json");
+    }
+
+    [Fact]
+    public void SidecarPath_Scriptlet()
+    {
+        var path = PackageManager.SidecarPath(TestScriptletModule);
+        path.ShouldEndWith($"{TestLibraryModule.QualifiedName}.json");
     }
 
     [Fact]
     public async Task SetUpBaseRepository_Handles_404()
     {
         var mockClient = new MockHttpMessageHandler();
-        var dc = new DependencyControl(new FileSystem(), new HttpClient(mockClient));
+        var dc = new PackageManager(new FileSystem(), new HttpClient(mockClient));
 
         mockClient.When(HttpMethod.Get, dc.BaseRepositoryUrl).Respond(HttpStatusCode.NotFound);
 
@@ -84,7 +116,7 @@ public class DependencyControlTests
     public async Task SetUpBaseRepository()
     {
         var mockClient = new MockHttpMessageHandler();
-        var dc = new DependencyControl(new FileSystem(), new HttpClient(mockClient));
+        var dc = new PackageManager(new FileSystem(), new HttpClient(mockClient));
 
         mockClient
             .When(HttpMethod.Get, dc.BaseRepositoryUrl)
@@ -100,7 +132,7 @@ public class DependencyControlTests
     public async Task SetUpBaseRepository_NoInternetConnection()
     {
         var mockClient = new MockHttpMessageHandler();
-        var dc = new DependencyControl(new FileSystem(), new HttpClient(mockClient));
+        var dc = new PackageManager(new FileSystem(), new HttpClient(mockClient));
 
         mockClient
             .When(HttpMethod.Get, dc.BaseRepositoryUrl)
@@ -117,7 +149,7 @@ public class DependencyControlTests
     {
         var fileSystem = new MockFileSystem();
         var mockClient = new MockHttpMessageHandler();
-        var dc = new DependencyControl(fileSystem, new HttpClient(mockClient));
+        var dc = new PackageManager(fileSystem, new HttpClient(mockClient));
 
         mockClient
             .When(HttpMethod.Get, dc.BaseRepositoryUrl)
@@ -141,13 +173,13 @@ public class DependencyControlTests
         var fileSystem = new MockFileSystem(
             new Dictionary<string, MockFileData>
             {
-                { DependencyControl.ModulePath(Script1), new MockFileData(string.Empty) },
-                { DependencyControl.SidecarPath(Script1), new MockFileData(string.Empty) },
+                { PackageManager.ModulePath(Script1), new MockFileData(string.Empty) },
+                { PackageManager.SidecarPath(Script1), new MockFileData(string.Empty) },
             }
         );
 
         var mockClient = new MockHttpMessageHandler();
-        var dc = new DependencyControl(fileSystem, new HttpClient(mockClient));
+        var dc = new PackageManager(fileSystem, new HttpClient(mockClient));
 
         mockClient
             .When(HttpMethod.Get, dc.BaseRepositoryUrl)
@@ -167,7 +199,7 @@ public class DependencyControlTests
     {
         var fileSystem = new MockFileSystem();
         var mockClient = new MockHttpMessageHandler();
-        var dc = new DependencyControl(fileSystem, new HttpClient(mockClient));
+        var dc = new PackageManager(fileSystem, new HttpClient(mockClient));
 
         mockClient
             .When(HttpMethod.Get, dc.BaseRepositoryUrl)
@@ -183,7 +215,7 @@ public class DependencyControlTests
         );
 
         result.ShouldBe(InstallationResult.Success);
-        fileSystem.FileExists(DependencyControl.ModulePath(Script1)).ShouldBeTrue();
+        fileSystem.FileExists(PackageManager.ModulePath(Script1)).ShouldBeTrue();
     }
 
     [Fact]
@@ -191,7 +223,7 @@ public class DependencyControlTests
     {
         var fileSystem = new MockFileSystem();
         var mockClient = new MockHttpMessageHandler();
-        var dc = new DependencyControl(fileSystem, new HttpClient(mockClient));
+        var dc = new PackageManager(fileSystem, new HttpClient(mockClient));
 
         mockClient
             .When(HttpMethod.Get, dc.BaseRepositoryUrl)
@@ -212,13 +244,13 @@ public class DependencyControlTests
         var fileSystem = new MockFileSystem(
             new Dictionary<string, MockFileData>
             {
-                { DependencyControl.ModulePath(Script1), new MockFileData(string.Empty) },
-                { DependencyControl.SidecarPath(Script1), new MockFileData(string.Empty) },
+                { PackageManager.ModulePath(Script1), new MockFileData(string.Empty) },
+                { PackageManager.SidecarPath(Script1), new MockFileData(string.Empty) },
             }
         );
 
         var mockClient = new MockHttpMessageHandler();
-        var dc = new DependencyControl(fileSystem, new HttpClient(mockClient));
+        var dc = new PackageManager(fileSystem, new HttpClient(mockClient));
 
         mockClient
             .When(HttpMethod.Get, dc.BaseRepositoryUrl)
@@ -231,7 +263,7 @@ public class DependencyControlTests
         );
 
         result.ShouldBe(InstallationResult.Success);
-        fileSystem.FileExists(DependencyControl.ModulePath(Script1)).ShouldBeFalse();
+        fileSystem.FileExists(PackageManager.ModulePath(Script1)).ShouldBeFalse();
     }
 
     [Fact]
@@ -240,15 +272,15 @@ public class DependencyControlTests
         var fileSystem = new MockFileSystem(
             new Dictionary<string, MockFileData>
             {
-                { DependencyControl.ModulePath(Script2), new MockFileData(string.Empty) },
-                { DependencyControl.SidecarPath(Script2), new MockFileData(string.Empty) },
-                { DependencyControl.ModulePath(Lib1), new MockFileData(string.Empty) },
-                { DependencyControl.SidecarPath(Lib1), new MockFileData(string.Empty) },
+                { PackageManager.ModulePath(Script2), new MockFileData(string.Empty) },
+                { PackageManager.SidecarPath(Script2), new MockFileData(string.Empty) },
+                { PackageManager.ModulePath(Lib1), new MockFileData(string.Empty) },
+                { PackageManager.SidecarPath(Lib1), new MockFileData(string.Empty) },
             }
         );
 
         var mockClient = new MockHttpMessageHandler();
-        var dc = new DependencyControl(fileSystem, new HttpClient(mockClient));
+        var dc = new PackageManager(fileSystem, new HttpClient(mockClient));
 
         mockClient
             .When(HttpMethod.Get, dc.BaseRepositoryUrl)
@@ -261,8 +293,8 @@ public class DependencyControlTests
         );
 
         result.ShouldBe(InstallationResult.IsRequiredDependency);
-        fileSystem.FileExists(DependencyControl.ModulePath(Lib1)).ShouldBeTrue();
-        fileSystem.FileExists(DependencyControl.SidecarPath(Lib1)).ShouldBeTrue();
+        fileSystem.FileExists(PackageManager.ModulePath(Lib1)).ShouldBeTrue();
+        fileSystem.FileExists(PackageManager.SidecarPath(Lib1)).ShouldBeTrue();
     }
 
     [Fact]
@@ -271,15 +303,15 @@ public class DependencyControlTests
         var fileSystem = new MockFileSystem(
             new Dictionary<string, MockFileData>
             {
-                { DependencyControl.ModulePath(Script2), new MockFileData(string.Empty) },
-                { DependencyControl.SidecarPath(Script2), new MockFileData(string.Empty) },
-                { DependencyControl.ModulePath(Lib1), new MockFileData(string.Empty) },
-                { DependencyControl.SidecarPath(Lib1), new MockFileData(string.Empty) },
+                { PackageManager.ModulePath(Script2), new MockFileData(string.Empty) },
+                { PackageManager.SidecarPath(Script2), new MockFileData(string.Empty) },
+                { PackageManager.ModulePath(Lib1), new MockFileData(string.Empty) },
+                { PackageManager.SidecarPath(Lib1), new MockFileData(string.Empty) },
             }
         );
 
         var mockClient = new MockHttpMessageHandler();
-        var dc = new DependencyControl(fileSystem, new HttpClient(mockClient));
+        var dc = new PackageManager(fileSystem, new HttpClient(mockClient));
 
         mockClient
             .When(HttpMethod.Get, dc.BaseRepositoryUrl)
@@ -293,8 +325,8 @@ public class DependencyControlTests
         );
 
         result.ShouldBe(InstallationResult.Success);
-        fileSystem.FileExists(DependencyControl.ModulePath(Lib1)).ShouldBeFalse();
-        fileSystem.FileExists(DependencyControl.SidecarPath(Lib1)).ShouldBeFalse();
+        fileSystem.FileExists(PackageManager.ModulePath(Lib1)).ShouldBeFalse();
+        fileSystem.FileExists(PackageManager.SidecarPath(Lib1)).ShouldBeFalse();
     }
 
     [Fact]
@@ -303,13 +335,13 @@ public class DependencyControlTests
         var fileSystem = new MockFileSystem(
             new Dictionary<string, MockFileData>
             {
-                { DependencyControl.ModulePath(Script1), new MockFileData(string.Empty) },
-                { DependencyControl.SidecarPath(Script1), new MockFileData(ScriptExample1Json) },
+                { PackageManager.ModulePath(Script1), new MockFileData(string.Empty) },
+                { PackageManager.SidecarPath(Script1), new MockFileData(ScriptExample1Json) },
             }
         );
 
         var mockClient = new MockHttpMessageHandler();
-        var dc = new DependencyControl(fileSystem, new HttpClient(mockClient));
+        var dc = new PackageManager(fileSystem, new HttpClient(mockClient));
 
         mockClient
             .When(HttpMethod.Get, dc.BaseRepositoryUrl)
@@ -327,13 +359,13 @@ public class DependencyControlTests
         var fileSystem = new MockFileSystem(
             new Dictionary<string, MockFileData>
             {
-                { DependencyControl.ModulePath(Script1), new MockFileData(string.Empty) },
-                { DependencyControl.SidecarPath(Script1), new MockFileData(ScriptExample1Json) },
+                { PackageManager.ModulePath(Script1), new MockFileData(string.Empty) },
+                { PackageManager.SidecarPath(Script1), new MockFileData(ScriptExample1Json) },
             }
         );
 
         var mockClient = new MockHttpMessageHandler();
-        var dc = new DependencyControl(fileSystem, new HttpClient(mockClient));
+        var dc = new PackageManager(fileSystem, new HttpClient(mockClient));
 
         mockClient
             .When(HttpMethod.Get, dc.BaseRepositoryUrl)
@@ -351,13 +383,13 @@ public class DependencyControlTests
         var fileSystem = new MockFileSystem(
             new Dictionary<string, MockFileData>
             {
-                { DependencyControl.ModulePath(Script1), new MockFileData(string.Empty) },
-                { DependencyControl.SidecarPath(Script1), new MockFileData(ScriptExample1Json) },
+                { PackageManager.ModulePath(Script1), new MockFileData(string.Empty) },
+                { PackageManager.SidecarPath(Script1), new MockFileData(ScriptExample1Json) },
             }
         );
 
         var mockClient = new MockHttpMessageHandler();
-        var dc = new DependencyControl(fileSystem, new HttpClient(mockClient));
+        var dc = new PackageManager(fileSystem, new HttpClient(mockClient));
 
         mockClient
             .When(HttpMethod.Get, dc.BaseRepositoryUrl)
@@ -375,13 +407,13 @@ public class DependencyControlTests
         var fileSystem = new MockFileSystem(
             new Dictionary<string, MockFileData>
             {
-                { DependencyControl.ModulePath(Script1), new MockFileData(string.Empty) },
-                { DependencyControl.SidecarPath(Script1), new MockFileData(ScriptExample1Json) },
+                { PackageManager.ModulePath(Script1), new MockFileData(string.Empty) },
+                { PackageManager.SidecarPath(Script1), new MockFileData(ScriptExample1Json) },
             }
         );
 
         var mockClient = new MockHttpMessageHandler();
-        var dc = new DependencyControl(fileSystem, new HttpClient(mockClient));
+        var dc = new PackageManager(fileSystem, new HttpClient(mockClient));
 
         mockClient
             .When(HttpMethod.Get, dc.BaseRepositoryUrl)
@@ -398,9 +430,9 @@ public class DependencyControlTests
     {
         var fileSystem = new MockFileSystem();
         var mockClient = new MockHttpMessageHandler();
-        var dc = new DependencyControl(fileSystem, new HttpClient(mockClient));
+        var dc = new PackageManager(fileSystem, new HttpClient(mockClient));
 
-        const string repoUrl = "https://coolrepo.com/depctrl.json";
+        const string repoUrl = "https://coolrepo.com/pkgman.json";
 
         mockClient
             .When(HttpMethod.Get, dc.BaseRepositoryUrl)
@@ -420,7 +452,7 @@ public class DependencyControlTests
     {
         var fileSystem = new MockFileSystem();
         var mockClient = new MockHttpMessageHandler();
-        var dc = new DependencyControl(fileSystem, new HttpClient(mockClient));
+        var dc = new PackageManager(fileSystem, new HttpClient(mockClient));
 
         mockClient
             .When(HttpMethod.Get, dc.BaseRepositoryUrl)
@@ -437,9 +469,9 @@ public class DependencyControlTests
     {
         var fileSystem = new MockFileSystem();
         var mockClient = new MockHttpMessageHandler();
-        var dc = new DependencyControl(fileSystem, new HttpClient(mockClient));
+        var dc = new PackageManager(fileSystem, new HttpClient(mockClient));
 
-        const string repoUrl = "https://coolrepo.com/depctrl.json";
+        const string repoUrl = "https://coolrepo.com/pkgman.json";
 
         mockClient
             .When(HttpMethod.Get, dc.BaseRepositoryUrl)
@@ -457,7 +489,7 @@ public class DependencyControlTests
     {
         var fileSystem = new MockFileSystem();
         var mockClient = new MockHttpMessageHandler();
-        var dc = new DependencyControl(fileSystem, new HttpClient(mockClient));
+        var dc = new PackageManager(fileSystem, new HttpClient(mockClient));
 
         mockClient
             .When(HttpMethod.Get, dc.BaseRepositoryUrl)
@@ -474,9 +506,9 @@ public class DependencyControlTests
     {
         var fileSystem = new MockFileSystem();
         var mockClient = new MockHttpMessageHandler();
-        var dc = new DependencyControl(fileSystem, new HttpClient(mockClient));
+        var dc = new PackageManager(fileSystem, new HttpClient(mockClient));
 
-        const string repoUrl = "https://coolrepo.com/depctrl.json";
+        const string repoUrl = "https://coolrepo.com/pkgman.json";
 
         mockClient
             .When(HttpMethod.Get, dc.BaseRepositoryUrl)
@@ -508,6 +540,20 @@ public class DependencyControlTests
     private static readonly Module TestLibraryModule = new Module
     {
         Type = ModuleType.Library,
+        DisplayName = "Test",
+        QualifiedName = "author.test",
+        Description = string.Empty,
+        Author = "author",
+        Version = 0,
+        IsBetaChannel = false,
+        Dependencies = [],
+        Tags = [],
+        Url = string.Empty,
+    };
+
+    private static readonly Module TestScriptletModule = new Module
+    {
+        Type = ModuleType.Scriptlet,
         DisplayName = "Test",
         QualifiedName = "author.test",
         Description = string.Empty,

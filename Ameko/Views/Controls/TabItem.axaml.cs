@@ -13,9 +13,10 @@ using AssCS;
 using AssCS.History;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Media;
 using Avalonia.ReactiveUI;
-using Holo;
 using Holo.Configuration.Keybinds;
+using Holo.Models;
 using ReactiveUI;
 
 namespace Ameko.Views.Controls;
@@ -131,10 +132,72 @@ public partial class TabItem : ReactiveUserControl<TabItemViewModel>
                         {
                             AttachGridKeybinds(vm);
                         };
+
+                        // Apply layouts
+                        ApplyLayout(vm, vm.LayoutProvider.Current);
+                        vm.LayoutProvider.OnLayoutChanged += (_, args) =>
+                        {
+                            ApplyLayout(vm, args.Layout);
+                        };
                     })
                     .DisposeWith(disposables);
             }
         );
+    }
+
+    private void ApplyLayout(TabItemViewModel? vm, Layout? layout)
+    {
+        if (vm is null || layout is null)
+            return;
+
+        TabItemGrid.Children.RemoveAll(TabItemGrid.Children.OfType<GridSplitter>());
+
+        TabItemGrid.ColumnDefinitions = new ColumnDefinitions(layout.ColumnDefinitions);
+        TabItemGrid.RowDefinitions = new RowDefinitions(layout.RowDefinitions);
+
+        var video = layout.Video;
+        TabItemVideoArea.IsVisible = video.IsVisible;
+        TabItemVideoArea.SetValue(Grid.ColumnProperty, video.Column);
+        TabItemVideoArea.SetValue(Grid.RowProperty, video.Row);
+        TabItemVideoArea.SetValue(Grid.ColumnSpanProperty, video.ColumnSpan);
+        TabItemVideoArea.SetValue(Grid.RowSpanProperty, video.RowSpan);
+
+        var audio = layout.Audio;
+        TabItemAudioArea.IsVisible = audio.IsVisible;
+        TabItemAudioArea.SetValue(Grid.ColumnProperty, audio.Column);
+        TabItemAudioArea.SetValue(Grid.RowProperty, audio.Row);
+        TabItemAudioArea.SetValue(Grid.ColumnSpanProperty, audio.ColumnSpan);
+        TabItemAudioArea.SetValue(Grid.RowSpanProperty, audio.RowSpan);
+
+        var editor = layout.Editor;
+        TabItemEditorArea.IsVisible = editor.IsVisible;
+        TabItemEditorArea.SetValue(Grid.ColumnProperty, editor.Column);
+        TabItemEditorArea.SetValue(Grid.RowProperty, editor.Row);
+        TabItemEditorArea.SetValue(Grid.ColumnSpanProperty, editor.ColumnSpan);
+        TabItemEditorArea.SetValue(Grid.RowSpanProperty, editor.RowSpan);
+
+        var events = layout.Events;
+        TabItemEventsArea.IsVisible = events.IsVisible;
+        TabItemEventsArea.SetValue(Grid.ColumnProperty, events.Column);
+        TabItemEventsArea.SetValue(Grid.RowProperty, events.Row);
+        TabItemEventsArea.SetValue(Grid.ColumnSpanProperty, events.ColumnSpan);
+        TabItemEventsArea.SetValue(Grid.RowSpanProperty, events.RowSpan);
+
+        foreach (var split in layout.Splitters)
+        {
+            var splitter = new GridSplitter
+            {
+                ResizeDirection = split.IsVertical
+                    ? GridResizeDirection.Columns
+                    : GridResizeDirection.Rows,
+                Background = Brushes.Black,
+            };
+            splitter.SetValue(Grid.ColumnProperty, split.Column);
+            splitter.SetValue(Grid.RowProperty, split.Row);
+            splitter.SetValue(Grid.ColumnSpanProperty, split.ColumnSpan);
+            splitter.SetValue(Grid.RowSpanProperty, split.RowSpan);
+            TabItemGrid.Children.Add(splitter);
+        }
     }
 
     private void AttachGridKeybinds(TabItemViewModel? vm)

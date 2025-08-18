@@ -59,6 +59,9 @@ public partial class TabItemEditorArea : ReactiveUserControl<TabItemViewModel>
     // TODO: These don't differentiate between user input and program input
     private void EditBox_OnTextChanged(object? sender, TextChangedEventArgs e)
     {
+        if (ViewModel?.Workspace.SelectionManager.IsSelectionChanging == true)
+            return;
+
         ViewModel?.Workspace.Commit(
             ViewModel.Workspace.SelectionManager.SelectedEventCollection,
             CommitType.EventText
@@ -67,6 +70,9 @@ public partial class TabItemEditorArea : ReactiveUserControl<TabItemViewModel>
 
     private void AnyControl_EventMetaChanged(object? sender, RoutedEventArgs e)
     {
+        if (ViewModel?.Workspace.SelectionManager.IsSelectionChanging == true)
+            return;
+
         ViewModel?.Workspace.Commit(
             ViewModel.Workspace.SelectionManager.SelectedEventCollection,
             CommitType.EventMeta
@@ -75,6 +81,9 @@ public partial class TabItemEditorArea : ReactiveUserControl<TabItemViewModel>
 
     private void AnyControl_EventTimeChanged(object? sender, TextChangedEventArgs e)
     {
+        if (ViewModel?.Workspace.SelectionManager.IsSelectionChanging == true)
+            return;
+
         ViewModel?.Workspace.Commit(
             ViewModel.Workspace.SelectionManager.SelectedEventCollection,
             CommitType.EventTime

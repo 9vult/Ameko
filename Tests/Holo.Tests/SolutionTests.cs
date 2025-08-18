@@ -2,6 +2,7 @@
 
 using System.IO.Abstractions.TestingHelpers;
 using AssCS;
+using Holo.Models;
 using Shouldly;
 using static Holo.Tests.Utilities.TestUtils;
 
@@ -202,6 +203,51 @@ public class SolutionTests
         sln.UseSoftLinebreaks.ShouldBeNull();
         sln.ReferencedItems.Count.ShouldBe(1);
         sln.StyleManager.Styles.Count.ShouldBe(0);
+    }
+
+    [Fact]
+    public void LoadDirectory_NotEmpty()
+    {
+        var fs = new MockFileSystem();
+        fs.AddDirectory(MakeTestableUri(fs, "test/01").LocalPath);
+        fs.AddDirectory(MakeTestableUri(fs, "test/02").LocalPath);
+        fs.AddDirectory(MakeTestableUri(fs, "test/03").LocalPath);
+        fs.AddFile(MakeTestableUri(fs, "test/a.ass").LocalPath, new MockFileData(string.Empty));
+        fs.AddFile(MakeTestableUri(fs, "test/01/b.ass").LocalPath, new MockFileData(string.Empty));
+        fs.AddFile(MakeTestableUri(fs, "test/01/d.ass").LocalPath, new MockFileData(string.Empty));
+        fs.AddFile(MakeTestableUri(fs, "test/03/d.ass").LocalPath, new MockFileData(string.Empty));
+
+        var sln = Solution.LoadDirectory(fs, MakeTestableUri(fs, "test/"));
+
+        sln.ReferencedItems.Count.ShouldBe(3);
+        sln.ReferencedItems.First(i => i.Type == SolutionItemType.Directory)
+            .Children.Count.ShouldBe(2);
+        sln.ReferencedItems.Last(i => i.Type == SolutionItemType.Directory)
+            .Children.Count.ShouldBe(1);
+    }
+
+    [Fact]
+    public void LoadDirectory_Empty()
+    {
+        var fs = new MockFileSystem();
+        fs.AddDirectory(MakeTestableUri(fs, "test/01").LocalPath);
+        fs.AddDirectory(MakeTestableUri(fs, "test/02").LocalPath);
+        fs.AddDirectory(MakeTestableUri(fs, "test/03").LocalPath);
+
+        var sln = Solution.LoadDirectory(fs, MakeTestableUri(fs, "test/"));
+
+        sln.ReferencedItems.Count.ShouldBe(1);
+        sln.ReferencedItems.First().Type.ShouldBe(SolutionItemType.Document); // default document
+    }
+
+    [Fact]
+    public void LoadDirectory_NotExists()
+    {
+        var fs = new MockFileSystem();
+        var sln = Solution.LoadDirectory(fs, MakeTestableUri(fs, "test/"));
+
+        sln.ReferencedItems.Count.ShouldBe(1);
+        sln.ReferencedItems.First().Type.ShouldBe(SolutionItemType.Document); // default document
     }
 
     private const string ExampleSolution = """

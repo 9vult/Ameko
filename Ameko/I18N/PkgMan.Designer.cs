@@ -21,14 +21,14 @@ namespace Ameko.I18N {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    public class DepCtrl {
+    public class PkgMan {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal DepCtrl() {
+        internal PkgMan() {
         }
         
         /// <summary>
@@ -38,7 +38,7 @@ namespace Ameko.I18N {
         public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Ameko.I18N.DepCtrl", typeof(DepCtrl).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Ameko.I18N.PkgMan", typeof(PkgMan).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -62,387 +62,396 @@ namespace Ameko.I18N {
         /// <summary>
         ///   Looks up a localized string similar to Add.
         /// </summary>
-        public static string DepCtrl_Button_AddRepo {
+        public static string PkgMan_Button_AddRepo {
             get {
-                return ResourceManager.GetString("DepCtrl_Button_AddRepo", resourceCulture);
+                return ResourceManager.GetString("PkgMan_Button_AddRepo", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Add a new repository.
         /// </summary>
-        public static string DepCtrl_Button_AddRepo_ToolTip {
+        public static string PkgMan_Button_AddRepo_ToolTip {
             get {
-                return ResourceManager.GetString("DepCtrl_Button_AddRepo_ToolTip", resourceCulture);
+                return ResourceManager.GetString("PkgMan_Button_AddRepo_ToolTip", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Install.
         /// </summary>
-        public static string DepCtrl_Button_Install {
+        public static string PkgMan_Button_Install {
             get {
-                return ResourceManager.GetString("DepCtrl_Button_Install", resourceCulture);
+                return ResourceManager.GetString("PkgMan_Button_Install", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Install the selected module.
         /// </summary>
-        public static string DepCtrl_Button_Install_ToolTip {
+        public static string PkgMan_Button_Install_ToolTip {
             get {
-                return ResourceManager.GetString("DepCtrl_Button_Install_ToolTip", resourceCulture);
+                return ResourceManager.GetString("PkgMan_Button_Install_ToolTip", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Refresh the Module Store.
         /// </summary>
-        public static string DepCtrl_Button_Refresh_ToolTip {
+        public static string PkgMan_Button_Refresh_ToolTip {
             get {
-                return ResourceManager.GetString("DepCtrl_Button_Refresh_ToolTip", resourceCulture);
+                return ResourceManager.GetString("PkgMan_Button_Refresh_ToolTip", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Remove.
         /// </summary>
-        public static string DepCtrl_Button_RemoveRepo {
+        public static string PkgMan_Button_RemoveRepo {
             get {
-                return ResourceManager.GetString("DepCtrl_Button_RemoveRepo", resourceCulture);
+                return ResourceManager.GetString("PkgMan_Button_RemoveRepo", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Remove the selected repository.
         /// </summary>
-        public static string DepCtrl_Button_RemoveRepo_ToolTip {
+        public static string PkgMan_Button_RemoveRepo_ToolTip {
             get {
-                return ResourceManager.GetString("DepCtrl_Button_RemoveRepo_ToolTip", resourceCulture);
+                return ResourceManager.GetString("PkgMan_Button_RemoveRepo_ToolTip", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Uninstall.
         /// </summary>
-        public static string DepCtrl_Button_Uninstall {
+        public static string PkgMan_Button_Uninstall {
             get {
-                return ResourceManager.GetString("DepCtrl_Button_Uninstall", resourceCulture);
+                return ResourceManager.GetString("PkgMan_Button_Uninstall", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Uninstall the selected module.
         /// </summary>
-        public static string DepCtrl_Button_Uninstall_ToolTip {
+        public static string PkgMan_Button_Uninstall_ToolTip {
             get {
-                return ResourceManager.GetString("DepCtrl_Button_Uninstall_ToolTip", resourceCulture);
+                return ResourceManager.GetString("PkgMan_Button_Uninstall_ToolTip", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Update.
         /// </summary>
-        public static string DepCtrl_Button_Update {
+        public static string PkgMan_Button_Update {
             get {
-                return ResourceManager.GetString("DepCtrl_Button_Update", resourceCulture);
+                return ResourceManager.GetString("PkgMan_Button_Update", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Update the selected module to its latest version.
         /// </summary>
-        public static string DepCtrl_Button_Update_ToolTip {
+        public static string PkgMan_Button_Update_ToolTip {
             get {
-                return ResourceManager.GetString("DepCtrl_Button_Update_ToolTip", resourceCulture);
+                return ResourceManager.GetString("PkgMan_Button_Update_ToolTip", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Update All.
         /// </summary>
-        public static string DepCtrl_Button_UpdateAll {
+        public static string PkgMan_Button_UpdateAll {
             get {
-                return ResourceManager.GetString("DepCtrl_Button_UpdateAll", resourceCulture);
+                return ResourceManager.GetString("PkgMan_Button_UpdateAll", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Update all modules to their latest version.
         /// </summary>
-        public static string DepCtrl_Button_UpdateAll_ToolTip {
+        public static string PkgMan_Button_UpdateAll_ToolTip {
             get {
-                return ResourceManager.GetString("DepCtrl_Button_UpdateAll_ToolTip", resourceCulture);
+                return ResourceManager.GetString("PkgMan_Button_UpdateAll_ToolTip", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Author.
         /// </summary>
-        public static string DepCtrl_Info_Author {
+        public static string PkgMan_Info_Author {
             get {
-                return ResourceManager.GetString("DepCtrl_Info_Author", resourceCulture);
+                return ResourceManager.GetString("PkgMan_Info_Author", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Dependencies.
         /// </summary>
-        public static string DepCtrl_Info_Dependencies {
+        public static string PkgMan_Info_Dependencies {
             get {
-                return ResourceManager.GetString("DepCtrl_Info_Dependencies", resourceCulture);
+                return ResourceManager.GetString("PkgMan_Info_Dependencies", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Description.
         /// </summary>
-        public static string DepCtrl_Info_Description {
+        public static string PkgMan_Info_Description {
             get {
-                return ResourceManager.GetString("DepCtrl_Info_Description", resourceCulture);
+                return ResourceManager.GetString("PkgMan_Info_Description", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Beta Channel?.
         /// </summary>
-        public static string DepCtrl_Info_IsBetaChannel {
+        public static string PkgMan_Info_IsBetaChannel {
             get {
-                return ResourceManager.GetString("DepCtrl_Info_IsBetaChannel", resourceCulture);
+                return ResourceManager.GetString("PkgMan_Info_IsBetaChannel", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Maintainer.
         /// </summary>
-        public static string DepCtrl_Info_Maintainer {
+        public static string PkgMan_Info_Maintainer {
             get {
-                return ResourceManager.GetString("DepCtrl_Info_Maintainer", resourceCulture);
+                return ResourceManager.GetString("PkgMan_Info_Maintainer", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Modules.
         /// </summary>
-        public static string DepCtrl_Info_ModuleCount {
+        public static string PkgMan_Info_ModuleCount {
             get {
-                return ResourceManager.GetString("DepCtrl_Info_ModuleCount", resourceCulture);
+                return ResourceManager.GetString("PkgMan_Info_ModuleCount", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Name.
         /// </summary>
-        public static string DepCtrl_Info_Name {
+        public static string PkgMan_Info_Name {
             get {
-                return ResourceManager.GetString("DepCtrl_Info_Name", resourceCulture);
+                return ResourceManager.GetString("PkgMan_Info_Name", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to No Selection.
         /// </summary>
-        public static string DepCtrl_Info_NoSelection {
+        public static string PkgMan_Info_NoSelection {
             get {
-                return ResourceManager.GetString("DepCtrl_Info_NoSelection", resourceCulture);
+                return ResourceManager.GetString("PkgMan_Info_NoSelection", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Qualified Name.
         /// </summary>
-        public static string DepCtrl_Info_QualifiedName {
+        public static string PkgMan_Info_QualifiedName {
             get {
-                return ResourceManager.GetString("DepCtrl_Info_QualifiedName", resourceCulture);
+                return ResourceManager.GetString("PkgMan_Info_QualifiedName", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Repository.
         /// </summary>
-        public static string DepCtrl_Info_Repository {
+        public static string PkgMan_Info_Repository {
             get {
-                return ResourceManager.GetString("DepCtrl_Info_Repository", resourceCulture);
+                return ResourceManager.GetString("PkgMan_Info_Repository", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Sub-Repositories.
         /// </summary>
-        public static string DepCtrl_Info_SubRepoCount {
+        public static string PkgMan_Info_SubRepoCount {
             get {
-                return ResourceManager.GetString("DepCtrl_Info_SubRepoCount", resourceCulture);
+                return ResourceManager.GetString("PkgMan_Info_SubRepoCount", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Type.
         /// </summary>
-        public static string DepCtrl_Info_Type {
+        public static string PkgMan_Info_Type {
             get {
-                return ResourceManager.GetString("DepCtrl_Info_Type", resourceCulture);
+                return ResourceManager.GetString("PkgMan_Info_Type", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Url.
         /// </summary>
-        public static string DepCtrl_Info_Url {
+        public static string PkgMan_Info_Url {
             get {
-                return ResourceManager.GetString("DepCtrl_Info_Url", resourceCulture);
+                return ResourceManager.GetString("PkgMan_Info_Url", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Version.
         /// </summary>
-        public static string DepCtrl_Info_Version {
+        public static string PkgMan_Info_Version {
             get {
-                return ResourceManager.GetString("DepCtrl_Info_Version", resourceCulture);
+                return ResourceManager.GetString("PkgMan_Info_Version", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Installed Modules.
         /// </summary>
-        public static string DepCtrl_InstalledModules {
+        public static string PkgMan_InstalledModules {
             get {
-                return ResourceManager.GetString("DepCtrl_InstalledModules", resourceCulture);
+                return ResourceManager.GetString("PkgMan_InstalledModules", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Modules.
         /// </summary>
-        public static string DepCtrl_ModulesTab {
+        public static string PkgMan_ModulesTab {
             get {
-                return ResourceManager.GetString("DepCtrl_ModulesTab", resourceCulture);
+                return ResourceManager.GetString("PkgMan_ModulesTab", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Module Store.
         /// </summary>
-        public static string DepCtrl_ModuleStore {
+        public static string PkgMan_ModuleStore {
             get {
-                return ResourceManager.GetString("DepCtrl_ModuleStore", resourceCulture);
+                return ResourceManager.GetString("PkgMan_ModuleStore", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Refresh successful.
         /// </summary>
-        public static string DepCtrl_MsgBox_Refreshed {
+        public static string PkgMan_MsgBox_Refreshed {
             get {
-                return ResourceManager.GetString("DepCtrl_MsgBox_Refreshed", resourceCulture);
+                return ResourceManager.GetString("PkgMan_MsgBox_Refreshed", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Repositories.
         /// </summary>
-        public static string DepCtrl_RepositoriesTab {
+        public static string PkgMan_RepositoriesTab {
             get {
-                return ResourceManager.GetString("DepCtrl_RepositoriesTab", resourceCulture);
+                return ResourceManager.GetString("PkgMan_RepositoriesTab", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to The module is already installed!.
         /// </summary>
-        public static string DepCtrl_Result_AlreadyInstalled {
+        public static string PkgMan_Result_AlreadyInstalled {
             get {
-                return ResourceManager.GetString("DepCtrl_Result_AlreadyInstalled", resourceCulture);
+                return ResourceManager.GetString("PkgMan_Result_AlreadyInstalled", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Could not find a required dependency.
         /// </summary>
-        public static string DepCtrl_Result_DepNotFound {
+        public static string PkgMan_Result_DepNotFound {
             get {
-                return ResourceManager.GetString("DepCtrl_Result_DepNotFound", resourceCulture);
+                return ResourceManager.GetString("PkgMan_Result_DepNotFound", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Failed!.
         /// </summary>
-        public static string DepCtrl_Result_Failure {
+        public static string PkgMan_Result_Failure {
             get {
-                return ResourceManager.GetString("DepCtrl_Result_Failure", resourceCulture);
+                return ResourceManager.GetString("PkgMan_Result_Failure", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to A filesystem error occured.
         /// </summary>
-        public static string DepCtrl_Result_FS_Failure {
+        public static string PkgMan_Result_FS_Failure {
             get {
-                return ResourceManager.GetString("DepCtrl_Result_FS_Failure", resourceCulture);
+                return ResourceManager.GetString("PkgMan_Result_FS_Failure", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The module has an invalid name.
+        /// </summary>
+        public static string PkgMan_Result_InvalidName {
+            get {
+                return ResourceManager.GetString("PkgMan_Result_InvalidName", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to This module is required by other modules.
         /// </summary>
-        public static string DepCtrl_Result_IsRequiredDep {
+        public static string PkgMan_Result_IsRequiredDep {
             get {
-                return ResourceManager.GetString("DepCtrl_Result_IsRequiredDep", resourceCulture);
+                return ResourceManager.GetString("PkgMan_Result_IsRequiredDep", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to The module is not installed.
         /// </summary>
-        public static string DepCtrl_Result_NotInstalled {
+        public static string PkgMan_Result_NotInstalled {
             get {
-                return ResourceManager.GetString("DepCtrl_Result_NotInstalled", resourceCulture);
+                return ResourceManager.GetString("PkgMan_Result_NotInstalled", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to The repository is already installed!.
         /// </summary>
-        public static string DepCtrl_Result_Repository_AlreadyInstalled {
+        public static string PkgMan_Result_Repository_AlreadyInstalled {
             get {
-                return ResourceManager.GetString("DepCtrl_Result_Repository_AlreadyInstalled", resourceCulture);
+                return ResourceManager.GetString("PkgMan_Result_Repository_AlreadyInstalled", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to The repository is not installed.
         /// </summary>
-        public static string DepCtrl_Result_Repository_NotInstalled {
+        public static string PkgMan_Result_Repository_NotInstalled {
             get {
-                return ResourceManager.GetString("DepCtrl_Result_Repository_NotInstalled", resourceCulture);
+                return ResourceManager.GetString("PkgMan_Result_Repository_NotInstalled", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Success!.
         /// </summary>
-        public static string DepCtrl_Result_Success {
+        public static string PkgMan_Result_Success {
             get {
-                return ResourceManager.GetString("DepCtrl_Result_Success", resourceCulture);
+                return ResourceManager.GetString("PkgMan_Result_Success", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to An update is available for this module.
         /// </summary>
-        public static string DepCtrl_Update_Available_ToolTip {
+        public static string PkgMan_Update_Available_ToolTip {
             get {
-                return ResourceManager.GetString("DepCtrl_Update_Available_ToolTip", resourceCulture);
+                return ResourceManager.GetString("PkgMan_Update_Available_ToolTip", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Ameko Dependency Control.
+        ///   Looks up a localized string similar to Ameko Package Manager.
         /// </summary>
-        public static string DepCtrlWindow_Title {
+        public static string PkgManWindow_Title {
             get {
-                return ResourceManager.GetString("DepCtrlWindow_Title", resourceCulture);
+                return ResourceManager.GetString("PkgManWindow_Title", resourceCulture);
             }
         }
     }

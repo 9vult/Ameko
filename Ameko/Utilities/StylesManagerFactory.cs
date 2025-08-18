@@ -18,12 +18,12 @@ public interface IStylesManagerFactory
     StylesManagerWindowViewModel Create(Solution solution, Document document);
 }
 
-public class StylesManagerFactory(IConfiguration configuration, IGlobals globals)
+public class StylesManagerFactory(IPersistence persistence, IGlobals globals)
     : IStylesManagerFactory
 {
     /// <inheritdoc cref="IStylesManagerFactory.Create"/>
     public StylesManagerWindowViewModel Create(Solution solution, Document document)
     {
-        return new StylesManagerWindowViewModel(configuration, globals, solution, document);
+        return new StylesManagerWindowViewModel(persistence, globals, solution, document);
     }
 }

@@ -88,10 +88,5 @@ public interface IKeybindRegistrar
     /// </summary>
     void Parse();
 
-    /// <summary>
-    /// Event Handler for <see cref="IKeybindRegistrar.OnKeybindsChanged"/>
-    /// </summary>
-    public delegate void KeybindsChangedEventHandler(object sender, EventArgs e);
-
-    event KeybindsChangedEventHandler? OnKeybindsChanged;
+    event EventHandler<EventArgs>? OnKeybindsChanged;
 }

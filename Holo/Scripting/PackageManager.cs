@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.IO.Abstractions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Text.RegularExpressions;
 using Holo.IO;
 using Holo.Scripting.Models;
 using NLog;
@@ -11,9 +12,9 @@ using NLog;
 namespace Holo.Scripting;
 
 /// <summary>
-/// Dependency Control manages <see cref="Repository"/>s and <see cref="Module"/>s
+/// Package Manager manages <see cref="Repository"/>s and <see cref="Module"/>s
 /// </summary>
-public class DependencyControl : IDependencyControl
+public partial class PackageManager : IPackageManager
 {
     private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -89,6 +90,9 @@ public class DependencyControl : IDependencyControl
         if (IsModuleInstalled(module))
             return InstallationResult.AlreadyInstalled;
         Logger.Info($"Attempting to install module {module.QualifiedName}");
+
+        if (!ValidateQualifiedName(module.QualifiedName))
+            return InstallationResult.InvalidName;
 
         foreach (
             var dependencyName in module.Dependencies.Where(dependencyName =>
@@ -250,6 +254,7 @@ public class DependencyControl : IDependencyControl
         {
             ModuleType.Script => Path.Combine(ModulesRoot.LocalPath, $"{qName}.cs"),
             ModuleType.Library => Path.Combine(ModulesRoot.LocalPath, $"{qName}.lib.cs"),
+            ModuleType.Scriptlet => Path.Combine(ModulesRoot.LocalPath, $"{qName}.js"),
             _ => throw new ArgumentOutOfRangeException(nameof(module)),
         };
     }
@@ -270,8 +275,19 @@ public class DependencyControl : IDependencyControl
                 "modules",
                 $"{qName}.lib.json"
             ),
+            ModuleType.Scriptlet => Path.Combine(ModulesRoot.LocalPath, "modules", $"{qName}.json"),
             _ => throw new ArgumentOutOfRangeException(nameof(module)),
         };
+    }
+
+    /// <summary>
+    /// Validate the validity of a script's Qualified Name
+    /// </summary>
+    /// <param name="qualifiedName">Qualified name to check</param>
+    /// <returns><see langword="true"/> if the name is valid</returns>
+    public static bool ValidateQualifiedName(string qualifiedName)
+    {
+        return QualifiedNameRegex().IsMatch(qualifiedName);
     }
 
     #endregion Modules
@@ -393,7 +409,7 @@ public class DependencyControl : IDependencyControl
         Logger.Info("Done!");
     }
 
-    /// <inheritdoc cref="IDependencyControl.AddRepository"/>
+    /// <inheritdoc cref="IPackageManager.AddRepository"/>
     public async Task<InstallationResult> AddRepository(string repoUrl)
     {
         var repo = await Repository.Build(repoUrl, _httpClient);
@@ -410,7 +426,7 @@ public class DependencyControl : IDependencyControl
         return InstallationResult.Success;
     }
 
-    /// <inheritdoc cref="IDependencyControl.RemoveRepository"/>
+    /// <inheritdoc cref="IPackageManager.RemoveRepository"/>
     public InstallationResult RemoveRepository(string repositoryName)
     {
         if (!_repositoryMap.Remove(repositoryName, out var repo))
@@ -457,7 +473,7 @@ public class DependencyControl : IDependencyControl
     /// This constructor does not set up the base repository.
     /// <see cref="SetUpBaseRepository"/> should be called following construction
     /// </remarks>
-    public DependencyControl(IFileSystem fileSystem, HttpClient httpClient)
+    public PackageManager(IFileSystem fileSystem, HttpClient httpClient)
     {
         _fileSystem = fileSystem;
         _httpClient = httpClient;
@@ -475,4 +491,7 @@ public class DependencyControl : IDependencyControl
 
         Logger.Info("Initialized Dependency Control");
     }
+
+    [GeneratedRegex(@"^[a-zA-Z0-9._]+$")]
+    private static partial Regex QualifiedNameRegex();
 }

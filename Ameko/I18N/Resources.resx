@@ -249,8 +249,14 @@
     <data name="Menu_ReloadScripts" xml:space="preserve">
         <value>_Reload Scripts</value>
     </data>
-    <data name="Menu_DependencyControl" xml:space="preserve">
-        <value>Open _Dependency Control...</value>
+    <data name="Menu_PackageManager" xml:space="preserve">
+        <value>Open _Package Manager...</value>
+    </data>
+    <data name="Menu_OpenSolutionFolder" xml:space="preserve">
+        <value>Open _Folder as Solution...</value>
+    </data>
+    <data name="Menu_ReloadLayouts" xml:space="preserve">
+        <value>_Reload Layouts</value>
     </data>
     <data name="Video_Button_PlayPause_ToolTip" xml:space="preserve">
         <value>Play/Pause</value>

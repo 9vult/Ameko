@@ -93,4 +93,7 @@
     <data name="FileDialog_FileType_Video" xml:space="preserve">
         <value>Video Files</value>
     </data>
+    <data name="FileDialog_OpenFolderAsSolution_Title" xml:space="preserve">
+        <value>Open Solution Folder</value>
+    </data>
 </root>
