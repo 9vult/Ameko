@@ -4,6 +4,7 @@ const c = @import("c.zig").c;
 
 const std = @import("std");
 const ffms = @import("ffms.zig");
+const libass = @import("libass.zig");
 const frames = @import("frames.zig");
 const common = @import("common.zig");
 const errors = @import("errors.zig");
@@ -101,5 +102,13 @@ pub fn main() !void {
         ffms_version.major,
         ffms_version.minor,
         ffms_version.patch,
+    });
+
+    libass.Initialize();
+    const libass_version = libass.GetVersion();
+    std.debug.print("Libass Version: {x}.{x}.{x}\n", .{
+        libass_version.major,
+        libass_version.minor,
+        libass_version.patch,
     });
 }
