@@ -29,10 +29,7 @@ public class LayoutProviderTests
         var fs = new MockFileSystem();
         fs.AddFile(
             TestUtils
-                .MakeTestableUri(
-                    fs,
-                    Path.Combine(DirectoryService.DataHome, "layouts", "testing.toml")
-                )
+                .MakeTestableUri(fs, Path.Combine(Directories.DataHome, "layouts", "testing.toml"))
                 .LocalPath,
             new MockFileData(ExampleLayout)
         );

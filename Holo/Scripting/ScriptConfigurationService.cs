@@ -17,9 +17,7 @@ public class ScriptConfigurationService(IFileSystem fileSystem) : IScriptConfigu
         IncludeFields = true,
         Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) },
     };
-    private static readonly Uri ModulesRoot = new(
-        Path.Combine(DirectoryService.DataHome, "scripts")
-    );
+    private static readonly Uri ModulesRoot = new(Path.Combine(Directories.DataHome, "scripts"));
 
     private readonly Dictionary<string, Dictionary<string, JsonElement>> _cache = [];
 

@@ -778,5 +778,77 @@ namespace Ameko.I18N {
                 return ResourceManager.GetString("Toolbox_Header", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Disable auto seek to event start.
+        /// </summary>
+        public static string Video_Button_DisableAutoSeek_ToolTip {
+            get {
+                return ResourceManager.GetString("Video_Button_DisableAutoSeek_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enable auto seek to event start.
+        /// </summary>
+        public static string Video_Button_EnableAutoSeek_ToolTip {
+            get {
+                return ResourceManager.GetString("Video_Button_EnableAutoSeek_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Play/Pause.
+        /// </summary>
+        public static string Video_Button_PlayPause_ToolTip {
+            get {
+                return ResourceManager.GetString("Video_Button_PlayPause_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Play Selection.
+        /// </summary>
+        public static string Video_Button_PlaySelection_ToolTip {
+            get {
+                return ResourceManager.GetString("Video_Button_PlaySelection_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Current Frame.
+        /// </summary>
+        public static string Video_Frame_ToolTip {
+            get {
+                return ResourceManager.GetString("Video_Frame_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Lock.
+        /// </summary>
+        public static string Video_LockAR {
+            get {
+                return ResourceManager.GetString("Video_LockAR", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Lock aspect ratio.
+        /// </summary>
+        public static string Video_LockAR_ToolTip {
+            get {
+                return ResourceManager.GetString("Video_LockAR_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Current Time.
+        /// </summary>
+        public static string Video_Time_ToolTip {
+            get {
+                return ResourceManager.GetString("Video_Time_ToolTip", resourceCulture);
+            }
+        }
     }
 }

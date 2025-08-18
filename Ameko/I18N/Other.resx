@@ -87,6 +87,12 @@
     <data name="MsgBox_ScriptService_Reload_Body" xml:space="preserve">
         <value>Scripts reloaded successfully</value>
     </data>
+    <data name="FileDialog_OpenVideo_Title" xml:space="preserve">
+        <value>Open Video File</value>
+    </data>
+    <data name="FileDialog_FileType_Video" xml:space="preserve">
+        <value>Video Files</value>
+    </data>
     <data name="FileDialog_OpenFolderAsSolution_Title" xml:space="preserve">
         <value>Open Solution Folder</value>
     </data>

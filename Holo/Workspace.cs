@@ -1,8 +1,8 @@
 ﻿// SPDX-License-Identifier: MPL-2.0
 
-using System.Collections.ObjectModel;
 using AssCS;
 using AssCS.History;
+using Holo.Media.Providers;
 using NLog;
 
 namespace Holo;
@@ -18,23 +18,28 @@ namespace Holo;
 public class Workspace : BindableBase
 {
     private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-    private readonly Document _document;
-    private readonly int _id;
-    private readonly SelectionManager _selectionManager;
     private Uri? _savePath;
     private bool _isSaved;
 
     /// <summary>
     /// The ass document in the workspace
     /// </summary>
-    public Document Document => _document;
+    public Document Document { get; }
 
     /// <summary>
     /// The ID of the workspace
     /// </summary>
-    public int Id => _id;
+    public int Id { get; }
 
-    public SelectionManager SelectionManager => _selectionManager;
+    /// <summary>
+    /// Manages selections within the workspace
+    /// </summary>
+    public SelectionManager SelectionManager { get; }
+
+    /// <summary>
+    /// Manages audio/video
+    /// </summary>
+    public MediaController MediaController { get; }
 
     /// <summary>
     /// The path the <see cref="Document"/> is saved to,
@@ -82,12 +87,12 @@ public class Workspace : BindableBase
     /// <summary>
     /// Whether the Actors column in the events grid should be displayed
     /// </summary>
-    public bool DisplayActorsColumn => _document.EventManager.Actors.Count > 0;
+    public bool DisplayActorsColumn => Document.EventManager.Actors.Count > 0;
 
     /// <summary>
     /// Whether the Effects column in the events grid should be displayed
     /// </summary>
-    public bool DisplayEffectsColumn => _document.EventManager.Effects.Count > 0;
+    public bool DisplayEffectsColumn => Document.EventManager.Effects.Count > 0;
 
     /// <summary>
     /// Commit a change
@@ -110,9 +115,9 @@ public class Workspace : BindableBase
         // https://github.com/arch1t3cht/Aegisub/blob/b2a0b098215d7028ba26f1bf728731fc585f2b99/src/subs_edit_box.cpp#L476
 
         var amend =
-            _document.HistoryManager.CanUndo
-            && _document.HistoryManager.LastCommitType == changeType
-            && _document.HistoryManager.LastCommitTime.AddSeconds(30) > DateTimeOffset.Now; // TODO: Add an option for this
+            Document.HistoryManager.CanUndo
+            && Document.HistoryManager.LastCommitType == changeType
+            && Document.HistoryManager.LastCommitTime.AddSeconds(30) > DateTimeOffset.Now; // TODO: Add an option for this
 
         Logger.Trace(
             $"Commiting {selection.Count} events under change {changeType} (amend={amend})"
@@ -121,8 +126,8 @@ public class Workspace : BindableBase
         // TODO: Determine how to best include descriptions here
         foreach (var e in selection)
         {
-            var parent = _document.EventManager.GetBefore(e.Id);
-            _document.HistoryManager.Commit("", changeType, e, parent?.Id, amend);
+            var parent = Document.EventManager.GetBefore(e.Id);
+            Document.HistoryManager.Commit("", changeType, e, parent?.Id, amend);
             amend = true;
         }
         IsSaved = false;
@@ -137,11 +142,16 @@ public class Workspace : BindableBase
     /// or <see langword="null"/> if unsaved</param>
     public Workspace(Document document, int id, Uri? savePath = null)
     {
-        _document = document;
-        _id = id;
+        Document = document;
+        Id = id;
         _savePath = savePath;
         IsSaved = true;
 
-        _selectionManager = new SelectionManager(Document.EventManager.Head);
+        SelectionManager = new SelectionManager(Document.EventManager.Head);
+
+        // TODO: make this cleaner
+        var mp = new MizukiSourceProvider();
+        mp.Initialize();
+        MediaController = new MediaController(mp);
     }
 }

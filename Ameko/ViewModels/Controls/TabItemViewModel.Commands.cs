@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
@@ -7,6 +8,7 @@ using System.Reactive.Linq;
 using Ameko.ViewModels.Dialogs;
 using AssCS;
 using AssCS.History;
+using Holo.Media;
 using ReactiveUI;
 
 namespace Ameko.ViewModels.Controls;
@@ -339,5 +341,195 @@ public partial class TabItemViewModel : ViewModelBase
                 await _scriptService.ExecuteScriptAsync(qualifiedName);
             }
         );
+    }
+
+    //
+    // Video
+    //
+
+    /// <summary>
+    /// Play/Pause video
+    /// </summary>
+    private ReactiveCommand<Unit, Unit> CreatePlayPauseCommand()
+    {
+        return ReactiveCommand.Create(() =>
+        {
+            if (!Workspace.MediaController.IsVideoLoaded)
+                return;
+            if (Workspace.MediaController.IsPlaying)
+                Workspace.MediaController.Pause();
+            else
+            {
+                if (Workspace.MediaController.IsPaused)
+                    Workspace.MediaController.Resume();
+                else
+                    Workspace.MediaController.PlayToEnd();
+            }
+        });
+    }
+
+    /// <summary>
+    /// Stop video
+    /// </summary>
+    private ReactiveCommand<Unit, Unit> CreateStopPlayingCommand()
+    {
+        return ReactiveCommand.Create(() =>
+        {
+            if (!Workspace.MediaController.IsVideoLoaded)
+                return;
+            Workspace.MediaController.Stop();
+        });
+    }
+
+    /// <summary>
+    /// Play selected events
+    /// </summary>
+    private ReactiveCommand<Unit, Unit> CreatePlaySelectionCommand()
+    {
+        return ReactiveCommand.Create(() =>
+        {
+            if (!Workspace.MediaController.IsVideoLoaded)
+                return;
+            Workspace.MediaController.PlaySelection(
+                Workspace.SelectionManager.SelectedEventCollection
+            );
+        });
+    }
+
+    /// <summary>
+    /// Toggle Auto-Seek
+    /// </summary>
+    private ReactiveCommand<Unit, Unit> CreateToggleAutoseekCommand()
+    {
+        return ReactiveCommand.Create(() =>
+        {
+            if (!Workspace.MediaController.IsVideoLoaded)
+                return;
+            Workspace.MediaController.IsAutoSeekEnabled = !Workspace
+                .MediaController
+                .IsAutoSeekEnabled;
+        });
+    }
+
+    /// <summary>
+    /// Go to next frame
+    /// </summary>
+    private ReactiveCommand<Unit, Unit> CreateNextFrameCommand()
+    {
+        return ReactiveCommand.Create(() =>
+        {
+            if (!Workspace.MediaController.IsVideoLoaded)
+                return;
+            Workspace.MediaController.SeekTo(Workspace.MediaController.CurrentFrame + 1);
+        });
+    }
+
+    /// <summary>
+    /// Go to previous frame
+    /// </summary>
+    private ReactiveCommand<Unit, Unit> CreatePreviousFrameCommand()
+    {
+        return ReactiveCommand.Create(() =>
+        {
+            if (!Workspace.MediaController.IsVideoLoaded)
+                return;
+            Workspace.MediaController.SeekTo(Workspace.MediaController.CurrentFrame - 1);
+        });
+    }
+
+    /// <summary>
+    /// Go to next boundary
+    /// </summary>
+    private ReactiveCommand<Unit, Unit> CreateNextBoundaryCommand()
+    {
+        return ReactiveCommand.Create(() =>
+        {
+            if (!Workspace.MediaController.IsVideoLoaded)
+                return;
+            throw new NotImplementedException();
+        });
+    }
+
+    /// <summary>
+    /// Go to previous boundary
+    /// </summary>
+    private ReactiveCommand<Unit, Unit> CreatePreviousBoundaryCommand()
+    {
+        return ReactiveCommand.Create(() =>
+        {
+            if (!Workspace.MediaController.IsVideoLoaded)
+                return;
+            throw new NotImplementedException();
+        });
+    }
+
+    /// <summary>
+    /// Go to next keyframe
+    /// </summary>
+    private ReactiveCommand<Unit, Unit> CreateNextKeyframeCommand()
+    {
+        return ReactiveCommand.Create(() =>
+        {
+            if (!Workspace.MediaController.IsVideoLoaded)
+                return;
+            var nextKeyframe = Workspace.MediaController.VideoInfo?.Keyframes.FirstOrDefault(kf =>
+                kf > Workspace.MediaController.CurrentFrame
+            );
+
+            if (nextKeyframe is not null)
+                Workspace.MediaController.SeekTo(nextKeyframe.Value);
+        });
+    }
+
+    /// <summary>
+    /// Go to previous keyframe
+    /// </summary>
+    private ReactiveCommand<Unit, Unit> CreatePreviousKeyframeCommand()
+    {
+        return ReactiveCommand.Create(() =>
+        {
+            if (!Workspace.MediaController.IsVideoLoaded)
+                return;
+            var nextKeyframe = Workspace.MediaController.VideoInfo?.Keyframes.LastOrDefault(kf =>
+                kf < Workspace.MediaController.CurrentFrame
+            );
+
+            if (nextKeyframe is not null)
+                Workspace.MediaController.SeekTo(nextKeyframe.Value);
+        });
+    }
+
+    /// <summary>
+    /// Increase video zoom level
+    /// </summary>
+    private ReactiveCommand<Unit, Unit> CreateZoomInCommand()
+    {
+        return ReactiveCommand.Create(() =>
+        {
+            if (!Workspace.MediaController.IsVideoLoaded)
+                return;
+            var scales = ScaleFactor.Scales;
+            var index = scales.IndexOf(Workspace.MediaController.ScaleFactor);
+
+            if (index < scales.Count - 1)
+                Workspace.MediaController.ScaleFactor = scales[index + 1];
+        });
+    }
+
+    /// <summary>
+    /// Decrease video zoom level
+    /// </summary>
+    private ReactiveCommand<Unit, Unit> CreateZoomOutCommand()
+    {
+        return ReactiveCommand.Create(() =>
+        {
+            if (!Workspace.MediaController.IsVideoLoaded)
+                return;
+            var scales = ScaleFactor.Scales;
+            var index = scales.IndexOf(Workspace.MediaController.ScaleFactor);
+
+            if (index > 0)
+                Workspace.MediaController.ScaleFactor = scales[index - 1];
+        });
     }
 }

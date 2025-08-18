@@ -1,0 +1,146 @@
+// SPDX-License-Identifier: GPL-3.0-only
+
+using System;
+using System.IO;
+using Avalonia.OpenGL;
+using Avalonia.Platform;
+using Silk.NET.OpenGLES;
+
+namespace Ameko.DataModels.OpenGl;
+
+public class Shader : IDisposable
+{
+    private readonly uint _handle;
+    private readonly GL _gl;
+    private readonly GlVersion _glVersion;
+
+    public Shader(GL gl, GlVersion version, Uri vertexPath, Uri fragmentPath)
+    {
+        _gl = gl;
+        _glVersion = version;
+
+        var vertex = LoadShader(ShaderType.VertexShader, vertexPath);
+        var fragment = LoadShader(ShaderType.FragmentShader, fragmentPath);
+
+        _handle = _gl.CreateProgram();
+        _gl.AttachShader(_handle, vertex);
+        _gl.AttachShader(_handle, fragment);
+        _gl.LinkProgram(_handle);
+        _gl.GetProgram(_handle, GLEnum.LinkStatus, out var status);
+        if (status == 0)
+            throw new OpenGlException($"Shader failed to link: {_gl.GetProgramInfoLog(_handle)}");
+
+        _gl.DetachShader(_handle, vertex);
+        _gl.DetachShader(_handle, fragment);
+        _gl.DeleteShader(vertex);
+        _gl.DeleteShader(fragment);
+    }
+
+    /// <summary>
+    /// Use the shader
+    /// </summary>
+    public void Use()
+    {
+        _gl.UseProgram(_handle);
+    }
+
+    /// <summary>
+    /// Set an integer value
+    /// </summary>
+    /// <param name="name">Name of the value</param>
+    /// <param name="value">Integer value</param>
+    /// <exception cref="OpenGlException">If setting fails</exception>
+    public void SetUniform(string name, int value)
+    {
+        var location = _gl.GetUniformLocation(_handle, name);
+        if (location == -1)
+            throw new OpenGlException($"Uniform '{name}' not found on shader.");
+
+        _gl.Uniform1(location, value);
+    }
+
+    /// <summary>
+    /// Set a float value
+    /// </summary>
+    /// <param name="name">Name of the value</param>
+    /// <param name="value">Float value</param>
+    /// <exception cref="OpenGlException">If setting fails</exception>
+    public void SetUniform(string name, float value)
+    {
+        var location = _gl.GetUniformLocation(_handle, name);
+        if (location == -1)
+            throw new OpenGlException($"Uniform '{name}' not found on shader.");
+
+        _gl.Uniform1(location, value);
+    }
+
+    /// <summary>
+    /// Get an attribute location
+    /// </summary>
+    /// <param name="name">Name of the attribute</param>
+    /// <returns>Index of the attribute</returns>
+    /// <exception cref="OpenGlException">If the attribute was not found</exception>
+    public uint GetAttribLocation(string name)
+    {
+        var location = _gl.GetAttribLocation(_handle, name);
+        if (location == -1)
+            throw new OpenGlException($"Attrib '{name}' not found on shader.");
+        return (uint)location;
+    }
+
+    /// <summary>
+    /// Load the given shader
+    /// </summary>
+    /// <param name="type">Type of shader being loaded</param>
+    /// <param name="uri">Path to the shader</param>
+    /// <returns>ID of the shader</returns>
+    /// <exception cref="OpenGlException">If loading fails</exception>
+    private uint LoadShader(ShaderType type, Uri uri)
+    {
+        using var reader = new StreamReader(AssetLoader.Open(uri));
+        var header = SelectGlslHeader(_glVersion);
+
+        var src = header + reader.ReadToEnd();
+
+        var handle = _gl.CreateShader(type);
+        _gl.ShaderSource(handle, src);
+        _gl.CompileShader(handle);
+
+        var infoLog = _gl.GetShaderInfoLog(handle);
+        if (!string.IsNullOrWhiteSpace(infoLog))
+            throw new OpenGlException($"Error compiling {type} shader: {infoLog}");
+
+        return handle;
+    }
+
+    /// <summary>
+    /// Select the appropriate OpenGL header
+    /// </summary>
+    /// <param name="glVersion">OpenGL version</param>
+    /// <returns>GLSL Header</returns>
+    /// <remarks>
+    /// When on a platform fronting OpenGL ES (e.g. Windows), ES headers will be provided.
+    /// Otherwise, when on a platform fronting desktop OpenGL (e.g. macOS), 150 Core will be provided.
+    /// </remarks>
+    private static string SelectGlslHeader(GlVersion glVersion)
+    {
+        if (glVersion.Type == GlProfileType.OpenGLES)
+            return "#version 300 es\n";
+        return "#version 150 core\n";
+    }
+
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            _gl.DeleteProgram(_handle);
+        }
+    }
+}

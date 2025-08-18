@@ -6,6 +6,7 @@
     <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <AvaloniaResource Include="Assets\**" />
@@ -40,6 +41,7 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.6" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="9.0.6" />
     <PackageReference Include="NLog" Version="5.5.0" />
+    <PackageReference Include="Silk.NET.OpenGLES" Version="2.22.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AssCS\AssCS.csproj" />
@@ -153,4 +155,16 @@
       <LastGenOutput>Git.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <ItemGroup>
+      <MIZUKI Include="$(SolutionDir)Mizuki\zig-out\bin\*.*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(MIZUKI)" DestinationFolder="$(TargetDir)" SkipUnchangedFiles="true" />
+  </Target>
+  <Target Name="PostPublish" AfterTargets="Publish">
+    <ItemGroup>
+      <MIZUKI Include="$(SolutionDir)Mizuki\zig-out\bin\*.*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(MIZUKI)" DestinationFolder="$(TargetDir)" SkipUnchangedFiles="true" />
+  </Target>
 </Project>

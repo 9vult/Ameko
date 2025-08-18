@@ -113,7 +113,7 @@ public class KeybindRegistrar(IFileSystem fileSystem) : IKeybindRegistrar
     /// <inheritdoc />
     public IEnumerable<Keybind> GetKeybinds(KeybindContext filter)
     {
-        return _keybinds.Values.Where(keybind => (keybind.DefaultContext & filter) != 0);
+        return _keybinds.Values.Where(keybind => (keybind.Context & filter) != 0);
     }
 
     /// <inheritdoc />
