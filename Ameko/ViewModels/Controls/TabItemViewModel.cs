@@ -93,8 +93,14 @@ public partial class TabItemViewModel : ViewModelBase
     [KeybindTarget("ameko.video.keyframe.next", KeybindContext.Video)]
     public ICommand NextKeyframeCommand { get; }
 
-    [KeybindTarget("ameko.keyframe.previous", KeybindContext.Video)]
+    [KeybindTarget("ameko.video.keyframe.previous", KeybindContext.Video)]
     public ICommand PreviousKeyframeCommand { get; }
+
+    [KeybindTarget("ameko.video.zoom.in", "Ctrl+OemPlus", KeybindContext.Video)]
+    public ICommand ZoomInCommand { get; }
+
+    [KeybindTarget("ameko.video.zoom.out", "Ctrl+OemMinus", KeybindContext.Video)]
+    public ICommand ZoomOutCommand { get; }
 
     #endregion
 
@@ -163,7 +169,9 @@ public partial class TabItemViewModel : ViewModelBase
         NextBoundaryCommand = CreateNextBoundaryCommand();
         PreviousBoundaryCommand = CreatePreviousBoundaryCommand();
         NextKeyframeCommand = CreateNextKeyframeCommand();
-        PreviousKeyframeCommand = CreateNextKeyframeCommand();
+        PreviousKeyframeCommand = CreatePreviousKeyframeCommand();
+        ZoomInCommand = CreateZoomInCommand();
+        ZoomOutCommand = CreateZoomOutCommand();
         #endregion
 
         _workspace = workspace;

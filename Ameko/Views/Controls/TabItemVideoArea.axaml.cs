@@ -24,7 +24,10 @@ public partial class TabItemVideoArea : ReactiveUserControl<TabItemViewModel>
         switch (e.KeyModifiers)
         {
             case KeyModifiers.Control:
-                // TODO: Change zoom
+                if (e.Delta.Y > 0)
+                    ViewModel.ZoomInCommand.Execute(null);
+                else
+                    ViewModel.ZoomOutCommand.Execute(null);
                 e.Handled = true;
                 break;
             case KeyModifiers.Alt:
