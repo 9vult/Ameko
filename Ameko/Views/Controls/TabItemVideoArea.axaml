@@ -9,6 +9,7 @@
              d:DesignHeight="400"
 
              xmlns:c="clr-namespace:Ameko.Views.Controls"
+             xmlns:converters="clr-namespace:Ameko.Converters"
              xmlns:holo="clr-namespace:Holo.Media;assembly=Holo"
              xmlns:i18n="clr-namespace:Ameko.I18N"
              xmlns:icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
@@ -16,6 +17,9 @@
 
              x:Class="Ameko.Views.Controls.TabItemVideoArea"
              x:DataType="vm:TabItemViewModel">
+    <Control.Resources>
+        <converters:SeekSliderMaxConverter x:Key="MaxConverter" />
+    </Control.Resources>
     <DockPanel IsEnabled="{Binding Workspace.MediaController.IsVideoLoaded}"
                Margin="2">
         <Grid DockPanel.Dock="Bottom"
@@ -28,7 +32,12 @@
                           SmallChange="1"
                           LargeChange="25"
                           TickFrequency="1"
-                          TickPlacement="Outside" />
+                          TickPlacement="Outside"
+                          Minimum="0"
+                          Maximum="{Binding Workspace.MediaController.VideoInfo.FrameCount,
+                                            Converter={StaticResource MaxConverter},
+                                            FallbackValue=1}"
+                          Value="{Binding Workspace.MediaController.CurrentFrame}" />
             <StackPanel Grid.Column="0"
                         Grid.Row="1"
                         Orientation="Horizontal"
