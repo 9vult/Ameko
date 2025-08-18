@@ -37,6 +37,9 @@
             <MenuItem Header="{x:Static i18n:Resources.Menu_OpenSolution}"
                       Icon="{icons:MaterialIconExt Kind=ArchiveArrowUpOutline}"
                       Command="{Binding OpenSolutionCommand}" />
+            <MenuItem Header="{x:Static i18n:Resources.Menu_OpenSolutionFolder}"
+                      Icon="{icons:MaterialIconExt Kind=ArchiveSearchOutline}"
+                      Command="{Binding OpenFolderAsSolutionCommand}" />
             <MenuItem Header="{x:Static i18n:Resources.Menu_SaveSolution}"
                       Icon="{icons:MaterialIconExt Kind=ArchiveArrowDownOutline}"
                       Command="{Binding SaveSolutionCommand}" />
@@ -86,7 +89,8 @@
         </MenuItem>
         <MenuItem Header="{x:Static i18n:Resources.Menu_Scripts}"
                   ItemsSource="{Binding ScriptMenuItems}" />
-        <MenuItem Header="{x:Static i18n:Resources.Menu_Layouts}" />
+        <MenuItem Header="{x:Static i18n:Resources.Menu_Layouts}"
+                  ItemsSource="{Binding LayoutMenuItems}"/>
         <MenuItem Header="{x:Static i18n:Resources.Menu_Help}">
             <MenuItem Header="{x:Static i18n:Resources.Menu_Configuration}"
                       Icon="{icons:MaterialIconExt Kind=CogOutline}" />

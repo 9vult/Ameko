@@ -4,23 +4,16 @@ using System;
 using System.Globalization;
 using Avalonia.Data.Converters;
 using Holo.Scripting.Models;
-using Material.Icons;
-using Material.Icons.Avalonia;
 
 namespace Ameko.Converters;
 
-public class DepCtrlIconConverter : IValueConverter
+public class PkgManDependencyConverter : IValueConverter
 {
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        if (value is not ModuleType type)
-            return null;
-        return type switch
-        {
-            ModuleType.Script => new MaterialIcon { Kind = MaterialIconKind.CodeBlockBraces },
-            ModuleType.Library => new MaterialIcon { Kind = MaterialIconKind.Bookshelf },
-            _ => null,
-        };
+        return value is Module module
+            ? string.Join(Environment.NewLine, module.Dependencies)
+            : I18N.PkgMan.PkgMan_Info_NoSelection;
     }
 
     public object? ConvertBack(

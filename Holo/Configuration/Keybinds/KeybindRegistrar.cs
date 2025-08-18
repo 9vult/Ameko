@@ -218,5 +218,5 @@ public class KeybindRegistrar(IFileSystem fileSystem) : IKeybindRegistrar
     }
 
     /// <inheritdoc />
-    public event IKeybindRegistrar.KeybindsChangedEventHandler? OnKeybindsChanged;
+    public event EventHandler<EventArgs>? OnKeybindsChanged;
 }

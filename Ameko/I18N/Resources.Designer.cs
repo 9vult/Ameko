@@ -438,15 +438,6 @@ namespace Ameko.I18N {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Open _Dependency Control....
-        /// </summary>
-        public static string Menu_DependencyControl {
-            get {
-                return ResourceManager.GetString("Menu_DependencyControl", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to _Edit.
         /// </summary>
         public static string Menu_Edit {
@@ -528,6 +519,15 @@ namespace Ameko.I18N {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Open _Folder as Solution....
+        /// </summary>
+        public static string Menu_OpenSolutionFolder {
+            get {
+                return ResourceManager.GetString("Menu_OpenSolutionFolder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to _Open Subtitle....
         /// </summary>
         public static string Menu_OpenSubtitle {
@@ -546,6 +546,15 @@ namespace Ameko.I18N {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Open _Package Manager....
+        /// </summary>
+        public static string Menu_PackageManager {
+            get {
+                return ResourceManager.GetString("Menu_PackageManager", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to _Quit.
         /// </summary>
         public static string Menu_Quit {
@@ -560,6 +569,15 @@ namespace Ameko.I18N {
         public static string Menu_Redo {
             get {
                 return ResourceManager.GetString("Menu_Redo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to _Reload Layouts.
+        /// </summary>
+        public static string Menu_ReloadLayouts {
+            get {
+                return ResourceManager.GetString("Menu_ReloadLayouts", resourceCulture);
             }
         }
         

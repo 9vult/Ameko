@@ -16,7 +16,7 @@ namespace Ameko.Services;
 public static class ScriptMenuService
 {
     public static List<MenuItem> GenerateMenuItemSource(
-        IList<HoloScript> scripts,
+        IList<IHoloExecutable> scripts,
         ICommand executeScriptCommand
     )
     {
@@ -35,20 +35,25 @@ public static class ScriptMenuService
                 Icon = new MaterialIcon { Kind = MaterialIconKind.CodeBlockBraces },
             };
 
-            if (script.Info.Submenu is not null)
+            var headless = script.Info.Headless && script.Info.Exports.Length != 0;
+
+            if (!headless) // Only add if not headless
             {
-                if (!subItemsMap.ContainsKey(script.Info.Submenu))
-                    subItemsMap[script.Info.Submenu] = [];
-                subItemsMap[script.Info.Submenu].Add(menu);
-            }
-            else
-            {
-                rootItems.Add(menu);
+                if (script.Info.Submenu is not null)
+                {
+                    if (!subItemsMap.ContainsKey(script.Info.Submenu))
+                        subItemsMap[script.Info.Submenu] = [];
+                    subItemsMap[script.Info.Submenu].Add(menu);
+                }
+                else
+                {
+                    rootItems.Add(menu);
+                }
             }
 
             foreach (var methodInfo in script.Info.Exports)
             {
-                var fullQualifiedName = $"{script.Info.QualifiedName}.{methodInfo.QualifiedName}";
+                var fullQualifiedName = $"{script.Info.QualifiedName}+{methodInfo.QualifiedName}";
                 var methodMenu = new MenuItem
                 {
                     Header = methodInfo.DisplayName,
@@ -90,13 +95,13 @@ public static class ScriptMenuService
         };
     }
 
-    public static MenuItem GenerateDepCtlMenuItem(ICommand depCtlCommand)
+    public static MenuItem GeneratePkgManMenuItem(ICommand pkgManCommand)
     {
         return new MenuItem
         {
-            Header = I18N.Resources.Menu_DependencyControl,
-            Command = depCtlCommand,
-            Icon = new MaterialIcon { Kind = MaterialIconKind.EarthArrowDown },
+            Header = I18N.Resources.Menu_PackageManager,
+            Command = pkgManCommand,
+            Icon = new MaterialIcon { Kind = MaterialIconKind.PackageVariant },
         };
     }
 }

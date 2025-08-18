@@ -6,9 +6,9 @@ using Avalonia.Markup.Xaml;
 
 namespace Ameko.Views.Controls;
 
-public partial class DepCtrlRepositoriesTab : UserControl
+public partial class PkgManModulesTab : UserControl
 {
-    public DepCtrlRepositoriesTab()
+    public PkgManModulesTab()
     {
         InitializeComponent();
     }

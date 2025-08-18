@@ -80,10 +80,11 @@ public sealed class ScriptServiceLocator
         );
     }
 
-    internal ScriptServiceLocator(
+    public ScriptServiceLocator(
         IConfiguration configuration,
         IGlobals globals,
-        ISolutionProvider solutionProvider
+        ISolutionProvider solutionProvider,
+        IScriptConfigurationService scriptConfigurationService
     )
     {
         Services = new Dictionary<Type, object>
@@ -91,6 +92,7 @@ public sealed class ScriptServiceLocator
             [typeof(IConfiguration)] = configuration,
             [typeof(IGlobals)] = globals,
             [typeof(ISolutionProvider)] = solutionProvider,
+            [typeof(IScriptConfigurationService)] = scriptConfigurationService,
         };
     }
 }

@@ -313,6 +313,24 @@ public partial class TabItemViewModel : ViewModelBase
     }
 
     /// <summary>
+    /// Toggle whether an event is a comment or not
+    /// </summary>
+    private ReactiveCommand<Unit, Unit> CreateToggleCommentCommand()
+    {
+        return ReactiveCommand.Create(() =>
+        {
+            foreach (var @event in Workspace.SelectionManager.SelectedEventCollection)
+            {
+                @event.IsComment = !@event.IsComment;
+            }
+            Workspace.Commit(
+                Workspace.SelectionManager.SelectedEventCollection,
+                CommitType.EventMeta
+            );
+        });
+    }
+
+    /// <summary>
     /// Execute a Script
     /// </summary>
     private ReactiveCommand<string, Unit> CreateExecuteScriptCommand()

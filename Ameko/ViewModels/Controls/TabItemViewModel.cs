@@ -63,6 +63,9 @@ public partial class TabItemViewModel : ViewModelBase
     // I don't think this needs a binding?
     public ICommand GetOrCreateAfterCommand { get; }
     public ICommand ToggleTagCommand { get; }
+
+    [KeybindTarget("ameko.event.toggleComment")]
+    public ICommand ToggleCommentCommand { get; }
     public ICommand ExecuteScriptCommand { get; }
 
     // Video
@@ -114,6 +117,7 @@ public partial class TabItemViewModel : ViewModelBase
     public ISolutionProvider SolutionProvider { get; }
     public IConfiguration Configuration { get; }
     public KeybindService KeybindService { get; }
+    public ILayoutProvider LayoutProvider { get; }
 
     public int EditBoxSelectionStart
     {
@@ -132,6 +136,7 @@ public partial class TabItemViewModel : ViewModelBase
         IConfiguration configuration,
         KeybindService keybindService,
         IScriptService scriptService,
+        ILayoutProvider layoutProvider,
         Workspace workspace
     )
     {
@@ -156,6 +161,7 @@ public partial class TabItemViewModel : ViewModelBase
         DeleteEventsCommand = CreateDeleteEventsCommand();
         GetOrCreateAfterCommand = CreateGetOrCreateAfterCommand();
         ToggleTagCommand = CreateToggleTagCommand();
+        ToggleCommentCommand = CreateToggleCommentCommand();
 
         ExecuteScriptCommand = CreateExecuteScriptCommand();
 
@@ -179,5 +185,6 @@ public partial class TabItemViewModel : ViewModelBase
         SolutionProvider = solutionProvider;
         Configuration = configuration;
         KeybindService = keybindService;
+        LayoutProvider = layoutProvider;
     }
 }

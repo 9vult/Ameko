@@ -8,7 +8,7 @@ namespace Holo.Scripting;
 /// <summary>
 /// Base class for user scripts
 /// </summary>
-public abstract class HoloScript
+public abstract class HoloScript : IHoloExecutable
 {
     /// <summary>
     /// Basic script information

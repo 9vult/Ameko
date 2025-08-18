@@ -27,13 +27,14 @@
     
     <DockPanel>
         <c:MenuStrip DockPanel.Dock="Top" />
-        <Grid>
+        <Grid Name="MainWindowGrid">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" MinWidth="100" />
                 <ColumnDefinition Width="2" />
                 <ColumnDefinition Width="*" MinWidth="500" />
             </Grid.ColumnDefinitions>
-            <c:SolutionExplorer Grid.Column="0" />
+            <c:SolutionExplorer Name="SolutionExplorer"
+                                Grid.Column="0" />
             <GridSplitter Grid.Column="1" ResizeDirection="Columns" />
             <TabControl Grid.Column="2"
                         Name="WorkspaceTabControl"
@@ -45,6 +46,7 @@
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="{Binding DisplayTitle, Mode=OneWay}" />
                             <Button Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).CloseTabCommand, FallbackValue=.}"
+                                    CommandParameter="{Binding Id}"
                                     ToolTip.Tip="{x:Static i18n:Resources.Tab_CloseButton_ToolTip}">
                                 <icons:MaterialIconExt Kind="CloseBox" />
                                 <Button.Styles>

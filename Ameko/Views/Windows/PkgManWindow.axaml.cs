@@ -11,7 +11,7 @@ using ReactiveUI;
 
 namespace Ameko.Views.Windows;
 
-public partial class DepCtrlWindow : ReactiveWindow<DepCtrlWindowViewModel>
+public partial class PkgManWindow : ReactiveWindow<PkgManWindowViewModel>
 {
     private async Task DoShowMessageBoxAsync(
         IInteractionContext<IMsBox<ButtonResult>, Unit> interaction
@@ -21,7 +21,7 @@ public partial class DepCtrlWindow : ReactiveWindow<DepCtrlWindowViewModel>
         interaction.SetOutput(Unit.Default);
     }
 
-    public DepCtrlWindow()
+    public PkgManWindow()
     {
         InitializeComponent();
 

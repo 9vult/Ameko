@@ -16,6 +16,7 @@ using Avalonia.ReactiveUI;
 using Avalonia.Styling;
 using Holo;
 using Holo.Configuration.Keybinds;
+using Holo.Models;
 using NLog;
 using ReactiveUI;
 
@@ -139,6 +140,25 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         interaction.SetOutput(null);
     }
 
+    private async Task DoShowOpenFolderAsSolutionDialogAsync(
+        IInteractionContext<Unit, Uri?> interaction
+    )
+    {
+        var dirs = await StorageProvider.OpenFolderPickerAsync(
+            new FolderPickerOpenOptions
+            {
+                Title = I18N.Other.FileDialog_OpenFolderAsSolution_Title,
+                AllowMultiple = false,
+            }
+        );
+        if (dirs.Count > 0)
+        {
+            interaction.SetOutput(dirs[0].Path);
+            return;
+        }
+        interaction.SetOutput(null);
+    }
+
     private async Task DoShowSaveSolutionAsDialogAsync(
         IInteractionContext<string, Uri?> interaction
     )
@@ -214,12 +234,12 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         interaction.SetOutput(null);
     }
 
-    private async Task DoShowDepCtlWindowAsync(
-        IInteractionContext<DepCtrlWindowViewModel, Unit> interaction
+    private async Task DoShowPkgManWindowAsync(
+        IInteractionContext<PkgManWindowViewModel, Unit> interaction
     )
     {
         Log.Trace("Displaying Dependency Control");
-        var window = new DepCtrlWindow { DataContext = interaction.Input };
+        var window = new PkgManWindow { DataContext = interaction.Input };
         await window.ShowDialog(this);
         interaction.SetOutput(Unit.Default);
     }
@@ -256,6 +276,9 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
                 ViewModel.SaveSubtitleAs.RegisterHandler(DoShowSaveSubtitleAsDialogAsync);
                 ViewModel.ExportSubtitle.RegisterHandler(DoShowExportSubtitleDialogAsync);
                 ViewModel.OpenSolution.RegisterHandler(DoShowOpenSolutionDialogAsync);
+                ViewModel.OpenFolderAsSolution.RegisterHandler(
+                    DoShowOpenFolderAsSolutionDialogAsync
+                );
                 ViewModel.SaveSolutionAs.RegisterHandler(DoShowSaveSolutionAsDialogAsync);
                 // Subtitle
                 ViewModel.ShowStylesManager.RegisterHandler(DoShowStylesManager);
@@ -265,7 +288,7 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
                 // Video
                 ViewModel.OpenVideo.RegisterHandler(DoShowOpenVideoDialogAsync);
                 // Scripts
-                ViewModel.ShowDependencyControl.RegisterHandler(DoShowDepCtlWindowAsync);
+                ViewModel.ShowPackageManager.RegisterHandler(DoShowPkgManWindowAsync);
                 // Help
                 ViewModel.ShowLogWindow.RegisterHandler(DoShowLogWindow);
                 ViewModel.ShowAboutWindow.RegisterHandler(DoShowAboutWindowAsync);
@@ -276,12 +299,46 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
                 {
                     AttachKeybinds();
                 };
+
+                // Apply layouts
+                ApplyLayout(ViewModel, ViewModel.LayoutProvider.Current);
+                ViewModel.LayoutProvider.OnLayoutChanged += (_, args) =>
+                {
+                    ApplyLayout(ViewModel, args.Layout);
+                };
             }
 
             Disposable.Create(() => { }).DisposeWith(disposables);
         });
 
         Log.Info("Done!");
+    }
+
+    private void ApplyLayout(MainWindowViewModel? vm, Layout? layout)
+    {
+        if (vm is null || layout is null)
+            return;
+
+        if (layout.Window.IsSolutionExplorerOnLeft)
+        {
+            var columnDefinitions = new ColumnDefinitions("Auto, 2, *");
+            columnDefinitions[0].MinWidth = 100;
+            columnDefinitions[2].MinWidth = 500;
+            MainWindowGrid.ColumnDefinitions = columnDefinitions;
+
+            SolutionExplorer.SetValue(Grid.ColumnProperty, 0);
+            WorkspaceTabControl.SetValue(Grid.ColumnProperty, 2);
+        }
+        else
+        {
+            var columnDefinitions = new ColumnDefinitions("*, 2, Auto");
+            columnDefinitions[0].MinWidth = 500;
+            columnDefinitions[2].MinWidth = 150;
+            MainWindowGrid.ColumnDefinitions = columnDefinitions;
+
+            SolutionExplorer.SetValue(Grid.ColumnProperty, 2);
+            WorkspaceTabControl.SetValue(Grid.ColumnProperty, 0);
+        }
     }
 
     private void AttachKeybinds()

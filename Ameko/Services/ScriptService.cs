@@ -5,12 +5,19 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.IO.Abstractions;
 using System.Linq;
 using System.Threading.Tasks;
+using Ameko.Converters;
+using AssCS.History;
 using Avalonia.Threading;
 using CSScriptLib;
 using Holo.IO;
+using Holo.Providers;
 using Holo.Scripting;
+using Holo.Scripting.Models;
+using Jint;
+using Jint.Native;
 using MsBox.Avalonia;
 using NLog;
 
@@ -24,33 +31,88 @@ public class ScriptService : IScriptService
     private static readonly Uri ScriptsRoot = new(Path.Combine(Directories.DataHome, "scripts"));
     private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-    private readonly ObservableCollection<HoloScript> _scripts;
+    private readonly IFileSystem _fileSystem;
+    private readonly ISolutionProvider _solutionProvider;
+    private readonly ObservableCollection<IHoloExecutable> _scripts;
     private readonly Dictionary<string, HoloScript?> _scriptMap;
+    private readonly Dictionary<string, HoloScriptlet?> _scriptletMap;
 
-    /// <inheritdoc cref="IScriptService.Scripts"/>
-    public AssCS.Utilities.ReadOnlyObservableCollection<HoloScript> Scripts { get; }
+    /// <inheritdoc />
+    public AssCS.Utilities.ReadOnlyObservableCollection<IHoloExecutable> Scripts { get; }
 
-    /// <inheritdoc cref="IScriptService.TryGetScript"/>
+    /// <inheritdoc />
     public bool TryGetScript(string qualifiedName, [NotNullWhen(true)] out HoloScript? script)
     {
         return _scriptMap.TryGetValue(qualifiedName, out script);
     }
 
-    /// <inheritdoc cref="IScriptService.ExecuteScriptAsync"/>
+    /// <inheritdoc />
+    public bool TryGetScriptlet(string qualifiedName, [NotNullWhen(true)] out HoloScriptlet? script)
+    {
+        return _scriptletMap.TryGetValue(qualifiedName, out script);
+    }
+
+    /// <inheritdoc />
     public async Task<ExecutionResult> ExecuteScriptAsync(string qualifiedName)
     {
         // Try running as a script
         if (TryGetScript(qualifiedName, out var script))
         {
-            return await script.ExecuteAsync();
+            try
+            {
+                return await script.ExecuteAsync();
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex, "Error executing script");
+                return new ExecutionResult
+                {
+                    Status = ExecutionStatus.Failure,
+                    Message = ex.ToString(),
+                };
+            }
         }
 
         // Try running as an exported function
-        var scriptName = qualifiedName[..qualifiedName.LastIndexOf('.')];
-        var methodName = qualifiedName[(qualifiedName.LastIndexOf('.') + 1)..];
-        if (TryGetScript(scriptName, out script))
+
+        if (qualifiedName.LastIndexOf('+') >= 0)
         {
-            return await script.ExecuteAsync(methodName);
+            var scriptName = qualifiedName[..qualifiedName.LastIndexOf('+')];
+            var methodName = qualifiedName[(qualifiedName.LastIndexOf('+') + 1)..];
+            if (TryGetScript(scriptName, out script))
+            {
+                try
+                {
+                    return await script.ExecuteAsync(methodName);
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error(ex, "Error executing script");
+                    return new ExecutionResult
+                    {
+                        Status = ExecutionStatus.Failure,
+                        Message = ex.ToString(),
+                    };
+                }
+            }
+        }
+
+        // Try running a scriptlet
+        if (TryGetScriptlet(qualifiedName, out var scriptlet))
+        {
+            var engine = new Engine(cfg => cfg.AllowClr())
+                .SetValue("CommitType", typeof(CommitType))
+                .SetValue("logger", LogManager.GetLogger(scriptlet.Info.QualifiedName));
+
+            var success = engine
+                .Execute(scriptlet.CompiledScript)
+                .Invoke("execute", _solutionProvider.Current);
+
+            return success is JsBoolean jsBool
+                ? jsBool.AsBoolean()
+                    ? ExecutionResult.Success
+                    : new ExecutionResult { Status = ExecutionStatus.Failure }
+                : ExecutionResult.Success;
         }
 
         // Not found
@@ -62,7 +124,7 @@ public class ScriptService : IScriptService
         };
     }
 
-    /// <inheritdoc cref="IScriptService.Reload"/>
+    /// <inheritdoc />
     public async Task Reload(bool isManual)
     {
         Logger.Info("Reloading scripts...");
@@ -96,20 +158,65 @@ public class ScriptService : IScriptService
             }
         }
 
+        List<HoloScriptlet> loadedScriptlets = [];
+
+        var scriptletPaths = Directory.EnumerateFiles(ScriptsRoot.LocalPath, "*.js");
+
+        foreach (var path in scriptletPaths)
+        {
+            try
+            {
+                Logger.Trace($"Loading scriptlet {path}...");
+                await using var fs = _fileSystem.FileStream.New(
+                    path,
+                    FileMode.Open,
+                    FileAccess.Read,
+                    FileShare.ReadWrite
+                );
+                using var reader = new StreamReader(fs);
+                var compiled = Engine.PrepareScript(await reader.ReadToEndAsync());
+                var scriptletInfo = new Engine().Execute(compiled).Evaluate("scriptInfo");
+                loadedScriptlets.Add(
+                    new HoloScriptlet
+                    {
+                        Info = new ModuleInfo
+                        {
+                            DisplayName = scriptletInfo.Get("displayName").ToString(),
+                            QualifiedName = scriptletInfo.Get("qualifiedName").ToString(),
+                        },
+                        CompiledScript = compiled,
+                    }
+                );
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
+        }
+
         // For informational purposes
         var libCount = Directory.GetFiles(ScriptsRoot.LocalPath, "*.lib.cs").Length;
-        Logger.Info($"Reloaded {loadedScripts.Count} scripts ({libCount} libraries)");
+        Logger.Info(
+            $"Reloaded {loadedScripts.Count} scripts ({libCount} libraries) and {loadedScriptlets.Count} scriptlets"
+        );
 
         // Update UI-bound collections and fire event on the UI thread for safety
         await Dispatcher.UIThread.InvokeAsync(() =>
         {
             _scripts.Clear();
             _scriptMap.Clear();
+            _scriptletMap.Clear();
 
             foreach (var script in loadedScripts)
             {
                 _scripts.Add(script);
                 _scriptMap.Add(script.Info.QualifiedName, script);
+            }
+
+            foreach (var script in loadedScriptlets)
+            {
+                _scripts.Add(script);
+                _scriptletMap.Add(script.Info.QualifiedName, script);
             }
 
             // Fire event
@@ -121,6 +228,9 @@ public class ScriptService : IScriptService
             await DisplayMessageBoxAsync(I18N.Other.MsgBox_ScriptService_Reload_Body);
     }
 
+    /// <inheritdoc />
+    public event EventHandler<EventArgs>? OnReload;
+
     private static async Task DisplayMessageBoxAsync(string message)
     {
         var box = MessageBoxManager.GetMessageBoxStandard(
@@ -130,12 +240,14 @@ public class ScriptService : IScriptService
         await box.ShowAsync();
     }
 
-    public ScriptService()
+    public ScriptService(IFileSystem fileSystem, ISolutionProvider solutionProvider)
     {
+        _fileSystem = fileSystem;
+        _solutionProvider = solutionProvider;
+
         _scripts = [];
         _scriptMap = [];
-        Scripts = new AssCS.Utilities.ReadOnlyObservableCollection<HoloScript>(_scripts);
+        _scriptletMap = [];
+        Scripts = new AssCS.Utilities.ReadOnlyObservableCollection<IHoloExecutable>(_scripts);
     }
-
-    public event IScriptService.ReloadEventHandler? OnReload;
 }

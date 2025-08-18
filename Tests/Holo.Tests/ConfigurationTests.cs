@@ -97,9 +97,9 @@ public class ConfigurationTests
             "AutosaveInterval": 120,
             "LineWidthIncludesWhitespace": true,
             "LineWidthIncludesPunctuation": true,
-            "UseColorRing": false,
             "Culture": "en-US",
             "Theme": "light",
+            "GridPadding": 2,
             "RepositoryUrls": []
         }
         """;

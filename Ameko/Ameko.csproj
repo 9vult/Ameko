@@ -34,6 +34,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Jint" Version="4.2.2" />
     <PackageReference Include="Markdown.Avalonia.Tight" Version="11.0.3-a1" />
     <PackageReference Include="Material.Icons.Avalonia" Version="2.4.1" />
     <PackageReference Include="MessageBox.Avalonia" Version="3.2.0" />
@@ -65,8 +66,8 @@
     <Compile Update="ViewModels\Windows\StylesManagerWindowViewModel.Commands.cs">
       <DependentUpon>StylesManagerWindowViewModel.cs</DependentUpon>
     </Compile>
-    <Compile Update="ViewModels\Windows\DepCtrlWindowViewModel.commands.cs">
-      <DependentUpon>DepCtrlWindowViewModel.cs</DependentUpon>
+    <Compile Update="ViewModels\Windows\PkgManWindowViewModel.commands.cs">
+      <DependentUpon>PkgManWindowViewModel.cs</DependentUpon>
     </Compile>
     <Compile Update="Views\Controls\RepositoryInformation.axaml.cs">
       <DependentUpon>RepositoryInformation.axaml</DependentUpon>
@@ -82,10 +83,10 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>About.resx</DependentUpon>
     </Compile>
-    <Compile Update="I18N\DepCtrl.Designer.cs">
+    <Compile Update="I18N\PkgMan.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
-      <DependentUpon>DepCtrl.resx</DependentUpon>
+      <DependentUpon>PkgMan.resx</DependentUpon>
     </Compile>
     <Compile Update="I18N\StylesManager.Designer.cs">
       <DesignTime>True</DesignTime>
@@ -107,6 +108,14 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>PasteOver.resx</DependentUpon>
     </Compile>
+    <Compile Update="I18N\Git.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Git.resx</DependentUpon>
+    </Compile>
+    <Compile Update="ViewModels\Controls\GitToolboxViewModel.Commands.cs">
+      <DependentUpon>GitToolboxViewModel.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Update="I18N\Resources.resx">
@@ -121,9 +130,9 @@
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>About.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Update="I18N\DepCtrl.resx">
+    <EmbeddedResource Update="I18N\PkgMan.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>DepCtrl.Designer.cs</LastGenOutput>
+      <LastGenOutput>PkgMan.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Update="I18N\StylesManager.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
@@ -140,6 +149,10 @@
     <EmbeddedResource Update="I18N\PasteOver.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>PasteOver.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="I18N\Git.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Git.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">

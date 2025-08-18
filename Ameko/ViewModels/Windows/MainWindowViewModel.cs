@@ -8,13 +8,13 @@ using System.Reactive;
 using System.Windows.Input;
 using Ameko.Services;
 using Ameko.Utilities;
+using Ameko.ViewModels.Controls;
 using Ameko.ViewModels.Dialogs;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using DynamicData;
 using Holo;
 using Holo.Configuration.Keybinds;
-using Holo.Models;
 using Holo.Providers;
 using NLog;
 using ReactiveUI;
@@ -24,7 +24,7 @@ namespace Ameko.ViewModels.Windows;
 [KeybindContext(KeybindContext.Global)]
 public partial class MainWindowViewModel : ViewModelBase
 {
-    private static readonly Logger Log = LogManager.GetCurrentClassLogger();
+    private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
     private readonly IServiceProvider _serviceProvider;
     private readonly IStylesManagerFactory _stylesManagerFactory;
@@ -32,12 +32,15 @@ public partial class MainWindowViewModel : ViewModelBase
     private readonly IScriptService _scriptService;
     private readonly IFileSystem _fileSystem;
 
+    public ILayoutProvider LayoutProvider { get; }
+
     #region Interactions
     // File
     public Interaction<Unit, Uri[]> OpenSubtitle { get; }
     public Interaction<string, Uri?> SaveSubtitleAs { get; }
     public Interaction<string, Uri?> ExportSubtitle { get; }
     public Interaction<Unit, Uri?> OpenSolution { get; }
+    public Interaction<Unit, Uri?> OpenFolderAsSolution { get; }
     public Interaction<string, Uri?> SaveSolutionAs { get; }
 
     // Subtitle
@@ -51,7 +54,7 @@ public partial class MainWindowViewModel : ViewModelBase
     public Interaction<Unit, Uri?> OpenVideo { get; }
 
     // Scripts
-    public Interaction<DepCtrlWindowViewModel, Unit> ShowDependencyControl { get; }
+    public Interaction<PkgManWindowViewModel, Unit> ShowPackageManager { get; }
 
     // Help
     public Interaction<LogWindowViewModel, Unit> ShowLogWindow { get; }
@@ -77,6 +80,9 @@ public partial class MainWindowViewModel : ViewModelBase
 
     [KeybindTarget("ameko.solution.open")]
     public ICommand OpenSolutionCommand { get; }
+
+    [KeybindTarget("ameko.solution.openFolder")]
+    public ICommand OpenFolderAsSolutionCommand { get; }
 
     [KeybindTarget("ameko.solution.save")]
     public ICommand SaveSolutionCommand { get; }
@@ -107,8 +113,12 @@ public partial class MainWindowViewModel : ViewModelBase
     [KeybindTarget("ameko.scripts.reload")]
     public ICommand ReloadScriptsCommand { get; }
 
-    [KeybindTarget("ameko.depCtrl.show")]
-    public ICommand ShowDependencyControlCommand { get; }
+    [KeybindTarget("ameko.pkgMan.show")]
+    public ICommand ShowPackageManagerCommand { get; }
+
+    // Layouts
+    public ICommand SelectLayoutCommand { get; }
+    public ICommand RefreshLayoutsCommand { get; }
 
     // Help
     [KeybindTarget("ameko.logs.show", "Ctrl+L")]
@@ -127,11 +137,13 @@ public partial class MainWindowViewModel : ViewModelBase
 
     public ISolutionProvider SolutionProvider { get; }
     public KeybindService KeybindService { get; }
+    public GitToolboxViewModel GitToolboxViewModel { get; }
 
     public ObservableCollection<TemplatedControl> ScriptMenuItems { get; }
+    public ObservableCollection<TemplatedControl> LayoutMenuItems { get; }
 
     /// <summary>
-    /// Window title
+    /// WindowSection title
     /// </summary>
     public string WindowTitle { get; } = $"Ameko {VersionService.FullLabel}";
 
@@ -155,7 +167,7 @@ public partial class MainWindowViewModel : ViewModelBase
 
     private void GenerateScriptsMenu()
     {
-        Log.Trace("Regenerating scripts menu...");
+        Logger.Trace("Regenerating scripts menu...");
         ScriptMenuItems.Clear();
         ScriptMenuItems.AddRange(
             ScriptMenuService.GenerateMenuItemSource(_scriptService.Scripts, ExecuteScriptCommand)
@@ -163,8 +175,20 @@ public partial class MainWindowViewModel : ViewModelBase
 
         ScriptMenuItems.Add(new Separator());
         ScriptMenuItems.Add(ScriptMenuService.GenerateReloadMenuItem(ReloadScriptsCommand));
-        ScriptMenuItems.Add(ScriptMenuService.GenerateDepCtlMenuItem(ShowDependencyControlCommand));
-        Log.Trace("Done!");
+        ScriptMenuItems.Add(ScriptMenuService.GeneratePkgManMenuItem(ShowPackageManagerCommand));
+        Logger.Trace("Done!");
+    }
+
+    private void GenerateLayoutsMenu()
+    {
+        Logger.Trace("Regenerating layouts menu...");
+        LayoutMenuItems.Clear();
+        LayoutMenuItems.AddRange(
+            LayoutMenuService.GenerateMenuItemSource(LayoutProvider.Layouts, SelectLayoutCommand)
+        );
+        LayoutMenuItems.Add(new Separator());
+        LayoutMenuItems.Add(LayoutMenuService.GenerateReloadMenuItem(RefreshLayoutsCommand));
+        Logger.Trace("Done!");
     }
 
     public MainWindowViewModel(
@@ -173,8 +197,10 @@ public partial class MainWindowViewModel : ViewModelBase
         IStylesManagerFactory stylesManagerFactory,
         IIoService ioService,
         IScriptService scriptService,
+        ILayoutProvider layoutProvider,
         IFileSystem fileSystem,
-        KeybindService keybindService
+        KeybindService keybindService,
+        GitToolboxViewModel gitToolboxViewModel
     )
     {
         _serviceProvider = serviceProvider;
@@ -184,6 +210,8 @@ public partial class MainWindowViewModel : ViewModelBase
         _scriptService = scriptService;
         _fileSystem = fileSystem;
         KeybindService = keybindService;
+        LayoutProvider = layoutProvider;
+        GitToolboxViewModel = gitToolboxViewModel;
 
         #region Interactions
         // File
@@ -191,6 +219,7 @@ public partial class MainWindowViewModel : ViewModelBase
         SaveSubtitleAs = new Interaction<string, Uri?>();
         ExportSubtitle = new Interaction<string, Uri?>();
         OpenSolution = new Interaction<Unit, Uri?>();
+        OpenFolderAsSolution = new Interaction<Unit, Uri?>();
         SaveSolutionAs = new Interaction<string, Uri?>();
         // Subtitle
         ShowStylesManager = new Interaction<StylesManagerWindowViewModel, Unit>();
@@ -200,7 +229,7 @@ public partial class MainWindowViewModel : ViewModelBase
         // Timing
         ShowShiftTimesDialog = new Interaction<ShiftTimesDialogViewModel, Unit>();
         // Scripts
-        ShowDependencyControl = new Interaction<DepCtrlWindowViewModel, Unit>();
+        ShowPackageManager = new Interaction<PkgManWindowViewModel, Unit>();
         // Help
         ShowLogWindow = new Interaction<LogWindowViewModel, Unit>();
         ShowAboutWindow = new Interaction<AboutWindowViewModel, Unit>();
@@ -214,6 +243,7 @@ public partial class MainWindowViewModel : ViewModelBase
         SaveSubtitleAsCommand = CreateSaveSubtitleAsCommand();
         ExportSubtitleCommand = CreateExportSubtitleCommand();
         OpenSolutionCommand = CreateOpenSolutionCommand();
+        OpenFolderAsSolutionCommand = CreateOpenFolderAsSolutionCommand();
         SaveSolutionCommand = CreateSaveSolutionCommand();
         CloseTabCommand = CreateCloseTabCommand();
         QuitCommand = CreateQuitCommand();
@@ -227,7 +257,10 @@ public partial class MainWindowViewModel : ViewModelBase
         // Scripts
         ExecuteScriptCommand = CreateExecuteScriptCommand();
         ReloadScriptsCommand = CreateReloadScriptsCommand();
-        ShowDependencyControlCommand = CreateShowDependencyControlCommand();
+        ShowPackageManagerCommand = CreateShowPackageManagerCommand();
+        // Layouts
+        SelectLayoutCommand = CreateSelectLayoutCommand();
+        RefreshLayoutsCommand = CreateRefreshLayoutsCommand();
         // Help
         ShowLogWindowCommand = CreateShowLogWindowCommand();
         ShowAboutWindowCommand = CreateShowAboutWindowCommand();
@@ -240,5 +273,9 @@ public partial class MainWindowViewModel : ViewModelBase
 
         ScriptMenuItems = [];
         _scriptService.OnReload += (_, _) => GenerateScriptsMenu();
+
+        LayoutMenuItems = [];
+        LayoutProvider.OnLayoutChanged += (_, _) => GenerateLayoutsMenu();
+        GenerateLayoutsMenu();
     }
 }

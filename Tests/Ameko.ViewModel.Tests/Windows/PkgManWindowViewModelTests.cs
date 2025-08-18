@@ -13,23 +13,23 @@ using Shouldly;
 
 namespace Ameko.ViewModel.Tests.Windows;
 
-public class DepCtrlWindowViewModelTests
+public class PkgManWindowViewModelTests
 {
     [Theory, AutoNSubstituteData]
     public void InstallButton_ShouldBeDisabled_WhenStoreIsEmpty(
-        [Frozen] IDependencyControl dependencyControl,
+        [Frozen] IPackageManager packageManager,
         [Frozen] IScriptService scriptService,
         [Frozen] IConfiguration configuration,
         [Frozen] IMessageBoxService messageBoxService
     )
     {
         // Arrange
-        dependencyControl.ModuleStore.Returns(
+        packageManager.ModuleStore.Returns(
             new AssCS.Utilities.ReadOnlyObservableCollection<Module>([])
         );
 
-        var vm = new DepCtrlWindowViewModel(
-            dependencyControl,
+        var vm = new PkgManWindowViewModel(
+            packageManager,
             scriptService,
             configuration,
             messageBoxService
@@ -41,20 +41,20 @@ public class DepCtrlWindowViewModelTests
 
     [Theory, AutoNSubstituteData]
     public void InstalledButtons_ShouldBeDisabled_WhenNoModulesInstalled(
-        [Frozen] IDependencyControl dependencyControl,
+        [Frozen] IPackageManager packageManager,
         [Frozen] IScriptService scriptService,
         [Frozen] IConfiguration configuration,
         [Frozen] IMessageBoxService messageBoxService
     )
     {
         // Arrange
-        dependencyControl.InstalledModules.Returns(
+        packageManager.InstalledModules.Returns(
             new AssCS.Utilities.ReadOnlyObservableCollection<Module>([])
         );
-        dependencyControl.GetUpdateCandidates().Returns([]);
+        packageManager.GetUpdateCandidates().Returns([]);
 
-        var vm = new DepCtrlWindowViewModel(
-            dependencyControl,
+        var vm = new PkgManWindowViewModel(
+            packageManager,
             scriptService,
             configuration,
             messageBoxService
@@ -73,16 +73,16 @@ public class DepCtrlWindowViewModelTests
     )
     {
         // Arrange
-        var dependencyControl = fixture.Freeze<IDependencyControl>();
+        var pkgMan = fixture.Freeze<IPackageManager>();
         var scriptService = fixture.Freeze<IScriptService>();
 
-        dependencyControl.InstalledModules.Returns(
+        pkgMan.InstalledModules.Returns(
             new AssCS.Utilities.ReadOnlyObservableCollection<Module>([module])
         );
-        dependencyControl.InstallModule(module).Returns(InstallationResult.Success);
-        dependencyControl.GetUpdateCandidates().Returns([]);
+        pkgMan.InstallModule(module).Returns(InstallationResult.Success);
+        pkgMan.GetUpdateCandidates().Returns([]);
 
-        var vm = fixture.Create<DepCtrlWindowViewModel>();
+        var vm = fixture.Create<PkgManWindowViewModel>();
         vm.SelectedStoreModule = module;
         vm.ShowMessageBox.RegisterHandler(ctx => ctx.SetOutput(Unit.Default));
 
@@ -96,7 +96,7 @@ public class DepCtrlWindowViewModelTests
 
     [Theory, AutoNSubstituteData]
     public async Task UninstallCommand_ShouldUninstallModule_AndReloadScripts_WhenSuccessful(
-        [Frozen] IDependencyControl dependencyControl,
+        [Frozen] IPackageManager packageManager,
         [Frozen] IScriptService scriptService,
         [Frozen] IConfiguration configuration,
         [Frozen] IMessageBoxService messageBoxService,
@@ -104,14 +104,14 @@ public class DepCtrlWindowViewModelTests
     )
     {
         // Arrange
-        dependencyControl.UninstallModule(module).Returns(InstallationResult.Success);
-        dependencyControl.InstalledModules.Returns(
+        packageManager.UninstallModule(module).Returns(InstallationResult.Success);
+        packageManager.InstalledModules.Returns(
             new AssCS.Utilities.ReadOnlyObservableCollection<Module>([])
         );
-        dependencyControl.GetUpdateCandidates().Returns([]);
+        packageManager.GetUpdateCandidates().Returns([]);
 
-        var vm = new DepCtrlWindowViewModel(
-            dependencyControl,
+        var vm = new PkgManWindowViewModel(
+            packageManager,
             scriptService,
             configuration,
             messageBoxService
@@ -134,7 +134,7 @@ public class DepCtrlWindowViewModelTests
 
     [Theory, AutoNSubstituteData]
     public async Task UpdateCommand_ShouldUpdateModule_AndReloadScripts_WhenSuccessful(
-        [Frozen] IDependencyControl dependencyControl,
+        [Frozen] IPackageManager packageManager,
         [Frozen] IScriptService scriptService,
         [Frozen] IConfiguration configuration,
         [Frozen] IMessageBoxService messageBoxService,
@@ -142,14 +142,14 @@ public class DepCtrlWindowViewModelTests
     )
     {
         // Arrange
-        dependencyControl.UpdateModule(module).Returns(InstallationResult.Success);
-        dependencyControl.GetUpdateCandidates().Returns([]);
-        dependencyControl.InstalledModules.Returns(
+        packageManager.UpdateModule(module).Returns(InstallationResult.Success);
+        packageManager.GetUpdateCandidates().Returns([]);
+        packageManager.InstalledModules.Returns(
             new AssCS.Utilities.ReadOnlyObservableCollection<Module>([module])
         );
 
-        var vm = new DepCtrlWindowViewModel(
-            dependencyControl,
+        var vm = new PkgManWindowViewModel(
+            packageManager,
             scriptService,
             configuration,
             messageBoxService
@@ -170,7 +170,7 @@ public class DepCtrlWindowViewModelTests
 
     [Theory, AutoNSubstituteData]
     public async Task UpdateAllCommand_ShouldUpdateModules_AndReloadScripts_WhenSuccessful(
-        [Frozen] IDependencyControl dependencyControl,
+        [Frozen] IPackageManager packageManager,
         [Frozen] IScriptService scriptService,
         [Frozen] IConfiguration configuration,
         [Frozen] IMessageBoxService messageBoxService,
@@ -179,15 +179,15 @@ public class DepCtrlWindowViewModelTests
     )
     {
         // Arrange
-        dependencyControl.UpdateModule(module1).Returns(InstallationResult.Success);
-        dependencyControl.UpdateModule(module2).Returns(InstallationResult.Success);
-        dependencyControl.GetUpdateCandidates().Returns(x => [module1, module2], x => []);
-        dependencyControl.InstalledModules.Returns(
+        packageManager.UpdateModule(module1).Returns(InstallationResult.Success);
+        packageManager.UpdateModule(module2).Returns(InstallationResult.Success);
+        packageManager.GetUpdateCandidates().Returns(x => [module1, module2], x => []);
+        packageManager.InstalledModules.Returns(
             new AssCS.Utilities.ReadOnlyObservableCollection<Module>([module1, module2])
         );
 
-        var vm = new DepCtrlWindowViewModel(
-            dependencyControl,
+        var vm = new PkgManWindowViewModel(
+            packageManager,
             scriptService,
             configuration,
             messageBoxService
@@ -209,7 +209,7 @@ public class DepCtrlWindowViewModelTests
 
     [Theory, AutoNSubstituteData]
     public async Task RefreshCommand_ShouldRefresh(
-        [Frozen] IDependencyControl dependencyControl,
+        [Frozen] IPackageManager packageManager,
         [Frozen] IScriptService scriptService,
         [Frozen] IConfiguration configuration,
         [Frozen] IMessageBoxService messageBoxService
@@ -220,8 +220,8 @@ public class DepCtrlWindowViewModelTests
             ["https://test.com/test.json"]
         );
         configuration.RepositoryUrls.Returns(repoUrls);
-        var vm = new DepCtrlWindowViewModel(
-            dependencyControl,
+        var vm = new PkgManWindowViewModel(
+            packageManager,
             scriptService,
             configuration,
             messageBoxService
@@ -233,7 +233,7 @@ public class DepCtrlWindowViewModelTests
         await ((ReactiveCommand<Unit, Unit>)vm.RefreshCommand).Execute();
 
         // Assert
-        await dependencyControl.Received().SetUpBaseRepository();
-        await dependencyControl.Received().AddAdditionalRepositories(repoUrls);
+        await packageManager.Received().SetUpBaseRepository();
+        await packageManager.Received().AddAdditionalRepositories(repoUrls);
     }
 }

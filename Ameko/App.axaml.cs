@@ -13,6 +13,7 @@ using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
 using Holo.Configuration;
 using Holo.Configuration.Keybinds;
+using Holo.Providers;
 using Holo.Scripting;
 using Microsoft.Extensions.DependencyInjection;
 using NLog;
@@ -31,9 +32,11 @@ public partial class App : Application
     {
         var provider = AmekoServiceProvider.Build();
 
-        // Activate the culture and theme services
+        // Activate some key services
         _ = provider.GetRequiredService<CultureService>();
         _ = provider.GetRequiredService<ThemeService>();
+        // May have to move this if it gets too resource-intensive
+        provider.GetRequiredService<ILayoutProvider>().Reload();
 
         // Set up the tab item template
         Resources["WorkspaceTabTemplate"] = new WorkspaceTabTemplate(provider);
@@ -56,7 +59,7 @@ public partial class App : Application
         {
             InitializeKeybindService(provider);
             InitializeScriptService(provider);
-            InitializeDependencyControl(provider);
+            InitializePackageManager(provider);
         });
     }
 
@@ -104,18 +107,18 @@ public partial class App : Application
     }
 
     /// <summary>
-    /// Initialize <see cref="DependencyControl"/>
+    /// Initialize <see cref="PackageManager"/>
     /// </summary>
     /// <param name="provider">Service Provider</param>
-    private static void InitializeDependencyControl(IServiceProvider provider)
+    private static void InitializePackageManager(IServiceProvider provider)
     {
         _ = Task.Run(async () =>
         {
             try
             {
-                var depCtrl = provider.GetRequiredService<IDependencyControl>();
-                await depCtrl.SetUpBaseRepository();
-                await depCtrl.AddAdditionalRepositories(
+                var pkgMan = provider.GetRequiredService<IPackageManager>();
+                await pkgMan.SetUpBaseRepository();
+                await pkgMan.AddAdditionalRepositories(
                     provider.GetRequiredService<IConfiguration>().RepositoryUrls
                 );
             }

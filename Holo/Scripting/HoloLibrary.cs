@@ -17,7 +17,7 @@ namespace Holo.Scripting;
 /// the library on NuGet and use the <c>css_nuget</c> import directive instead.
 /// </para>
 /// </remarks>
-public abstract class HoloLibrary
+public abstract class HoloLibrary : IHoloExecutable
 {
     /// <summary>
     /// Basic script information
