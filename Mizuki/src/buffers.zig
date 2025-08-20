@@ -37,15 +37,31 @@ pub fn ProcFrame(frame_number: c_int, timestamp: c_longlong, raw: c_int) ffms.Ff
 
     var frame: ?*frames.VideoFrame = null;
     // See if the frame is in the list of cached buffers already
-    for (buffers.items) |buffer| {
+    for (buffers.items, 0..) |buffer, idx| {
         if (buffer.*.valid == 1 and buffer.*.frame_number == frame_number) {
             frame = buffer;
+
+            // Move buffer to the front of the list
+            if (idx != 0) {
+                _ = buffers.swapRemove(idx);
+                try buffers.insert(0, buffer);
+            }
+
             return frame.?;
         }
     }
 
-    // The frame was not cached, so
-    // Find an invalid buffer or create one if needed
+    // The frame was not cached, so we need to find an invalidated buffer
+    // (or create a new one if there's space in the cache)
+
+    // If we're at the size limit, make space
+    if (total_size >= max_size) {
+        const last = buffers.swapRemove(buffers.items.len - 1);
+        _ = ReleaseFrame(last);
+        try buffers.insert(0, last);
+    }
+
+    // Find an invalidated buffer
     for (buffers.items) |buffer| {
         if (buffer.*.valid == 0) {
             frame = buffer;
@@ -53,6 +69,7 @@ pub fn ProcFrame(frame_number: c_int, timestamp: c_longlong, raw: c_int) ffms.Ff
         }
     }
 
+    // Allocate a new buffer
     if (frame == null) {
         // Clone geometry from the first buffer
         const reference = buffers.items[0];
@@ -61,7 +78,7 @@ pub fn ProcFrame(frame_number: c_int, timestamp: c_longlong, raw: c_int) ffms.Ff
             @intCast(reference.*.height),
             @intCast(reference.*.pitch),
         );
-        try buffers.append(frame.?);
+        try buffers.insert(0, frame.?);
         total_size = total_size + frame.?.*.height * frame.?.*.pitch; // add size
     }
 
