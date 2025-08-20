@@ -6,6 +6,8 @@ const ffms = @import("ffms.zig");
 const frames = @import("frames.zig");
 const common = @import("common.zig");
 
+const max_size = 1024 ^ 3; // 1024 mb
+var total_size: c_int = 0;
 var buffers: std.ArrayList(*frames.VideoFrame) = undefined;
 
 // TODO: FrameGroup instead of VideoFrame
@@ -33,8 +35,17 @@ pub fn ProcFrame(frame_number: c_int, timestamp: c_longlong, raw: c_int) ffms.Ff
     _ = raw; // For sub-less frame
     _ = timestamp;
 
-    // Find an invalid buffer or create one if needed
     var frame: ?*frames.VideoFrame = null;
+    // See if the frame is in the list of cached buffers already
+    for (buffers.items) |buffer| {
+        if (buffer.*.valid == 1 and buffer.*.frame_number == frame_number) {
+            frame = buffer;
+            return frame.?;
+        }
+    }
+
+    // The frame was not cached, so
+    // Find an invalid buffer or create one if needed
     for (buffers.items) |buffer| {
         if (buffer.*.valid == 0) {
             frame = buffer;
@@ -51,6 +62,7 @@ pub fn ProcFrame(frame_number: c_int, timestamp: c_longlong, raw: c_int) ffms.Ff
             @intCast(reference.*.pitch),
         );
         try buffers.append(frame.?);
+        total_size = total_size + frame.?.*.height * frame.?.*.pitch; // add size
     }
 
     try ffms.GetFrame(frame_number, frame.?);

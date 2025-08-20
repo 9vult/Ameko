@@ -253,7 +253,7 @@ public class MediaController : BindableBase
             return false;
         }
 
-        if (_provider.AllocateBuffers(2) != 0)
+        if (_provider.AllocateBuffers(64) != 0)
         {
             return false;
         }
@@ -315,8 +315,9 @@ public class MediaController : BindableBase
         {
             if (_nextFrame is not null)
             {
-                if (_lastFrame is not null)
-                    _provider.ReleaseFrame(_lastFrame);
+                // TODO: (zig) Release buffers when cache size maximum is hit. Also, move most-recently-used buffer to the front of the list
+                // if (_lastFrame is not null)
+                //     _provider.ReleaseFrame(_lastFrame);
 
                 _lastFrame = _nextFrame;
                 _nextFrame = null;
