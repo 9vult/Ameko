@@ -6,13 +6,14 @@ const ffms = @import("ffms.zig");
 const frames = @import("frames.zig");
 const common = @import("common.zig");
 
-const max_size = 1024 ^ 3; // 1024 mb
+const max_size: c_int = 0;
 var total_size: c_int = 0;
 var buffers: std.ArrayList(*frames.VideoFrame) = undefined;
 
 // TODO: FrameGroup instead of VideoFrame
-pub fn Init(num_buffers: usize, width: usize, height: usize, pitch: usize) ffms.FfmsError!void {
+pub fn Init(num_buffers: usize, max_cache_mb: c_int, width: usize, height: usize, pitch: usize) ffms.FfmsError!void {
     buffers = std.ArrayList(*frames.VideoFrame).init(common.allocator);
+    max_size = max_cache_mb * (1024 ^ 2);
 
     // Pre-allocate buffers
     var i: usize = 0;

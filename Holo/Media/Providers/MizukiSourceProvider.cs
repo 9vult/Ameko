@@ -45,9 +45,9 @@ public class MizukiSourceProvider : ISourceProvider
         return 0;
     }
 
-    public int AllocateBuffers(int numBuffers)
+    public int AllocateBuffers(int numBuffers, int maxCacheSize)
     {
-        return External.AllocateBuffers(numBuffers);
+        return External.AllocateBuffers(numBuffers, maxCacheSize);
     }
 
     /// <inheritdoc />
@@ -112,7 +112,7 @@ internal static unsafe partial class External
     );
 
     [LibraryImport("mizuki")]
-    internal static partial int AllocateBuffers(int numBuffers);
+    internal static partial int AllocateBuffers(int numBuffers, int maxCacheSize);
 
     [LibraryImport("mizuki")]
     internal static partial int FreeBuffers();

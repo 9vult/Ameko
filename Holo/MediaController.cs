@@ -253,7 +253,7 @@ public class MediaController : BindableBase
             return false;
         }
 
-        if (_provider.AllocateBuffers(64) != 0)
+        if (_provider.AllocateBuffers(64, 1024) != 0)
         {
             return false;
         }

@@ -26,8 +26,8 @@ pub export fn CloseVideo() c_int {
 }
 
 /// Allocate frame buffers
-pub export fn AllocateBuffers(num_buffers: c_int) c_int {
-    buffers.Init(@intCast(num_buffers), ffms.frame_width, ffms.frame_height, ffms.frame_pitch) catch |err| {
+pub export fn AllocateBuffers(num_buffers: c_int, max_cache_mb: c_int) c_int {
+    buffers.Init(@intCast(num_buffers), max_cache_mb, ffms.frame_width, ffms.frame_height, ffms.frame_pitch) catch |err| {
         return errors.IntFromFfmsError(err);
     };
     return 0;
