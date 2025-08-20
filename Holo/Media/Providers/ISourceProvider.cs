@@ -40,9 +40,10 @@ public interface ISourceProvider
     /// <summary>
     /// Allocate frame buffers
     /// </summary>
-    /// <param name="numBuffers"></param>
+    /// <param name="numBuffers">Number of buffers to pre-allocate</param>
+    /// <param name="maxCacheSize">Maximum cache size in megabytes</param>
     /// <returns>0 on success</returns>
-    int AllocateBuffers(int numBuffers);
+    int AllocateBuffers(int numBuffers, int maxCacheSize);
 
     /// <summary>
     /// Free frame buffers
