@@ -29,22 +29,30 @@ pub fn GetVersion() common.BackingVersion {
 }
 
 /// Initialize libass
-pub fn Initialize(frame_width: c_int, frame_height: c_int) void {
+pub fn Initialize() void {
     library = c.ass_library_init();
-    renderer = c.ass_renderer_init(library);
-
-    c.ass_set_frame_size(renderer, frame_width, frame_height);
-    c.ass_set_storage_size(renderer, frame_width, frame_height);
-    c.ass_set_font_scale(renderer, 1.0);
-
-    c.ass_set_fonts(renderer, null, "Sans", 1, null, true);
 }
 
 /// Deinitialize libass
-pub fn Deinitialize() {
+pub fn Deinitialize() void {
     c.ass_renderer_done(renderer);
     c.ass_library_done(library);
     if (track != null) {
         c.ass_free_track(track);
     }
+}
+
+/// Set up renderer
+pub fn LoadVideo(frame_width: c_int, frame_height: c_int) void {
+    if (renderer != null) {
+        c.ass_renderer_done(renderer);
+        renderer = null;
+    }
+    
+    renderer = c.ass_renderer_init(library);
+    c.ass_set_frame_size(renderer, frame_width, frame_height);
+    c.ass_set_storage_size(renderer, frame_width, frame_height);
+    c.ass_set_font_scale(renderer, 1.0);
+
+    c.ass_set_fonts(renderer, null, "Sans", 1, null, 0);
 }

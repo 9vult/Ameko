@@ -6,7 +6,7 @@ const ffms = @import("ffms.zig");
 const frames = @import("frames.zig");
 const common = @import("common.zig");
 
-const max_size: c_int = 0;
+var max_size: c_int = 0;
 var total_size: c_int = 0;
 var buffers: std.ArrayList(*frames.VideoFrame) = undefined;
 

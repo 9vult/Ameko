@@ -18,6 +18,7 @@ pub export fn LoadVideo(file_name: [*c]u8, cache_file_name: [*c]u8, color_matrix
     ffms.LoadVideo(file_name, cache_file_name, color_matrix) catch |err| {
         return errors.IntFromFfmsError(err);
     };
+    libass.LoadVideo(@intCast(ffms.frame_width), @intCast(ffms.frame_height));
     return 0;
 }
 
