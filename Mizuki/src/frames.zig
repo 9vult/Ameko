@@ -25,6 +25,6 @@ pub const SubtitleFrame = extern struct {
 };
 
 pub const FrameGroup = extern struct {
-    video_frame: VideoFrame,
-    subtitle_frame: SubtitleFrame,
+    video_frame: *VideoFrame,
+    subtitle_frame: *SubtitleFrame,
 };
