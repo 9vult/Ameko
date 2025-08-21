@@ -15,8 +15,8 @@ public class MediaController : BindableBase
     private VideoInfo? _videoInfo;
     private bool _isVideoLoaded;
 
-    private unsafe VideoFrame* _lastFrame;
-    private unsafe VideoFrame* _nextFrame;
+    private unsafe FrameGroup* _lastFrame;
+    private unsafe FrameGroup* _nextFrame;
     private int _currentFrame;
     private readonly object _frameLock = new();
     private Task? _fetchTask;
@@ -260,7 +260,7 @@ public class MediaController : BindableBase
 
         unsafe
         {
-            var testFrame = _provider.GetFrame(0);
+            var testFrame = _provider.GetFrame(0, 0, true);
             if (testFrame is null)
             {
                 // TODO: Handle error
@@ -272,8 +272,8 @@ public class MediaController : BindableBase
                 frameTimes: _provider.GetTimecodes(),
                 frameIntervals: _provider.GetFrameIntervals(),
                 keyframes: _provider.GetKeyframes(),
-                testFrame->Width,
-                testFrame->Height
+                testFrame->VideoFrame->Width,
+                testFrame->VideoFrame->Height
             );
 
             _playback.Intervals = VideoInfo.FrameIntervals;
@@ -304,7 +304,7 @@ public class MediaController : BindableBase
     /// </summary>
     /// <returns>Pointer to the frame</returns>
     /// <exception cref="InvalidOperationException">If there is no frame</exception>
-    public unsafe VideoFrame* GetVideoFrame()
+    public unsafe FrameGroup* GetCurrentFrame()
     {
         if (!_provider.IsInitialized)
             throw new InvalidOperationException("Provider is not initialized");
@@ -353,7 +353,7 @@ public class MediaController : BindableBase
             frameToFetch = _pendingFrame;
             _pendingFrame = -1;
         }
-        var frame = _provider.GetFrame(frameToFetch);
+        var frame = _provider.GetFrame(frameToFetch, 0, false); // TODO: Timestamp here
         lock (_frameLock)
         {
             if (frameToFetch == _currentFrame)

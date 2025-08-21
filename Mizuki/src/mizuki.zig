@@ -18,7 +18,7 @@ pub export fn LoadVideo(file_name: [*c]u8, cache_file_name: [*c]u8, color_matrix
     ffms.LoadVideo(file_name, cache_file_name, color_matrix) catch |err| {
         return errors.IntFromFfmsError(err);
     };
-    libass.LoadVideo(@intCast(ffms.frame_width), @intCast(ffms.frame_height));
+    // libass.LoadVideo(@intCast(ffms.frame_width), @intCast(ffms.frame_height));
     return 0;
 }
 
@@ -41,14 +41,14 @@ pub export fn FreeBuffers() c_int {
 }
 
 /// Get a frame
-pub export fn GetFrame(frame_number: c_int) ?*frames.VideoFrame {
-    return buffers.ProcFrame(frame_number, 0, 0) catch {
+pub export fn GetFrame(frame_number: c_int, timestamp: c_longlong, raw: c_int) ?*frames.FrameGroup {
+    return buffers.ProcFrame(frame_number, timestamp, raw) catch {
         return null;
     };
 }
 
 /// Release a frame
-pub export fn ReleaseFrame(frame: *frames.VideoFrame) c_int {
+pub export fn ReleaseFrame(frame: *frames.FrameGroup) c_int {
     return buffers.ReleaseFrame(frame);
 }
 

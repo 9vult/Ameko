@@ -8,11 +8,10 @@ const common = @import("common.zig");
 
 var max_size: c_int = 0;
 var total_size: c_int = 0;
-var buffers: std.ArrayList(*frames.VideoFrame) = undefined;
+var buffers: std.ArrayList(*frames.FrameGroup) = undefined;
 
-// TODO: FrameGroup instead of VideoFrame
 pub fn Init(num_buffers: usize, max_cache_mb: c_int, width: usize, height: usize, pitch: usize) ffms.FfmsError!void {
-    buffers = std.ArrayList(*frames.VideoFrame).init(common.allocator);
+    buffers = std.ArrayList(*frames.FrameGroup).init(common.allocator);
     max_size = max_cache_mb * (1024 ^ 2);
 
     // Pre-allocate buffers
@@ -26,20 +25,22 @@ pub fn Init(num_buffers: usize, max_cache_mb: c_int, width: usize, height: usize
 /// Free the buffers
 pub fn Deinit() void {
     for (buffers.items) |buffer| {
+        common.allocator.destroy(buffer.*.video_frame);
+        common.allocator.destroy(buffer.*.subtitle_frame);
         common.allocator.destroy(buffer);
     }
     buffers.deinit();
 }
 
 /// Get a frame
-pub fn ProcFrame(frame_number: c_int, timestamp: c_longlong, raw: c_int) ffms.FfmsError!*frames.VideoFrame {
+pub fn ProcFrame(frame_number: c_int, timestamp: c_longlong, raw: c_int) ffms.FfmsError!*frames.FrameGroup {
     _ = raw; // For sub-less frame
     _ = timestamp;
 
-    var frame: ?*frames.VideoFrame = null;
+    var frame: ?*frames.FrameGroup = null;
     // See if the frame is in the list of cached buffers already
     for (buffers.items, 0..) |buffer, idx| {
-        if (buffer.*.valid == 1 and buffer.*.frame_number == frame_number) {
+        if (buffer.*.video_frame.*.valid == 1 and buffer.*.video_frame.*.frame_number == frame_number) {
             frame = buffer;
 
             // Move buffer to the front of the list
@@ -64,7 +65,7 @@ pub fn ProcFrame(frame_number: c_int, timestamp: c_longlong, raw: c_int) ffms.Ff
 
     // Find an invalidated buffer
     for (buffers.items) |buffer| {
-        if (buffer.*.valid == 0) {
+        if (buffer.*.video_frame.*.valid == 0) {
             frame = buffer;
             break;
         }
@@ -75,41 +76,62 @@ pub fn ProcFrame(frame_number: c_int, timestamp: c_longlong, raw: c_int) ffms.Ff
         // Clone geometry from the first buffer
         const reference = buffers.items[0];
         frame = try AllocateFrame(
-            @intCast(reference.*.width),
-            @intCast(reference.*.height),
-            @intCast(reference.*.pitch),
+            @intCast(reference.*.video_frame.*.width),
+            @intCast(reference.*.video_frame.*.height),
+            @intCast(reference.*.video_frame.*.pitch),
         );
         try buffers.insert(0, frame.?);
-        total_size = total_size + frame.?.*.height * frame.?.*.pitch; // add size
+        total_size = total_size + (frame.?.*.video_frame.*.height * frame.?.*.video_frame.*.pitch) * 2; // add size
     }
 
-    try ffms.GetFrame(frame_number, frame.?);
+    try ffms.GetFrame(frame_number, frame.?.*.video_frame);
 
-    frame.?.*.valid = 1;
+    frame.?.*.video_frame.*.valid = 1;
     return frame.?;
     // TODO: subtitles
 }
 
-pub fn ReleaseFrame(frame: *frames.VideoFrame) c_int {
-    frame.valid = 0;
+pub fn ReleaseFrame(frame: *frames.FrameGroup) c_int {
+    frame.video_frame.valid = 0;
+    frame.subtitle_frame.valid = 0;
     return 0;
 }
 
 /// Allocate a new frame buffer
-fn AllocateFrame(width: usize, height: usize, pitch: usize) !*frames.VideoFrame {
+fn AllocateFrame(width: usize, height: usize, pitch: usize) !*frames.FrameGroup {
     const total_bytes = height * pitch;
-    const pixel_buffer = try common.allocator.alloc(u8, total_bytes);
-    const frame = try common.allocator.create(frames.VideoFrame);
+    const v_pixel_buffer = try common.allocator.alloc(u8, total_bytes);
+    const s_pixel_buffer = try common.allocator.alloc(u8, total_bytes);
+    const v_frame = try common.allocator.create(frames.VideoFrame);
+    const s_frame = try common.allocator.create(frames.SubtitleFrame);
+    const group = try common.allocator.create(frames.FrameGroup);
 
-    frame.* = .{
+    v_frame.* = .{
         .frame_number = -1,
         .timestamp = 0,
         .width = @intCast(width),
         .height = @intCast(height),
         .pitch = @intCast(pitch),
         .flipped = 0,
-        .data = pixel_buffer.ptr,
+        .data = v_pixel_buffer.ptr,
         .valid = 0,
     };
-    return frame;
+
+    s_frame.* = .{
+        .hash = 0,
+        .timestamp = 0,
+        .width = @intCast(width),
+        .height = @intCast(height),
+        .pitch = @intCast(pitch),
+        .flipped = 0,
+        .data = s_pixel_buffer.ptr,
+        .valid = 0,
+    };
+
+    group.* = .{
+        .video_frame = v_frame,
+        .subtitle_frame = s_frame,
+    };
+
+    return group;
 }

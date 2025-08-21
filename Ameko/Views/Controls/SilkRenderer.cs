@@ -126,12 +126,12 @@ public class SilkRenderer : OpenGlControlBase
 
         _vao.Bind();
 
-        var frame = MediaController.GetVideoFrame();
-        var texWidth = (uint)frame->Width;
-        var texHeight = (uint)frame->Height;
+        var frame = MediaController.GetCurrentFrame();
+        var texWidth = (uint)frame->VideoFrame->Width;
+        var texHeight = (uint)frame->VideoFrame->Height;
 
         _texture.Bind();
-        _texture.SetTexture(texWidth, texHeight, frame->Data);
+        _texture.SetTexture(texWidth, texHeight, frame->VideoFrame->Data);
 
         _shader.Use();
 

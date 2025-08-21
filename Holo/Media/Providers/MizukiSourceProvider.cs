@@ -57,13 +57,13 @@ public class MizukiSourceProvider : ISourceProvider
     }
 
     /// <inheritdoc />
-    public unsafe VideoFrame* GetFrame(int frameNumber)
+    public unsafe FrameGroup* GetFrame(int frameNumber, long timestamp, bool raw)
     {
-        return External.GetFrame(frameNumber);
+        return External.GetFrame(frameNumber, timestamp, raw ? 1 : 0);
     }
 
     /// <inheritdoc />
-    public unsafe int ReleaseFrame(VideoFrame* frame)
+    public unsafe int ReleaseFrame(FrameGroup* frame)
     {
         return External.ReleaseFrame(frame);
     }
@@ -118,10 +118,10 @@ internal static unsafe partial class External
     internal static partial int FreeBuffers();
 
     [LibraryImport("mizuki")]
-    internal static unsafe partial VideoFrame* GetFrame(int frameNumber);
+    internal static unsafe partial FrameGroup* GetFrame(int frameNumber, long timestamp, int raw);
 
     [LibraryImport("mizuki")]
-    internal static unsafe partial int ReleaseFrame(VideoFrame* frame);
+    internal static unsafe partial int ReleaseFrame(FrameGroup* frame);
 
     [LibraryImport("mizuki")]
     internal static partial int GetFrameCount();
@@ -134,19 +134,6 @@ internal static unsafe partial class External
 
     [LibraryImport("mizuki")]
     internal static partial UnmanagedArray GetFrameIntervals();
-}
-
-[StructLayout(LayoutKind.Sequential)]
-public struct VideoFrame
-{
-    public int FrameNumber;
-    public long Timestamp;
-    public int Width;
-    public int Height;
-    public int Pitch;
-    public int Flipped;
-    public unsafe byte* Data;
-    public int Valid;
 }
 
 /// <summary>
