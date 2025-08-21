@@ -315,10 +315,6 @@ public class MediaController : BindableBase
         {
             if (_nextFrame is not null)
             {
-                // TODO: (zig) Release buffers when cache size maximum is hit. Also, move most-recently-used buffer to the front of the list
-                // if (_lastFrame is not null)
-                //     _provider.ReleaseFrame(_lastFrame);
-
                 _lastFrame = _nextFrame;
                 _nextFrame = null;
             }
@@ -334,7 +330,7 @@ public class MediaController : BindableBase
     /// Queue a request for a frame
     /// </summary>
     /// <param name="fetchingFrame">Frame number to fetch</param>
-    private unsafe void OnCurrentFrameChanged(int fetchingFrame)
+    private void OnCurrentFrameChanged(int fetchingFrame)
     {
         lock (_frameLock)
         {
