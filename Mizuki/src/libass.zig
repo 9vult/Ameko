@@ -7,8 +7,14 @@ const c = @import("c.zig").c;
 const frames = @import("frames.zig");
 const common = @import("common.zig");
 
+pub const LibassError = error{
+    NotInitialized,
+};
+
 // Local variables
 var library: ?*c.ASS_Library = null;
+var renderer: ?*c.ass_renderer = null;
+var track: ?*c.ass_track = null;
 
 /// Get the current libass version
 ///
@@ -23,6 +29,22 @@ pub fn GetVersion() common.BackingVersion {
 }
 
 /// Initialize libass
-pub fn Initialize() void {
+pub fn Initialize(frame_width: c_int, frame_height: c_int) void {
     library = c.ass_library_init();
+    renderer = c.ass_renderer_init(library);
+
+    c.ass_set_frame_size(renderer, frame_width, frame_height);
+    c.ass_set_storage_size(renderer, frame_width, frame_height);
+    c.ass_set_font_scale(renderer, 1.0);
+
+    c.ass_set_fonts(renderer, null, "Sans", 1, null, true);
+}
+
+/// Deinitialize libass
+pub fn Deinitialize() {
+    c.ass_renderer_done(renderer);
+    c.ass_library_done(library);
+    if (track != null) {
+        c.ass_free_track(track);
+    }
 }
