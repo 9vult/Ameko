@@ -31,7 +31,8 @@ public class SilkRenderer : OpenGlControlBase
     [MemberNotNullWhen(true, nameof(_ebo))]
     [MemberNotNullWhen(true, nameof(_vao))]
     [MemberNotNullWhen(true, nameof(_shader))]
-    [MemberNotNullWhen(true, nameof(_texture))]
+    [MemberNotNullWhen(true, nameof(_textureV))]
+    [MemberNotNullWhen(true, nameof(_textureS))]
     private new bool IsInitialized { get; set; }
 
     private GL? _gl;
@@ -39,7 +40,8 @@ public class SilkRenderer : OpenGlControlBase
     private BufferObject<uint>? _ebo;
     private VertexArrayObject<float, uint>? _vao;
     private Shader? _shader;
-    private Texture? _texture;
+    private Texture? _textureV;
+    private Texture? _textureS;
 
     private double _scaleFactor = 1.0d;
 
@@ -85,7 +87,8 @@ public class SilkRenderer : OpenGlControlBase
         _vao.VertexAttributePointer(vertexLocation, 3, VertexAttribPointerType.Float, 5, 0); // Position
         _vao.VertexAttributePointer(texCoordLocation, 2, VertexAttribPointerType.Float, 5, 3); // Texture coords
 
-        _texture = new Texture(_gl);
+        _textureV = new Texture(_gl);
+        _textureS = new Texture(_gl);
     }
 
     protected override void OnOpenGlDeinit(GlInterface gl)
@@ -97,7 +100,8 @@ public class SilkRenderer : OpenGlControlBase
         _ebo.Dispose();
         _vao.Dispose();
         _shader.Dispose();
-        _texture.Dispose();
+        _textureV.Dispose();
+        _textureS.Dispose();
         base.OnOpenGlDeinit(gl);
         IsInitialized = false;
     }
@@ -126,12 +130,18 @@ public class SilkRenderer : OpenGlControlBase
 
         _vao.Bind();
 
+        _shader.SetUniform("texture0", 0);
+        _shader.SetUniform("texture1", 1);
+
         var frame = MediaController.GetCurrentFrame();
         var texWidth = (uint)frame->VideoFrame->Width;
         var texHeight = (uint)frame->VideoFrame->Height;
 
-        _texture.Bind();
-        _texture.SetTexture(texWidth, texHeight, frame->VideoFrame->Data);
+        _textureV.Bind(TextureUnit.Texture0);
+        _textureV.SetTexture(texWidth, texHeight, frame->VideoFrame->Data);
+
+        _textureS.Bind(TextureUnit.Texture1);
+        _textureS.SetTexture(texWidth, texHeight, frame->SubtitleFrame->Data);
 
         _shader.Use();
 

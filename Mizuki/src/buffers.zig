@@ -3,6 +3,7 @@
 const std = @import("std");
 const c = @import("c.zig").c;
 const ffms = @import("ffms.zig");
+const libass = @import("libass.zig");
 const frames = @import("frames.zig");
 const common = @import("common.zig");
 
@@ -35,8 +36,8 @@ pub fn Deinit() void {
 /// Get a frame
 pub fn ProcFrame(frame_number: c_int, timestamp: c_longlong, raw: c_int) ffms.FfmsError!*frames.FrameGroup {
     _ = raw; // For sub-less frame
-    _ = timestamp;
 
+    // TODO: subtitle hash check
     var frame: ?*frames.FrameGroup = null;
     // See if the frame is in the list of cached buffers already
     for (buffers.items, 0..) |buffer, idx| {
@@ -85,10 +86,11 @@ pub fn ProcFrame(frame_number: c_int, timestamp: c_longlong, raw: c_int) ffms.Ff
     }
 
     try ffms.GetFrame(frame_number, frame.?.*.video_frame);
+    try libass.GetFrame(timestamp, frame.?.*.subtitle_frame);
 
     frame.?.*.video_frame.*.valid = 1;
+    frame.?.*.subtitle_frame.valid = 1;
     return frame.?;
-    // TODO: subtitles
 }
 
 pub fn ReleaseFrame(frame: *frames.FrameGroup) c_int {

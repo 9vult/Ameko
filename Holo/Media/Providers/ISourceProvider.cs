@@ -38,6 +38,14 @@ public interface ISourceProvider
     int CloseVideo();
 
     /// <summary>
+    /// Set the subtitles to be parsed
+    /// </summary>
+    /// <param name="data">Subtitle data</param>
+    /// <param name="codePage">Codepage to use</param>
+    /// <returns>0 on success</returns>
+    int SetSubtitles(string data, string? codePage);
+
+    /// <summary>
     /// Allocate frame buffers
     /// </summary>
     /// <param name="numBuffers">Number of buffers to pre-allocate</param>

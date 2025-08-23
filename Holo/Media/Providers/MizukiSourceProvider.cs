@@ -45,6 +45,13 @@ public class MizukiSourceProvider : ISourceProvider
         return 0;
     }
 
+    /// <inheritdoc />
+    public int SetSubtitles(string data, string? codePage)
+    {
+        var bytes = Encoding.UTF8.GetBytes(data);
+        return External.SetSubtitles(bytes, bytes.Length, codePage);
+    }
+
     public int AllocateBuffers(int numBuffers, int maxCacheSize)
     {
         return External.AllocateBuffers(numBuffers, maxCacheSize);
@@ -106,10 +113,13 @@ internal static unsafe partial class External
 
     [LibraryImport("mizuki", StringMarshalling = StringMarshalling.Utf8)]
     internal static partial int LoadVideo(
-        [MarshalAs(UnmanagedType.LPStr)] string fileName,
-        [MarshalAs(UnmanagedType.LPStr)] string cacheFileName,
-        [MarshalAs(UnmanagedType.LPStr)] string colorMatrix
+        string fileName,
+        string cacheFileName,
+        string colorMatrix
     );
+
+    [LibraryImport("mizuki", StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial int SetSubtitles(byte[] data, int dataLen, string? codePage);
 
     [LibraryImport("mizuki")]
     internal static partial int AllocateBuffers(int numBuffers, int maxCacheSize);

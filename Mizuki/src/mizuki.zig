@@ -10,20 +10,29 @@ const common = @import("common.zig");
 const errors = @import("errors.zig");
 const buffers = @import("buffers.zig");
 
+/// Initialize the library
 pub export fn Initialize() void {
     ffms.Initialize();
+    libass.Initialize();
 }
 
+/// Open a video file
 pub export fn LoadVideo(file_name: [*c]u8, cache_file_name: [*c]u8, color_matrix: [*c]u8) c_int {
     ffms.LoadVideo(file_name, cache_file_name, color_matrix) catch |err| {
         return errors.IntFromFfmsError(err);
     };
-    // libass.LoadVideo(@intCast(ffms.frame_width), @intCast(ffms.frame_height));
+    libass.LoadVideo(@intCast(ffms.frame_width), @intCast(ffms.frame_height));
     return 0;
 }
 
+/// Close the open video file
 pub export fn CloseVideo() c_int {
     return 0; // TODO: implement
+}
+
+pub export fn SetSubtitles(data: [*c]u8, data_len: c_int, code_page: [*c]u8) c_int {
+    libass.SetSubtitles(data, data_len, code_page);
+    return 0;
 }
 
 /// Allocate frame buffers
