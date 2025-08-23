@@ -136,7 +136,7 @@ pub fn LoadVideo(file_name: [*c]u8, cache_file_name: [*c]u8, color_matrix: [*c]u
     // const has_audio = c.FFMS_GetFirstTrackOfType(index, c.FFMS_TYPE_AUDIO, &err_info) != -1;
 
     // TODO: Add an option for unsafe seeking
-    video_source = c.FFMS_CreateVideoSource(file_name, track_number, index, 1, c.FFMS_SEEK_NORMAL, &err_info);
+    video_source = c.FFMS_CreateVideoSource(file_name, track_number, index, -1, c.FFMS_SEEK_NORMAL, &err_info);
 
     if (video_source == null) {
         return FfmsError.VideoTrackLoadingFailed;
