@@ -22,6 +22,7 @@ public class MediaController : BindableBase
     private readonly object _frameLock = new();
     private Task? _fetchTask;
     private int _pendingFrame = -1;
+    private bool _subtitlesChanged = false;
 
     private ScaleFactor _scaleFactor = ScaleFactor.Default;
     private double _displayWidth;
@@ -93,7 +94,7 @@ public class MediaController : BindableBase
         {
             SetProperty(ref _currentFrame, value);
             RaisePropertyChanged(nameof(CurrentTime));
-            OnCurrentFrameChanged(value);
+            RequestFrame(value);
         }
     }
 
@@ -284,13 +285,7 @@ public class MediaController : BindableBase
         DisplayHeight = VideoInfo.Height;
         IsVideoLoaded = true;
 
-        // TODO: Temp!
-        var doc = new Document(true);
-        doc.EventManager.Head.Text = @"{\fs80}今日はlibassの日！";
-        var writer = new AssWriter(doc, new ConsumerInfo("", "", ""));
-        _provider.SetSubtitles(writer.Write(false), null);
-
-        // Re-fetch frame 0 with the subtitles
+        // Re-fetch frame 0 with subtitles
         unsafe
         {
             _lastFrame = _provider.GetFrame(0, 0, false);
@@ -338,11 +333,25 @@ public class MediaController : BindableBase
         throw new InvalidOperationException("Frame is unavailable");
     }
 
+    public void SetSubtitles(Document document)
+    {
+        if (!_provider.IsInitialized)
+            throw new InvalidOperationException("Provider is not initialized");
+        if (_videoInfo is null)
+            return;
+
+        // TODO: preferably not create a new writer on each change
+        var writer = new AssWriter(document, new ConsumerInfo("", "", ""));
+        _provider.SetSubtitles(writer.Write(false), null);
+        _subtitlesChanged = true;
+        RequestFrame(CurrentFrame);
+    }
+
     /// <summary>
     /// Queue a request for a frame
     /// </summary>
     /// <param name="fetchingFrame">Frame number to fetch</param>
-    private void OnCurrentFrameChanged(int fetchingFrame)
+    private void RequestFrame(int fetchingFrame)
     {
         lock (_frameLock)
         {
@@ -360,22 +369,24 @@ public class MediaController : BindableBase
     private unsafe void FetchFrame()
     {
         int frameToFetch;
+        bool subtitlesChanged;
         lock (_frameLock)
         {
             frameToFetch = _pendingFrame;
             _pendingFrame = -1;
+            subtitlesChanged = _subtitlesChanged;
+            _subtitlesChanged = false;
         }
 
         var time = _videoInfo?.MillisecondsFromFrame(frameToFetch) ?? 0;
+
         var frame = _provider.GetFrame(frameToFetch, time, false);
         lock (_frameLock)
         {
-            if (frameToFetch == _currentFrame)
+            if (frameToFetch == _currentFrame || subtitlesChanged)
                 _nextFrame = frame;
-            else
-                _provider.ReleaseFrame(frame);
 
-            if (_pendingFrame != -1)
+            if (_pendingFrame != -1 || _subtitlesChanged)
                 _fetchTask = Task.Run(FetchFrame);
         }
     }
