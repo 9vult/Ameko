@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 
 using AssCS;
+using AssCS.IO;
 using Holo.Media;
 using Holo.Media.Providers;
 using NLog;
@@ -283,6 +284,12 @@ public class MediaController : BindableBase
         DisplayWidth = VideoInfo.Width;
         DisplayHeight = VideoInfo.Height;
         IsVideoLoaded = true;
+
+        // TODO: Temp!
+        var doc = new Document(true);
+        doc.EventManager.Head.Text = @"{\fs80}今日はlibassの日！";
+        var writer = new AssWriter(doc, new ConsumerInfo("", "", ""));
+        _provider.SetSubtitles(writer.Write(false), null);
         return true;
     }
 
@@ -353,7 +360,9 @@ public class MediaController : BindableBase
             frameToFetch = _pendingFrame;
             _pendingFrame = -1;
         }
-        var frame = _provider.GetFrame(frameToFetch, 0, false); // TODO: Timestamp here
+
+        var time = _videoInfo?.MillisecondsFromFrame(frameToFetch) ?? 0;
+        var frame = _provider.GetFrame(frameToFetch, time, false);
         lock (_frameLock)
         {
             if (frameToFetch == _currentFrame)

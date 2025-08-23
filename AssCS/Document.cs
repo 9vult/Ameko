@@ -52,6 +52,7 @@ public class Document
     {
         StyleManager.LoadDefault();
         EventManager.LoadDefault();
+        ScriptInfoManager.LoadDefault();
     }
 
     /// <summary>
