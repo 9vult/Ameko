@@ -153,5 +153,8 @@ public class Workspace : BindableBase
         var mp = new MizukiSourceProvider();
         mp.Initialize();
         MediaController = new MediaController(mp);
+
+        // TODO: Should this be here or elsewhere?
+        document.HistoryManager.OnChangeMade += (_, _) => MediaController.SetSubtitles(document);
     }
 }

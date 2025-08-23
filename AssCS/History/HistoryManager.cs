@@ -193,5 +193,8 @@ public class HistoryManager : BindableBase
     {
         RaisePropertyChanged(nameof(CanUndo));
         RaisePropertyChanged(nameof(CanRedo));
+        OnChangeMade?.Invoke(this, EventArgs.Empty);
     }
+
+    public event EventHandler<EventArgs>? OnChangeMade;
 }
