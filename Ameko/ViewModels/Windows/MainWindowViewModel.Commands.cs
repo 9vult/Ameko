@@ -292,6 +292,7 @@ public partial class MainWindowViewModel : ViewModelBase
             }
 
             wsp.MediaController.OpenVideo(uri.LocalPath);
+            wsp.MediaController.SetSubtitles(wsp.Document);
         });
     }
 
