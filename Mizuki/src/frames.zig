@@ -2,6 +2,7 @@
 
 const c = @import("c.zig").c;
 
+/// Frame containing the base video
 pub const VideoFrame = extern struct {
     frame_number: c_int = -1,
     timestamp: c_longlong = 0,
@@ -13,6 +14,7 @@ pub const VideoFrame = extern struct {
     valid: c_int = 0, // bool
 };
 
+/// Frame containing rendered subtitles on a transparent background
 pub const SubtitleFrame = extern struct {
     hash: u32 = 0,
     timestamp: c_longlong = 0,
@@ -24,6 +26,7 @@ pub const SubtitleFrame = extern struct {
     valid: c_int = 0, // bool
 };
 
+/// Collection of the VideoFrame and SubtitleFrame
 pub const FrameGroup = extern struct {
     video_frame: *VideoFrame,
     subtitle_frame: *SubtitleFrame,
