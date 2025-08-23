@@ -4,6 +4,7 @@
 
 const std = @import("std");
 const c = @import("c.zig").c;
+const fnv = @import("fnv.zig");
 const frames = @import("frames.zig");
 const common = @import("common.zig");
 
@@ -15,6 +16,7 @@ pub const LibassError = error{
 var library: ?*c.ASS_Library = null;
 var renderer: ?*c.ass_renderer = null;
 var track: ?*c.ass_track = null;
+var current_hash: u32 = 0;
 
 /// Get the current libass version
 ///
@@ -50,6 +52,7 @@ pub fn SetSubtitles(data: [*c]u8, data_len: c_int, code_page: [*c]u8) void {
         track = null;
     }
     track = c.ass_read_memory(library, data, @intCast(data_len), code_page);
+    current_hash = fnv.fnv1a_32(data, data_len);
 }
 
 /// Set up renderer
@@ -67,11 +70,18 @@ pub fn LoadVideo(frame_width: c_int, frame_height: c_int) void {
     c.ass_set_fonts(renderer, null, "Sans", 1, null, 0);
 }
 
+pub fn VerifyHash(frame: ?*frames.SubtitleFrame) bool {
+    return current_hash != 0 and current_hash == frame.?.*.hash;
+}
+
 /// Get the subtitles (On a transparent frame)
 pub fn GetFrame(timestamp: c_longlong, out: *frames.SubtitleFrame) !void {
     const frame_w: i32 = @intCast(out.*.width);
     const frame_h: i32 = @intCast(out.*.height);
     const buffer_size: usize = @intCast(out.*.pitch * out.*.height);
+
+    // Set the frame's hash
+    out.*.hash = current_hash;
 
     // Reset buffer to transparent
     const buf = out.data[0..buffer_size];

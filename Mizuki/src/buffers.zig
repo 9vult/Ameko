@@ -36,13 +36,12 @@ pub fn Deinit() void {
 /// Get a frame
 pub fn ProcFrame(frame_number: c_int, timestamp: c_longlong, raw: c_int) ffms.FfmsError!*frames.FrameGroup {
     _ = raw; // For sub-less frame
+    var result: ?*frames.FrameGroup = null;
 
-    // TODO: subtitle hash check
-    var frame: ?*frames.FrameGroup = null;
     // See if the frame is in the list of cached buffers already
     for (buffers.items, 0..) |buffer, idx| {
         if (buffer.*.video_frame.*.valid == 1 and buffer.*.video_frame.*.frame_number == frame_number) {
-            frame = buffer;
+            result = buffer;
 
             // Move buffer to the front of the list
             if (idx != 0) {
@@ -50,7 +49,12 @@ pub fn ProcFrame(frame_number: c_int, timestamp: c_longlong, raw: c_int) ffms.Ff
                 try buffers.insert(0, buffer);
             }
 
-            return frame.?;
+            // Check if we need to (re)render the subtitles
+            if (!libass.VerifyHash(result.?.*.subtitle_frame)) {
+                try libass.GetFrame(timestamp, result.?.*.subtitle_frame);
+            }
+
+            return result.?;
         }
     }
 
@@ -67,30 +71,30 @@ pub fn ProcFrame(frame_number: c_int, timestamp: c_longlong, raw: c_int) ffms.Ff
     // Find an invalidated buffer
     for (buffers.items) |buffer| {
         if (buffer.*.video_frame.*.valid == 0) {
-            frame = buffer;
+            result = buffer;
             break;
         }
     }
 
     // Allocate a new buffer
-    if (frame == null) {
+    if (result == null) {
         // Clone geometry from the first buffer
         const reference = buffers.items[0];
-        frame = try AllocateFrame(
+        result = try AllocateFrame(
             @intCast(reference.*.video_frame.*.width),
             @intCast(reference.*.video_frame.*.height),
             @intCast(reference.*.video_frame.*.pitch),
         );
-        try buffers.insert(0, frame.?);
-        total_size = total_size + (frame.?.*.video_frame.*.height * frame.?.*.video_frame.*.pitch) * 2; // add size
+        try buffers.insert(0, result.?);
+        total_size = total_size + (result.?.*.video_frame.*.height * result.?.*.video_frame.*.pitch) * 2; // add size
     }
 
-    try ffms.GetFrame(frame_number, frame.?.*.video_frame);
-    try libass.GetFrame(timestamp, frame.?.*.subtitle_frame);
+    try ffms.GetFrame(frame_number, result.?.*.video_frame);
+    try libass.GetFrame(timestamp, result.?.*.subtitle_frame);
 
-    frame.?.*.video_frame.*.valid = 1;
-    frame.?.*.subtitle_frame.valid = 1;
-    return frame.?;
+    result.?.*.video_frame.*.valid = 1;
+    result.?.*.subtitle_frame.valid = 1;
+    return result.?;
 }
 
 pub fn ReleaseFrame(frame: *frames.FrameGroup) c_int {
