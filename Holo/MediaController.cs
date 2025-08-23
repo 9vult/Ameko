@@ -278,7 +278,6 @@ public class MediaController : BindableBase
             );
 
             _playback.Intervals = VideoInfo.FrameIntervals;
-            _lastFrame = testFrame;
         }
 
         DisplayWidth = VideoInfo.Width;
@@ -290,6 +289,12 @@ public class MediaController : BindableBase
         doc.EventManager.Head.Text = @"{\fs80}今日はlibassの日！";
         var writer = new AssWriter(doc, new ConsumerInfo("", "", ""));
         _provider.SetSubtitles(writer.Write(false), null);
+
+        // Re-fetch frame 0 with the subtitles
+        unsafe
+        {
+            _lastFrame = _provider.GetFrame(0, 0, false);
+        }
         return true;
     }
 

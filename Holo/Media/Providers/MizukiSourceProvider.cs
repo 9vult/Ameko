@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
 using Holo.IO;
+using NLog;
 
 namespace Holo.Media.Providers;
 
@@ -12,6 +13,9 @@ namespace Holo.Media.Providers;
 /// </summary>
 public class MizukiSourceProvider : ISourceProvider
 {
+    private static readonly Logger Logger = LogManager.GetLogger("Mizuki");
+    private static readonly External.LogCallback LogDelegate = Log;
+
     /// <summary>
     /// If this provider is initialized
     /// </summary>
@@ -25,6 +29,7 @@ public class MizukiSourceProvider : ISourceProvider
 
     public void Initialize()
     {
+        External.SetLoggerCallback(LogDelegate);
         External.Initialize();
         IsInitialized = true;
     }
@@ -96,6 +101,34 @@ public class MizukiSourceProvider : ISourceProvider
         return ptr.ToLongArray();
     }
 
+    /// <summary>
+    /// Callback for handling logs emitted by Mizuki
+    /// </summary>
+    /// <param name="level">Log level</param>
+    /// <param name="ptr">Pointer to the c-string</param>
+    private static void Log(int level, nint ptr)
+    {
+        var msg = Marshal.PtrToStringAnsi(ptr);
+        switch (level)
+        {
+            case 0:
+                Logger.Trace(msg);
+                break;
+            case 1:
+                Logger.Debug(msg);
+                break;
+            case 2:
+                Logger.Info(msg);
+                break;
+            case 3:
+                Logger.Warn(msg);
+                break;
+            case 4:
+                Logger.Error(msg);
+                break;
+        }
+    }
+
     private static string GetCachePath(string filePath)
     {
         var hash = Convert.ToBase64String(MD5.HashData(Encoding.UTF8.GetBytes(filePath)));
@@ -144,6 +177,12 @@ internal static unsafe partial class External
 
     [LibraryImport("mizuki")]
     internal static partial UnmanagedArray GetFrameIntervals();
+
+    [LibraryImport("mizuki")]
+    internal static partial void SetLoggerCallback(LogCallback callback);
+
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    public delegate void LogCallback(int level, nint message);
 }
 
 /// <summary>
