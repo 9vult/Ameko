@@ -7,6 +7,7 @@ const c = @import("c.zig").c;
 const fnv = @import("fnv.zig");
 const frames = @import("frames.zig");
 const common = @import("common.zig");
+const logger = @import("logger.zig");
 
 pub const LibassError = error{
     NotInitialized,
@@ -33,6 +34,7 @@ pub fn GetVersion() common.BackingVersion {
 /// Initialize libass
 pub fn Initialize() void {
     library = c.ass_library_init();
+    // c.ass_set_message_cb(library, &AssLogCallback, null); // TODO: When va_args is supported
 }
 
 /// Deinitialize libass
@@ -126,5 +128,22 @@ pub fn GetFrame(timestamp: c_longlong, out: *frames.SubtitleFrame) !void {
         }
 
         img = i.*.next;
+    }
+}
+
+pub export fn AssLogCallback(
+    level: c_int,
+    fmt: [*c]const u8,
+    args: [*c]u8,
+    data: ?*anyopaque,
+) callconv(.c) void {
+    _ = args;
+    _ = data;
+    if (level < 5) {
+        // Note: Would need to work with the va_list
+        // but it's not implemented yet(?)
+        // https://github.com/ziglang/zig/blob/0d0f09fb0ee60b5fa42f51732bde2a4db43453a8/test/behavior/var_args.zig#L234
+        const fmt_slice = std.mem.sliceTo(fmt, 0);
+        logger.Info(fmt_slice);
     }
 }

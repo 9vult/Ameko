@@ -8,12 +8,15 @@ const libass = @import("libass.zig");
 const frames = @import("frames.zig");
 const common = @import("common.zig");
 const errors = @import("errors.zig");
+const logger = @import("logger.zig");
 const buffers = @import("buffers.zig");
 
 /// Initialize the library
 pub export fn Initialize() void {
+    logger.Debug("Initializing Mizuki...");
     ffms.Initialize();
     libass.Initialize();
+    logger.Debug("Done!");
 }
 
 /// Open a video file
@@ -82,12 +85,17 @@ pub export fn GetTimecodes() common.LongArray {
     };
 }
 
-// Get array of frame intervals
+/// Get array of frame intervals
 pub export fn GetFrameIntervals() common.LongArray {
     return .{
         .ptr = ffms.frame_intervals.ptr,
         .len = ffms.frame_intervals.len,
     };
+}
+
+/// Set the logging callback
+pub export fn SetLoggerCallback(callback: logger.LogCallback) void {
+    logger.SetCallback(callback);
 }
 
 /// Free an int array

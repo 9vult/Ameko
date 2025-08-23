@@ -6,6 +6,7 @@ const std = @import("std");
 const c = @import("c.zig").c;
 const frames = @import("frames.zig");
 const common = @import("common.zig");
+const logger = @import("logger.zig");
 
 pub const FfmsError = error{
     FileNotFound,
@@ -229,6 +230,7 @@ pub fn LoadVideo(file_name: [*c]u8, cache_file_name: [*c]u8, color_matrix: [*c]u
     try intervals_list.append(0);
 
     frame_intervals = intervals_list.toOwnedSlice() catch unreachable;
+    logger.Debug("[FFMS2] Successfully loaded video file");
 }
 
 pub fn GetFrame(frame_number: c_int, out: *frames.VideoFrame) FfmsError!void {
