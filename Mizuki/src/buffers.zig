@@ -11,6 +11,7 @@ var max_size: c_int = 0;
 var total_size: c_int = 0;
 var buffers: std.ArrayList(*frames.FrameGroup) = undefined;
 
+/// Pre-initialize some buffers
 pub fn Init(num_buffers: usize, max_cache_mb: c_int, width: usize, height: usize, pitch: usize) ffms.FfmsError!void {
     buffers = std.ArrayList(*frames.FrameGroup).init(common.allocator);
     max_size = max_cache_mb * (1024 ^ 2);
@@ -97,6 +98,7 @@ pub fn ProcFrame(frame_number: c_int, timestamp: c_longlong, raw: c_int) ffms.Ff
     return result.?;
 }
 
+/// Mark a frame as invalid so it can be reused
 pub fn ReleaseFrame(frame: *frames.FrameGroup) c_int {
     frame.video_frame.valid = 0;
     frame.subtitle_frame.valid = 0;

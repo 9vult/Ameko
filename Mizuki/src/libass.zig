@@ -72,6 +72,7 @@ pub fn LoadVideo(frame_width: c_int, frame_height: c_int) void {
     c.ass_set_fonts(renderer, null, "Sans", 1, null, 0);
 }
 
+/// Verify a frame's hash
 pub fn VerifyHash(frame: ?*frames.SubtitleFrame) bool {
     return current_hash != 0 and current_hash == frame.?.*.hash;
 }
@@ -131,6 +132,9 @@ pub fn GetFrame(timestamp: c_longlong, out: *frames.SubtitleFrame) !void {
     }
 }
 
+/// Callback for handling logs emitted by libass
+///
+/// Currently unused since Zig doesn't support va_list yet
 pub export fn AssLogCallback(
     level: c_int,
     fmt: [*c]const u8,
