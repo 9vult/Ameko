@@ -239,6 +239,12 @@ public class MediaController : BindableBase
             CurrentFrame = _videoInfo.FrameFromTime(@event.Start);
     }
 
+    /// <summary>
+    /// Open a video
+    /// </summary>
+    /// <param name="filePath">Path to the video to open</param>
+    /// <returns><see langword="true"/> if successful</returns>
+    /// <exception cref="InvalidOperationException">If the provider isn't initialized</exception>
     public bool OpenVideo(string filePath)
     {
         if (!_provider.IsInitialized)
@@ -333,6 +339,11 @@ public class MediaController : BindableBase
         throw new InvalidOperationException("Frame is unavailable");
     }
 
+    /// <summary>
+    /// Set the subtitles to be displayed
+    /// </summary>
+    /// <param name="document">Document being displayed</param>
+    /// <exception cref="InvalidOperationException">If the provider isn't initialized</exception>
     public void SetSubtitles(Document document)
     {
         if (!_provider.IsInitialized)
@@ -383,7 +394,7 @@ public class MediaController : BindableBase
         var frame = _provider.GetFrame(frameToFetch, time, false);
         lock (_frameLock)
         {
-            if (frameToFetch == _currentFrame || subtitlesChanged)
+            if (frameToFetch == _currentFrame || subtitlesChanged) // TODO: Do we want this gate?
                 _nextFrame = frame;
 
             if (_pendingFrame != -1 || _subtitlesChanged)
