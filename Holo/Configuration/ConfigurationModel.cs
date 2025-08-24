@@ -19,6 +19,7 @@ internal record ConfigurationModel
     public required uint AutosaveInterval;
     public required bool LineWidthIncludesWhitespace;
     public required bool LineWidthIncludesPunctuation;
+    public required bool DiscordRpcEnabled;
     public required string Culture;
     public required Theme Theme;
     public required uint GridPadding;

@@ -116,6 +116,8 @@ public partial class TabItem : ReactiveUserControl<TabItemViewModel>
                 .WhereNotNull()
                 .Subscribe(vm =>
                 {
+                    // Alert that the working space has changed
+                    MessageBus.Current.SendMessage(new WorkingSpaceChangedMessage());
                     // Listen for scroll messages (?)
 
                     // Skip if already subscribed
