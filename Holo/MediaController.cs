@@ -176,7 +176,7 @@ public class MediaController : BindableBase
             return;
 
         var startFrame = _videoInfo.FrameFromTime(startTime);
-        var endFrame = _videoInfo.FrameFromTime(endTime);
+        var endFrame = _videoInfo.FrameFromTime(endTime) - 1; // Stop on the last frame including the selection
 
         CurrentFrame = startFrame;
         _destinationFrame = endFrame;
@@ -220,13 +220,23 @@ public class MediaController : BindableBase
     }
 
     /// <summary>
-    /// Seek to a frame by event
+    /// Seek to the first frame of an event
     /// </summary>
     /// <param name="event">Event to seek to the start of</param>
     public void SeekTo(Event @event)
     {
         if (_videoInfo is not null)
             CurrentFrame = _videoInfo.FrameFromTime(@event.Start);
+    }
+
+    /// <summary>
+    /// Seek to the last frame of an event
+    /// </summary>
+    /// <param name="event">Event to seek to the end of</param>
+    public void SeekToEnd(Event @event)
+    {
+        if (_videoInfo is not null)
+            CurrentFrame = _videoInfo.FrameFromTime(@event.End) - 1;
     }
 
     /// <summary>

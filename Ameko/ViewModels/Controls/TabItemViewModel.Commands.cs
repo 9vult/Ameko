@@ -500,6 +500,34 @@ public partial class TabItemViewModel : ViewModelBase
     }
 
     /// <summary>
+    /// Go to start of active event
+    /// </summary>
+    private ReactiveCommand<Unit, Unit> CreateActiveStartCommand()
+    {
+        return ReactiveCommand.Create(() =>
+        {
+            if (!Workspace.MediaController.IsVideoLoaded)
+                return;
+            var selection = Workspace.SelectionManager.ActiveEvent;
+            Workspace.MediaController.SeekTo(selection);
+        });
+    }
+
+    /// <summary>
+    /// Go to end of active event
+    /// </summary>
+    private ReactiveCommand<Unit, Unit> CreateActiveEndCommand()
+    {
+        return ReactiveCommand.Create(() =>
+        {
+            if (!Workspace.MediaController.IsVideoLoaded)
+                return;
+            var selection = Workspace.SelectionManager.ActiveEvent;
+            Workspace.MediaController.SeekToEnd(selection);
+        });
+    }
+
+    /// <summary>
     /// Increase video zoom level
     /// </summary>
     private ReactiveCommand<Unit, Unit> CreateZoomInCommand()
