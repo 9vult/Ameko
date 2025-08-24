@@ -1,14 +1,11 @@
-// SPDX-License-Identifier: GPL-3.0-only
+// SPDX-License-Identifier: MPL-2.0
 
-using System;
-using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Holo.Configuration;
-using Holo.Providers;
 using Holo.Scripting;
 using NLog;
 
-namespace Ameko.Services;
+namespace Holo.Providers;
 
 /// <summary>
 /// Provides a controlled service locator for use by
@@ -75,8 +72,8 @@ public sealed class ScriptServiceLocator
 
         Logger.Warn($"{callerName} attempted to get restricted service {typeof(T)}");
         throw new ArgumentOutOfRangeException(
-            nameof(T),
-            string.Format(I18N.Other.ScriptServiceLocator_Get_UnregisteredScript, typeof(T).Name)
+        // nameof(T),
+        // string.Format(I18N.Other.ScriptServiceLocator_Get_UnregisteredScript, typeof(T).Name)
         );
     }
 
