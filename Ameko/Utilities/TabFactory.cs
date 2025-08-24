@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using Ameko.ViewModels.Controls;
 using Holo;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,6 +24,14 @@ public interface ITabFactory
     /// </summary>
     /// <param name="workspace"></param>
     void Release(Workspace workspace);
+
+    /// <summary>
+    /// Try to get the <see cref="TabItemViewModel"/> associated with the <paramref name="workspace"/>
+    /// </summary>
+    /// <param name="workspace">Workspace to get the ViewModel of</param>
+    /// <param name="viewModel">ViewModel corresponding to the <paramref name="workspace"/></param>
+    /// <returns><see langword="true"/> if found</returns>
+    bool TryGetViewModel(Workspace workspace, [NotNullWhen(true)] out TabItemViewModel? viewModel);
 }
 
 public class TabFactory(IServiceProvider provider) : ITabFactory
@@ -44,5 +53,14 @@ public class TabFactory(IServiceProvider provider) : ITabFactory
     public void Release(Workspace workspace)
     {
         _cache.Remove(workspace);
+    }
+
+    /// <inheritdoc />
+    public bool TryGetViewModel(
+        Workspace workspace,
+        [NotNullWhen(true)] out TabItemViewModel? viewModel
+    )
+    {
+        return _cache.TryGetValue(workspace, out viewModel);
     }
 }
