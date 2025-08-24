@@ -42,8 +42,8 @@ public class VideoInfo(
         if (bs >= 0)
             return bs;
 
-        // ~bs → Index of the first greater element. Subtract one for the smaller element
-        return ~bs - 1;
+        // ~bs → Index of the first greater element.
+        return ~bs;
     }
 
     /// <summary>
