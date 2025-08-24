@@ -12,6 +12,7 @@ using Ameko.ViewModels.Windows;
 using Ameko.Views.Dialogs;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Platform.Storage;
 using Avalonia.ReactiveUI;
 using Avalonia.Styling;
@@ -26,6 +27,10 @@ namespace Ameko.Views.Windows;
 public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
 {
     private static readonly Logger Log = LogManager.GetCurrentClassLogger();
+
+    private static readonly string[] ScriptExtensions = [".ass", ".txt"];
+    private static readonly string[] VideoExtensions = [".mkv", ".mp4"];
+    private const string SolutionExtension = ".asln";
 
     private async Task DoShowOpenSubtitleDialogAsync(IInteractionContext<Unit, Uri[]> interaction)
     {
@@ -278,6 +283,8 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         Log.Info("Initializing Main Window...");
         InitializeComponent();
 
+        AddHandler(DragDrop.DropEvent, DoDragAndDrop);
+
         this.WhenActivated(disposables =>
         {
             if (ViewModel is not null)
@@ -363,5 +370,34 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
             KeybindContext.Global,
             this
         );
+    }
+
+    private void DoDragAndDrop(object? sender, DragEventArgs e)
+    {
+        if (e.Data.GetFiles() is not { } files || ViewModel is null)
+            return;
+
+        foreach (var file in files)
+        {
+            var ext = Path.GetExtension(file.Path.LocalPath);
+
+            if (ScriptExtensions.Contains(ext))
+            {
+                ViewModel.OpenSubtitleNoGuiCommand.Execute(file.Path);
+                continue;
+            }
+
+            if (VideoExtensions.Contains(ext))
+            {
+                ViewModel.OpenVideoNoGuiCommand.Execute(file.Path);
+                continue;
+            }
+
+            if (ext == SolutionExtension)
+            {
+                ViewModel.OpenSolutionNoGuiCommand.Execute(file.Path);
+                continue;
+            }
+        }
     }
 }

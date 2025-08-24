@@ -70,6 +70,7 @@ public partial class MainWindowViewModel : ViewModelBase
 
     [KeybindTarget("ameko.document.open", "Ctrl+O")]
     public ICommand OpenSubtitleCommand { get; }
+    public ICommand OpenSubtitleNoGuiCommand { get; }
 
     [KeybindTarget("ameko.document.save", "Ctrl+S")]
     public ICommand SaveSubtitleCommand { get; }
@@ -82,6 +83,7 @@ public partial class MainWindowViewModel : ViewModelBase
 
     [KeybindTarget("ameko.solution.open")]
     public ICommand OpenSolutionCommand { get; }
+    public ICommand OpenSolutionNoGuiCommand { get; }
 
     [KeybindTarget("ameko.solution.openFolder")]
     public ICommand OpenFolderAsSolutionCommand { get; }
@@ -107,6 +109,7 @@ public partial class MainWindowViewModel : ViewModelBase
     // Video
     [KeybindTarget("ameko.video.open")]
     public ICommand OpenVideoCommand { get; }
+    public ICommand OpenVideoNoGuiCommand { get; }
 
     [KeybindTarget("ameko.video.jump", "Ctrl+G")]
     public ICommand ShowJumpDialogCommand { get; }
@@ -231,7 +234,7 @@ public partial class MainWindowViewModel : ViewModelBase
         // Solution
         // Video
         OpenVideo = new Interaction<Unit, Uri?>();
-        ShowJumpDialog = new Interaction<JumpDialogViewModel, JumpDialogClosedMessage>();
+        ShowJumpDialog = new Interaction<JumpDialogViewModel, JumpDialogClosedMessage?>();
         // Timing
         ShowShiftTimesDialog = new Interaction<ShiftTimesDialogViewModel, Unit>();
         // Scripts
@@ -245,10 +248,12 @@ public partial class MainWindowViewModel : ViewModelBase
         // File
         NewCommand = CreateNewCommand();
         OpenSubtitleCommand = CreateOpenSubtitleCommand();
+        OpenSubtitleNoGuiCommand = CreateOpenSubtitleNoGuiCommand();
         SaveSubtitleCommand = CreateSaveSubtitleCommand();
         SaveSubtitleAsCommand = CreateSaveSubtitleAsCommand();
         ExportSubtitleCommand = CreateExportSubtitleCommand();
         OpenSolutionCommand = CreateOpenSolutionCommand();
+        OpenSolutionNoGuiCommand = CreateOpenSolutionNoGuiCommand();
         OpenFolderAsSolutionCommand = CreateOpenFolderAsSolutionCommand();
         SaveSolutionCommand = CreateSaveSolutionCommand();
         CloseTabCommand = CreateCloseTabCommand();
@@ -260,6 +265,7 @@ public partial class MainWindowViewModel : ViewModelBase
         ShowShiftTimesDialogCommand = CreateShowShiftTimesDialogCommand();
         // Video
         OpenVideoCommand = CreateOpenVideoCommand();
+        OpenVideoNoGuiCommand = CreateOpenVideoNoGuiCommand();
         ShowJumpDialogCommand = CreateShowJumpDialogCommand();
         // Scripts
         ExecuteScriptCommand = CreateExecuteScriptCommand();
