@@ -46,7 +46,7 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         return ReactiveCommand.CreateFromTask(async () =>
         {
-            Logger.Info("Preparing to open subtitles");
+            Logger.Debug("Preparing to open subtitles");
             var uris = await OpenSubtitle.Handle(Unit.Default);
 
             Workspace? latest = null;
@@ -79,7 +79,7 @@ public partial class MainWindowViewModel : ViewModelBase
         return ReactiveCommand.Create(
             (Uri uri) =>
             {
-                Logger.Info("Opening subtitle (no-gui)");
+                Logger.Debug("Opening subtitle (no-gui)");
 
                 var doc = Path.GetExtension(uri.LocalPath) switch
                 {
@@ -154,7 +154,7 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         return ReactiveCommand.CreateFromTask(async () =>
         {
-            Logger.Info("Preparing to open solution file");
+            Logger.Debug("Preparing to open solution file");
             var uri = await OpenSolution.Handle(Unit.Default);
 
             if (uri is null)
@@ -189,7 +189,7 @@ public partial class MainWindowViewModel : ViewModelBase
         return ReactiveCommand.CreateFromTask(
             async (Uri uri) =>
             {
-                Logger.Info("Preparing to open solution file (no-gui)");
+                Logger.Debug("Preparing to open solution file (no-gui)");
 
                 foreach (var wsp in SolutionProvider.Current.LoadedWorkspaces.ToArray())
                 {
@@ -217,7 +217,7 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         return ReactiveCommand.CreateFromTask(async () =>
         {
-            Logger.Info("Preparing to open a directory as a solution");
+            Logger.Debug("Preparing to open a directory as a solution");
             var uri = await OpenFolderAsSolution.Handle(Unit.Default);
 
             if (uri is null)
@@ -269,7 +269,7 @@ public partial class MainWindowViewModel : ViewModelBase
                     if (wsp is null)
                         return;
 
-                    Logger.Trace($"Closing tab {wsp.Title}");
+                    Logger.Debug($"Closing tab {wsp.Title}");
                     await _ioService.SafeCloseWorkspace(wsp, SaveSubtitleAs);
                 }
             }
@@ -334,7 +334,7 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         return ReactiveCommand.CreateFromTask(async () =>
         {
-            Logger.Info("Preparing to open video");
+            Logger.Debug("Preparing to open video");
             var uri = await OpenVideo.Handle(Unit.Default);
 
             if (uri is null)
@@ -360,7 +360,7 @@ public partial class MainWindowViewModel : ViewModelBase
         return ReactiveCommand.Create(
             (Uri uri) =>
             {
-                Logger.Info("Preparing to open video (no-gui)");
+                Logger.Debug("Preparing to open video (no-gui)");
 
                 var wsp = SolutionProvider.Current.WorkingSpace;
                 if (wsp is null)
@@ -382,7 +382,7 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         return ReactiveCommand.CreateFromTask(async () =>
         {
-            Logger.Info("Opening Jump dialog");
+            Logger.Debug("Opening Jump dialog");
 
             var wsp = SolutionProvider.Current.WorkingSpace;
             if (wsp is null)
@@ -460,7 +460,7 @@ public partial class MainWindowViewModel : ViewModelBase
         return ReactiveCommand.Create(
             (string name) =>
             {
-                Logger.Trace($"Switching to layout {name}");
+                Logger.Debug($"Switching to layout {name}");
                 var layout = LayoutProvider.Layouts.FirstOrDefault(l => l.Name == name);
                 if (layout is null)
                     return;
@@ -509,7 +509,7 @@ public partial class MainWindowViewModel : ViewModelBase
         return ReactiveCommand.CreateFromTask(
             async (int id) =>
             {
-                Logger.Trace(
+                Logger.Debug(
                     $"Displaying message to confirm removal of document {id} from solution"
                 );
 
@@ -536,7 +536,7 @@ public partial class MainWindowViewModel : ViewModelBase
         return ReactiveCommand.CreateFromTask(
             async (int id) =>
             {
-                Logger.Trace(
+                Logger.Debug(
                     $"Displaying message to confirm removal of directory {id} from solution"
                 );
 
@@ -566,7 +566,7 @@ public partial class MainWindowViewModel : ViewModelBase
                 if (SolutionProvider.Current.FindItemById(id) is not DirectoryItem dirItem)
                     return;
 
-                Logger.Trace(
+                Logger.Debug(
                     $"Displaying input box for rename of directory {id} ({dirItem.Title})"
                 );
 
@@ -606,7 +606,7 @@ public partial class MainWindowViewModel : ViewModelBase
                 if (SolutionProvider.Current.FindItemById(id) is not DocumentItem docItem)
                     return;
 
-                Logger.Trace($"Displaying input box for rename of document {id} ({docItem.Title})");
+                Logger.Debug($"Displaying input box for rename of document {id} ({docItem.Title})");
 
                 var box = MessageBoxManager.GetMessageBoxStandard(
                     new MessageBoxStandardParams
