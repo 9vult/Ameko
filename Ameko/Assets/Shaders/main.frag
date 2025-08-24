@@ -14,6 +14,10 @@ void main()
 {
     vec4 videoColor = texture(texture0, texCoord);
     vec4 subsColor = texture(texture1, texCoord);
-    
-    outputColor = mix(videoColor, subsColor, subsColor.a);
+
+    // Premultiplied alpha blending
+    vec3 blendedRGB = subsColor.rgb + videoColor.rgb * (1.0 - subsColor.a);
+
+    // Output fully opaque
+    outputColor = vec4(blendedRGB, 1.0);
 }
