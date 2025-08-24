@@ -71,6 +71,32 @@ public partial class MainWindowViewModel : ViewModelBase
     }
 
     /// <summary>
+    /// Open a subtitle without using a dialog
+    /// </summary>
+    /// <returns></returns>
+    private ReactiveCommand<Uri, Unit> CreateOpenSubtitleNoGuiCommand()
+    {
+        return ReactiveCommand.Create(
+            (Uri uri) =>
+            {
+                Logger.Info("Opening subtitle (no-gui)");
+
+                var doc = Path.GetExtension(uri.LocalPath) switch
+                {
+                    ".ass" => new AssParser().Parse(_fileSystem, uri),
+                    ".txt" => new TxtParser().Parse(_fileSystem, uri),
+                    _ => throw new ArgumentOutOfRangeException(),
+                };
+
+                var latest = SolutionProvider.Current.AddWorkspace(doc, uri);
+                latest.IsSaved = true;
+                Logger.Info($"Opened subtitle file {latest.Title}");
+                SolutionProvider.Current.WorkingSpace = latest;
+            }
+        );
+    }
+
+    /// <summary>
     /// Display either the Save Subtitle or Save Subtitle As dialog
     /// </summary>
     private ReactiveCommand<Unit, Unit> CreateSaveSubtitleCommand()
@@ -153,6 +179,35 @@ public partial class MainWindowViewModel : ViewModelBase
             SolutionProvider.Current = Solution.Parse(_fileSystem, uri);
             Logger.Info("Loaded solution file");
         });
+    }
+
+    /// <summary>
+    /// Open a solution without using a dialog
+    /// </summary>
+    private ReactiveCommand<Uri, Unit> CreateOpenSolutionNoGuiCommand()
+    {
+        return ReactiveCommand.CreateFromTask(
+            async (Uri uri) =>
+            {
+                Logger.Info("Preparing to open solution file (no-gui)");
+
+                foreach (var wsp in SolutionProvider.Current.LoadedWorkspaces.ToArray())
+                {
+                    await _ioService.SafeCloseWorkspace(wsp, SaveSubtitleAs, false);
+                }
+
+                if (SolutionProvider.Current.LoadedWorkspaces.Count > 0)
+                {
+                    Logger.Info(
+                        $"Opening solution file aborted - {SolutionProvider.Current.LoadedWorkspaces.Count} workspaces remain open"
+                    );
+                    return;
+                }
+
+                SolutionProvider.Current = Solution.Parse(_fileSystem, uri);
+                Logger.Info("Loaded solution file");
+            }
+        );
     }
 
     /// <summary>
@@ -295,6 +350,29 @@ public partial class MainWindowViewModel : ViewModelBase
             wsp.MediaController.OpenVideo(uri.LocalPath);
             wsp.MediaController.SetSubtitles(wsp.Document);
         });
+    }
+
+    /// <summary>
+    /// Open a video without using a dialog
+    /// </summary>
+    private ReactiveCommand<Uri, Unit> CreateOpenVideoNoGuiCommand()
+    {
+        return ReactiveCommand.Create(
+            (Uri uri) =>
+            {
+                Logger.Info("Preparing to open video (no-gui)");
+
+                var wsp = SolutionProvider.Current.WorkingSpace;
+                if (wsp is null)
+                {
+                    SolutionProvider.Current.WorkingSpace = wsp =
+                        SolutionProvider.Current.AddWorkspace();
+                }
+
+                wsp.MediaController.OpenVideo(uri.LocalPath);
+                wsp.MediaController.SetSubtitles(wsp.Document);
+            }
+        );
     }
 
     /// <summary>
