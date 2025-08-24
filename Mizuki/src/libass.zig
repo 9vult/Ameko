@@ -69,7 +69,7 @@ pub fn LoadVideo(frame_width: c_int, frame_height: c_int) void {
     c.ass_set_storage_size(renderer, frame_width, frame_height);
     c.ass_set_font_scale(renderer, 1.0);
 
-    c.ass_set_fonts(renderer, null, "Sans", 1, null, 0);
+    c.ass_set_fonts(renderer, null, "Sans", 1, null, 1);
 }
 
 /// Verify a frame's hash
