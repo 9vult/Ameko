@@ -6,6 +6,7 @@ using System.IO.Abstractions;
 using System.Linq;
 using System.Reactive;
 using System.Windows.Input;
+using Ameko.Messages;
 using Ameko.Services;
 using Ameko.Utilities;
 using Ameko.ViewModels.Controls;
@@ -52,6 +53,7 @@ public partial class MainWindowViewModel : ViewModelBase
 
     // Video
     public Interaction<Unit, Uri?> OpenVideo { get; }
+    public Interaction<JumpDialogViewModel, JumpDialogClosedMessage> ShowJumpDialog { get; }
 
     // Scripts
     public Interaction<PkgManWindowViewModel, Unit> ShowPackageManager { get; }
@@ -105,6 +107,9 @@ public partial class MainWindowViewModel : ViewModelBase
     // Video
     [KeybindTarget("ameko.video.open")]
     public ICommand OpenVideoCommand { get; }
+
+    [KeybindTarget("ameko.video.jump", "Ctrl+G")]
+    public ICommand JumpToCommand { get; }
 
     // Scripts
     // Command execution doesn't get a keybind. So sad :(
@@ -226,6 +231,7 @@ public partial class MainWindowViewModel : ViewModelBase
         // Solution
         // Video
         OpenVideo = new Interaction<Unit, Uri?>();
+        ShowJumpDialog = new Interaction<JumpDialogViewModel, JumpDialogClosedMessage>();
         // Timing
         ShowShiftTimesDialog = new Interaction<ShiftTimesDialogViewModel, Unit>();
         // Scripts
