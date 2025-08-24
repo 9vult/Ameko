@@ -26,7 +26,6 @@ public partial class TabItemViewModel : ViewModelBase
         PasteOverDialogViewModel,
         PasteOverDialogClosedMessage
     > ShowPasteOverDialog { get; }
-    public Interaction<Event, Unit> ScrollIntoView { get; }
 
     #endregion
 
@@ -148,7 +147,6 @@ public partial class TabItemViewModel : ViewModelBase
         PasteEvents = new Interaction<TabItemViewModel, string[]?>();
         ShowPasteOverDialog =
             new Interaction<PasteOverDialogViewModel, PasteOverDialogClosedMessage>();
-        ScrollIntoView = new Interaction<Event, Unit>();
         #endregion
 
         #region Commands

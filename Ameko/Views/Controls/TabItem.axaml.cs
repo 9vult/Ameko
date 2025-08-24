@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Ameko.Messages;
 using Ameko.ViewModels.Controls;
@@ -109,40 +110,40 @@ public partial class TabItem : ReactiveUserControl<TabItemViewModel>
         InitializeComponent();
         List<TabItemViewModel> previousVMs = [];
 
-        this.WhenActivated(
-            (CompositeDisposable disposables) =>
-            {
-                this.GetObservable(ViewModelProperty)
-                    .WhereNotNull()
-                    .Subscribe(vm =>
+        this.WhenActivated(disposables =>
+        {
+            this.GetObservable(ViewModelProperty)
+                .WhereNotNull()
+                .Subscribe(vm =>
+                {
+                    // Listen for scroll messages (?)
+
+                    // Skip if already subscribed
+                    if (previousVMs.Contains(vm))
+                        return;
+                    previousVMs.Add(vm);
+
+                    vm.CopyEvents.RegisterHandler(DoCopyEventsAsync);
+                    vm.CutEvents.RegisterHandler(DoCutEventsAsync);
+                    vm.PasteEvents.RegisterHandler(DoPasteEventsAsync);
+                    vm.ShowPasteOverDialog.RegisterHandler(DoShowPasteOverDialogAsync);
+
+                    // Register keybinds
+                    AttachGridKeybinds(vm);
+                    vm.KeybindService.KeybindRegistrar.OnKeybindsChanged += (_, _) =>
                     {
-                        // Skip if already subscribed
-                        if (previousVMs.Contains(vm))
-                            return;
-                        previousVMs.Add(vm);
-
-                        vm.CopyEvents.RegisterHandler(DoCopyEventsAsync);
-                        vm.CutEvents.RegisterHandler(DoCutEventsAsync);
-                        vm.PasteEvents.RegisterHandler(DoPasteEventsAsync);
-                        vm.ShowPasteOverDialog.RegisterHandler(DoShowPasteOverDialogAsync);
-
-                        // Register keybinds
                         AttachGridKeybinds(vm);
-                        vm.KeybindService.KeybindRegistrar.OnKeybindsChanged += (_, _) =>
-                        {
-                            AttachGridKeybinds(vm);
-                        };
+                    };
 
-                        // Apply layouts
-                        ApplyLayout(vm, vm.LayoutProvider.Current);
-                        vm.LayoutProvider.OnLayoutChanged += (_, args) =>
-                        {
-                            ApplyLayout(vm, args.Layout);
-                        };
-                    })
-                    .DisposeWith(disposables);
-            }
-        );
+                    // Apply layouts
+                    ApplyLayout(vm, vm.LayoutProvider.Current);
+                    vm.LayoutProvider.OnLayoutChanged += (_, args) =>
+                    {
+                        ApplyLayout(vm, args.Layout);
+                    };
+                })
+                .DisposeWith(disposables);
+        });
     }
 
     private void ApplyLayout(TabItemViewModel? vm, Layout? layout)

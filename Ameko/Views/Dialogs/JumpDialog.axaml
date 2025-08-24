@@ -52,7 +52,7 @@
                        Grid.Row="2"
                        Padding="0"
                        Margin="2"
-                       Minimum="0"
+                       Minimum="1"
                        Increment="1"
                        FormatString="0"
                        ShowButtonSpinner="False"
@@ -61,6 +61,7 @@
                 Grid.Row="3"
                 Margin="2"
                 IsDefault="True"
-                Content="{x:Static i18n:Jump.Jump_Button_Jump}" />
+                Content="{x:Static i18n:Jump.Jump_Button_Jump}"
+                Command="{Binding ConfirmCommand}" />
     </Grid>
 </Window>

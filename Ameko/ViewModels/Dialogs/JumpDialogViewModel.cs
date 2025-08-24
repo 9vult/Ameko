@@ -10,7 +10,7 @@ namespace Ameko.ViewModels.Dialogs;
 public partial class JumpDialogViewModel : ViewModelBase
 {
     public int Frame { get; set; }
-    public int Line { get; set; }
+    public int Line { get; set; } = 1;
     public Time Time { get; set; } = Time.FromSeconds(0);
     public bool VideoLoaded { get; set; }
 
