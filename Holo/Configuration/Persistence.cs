@@ -71,7 +71,7 @@ public class Persistence : BindableBase, IPersistence
 
             var content = JsonSerializer.Serialize(model, JsonOptions);
             writer.Write(content);
-            Logger.Info($"Done!");
+            Logger.Info("Done!");
             return true;
         }
         catch (Exception ex) when (ex is IOException or JsonException)
@@ -92,7 +92,7 @@ public class Persistence : BindableBase, IPersistence
 
             if (!fileSystem.File.Exists(path))
             {
-                Logger.Info("Persistence file does not exist, using defaults...");
+                Logger.Warn("Persistence file does not exist, using defaults...");
                 return new Persistence(fileSystem);
             }
 
@@ -119,7 +119,7 @@ public class Persistence : BindableBase, IPersistence
         catch (Exception ex) when (ex is IOException or JsonException)
         {
             Logger.Error(ex);
-            Logger.Info("Failed to parse persistence, using defaults...");
+            Logger.Error("Failed to parse persistence, using defaults...");
             return new Persistence(fileSystem);
         }
     }

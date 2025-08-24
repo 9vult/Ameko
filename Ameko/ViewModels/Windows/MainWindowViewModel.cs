@@ -175,7 +175,7 @@ public partial class MainWindowViewModel : ViewModelBase
 
     private void GenerateScriptsMenu()
     {
-        Logger.Trace("Regenerating scripts menu...");
+        Logger.Debug("Regenerating scripts menu...");
         ScriptMenuItems.Clear();
         ScriptMenuItems.AddRange(
             ScriptMenuService.GenerateMenuItemSource(_scriptService.Scripts, ExecuteScriptCommand)
@@ -184,19 +184,19 @@ public partial class MainWindowViewModel : ViewModelBase
         ScriptMenuItems.Add(new Separator());
         ScriptMenuItems.Add(ScriptMenuService.GenerateReloadMenuItem(ReloadScriptsCommand));
         ScriptMenuItems.Add(ScriptMenuService.GeneratePkgManMenuItem(ShowPackageManagerCommand));
-        Logger.Trace("Done!");
+        Logger.Debug("Done!");
     }
 
     private void GenerateLayoutsMenu()
     {
-        Logger.Trace("Regenerating layouts menu...");
+        Logger.Debug("Regenerating layouts menu...");
         LayoutMenuItems.Clear();
         LayoutMenuItems.AddRange(
             LayoutMenuService.GenerateMenuItemSource(LayoutProvider.Layouts, SelectLayoutCommand)
         );
         LayoutMenuItems.Add(new Separator());
         LayoutMenuItems.Add(LayoutMenuService.GenerateReloadMenuItem(RefreshLayoutsCommand));
-        Logger.Trace("Done!");
+        Logger.Debug("Done!");
     }
 
     public MainWindowViewModel(

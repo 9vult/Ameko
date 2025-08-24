@@ -144,7 +144,7 @@ public partial class Configuration : BindableBase, IConfiguration
     /// <inheritdoc />
     public void AddRepositoryUrl(string url)
     {
-        Logger.Info($"Adding repository url {url}");
+        Logger.Debug($"Adding repository url {url}");
         _repositoryUrls.Add(url);
         Save();
     }
@@ -152,7 +152,7 @@ public partial class Configuration : BindableBase, IConfiguration
     /// <inheritdoc />
     public bool RemoveRepositoryUrl(string url)
     {
-        Logger.Info($"Removing repository url {url}");
+        Logger.Debug($"Removing repository url {url}");
         var result = _repositoryUrls.Remove(url);
         Save();
         return result;
@@ -222,7 +222,7 @@ public partial class Configuration : BindableBase, IConfiguration
 
             if (!fileSystem.File.Exists(path))
             {
-                Logger.Info("Configuration file does not exist, using defaults...");
+                Logger.Warn("Configuration file does not exist, using defaults...");
                 return new Configuration(fileSystem);
             }
 
@@ -260,7 +260,7 @@ public partial class Configuration : BindableBase, IConfiguration
         catch (Exception ex) when (ex is IOException or JsonException)
         {
             Logger.Error(ex);
-            Logger.Info("Failed to parse configuration, using defaults...");
+            Logger.Error("Failed to parse configuration, using defaults...");
             return new Configuration(fileSystem);
         }
     }

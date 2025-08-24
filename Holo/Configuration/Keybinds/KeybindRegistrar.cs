@@ -166,7 +166,7 @@ public class KeybindRegistrar(IFileSystem fileSystem) : IKeybindRegistrar
 
             if (!_fileSystem.File.Exists(path))
             {
-                Logger.Info("Keybinds file does not exist, using defaults...");
+                Logger.Warn("Keybinds file does not exist, using defaults...");
                 Save();
                 return;
             }
@@ -186,7 +186,7 @@ public class KeybindRegistrar(IFileSystem fileSystem) : IKeybindRegistrar
 
             if (imports is null)
             {
-                Logger.Info("Failed to parse keybinds, using defaults...");
+                Logger.Error("Failed to parse keybinds, using defaults...");
                 return;
             }
 
@@ -208,8 +208,8 @@ public class KeybindRegistrar(IFileSystem fileSystem) : IKeybindRegistrar
         }
         catch (Exception ex) when (ex is IOException or JsonException)
         {
-            Logger.Info("Failed to parse keybinds, using defaults...");
             Logger.Error(ex);
+            Logger.Error("Failed to parse keybinds, using defaults...");
         }
         finally
         {
