@@ -61,3 +61,11 @@
 #*.PDF   diff=astextplain
 #*.rtf   diff=astextplain
 #*.RTF   diff=astextplain
+
+###############################################################################
+# configure linguist behavior
+#
+# Exclude imported headers, assets, etc. from the reported language statistics
+###############################################################################
+/Mizuki/include/** linguist-vendored
+/Ameko/Assets/** linguist-vendored
