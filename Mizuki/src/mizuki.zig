@@ -4,29 +4,43 @@ const c = @import("c.zig").c;
 
 const std = @import("std");
 const ffms = @import("ffms.zig");
+const libass = @import("libass.zig");
 const frames = @import("frames.zig");
 const common = @import("common.zig");
 const errors = @import("errors.zig");
+const logger = @import("logger.zig");
 const buffers = @import("buffers.zig");
 
+/// Initialize the library
 pub export fn Initialize() void {
+    logger.Debug("Initializing Mizuki...");
     ffms.Initialize();
+    libass.Initialize();
+    logger.Debug("Done!");
 }
 
+/// Open a video file
 pub export fn LoadVideo(file_name: [*c]u8, cache_file_name: [*c]u8, color_matrix: [*c]u8) c_int {
     ffms.LoadVideo(file_name, cache_file_name, color_matrix) catch |err| {
         return errors.IntFromFfmsError(err);
     };
+    libass.LoadVideo(@intCast(ffms.frame_width), @intCast(ffms.frame_height));
     return 0;
 }
 
+/// Close the open video file
 pub export fn CloseVideo() c_int {
     return 0; // TODO: implement
 }
 
+pub export fn SetSubtitles(data: [*c]u8, data_len: c_int, code_page: [*c]u8) c_int {
+    libass.SetSubtitles(data, data_len, code_page);
+    return 0;
+}
+
 /// Allocate frame buffers
-pub export fn AllocateBuffers(num_buffers: c_int) c_int {
-    buffers.Init(@intCast(num_buffers), ffms.frame_width, ffms.frame_height, ffms.frame_pitch) catch |err| {
+pub export fn AllocateBuffers(num_buffers: c_int, max_cache_mb: c_int) c_int {
+    buffers.Init(@intCast(num_buffers), max_cache_mb, ffms.frame_width, ffms.frame_height, ffms.frame_pitch) catch |err| {
         return errors.IntFromFfmsError(err);
     };
     return 0;
@@ -39,14 +53,14 @@ pub export fn FreeBuffers() c_int {
 }
 
 /// Get a frame
-pub export fn GetFrame(frame_number: c_int) ?*frames.VideoFrame {
-    return buffers.ProcFrame(frame_number, 0, 0) catch {
+pub export fn GetFrame(frame_number: c_int, timestamp: c_longlong, raw: c_int) ?*frames.FrameGroup {
+    return buffers.ProcFrame(frame_number, timestamp, raw) catch {
         return null;
     };
 }
 
 /// Release a frame
-pub export fn ReleaseFrame(frame: *frames.VideoFrame) c_int {
+pub export fn ReleaseFrame(frame: *frames.FrameGroup) c_int {
     return buffers.ReleaseFrame(frame);
 }
 
@@ -71,12 +85,17 @@ pub export fn GetTimecodes() common.LongArray {
     };
 }
 
-// Get array of frame intervals
+/// Get array of frame intervals
 pub export fn GetFrameIntervals() common.LongArray {
     return .{
         .ptr = ffms.frame_intervals.ptr,
         .len = ffms.frame_intervals.len,
     };
+}
+
+/// Set the logging callback
+pub export fn SetLoggerCallback(callback: logger.LogCallback) void {
+    logger.SetCallback(callback);
 }
 
 /// Free an int array
@@ -101,5 +120,13 @@ pub fn main() !void {
         ffms_version.major,
         ffms_version.minor,
         ffms_version.patch,
+    });
+
+    libass.Initialize();
+    const libass_version = libass.GetVersion();
+    std.debug.print("Libass Version: {x}.{x}.{x}\n", .{
+        libass_version.major,
+        libass_version.minor,
+        libass_version.patch,
     });
 }

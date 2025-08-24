@@ -16,6 +16,8 @@
 
         x:Class="Ameko.Views.Windows.MainWindow"
         x:DataType="vm:MainWindowViewModel"
+        
+        DragDrop.AllowDrop="True"
 
         Icon="/Assets/Ameko-Simplified-BG-64.ico"
         Title="{Binding WindowTitle}">

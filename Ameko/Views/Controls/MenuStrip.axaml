@@ -85,7 +85,8 @@
                       Command="{Binding OpenVideoCommand}" />
             <Separator />
             <MenuItem Header="{x:Static i18n:Resources.Menu_JumpTo}"
-                      Icon="{icons:MaterialIconExt Kind=BullseyeArrow}" />
+                      Icon="{icons:MaterialIconExt Kind=BullseyeArrow}"
+                      Command="{Binding ShowJumpDialogCommand}"/>
         </MenuItem>
         <MenuItem Header="{x:Static i18n:Resources.Menu_Scripts}"
                   ItemsSource="{Binding ScriptMenuItems}" />

@@ -47,4 +47,16 @@ public abstract class FileWriter
         fs.SetLength(fs.Position);
         return result;
     }
+
+    /// <summary>
+    /// Write an ass document to string
+    /// </summary>
+    /// <param name="export"><see langword="true"/> if this write is an export</param>
+    /// <returns>Text representation of the file</returns>
+    public string Write(bool export = false)
+    {
+        using var writer = new StringWriter();
+        Write(writer, export);
+        return writer.ToString();
+    }
 }

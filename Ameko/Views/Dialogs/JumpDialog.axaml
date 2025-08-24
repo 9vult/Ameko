@@ -1,0 +1,67 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        d:DesignWidth="200"
+        d:DesignHeight="122"
+
+        xmlns:i18n="clr-namespace:Ameko.I18N"
+        xmlns:vm="clr-namespace:Ameko.ViewModels.Dialogs"
+
+        x:Class="Ameko.Views.Dialogs.JumpDialog"
+        x:DataType="vm:JumpDialogViewModel"
+
+        Width="200"
+        Height="122"
+        Topmost="True"
+        CanResize="False"
+        WindowStartupLocation="CenterOwner"
+        Icon="/Assets/Ameko-Simplified-BG-64.ico"
+        Title="{x:Static i18n:Jump.JumpDialog_Title}">
+    <Grid ColumnDefinitions="Auto, *"
+          RowDefinitions="Auto, Auto, Auto, Auto">
+        <Label Grid.Column="0"
+               Grid.Row="0"
+               Content="{x:Static i18n:Jump.Jump_Frame}" />
+        <Label Grid.Column="0"
+               Grid.Row="1"
+               Content="{x:Static i18n:Jump.Jump_Time}" />
+        <Label Grid.Column="0"
+               Grid.Row="2"
+               Content="{x:Static i18n:Jump.Jump_Line}" />
+        <NumericUpDown Grid.Column="1"
+                       Grid.Row="0"
+                       Padding="0"
+                       Margin="2"
+                       Minimum="0"
+                       Increment="1"
+                       FormatString="0"
+                       ShowButtonSpinner="False"
+                       Value="{Binding Frame}"
+                       IsEnabled="{Binding VideoLoaded}" />
+        <TextBox Name="TimeBox"
+                   Grid.Column="1"
+                   Grid.Row="1"
+                   Margin="2"
+                   AcceptsReturn="False"
+                   AcceptsTab="False"
+                   Text="{Binding Time.UpdatableText}"
+                   IsEnabled="{Binding VideoLoaded}" />
+        <NumericUpDown Grid.Column="1"
+                       Grid.Row="2"
+                       Padding="0"
+                       Margin="2"
+                       Minimum="1"
+                       Increment="1"
+                       FormatString="0"
+                       ShowButtonSpinner="False"
+                       Value="{Binding Line}" />
+        <Button Grid.Column="1"
+                Grid.Row="3"
+                Margin="2"
+                IsDefault="True"
+                Content="{x:Static i18n:Jump.Jump_Button_Jump}"
+                Command="{Binding ConfirmCommand}" />
+    </Grid>
+</Window>

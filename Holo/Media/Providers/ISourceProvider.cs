@@ -38,11 +38,20 @@ public interface ISourceProvider
     int CloseVideo();
 
     /// <summary>
+    /// Set the subtitles to be parsed
+    /// </summary>
+    /// <param name="data">Subtitle data</param>
+    /// <param name="codePage">Codepage to use</param>
+    /// <returns>0 on success</returns>
+    int SetSubtitles(string data, string? codePage);
+
+    /// <summary>
     /// Allocate frame buffers
     /// </summary>
-    /// <param name="numBuffers"></param>
+    /// <param name="numBuffers">Number of buffers to pre-allocate</param>
+    /// <param name="maxCacheSize">Maximum cache size in megabytes</param>
     /// <returns>0 on success</returns>
-    int AllocateBuffers(int numBuffers);
+    int AllocateBuffers(int numBuffers, int maxCacheSize);
 
     /// <summary>
     /// Free frame buffers
@@ -54,15 +63,17 @@ public interface ISourceProvider
     /// Get a frame
     /// </summary>
     /// <param name="frameNumber">Frame number to get</param>
+    /// <param name="timestamp">Timestamp to get</param>
+    /// <param name="raw">Just the video</param>
     /// <returns>Output frame</returns>
-    unsafe VideoFrame* GetFrame(int frameNumber);
+    unsafe FrameGroup* GetFrame(int frameNumber, long timestamp, bool raw);
 
     /// <summary>
     /// Release a frame
     /// </summary>
     /// <param name="frame">Pointer to frame to release</param>
     /// <returns>0 on success</returns>
-    unsafe int ReleaseFrame(VideoFrame* frame);
+    unsafe int ReleaseFrame(FrameGroup* frame);
 
     /// <summary>
     /// List of keyframes

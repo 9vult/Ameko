@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 
 using AssCS;
+using AssCS.IO;
 using Holo.Media;
 using Holo.Media.Providers;
 using NLog;
@@ -15,12 +16,13 @@ public class MediaController : BindableBase
     private VideoInfo? _videoInfo;
     private bool _isVideoLoaded;
 
-    private unsafe VideoFrame* _lastFrame;
-    private unsafe VideoFrame* _nextFrame;
+    private unsafe FrameGroup* _lastFrame;
+    private unsafe FrameGroup* _nextFrame;
     private int _currentFrame;
     private readonly object _frameLock = new();
     private Task? _fetchTask;
     private int _pendingFrame = -1;
+    private bool _subtitlesChanged = false;
 
     private ScaleFactor _scaleFactor = ScaleFactor.Default;
     private double _displayWidth;
@@ -92,7 +94,7 @@ public class MediaController : BindableBase
         {
             SetProperty(ref _currentFrame, value);
             RaisePropertyChanged(nameof(CurrentTime));
-            OnCurrentFrameChanged(value);
+            RequestFrame(value);
         }
     }
 
@@ -237,6 +239,12 @@ public class MediaController : BindableBase
             CurrentFrame = _videoInfo.FrameFromTime(@event.Start);
     }
 
+    /// <summary>
+    /// Open a video
+    /// </summary>
+    /// <param name="filePath">Path to the video to open</param>
+    /// <returns><see langword="true"/> if successful</returns>
+    /// <exception cref="InvalidOperationException">If the provider isn't initialized</exception>
     public bool OpenVideo(string filePath)
     {
         if (!_provider.IsInitialized)
@@ -253,14 +261,14 @@ public class MediaController : BindableBase
             return false;
         }
 
-        if (_provider.AllocateBuffers(2) != 0)
+        if (_provider.AllocateBuffers(64, 1024) != 0)
         {
             return false;
         }
 
         unsafe
         {
-            var testFrame = _provider.GetFrame(0);
+            var testFrame = _provider.GetFrame(0, 0, true);
             if (testFrame is null)
             {
                 // TODO: Handle error
@@ -272,17 +280,22 @@ public class MediaController : BindableBase
                 frameTimes: _provider.GetTimecodes(),
                 frameIntervals: _provider.GetFrameIntervals(),
                 keyframes: _provider.GetKeyframes(),
-                testFrame->Width,
-                testFrame->Height
+                testFrame->VideoFrame->Width,
+                testFrame->VideoFrame->Height
             );
 
             _playback.Intervals = VideoInfo.FrameIntervals;
-            _lastFrame = testFrame;
         }
 
         DisplayWidth = VideoInfo.Width;
         DisplayHeight = VideoInfo.Height;
         IsVideoLoaded = true;
+
+        // Re-fetch frame 0 with subtitles
+        unsafe
+        {
+            _lastFrame = _provider.GetFrame(0, 0, false);
+        }
         return true;
     }
 
@@ -304,7 +317,7 @@ public class MediaController : BindableBase
     /// </summary>
     /// <returns>Pointer to the frame</returns>
     /// <exception cref="InvalidOperationException">If there is no frame</exception>
-    public unsafe VideoFrame* GetVideoFrame()
+    public unsafe FrameGroup* GetCurrentFrame()
     {
         if (!_provider.IsInitialized)
             throw new InvalidOperationException("Provider is not initialized");
@@ -315,9 +328,6 @@ public class MediaController : BindableBase
         {
             if (_nextFrame is not null)
             {
-                if (_lastFrame is not null)
-                    _provider.ReleaseFrame(_lastFrame);
-
                 _lastFrame = _nextFrame;
                 _nextFrame = null;
             }
@@ -330,10 +340,29 @@ public class MediaController : BindableBase
     }
 
     /// <summary>
+    /// Set the subtitles to be displayed
+    /// </summary>
+    /// <param name="document">Document being displayed</param>
+    /// <exception cref="InvalidOperationException">If the provider isn't initialized</exception>
+    public void SetSubtitles(Document document)
+    {
+        if (!_provider.IsInitialized)
+            throw new InvalidOperationException("Provider is not initialized");
+        if (_videoInfo is null)
+            return;
+
+        // TODO: preferably not create a new writer on each change
+        var writer = new AssWriter(document, new ConsumerInfo("", "", ""));
+        _provider.SetSubtitles(writer.Write(false), null);
+        _subtitlesChanged = true;
+        RequestFrame(CurrentFrame);
+    }
+
+    /// <summary>
     /// Queue a request for a frame
     /// </summary>
     /// <param name="fetchingFrame">Frame number to fetch</param>
-    private unsafe void OnCurrentFrameChanged(int fetchingFrame)
+    private void RequestFrame(int fetchingFrame)
     {
         lock (_frameLock)
         {
@@ -351,20 +380,24 @@ public class MediaController : BindableBase
     private unsafe void FetchFrame()
     {
         int frameToFetch;
+        bool subtitlesChanged;
         lock (_frameLock)
         {
             frameToFetch = _pendingFrame;
             _pendingFrame = -1;
+            subtitlesChanged = _subtitlesChanged;
+            _subtitlesChanged = false;
         }
-        var frame = _provider.GetFrame(frameToFetch);
+
+        var time = _videoInfo?.MillisecondsFromFrame(frameToFetch) ?? 0;
+
+        var frame = _provider.GetFrame(frameToFetch, time, false);
         lock (_frameLock)
         {
-            if (frameToFetch == _currentFrame)
+            if (frameToFetch == _currentFrame || subtitlesChanged) // TODO: Do we want this gate?
                 _nextFrame = frame;
-            else
-                _provider.ReleaseFrame(frame);
 
-            if (_pendingFrame != -1)
+            if (_pendingFrame != -1 || _subtitlesChanged)
                 _fetchTask = Task.Run(FetchFrame);
         }
     }

@@ -34,7 +34,8 @@
                        FontSize="32" />
             <TextBlock Text="{Binding Version}"
                        HorizontalAlignment="Center"
-                       FontSize="14" />
+                       FontSize="14"
+                       PointerPressed="VersionLabel_OnPointerPressed"/>
         </StackPanel>
         <TabControl TabStripPlacement="Bottom">
             <TabItem Header="{x:Static i18n:About.AboutWindow_GeneralTab}">

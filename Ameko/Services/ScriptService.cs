@@ -141,7 +141,7 @@ public class ScriptService : IScriptService
         {
             try
             {
-                Logger.Trace($"Loading script {path}...");
+                Logger.Debug($"Loading script {path}...");
                 var script = CSScript.Evaluator.LoadFile<HoloScript>(path);
                 if (script is null)
                 {
@@ -166,7 +166,7 @@ public class ScriptService : IScriptService
         {
             try
             {
-                Logger.Trace($"Loading scriptlet {path}...");
+                Logger.Debug($"Loading scriptlet {path}...");
                 await using var fs = _fileSystem.FileStream.New(
                     path,
                     FileMode.Open,
