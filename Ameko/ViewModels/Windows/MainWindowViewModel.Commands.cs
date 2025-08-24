@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
+using Ameko.Messages;
 using Ameko.Services;
 using Ameko.ViewModels.Dialogs;
 using Ameko.Views.Dialogs;
@@ -299,7 +300,7 @@ public partial class MainWindowViewModel : ViewModelBase
     /// <summary>
     /// Display the Jump dialog
     /// </summary>
-    private ReactiveCommand<Unit, Unit> CreateOpenJumpDialogCommand()
+    private ReactiveCommand<Unit, Unit> CreateShowJumpDialogCommand()
     {
         return ReactiveCommand.CreateFromTask(async () =>
         {
@@ -314,6 +315,9 @@ public partial class MainWindowViewModel : ViewModelBase
             var vm = new JumpDialogViewModel(videoLoaded);
             var result = await ShowJumpDialog.Handle(vm);
 
+            if (result is null)
+                return;
+
             if (result.Frame != 0)
             {
                 wsp.MediaController.SeekTo(result.Frame);
@@ -326,12 +330,12 @@ public partial class MainWindowViewModel : ViewModelBase
                 return;
             }
 
-            var @event = wsp.Document.EventManager.Events.ElementAtOrDefault(result.Line);
+            var @event = wsp.Document.EventManager.Events.ElementAtOrDefault(result.Line - 1);
             if (@event is null)
                 return;
 
-            // TODO: Scroll into view
             wsp.MediaController.SeekTo(@event.Start);
+            // Publish a scroll message (?)
         });
     }
 

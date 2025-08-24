@@ -33,8 +33,6 @@ public partial class TabItemEventsArea : ReactiveUserControl<TabItemViewModel>
                     if (_previousVMs.Contains(vm))
                         return;
                     _previousVMs.Add(vm);
-
-                    vm.ScrollIntoView.RegisterHandler(DoScrollIntoView);
                 })
                 .DisposeWith(disposables);
         });
@@ -57,15 +55,5 @@ public partial class TabItemEventsArea : ReactiveUserControl<TabItemViewModel>
             },
             DispatcherPriority.Background
         );
-    }
-
-    private void DoScrollIntoView(IInteractionContext<Event, Unit> interaction)
-    {
-        if (interaction?.Input is null)
-            return;
-
-        interaction.SetOutput(Unit.Default);
-        ViewModel?.Workspace.SelectionManager.Select(interaction.Input);
-        EventsGrid.ScrollIntoView(interaction.Input, null);
     }
 }

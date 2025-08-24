@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Threading.Tasks;
+using Ameko.Messages;
 using Ameko.ViewModels.Dialogs;
 using Ameko.ViewModels.Windows;
 using Ameko.Views.Dialogs;
@@ -234,6 +235,16 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         interaction.SetOutput(null);
     }
 
+    private async Task DoShowJumpDialogAsync(
+        IInteractionContext<JumpDialogViewModel, JumpDialogClosedMessage?> interaction
+    )
+    {
+        Log.Trace("Displaying Jump dialog");
+        var dialog = new JumpDialog { DataContext = interaction.Input };
+        var result = await dialog.ShowDialog<JumpDialogClosedMessage?>(this);
+        interaction.SetOutput(result);
+    }
+
     private async Task DoShowPkgManWindowAsync(
         IInteractionContext<PkgManWindowViewModel, Unit> interaction
     )
@@ -287,6 +298,7 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
                 ViewModel.ShowShiftTimesDialog.RegisterHandler(DoShowShiftTimesDialogAsync);
                 // Video
                 ViewModel.OpenVideo.RegisterHandler(DoShowOpenVideoDialogAsync);
+                ViewModel.ShowJumpDialog.RegisterHandler(DoShowJumpDialogAsync);
                 // Scripts
                 ViewModel.ShowPackageManager.RegisterHandler(DoShowPkgManWindowAsync);
                 // Help

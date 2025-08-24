@@ -53,7 +53,7 @@ public partial class MainWindowViewModel : ViewModelBase
 
     // Video
     public Interaction<Unit, Uri?> OpenVideo { get; }
-    public Interaction<JumpDialogViewModel, JumpDialogClosedMessage> ShowJumpDialog { get; }
+    public Interaction<JumpDialogViewModel, JumpDialogClosedMessage?> ShowJumpDialog { get; }
 
     // Scripts
     public Interaction<PkgManWindowViewModel, Unit> ShowPackageManager { get; }
@@ -109,7 +109,7 @@ public partial class MainWindowViewModel : ViewModelBase
     public ICommand OpenVideoCommand { get; }
 
     [KeybindTarget("ameko.video.jump", "Ctrl+G")]
-    public ICommand JumpToCommand { get; }
+    public ICommand ShowJumpDialogCommand { get; }
 
     // Scripts
     // Command execution doesn't get a keybind. So sad :(
@@ -260,6 +260,7 @@ public partial class MainWindowViewModel : ViewModelBase
         ShowShiftTimesDialogCommand = CreateShowShiftTimesDialogCommand();
         // Video
         OpenVideoCommand = CreateOpenVideoCommand();
+        ShowJumpDialogCommand = CreateShowJumpDialogCommand();
         // Scripts
         ExecuteScriptCommand = CreateExecuteScriptCommand();
         ReloadScriptsCommand = CreateReloadScriptsCommand();
