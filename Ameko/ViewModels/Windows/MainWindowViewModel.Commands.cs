@@ -297,6 +297,45 @@ public partial class MainWindowViewModel : ViewModelBase
     }
 
     /// <summary>
+    /// Display the Jump dialog
+    /// </summary>
+    private ReactiveCommand<Unit, Unit> CreateOpenJumpDialogCommand()
+    {
+        return ReactiveCommand.CreateFromTask(async () =>
+        {
+            Logger.Info("Opening Jump dialog");
+
+            var wsp = SolutionProvider.Current.WorkingSpace;
+            if (wsp is null)
+                return;
+
+            var videoLoaded = wsp.MediaController.IsVideoLoaded;
+
+            var vm = new JumpDialogViewModel(videoLoaded);
+            var result = await ShowJumpDialog.Handle(vm);
+
+            if (result.Frame != 0)
+            {
+                wsp.MediaController.SeekTo(result.Frame);
+                return;
+            }
+
+            if (result.Time != Time.FromSeconds(0))
+            {
+                wsp.MediaController.SeekTo(result.Time);
+                return;
+            }
+
+            var @event = wsp.Document.EventManager.Events.ElementAtOrDefault(result.Line);
+            if (@event is null)
+                return;
+
+            // TODO: Scroll into view
+            wsp.MediaController.SeekTo(@event.Start);
+        });
+    }
+
+    /// <summary>
     /// Execute a Script
     /// </summary>
     private ReactiveCommand<string, Unit> CreateExecuteScriptCommand()

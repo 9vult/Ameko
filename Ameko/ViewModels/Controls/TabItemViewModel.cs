@@ -1,5 +1,6 @@
 ﻿// SPDX-License-Identifier: GPL-3.0-only
 
+using System.Reactive;
 using System.Windows.Input;
 using Ameko.Messages;
 using Ameko.Services;
@@ -25,6 +26,7 @@ public partial class TabItemViewModel : ViewModelBase
         PasteOverDialogViewModel,
         PasteOverDialogClosedMessage
     > ShowPasteOverDialog { get; }
+    public Interaction<Event, Unit> ScrollIntoView { get; }
 
     #endregion
 
@@ -146,6 +148,7 @@ public partial class TabItemViewModel : ViewModelBase
         PasteEvents = new Interaction<TabItemViewModel, string[]?>();
         ShowPasteOverDialog =
             new Interaction<PasteOverDialogViewModel, PasteOverDialogClosedMessage>();
+        ScrollIntoView = new Interaction<Event, Unit>();
         #endregion
 
         #region Commands

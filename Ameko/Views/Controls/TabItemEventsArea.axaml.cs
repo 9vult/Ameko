@@ -1,19 +1,43 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
+using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Reactive;
+using System.Reactive.Disposables;
 using Ameko.ViewModels.Controls;
 using AssCS;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.ReactiveUI;
 using Avalonia.Threading;
+using ReactiveUI;
 
 namespace Ameko.Views.Controls;
 
 public partial class TabItemEventsArea : ReactiveUserControl<TabItemViewModel>
 {
+    private readonly List<TabItemViewModel> _previousVMs = [];
+
     public TabItemEventsArea()
     {
         InitializeComponent();
+
+        this.WhenActivated(disposables =>
+        {
+            this.GetObservable(ViewModelProperty)
+                .WhereNotNull()
+                .Subscribe(vm =>
+                {
+                    // Skip the rest if already subscribed
+                    if (_previousVMs.Contains(vm))
+                        return;
+                    _previousVMs.Add(vm);
+
+                    vm.ScrollIntoView.RegisterHandler(DoScrollIntoView);
+                })
+                .DisposeWith(disposables);
+        });
     }
 
     private void DataGrid_OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
@@ -33,5 +57,15 @@ public partial class TabItemEventsArea : ReactiveUserControl<TabItemViewModel>
             },
             DispatcherPriority.Background
         );
+    }
+
+    private void DoScrollIntoView(IInteractionContext<Event, Unit> interaction)
+    {
+        if (interaction?.Input is null)
+            return;
+
+        interaction.SetOutput(Unit.Default);
+        ViewModel?.Workspace.SelectionManager.Select(interaction.Input);
+        EventsGrid.ScrollIntoView(interaction.Input, null);
     }
 }
