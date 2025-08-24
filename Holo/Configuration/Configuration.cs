@@ -48,91 +48,100 @@ public partial class Configuration : BindableBase, IConfiguration
     private bool _useSoftLinebreaks;
     private bool _lineWidthIncludesWhitespace;
     private bool _lineWidthIncludesPunctuation;
+    private bool _discordRpcEnabled;
     private string _culture;
     private Theme _theme;
     private uint _gridPadding;
     private RangeObservableCollection<string> _repositoryUrls;
 
-    //// <inheritdoc cref="IConfiguration.Cps"/>
+    /// <inheritdoc />
     public uint Cps
     {
         get => _cps;
         set => SetProperty(ref _cps, value);
     }
 
-    /// <inheritdoc cref="IConfiguration.CpsIncludesWhitespace"/>
+    /// <inheritdoc />
     public bool CpsIncludesWhitespace
     {
         get => _cpsIncludesWhitespace;
         set => SetProperty(ref _cpsIncludesWhitespace, value);
     }
 
-    /// <inheritdoc cref="IConfiguration.CpsIncludesPunctuation"/>
+    /// <inheritdoc />
     public bool CpsIncludesPunctuation
     {
         get => _cpsIncludesPunctuation;
         set => SetProperty(ref _cpsIncludesPunctuation, value);
     }
 
-    /// <inheritdoc cref="IConfiguration.UseSoftLinebreaks"/>
+    /// <inheritdoc />
     public bool UseSoftLinebreaks
     {
         get => _useSoftLinebreaks;
         set => SetProperty(ref _useSoftLinebreaks, value);
     }
 
-    /// <inheritdoc cref="IConfiguration.AutosaveEnabled"/>
+    /// <inheritdoc />
     public bool AutosaveEnabled
     {
         get => _autosaveEnabled;
         set => SetProperty(ref _autosaveEnabled, value);
     }
 
-    /// <inheritdoc cref="IConfiguration.AutosaveInterval"/>
+    /// <inheritdoc />
     public uint AutosaveInterval
     {
         get => _autosaveInterval;
         set => SetProperty(ref _autosaveInterval, value);
     }
 
-    /// <inheritdoc cref="IConfiguration.LineWidthIncludesWhitespace"/>
+    /// <inheritdoc />
     public bool LineWidthIncludesWhitespace
     {
         get => _lineWidthIncludesWhitespace;
         set => SetProperty(ref _lineWidthIncludesWhitespace, value);
     }
 
-    /// <inheritdoc cref="IConfiguration.LineWidthIncludesPunctuation"/>
+    /// <inheritdoc />
     public bool LineWidthIncludesPunctuation
     {
         get => _lineWidthIncludesPunctuation;
         set => SetProperty(ref _lineWidthIncludesPunctuation, value);
     }
 
-    /// <inheritdoc cref="IConfiguration.Culture"/>
+    /// <inheritdoc />
+    public bool DiscordRpcEnabled
+    {
+        get => _discordRpcEnabled;
+        set => SetProperty(ref _discordRpcEnabled, value);
+    }
+
+    /// <inheritdoc />
     public string Culture
     {
         get => _culture;
         set => SetProperty(ref _culture, value);
     }
 
-    /// <inheritdoc cref="IConfiguration.Theme"/>
+    /// <inheritdoc />
     public Theme Theme
     {
         get => _theme;
         set => SetProperty(ref _theme, value);
     }
 
+    /// <inheritdoc />
     public uint GridPadding
     {
         get => _gridPadding;
         set => SetProperty(ref _gridPadding, value);
     }
 
-    /// <inheritdoc cref="IConfiguration.RepositoryUrls"/>
+    /// <inheritdoc />
     public ReadOnlyObservableCollection<string> RepositoryUrls { get; }
 
-    /// <inheritdoc cref="IConfiguration.AddRepositoryUrl"/>
+    /// <inheritdoc />
     public void AddRepositoryUrl(string url)
     {
         Logger.Info($"Adding repository url {url}");
@@ -140,7 +149,7 @@ public partial class Configuration : BindableBase, IConfiguration
         Save();
     }
 
-    /// <inheritdoc cref="IConfiguration.RemoveRepositoryUrl"/>
+    /// <inheritdoc />
     public bool RemoveRepositoryUrl(string url)
     {
         Logger.Info($"Removing repository url {url}");
@@ -149,7 +158,7 @@ public partial class Configuration : BindableBase, IConfiguration
         return result;
     }
 
-    /// <inheritdoc cref="IConfiguration.Save"/>
+    /// <inheritdoc />
     public bool Save()
     {
         var path = Paths.Configuration.LocalPath;
@@ -178,6 +187,7 @@ public partial class Configuration : BindableBase, IConfiguration
                 AutosaveInterval = _autosaveInterval,
                 LineWidthIncludesWhitespace = _lineWidthIncludesWhitespace,
                 LineWidthIncludesPunctuation = _lineWidthIncludesPunctuation,
+                DiscordRpcEnabled = _discordRpcEnabled,
                 Culture = _culture,
                 Theme = _theme,
                 GridPadding = _gridPadding,
@@ -238,6 +248,7 @@ public partial class Configuration : BindableBase, IConfiguration
                 _autosaveInterval = model.AutosaveInterval,
                 _lineWidthIncludesWhitespace = model.LineWidthIncludesWhitespace,
                 _lineWidthIncludesPunctuation = model.LineWidthIncludesPunctuation,
+                _discordRpcEnabled = model.DiscordRpcEnabled,
                 _culture = model.Culture,
                 _theme = model.Theme,
                 _gridPadding = model.GridPadding,
@@ -263,6 +274,7 @@ public partial class Configuration : BindableBase, IConfiguration
         _fileSystem = fileSystem;
         _cps = 18;
         _useSoftLinebreaks = false;
+        _discordRpcEnabled = true;
         _autosaveEnabled = true;
         _autosaveInterval = 60;
         _repositoryUrls = [];

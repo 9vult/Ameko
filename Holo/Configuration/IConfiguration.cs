@@ -52,6 +52,11 @@ public interface IConfiguration
     bool LineWidthIncludesPunctuation { get; set; }
 
     /// <summary>
+    /// If current workspace/solution should be announced to Discord
+    /// </summary>
+    bool DiscordRpcEnabled { get; set; }
+
+    /// <summary>
     /// Current display language
     /// </summary>
     string Culture { get; set; }
