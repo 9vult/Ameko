@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
 using Holo.IO;
+using NLog;
 
 namespace Holo.Media.Providers;
 
@@ -12,6 +13,9 @@ namespace Holo.Media.Providers;
 /// </summary>
 public class MizukiSourceProvider : ISourceProvider
 {
+    private static readonly Logger Logger = LogManager.GetLogger("Mizuki");
+    private static readonly External.LogCallback LogDelegate = Log;
+
     /// <summary>
     /// If this provider is initialized
     /// </summary>
@@ -25,6 +29,7 @@ public class MizukiSourceProvider : ISourceProvider
 
     public void Initialize()
     {
+        External.SetLoggerCallback(LogDelegate);
         External.Initialize();
         IsInitialized = true;
     }
@@ -45,9 +50,16 @@ public class MizukiSourceProvider : ISourceProvider
         return 0;
     }
 
-    public int AllocateBuffers(int numBuffers)
+    /// <inheritdoc />
+    public int SetSubtitles(string data, string? codePage)
     {
-        return External.AllocateBuffers(numBuffers);
+        var bytes = Encoding.UTF8.GetBytes(data);
+        return External.SetSubtitles(bytes, bytes.Length, codePage);
+    }
+
+    public int AllocateBuffers(int numBuffers, int maxCacheSize)
+    {
+        return External.AllocateBuffers(numBuffers, maxCacheSize);
     }
 
     /// <inheritdoc />
@@ -57,13 +69,13 @@ public class MizukiSourceProvider : ISourceProvider
     }
 
     /// <inheritdoc />
-    public unsafe VideoFrame* GetFrame(int frameNumber)
+    public unsafe FrameGroup* GetFrame(int frameNumber, long timestamp, bool raw)
     {
-        return External.GetFrame(frameNumber);
+        return External.GetFrame(frameNumber, timestamp, raw ? 1 : 0);
     }
 
     /// <inheritdoc />
-    public unsafe int ReleaseFrame(VideoFrame* frame)
+    public unsafe int ReleaseFrame(FrameGroup* frame)
     {
         return External.ReleaseFrame(frame);
     }
@@ -89,6 +101,34 @@ public class MizukiSourceProvider : ISourceProvider
         return ptr.ToLongArray();
     }
 
+    /// <summary>
+    /// Callback for handling logs emitted by Mizuki
+    /// </summary>
+    /// <param name="level">Log level</param>
+    /// <param name="ptr">Pointer to the c-string</param>
+    private static void Log(int level, nint ptr)
+    {
+        var msg = Marshal.PtrToStringAnsi(ptr);
+        switch (level)
+        {
+            case 0:
+                Logger.Trace(msg);
+                break;
+            case 1:
+                Logger.Debug(msg);
+                break;
+            case 2:
+                Logger.Info(msg);
+                break;
+            case 3:
+                Logger.Warn(msg);
+                break;
+            case 4:
+                Logger.Error(msg);
+                break;
+        }
+    }
+
     private static string GetCachePath(string filePath)
     {
         var hash = Convert.ToBase64String(MD5.HashData(Encoding.UTF8.GetBytes(filePath)));
@@ -106,22 +146,25 @@ internal static unsafe partial class External
 
     [LibraryImport("mizuki", StringMarshalling = StringMarshalling.Utf8)]
     internal static partial int LoadVideo(
-        [MarshalAs(UnmanagedType.LPStr)] string fileName,
-        [MarshalAs(UnmanagedType.LPStr)] string cacheFileName,
-        [MarshalAs(UnmanagedType.LPStr)] string colorMatrix
+        string fileName,
+        string cacheFileName,
+        string colorMatrix
     );
 
+    [LibraryImport("mizuki", StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial int SetSubtitles(byte[] data, int dataLen, string? codePage);
+
     [LibraryImport("mizuki")]
-    internal static partial int AllocateBuffers(int numBuffers);
+    internal static partial int AllocateBuffers(int numBuffers, int maxCacheSize);
 
     [LibraryImport("mizuki")]
     internal static partial int FreeBuffers();
 
     [LibraryImport("mizuki")]
-    internal static unsafe partial VideoFrame* GetFrame(int frameNumber);
+    internal static unsafe partial FrameGroup* GetFrame(int frameNumber, long timestamp, int raw);
 
     [LibraryImport("mizuki")]
-    internal static unsafe partial int ReleaseFrame(VideoFrame* frame);
+    internal static unsafe partial int ReleaseFrame(FrameGroup* frame);
 
     [LibraryImport("mizuki")]
     internal static partial int GetFrameCount();
@@ -134,19 +177,12 @@ internal static unsafe partial class External
 
     [LibraryImport("mizuki")]
     internal static partial UnmanagedArray GetFrameIntervals();
-}
 
-[StructLayout(LayoutKind.Sequential)]
-public struct VideoFrame
-{
-    public int FrameNumber;
-    public long Timestamp;
-    public int Width;
-    public int Height;
-    public int Pitch;
-    public int Flipped;
-    public unsafe byte* Data;
-    public int Valid;
+    [LibraryImport("mizuki")]
+    internal static partial void SetLoggerCallback(LogCallback callback);
+
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    public delegate void LogCallback(int level, nint message);
 }
 
 /// <summary>

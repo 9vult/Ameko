@@ -6,6 +6,7 @@ using System.IO.Abstractions;
 using System.Linq;
 using System.Reactive;
 using System.Windows.Input;
+using Ameko.Messages;
 using Ameko.Services;
 using Ameko.Utilities;
 using Ameko.ViewModels.Controls;
@@ -52,6 +53,7 @@ public partial class MainWindowViewModel : ViewModelBase
 
     // Video
     public Interaction<Unit, Uri?> OpenVideo { get; }
+    public Interaction<JumpDialogViewModel, JumpDialogClosedMessage?> ShowJumpDialog { get; }
 
     // Scripts
     public Interaction<PkgManWindowViewModel, Unit> ShowPackageManager { get; }
@@ -68,6 +70,7 @@ public partial class MainWindowViewModel : ViewModelBase
 
     [KeybindTarget("ameko.document.open", "Ctrl+O")]
     public ICommand OpenSubtitleCommand { get; }
+    public ICommand OpenSubtitleNoGuiCommand { get; }
 
     [KeybindTarget("ameko.document.save", "Ctrl+S")]
     public ICommand SaveSubtitleCommand { get; }
@@ -80,6 +83,7 @@ public partial class MainWindowViewModel : ViewModelBase
 
     [KeybindTarget("ameko.solution.open")]
     public ICommand OpenSolutionCommand { get; }
+    public ICommand OpenSolutionNoGuiCommand { get; }
 
     [KeybindTarget("ameko.solution.openFolder")]
     public ICommand OpenFolderAsSolutionCommand { get; }
@@ -105,6 +109,10 @@ public partial class MainWindowViewModel : ViewModelBase
     // Video
     [KeybindTarget("ameko.video.open")]
     public ICommand OpenVideoCommand { get; }
+    public ICommand OpenVideoNoGuiCommand { get; }
+
+    [KeybindTarget("ameko.video.jump", "Ctrl+G")]
+    public ICommand ShowJumpDialogCommand { get; }
 
     // Scripts
     // Command execution doesn't get a keybind. So sad :(
@@ -167,7 +175,7 @@ public partial class MainWindowViewModel : ViewModelBase
 
     private void GenerateScriptsMenu()
     {
-        Logger.Trace("Regenerating scripts menu...");
+        Logger.Debug("Regenerating scripts menu...");
         ScriptMenuItems.Clear();
         ScriptMenuItems.AddRange(
             ScriptMenuService.GenerateMenuItemSource(_scriptService.Scripts, ExecuteScriptCommand)
@@ -176,19 +184,19 @@ public partial class MainWindowViewModel : ViewModelBase
         ScriptMenuItems.Add(new Separator());
         ScriptMenuItems.Add(ScriptMenuService.GenerateReloadMenuItem(ReloadScriptsCommand));
         ScriptMenuItems.Add(ScriptMenuService.GeneratePkgManMenuItem(ShowPackageManagerCommand));
-        Logger.Trace("Done!");
+        Logger.Debug("Done!");
     }
 
     private void GenerateLayoutsMenu()
     {
-        Logger.Trace("Regenerating layouts menu...");
+        Logger.Debug("Regenerating layouts menu...");
         LayoutMenuItems.Clear();
         LayoutMenuItems.AddRange(
             LayoutMenuService.GenerateMenuItemSource(LayoutProvider.Layouts, SelectLayoutCommand)
         );
         LayoutMenuItems.Add(new Separator());
         LayoutMenuItems.Add(LayoutMenuService.GenerateReloadMenuItem(RefreshLayoutsCommand));
-        Logger.Trace("Done!");
+        Logger.Debug("Done!");
     }
 
     public MainWindowViewModel(
@@ -226,6 +234,7 @@ public partial class MainWindowViewModel : ViewModelBase
         // Solution
         // Video
         OpenVideo = new Interaction<Unit, Uri?>();
+        ShowJumpDialog = new Interaction<JumpDialogViewModel, JumpDialogClosedMessage?>();
         // Timing
         ShowShiftTimesDialog = new Interaction<ShiftTimesDialogViewModel, Unit>();
         // Scripts
@@ -239,10 +248,12 @@ public partial class MainWindowViewModel : ViewModelBase
         // File
         NewCommand = CreateNewCommand();
         OpenSubtitleCommand = CreateOpenSubtitleCommand();
+        OpenSubtitleNoGuiCommand = CreateOpenSubtitleNoGuiCommand();
         SaveSubtitleCommand = CreateSaveSubtitleCommand();
         SaveSubtitleAsCommand = CreateSaveSubtitleAsCommand();
         ExportSubtitleCommand = CreateExportSubtitleCommand();
         OpenSolutionCommand = CreateOpenSolutionCommand();
+        OpenSolutionNoGuiCommand = CreateOpenSolutionNoGuiCommand();
         OpenFolderAsSolutionCommand = CreateOpenFolderAsSolutionCommand();
         SaveSolutionCommand = CreateSaveSolutionCommand();
         CloseTabCommand = CreateCloseTabCommand();
@@ -254,6 +265,8 @@ public partial class MainWindowViewModel : ViewModelBase
         ShowShiftTimesDialogCommand = CreateShowShiftTimesDialogCommand();
         // Video
         OpenVideoCommand = CreateOpenVideoCommand();
+        OpenVideoNoGuiCommand = CreateOpenVideoNoGuiCommand();
+        ShowJumpDialogCommand = CreateShowJumpDialogCommand();
         // Scripts
         ExecuteScriptCommand = CreateExecuteScriptCommand();
         ReloadScriptsCommand = CreateReloadScriptsCommand();

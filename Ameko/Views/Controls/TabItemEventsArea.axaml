@@ -17,6 +17,7 @@
              x:DataType="vm:TabItemViewModel">
 	<UserControl.Resources>
 		<converters:GridPaddingConverter x:Key="PaddingConverter" />
+		<converters:EventTextLengthConverter x:Key="TextLengthConverter" />
 	</UserControl.Resources>
     <DataGrid Name="EventsGrid"
               IsReadOnly="True"
@@ -55,7 +56,9 @@
 			                    Binding="{Binding Effect}"
 			                    IsVisible="{Binding Workspace.DisplayEffectsColumn}" />
 			<DataGridTextColumn Header="{x:Static i18n:Resources.EventsGrid_Header_Content}"
-			                    Binding="{Binding Text}" />
+			                    Binding="{Binding Text,
+												  Mode=OneWay,
+												  Converter={StaticResource TextLengthConverter}}" />
         </DataGrid.Columns>
 	    <DataGrid.ContextMenu>
 		    <ContextMenu>

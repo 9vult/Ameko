@@ -1,5 +1,6 @@
 ﻿// SPDX-License-Identifier: GPL-3.0-only
 
+using System.Reactive;
 using System.Windows.Input;
 using Ameko.Messages;
 using Ameko.Services;

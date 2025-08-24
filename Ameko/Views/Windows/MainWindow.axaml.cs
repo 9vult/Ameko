@@ -6,11 +6,13 @@ using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Threading.Tasks;
+using Ameko.Messages;
 using Ameko.ViewModels.Dialogs;
 using Ameko.ViewModels.Windows;
 using Ameko.Views.Dialogs;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Platform.Storage;
 using Avalonia.ReactiveUI;
 using Avalonia.Styling;
@@ -25,6 +27,10 @@ namespace Ameko.Views.Windows;
 public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
 {
     private static readonly Logger Log = LogManager.GetCurrentClassLogger();
+
+    private static readonly string[] ScriptExtensions = [".ass", ".txt"];
+    private static readonly string[] VideoExtensions = [".mkv", ".mp4"];
+    private const string SolutionExtension = ".asln";
 
     private async Task DoShowOpenSubtitleDialogAsync(IInteractionContext<Unit, Uri[]> interaction)
     {
@@ -234,6 +240,16 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         interaction.SetOutput(null);
     }
 
+    private async Task DoShowJumpDialogAsync(
+        IInteractionContext<JumpDialogViewModel, JumpDialogClosedMessage?> interaction
+    )
+    {
+        Log.Trace("Displaying Jump dialog");
+        var dialog = new JumpDialog { DataContext = interaction.Input };
+        var result = await dialog.ShowDialog<JumpDialogClosedMessage?>(this);
+        interaction.SetOutput(result);
+    }
+
     private async Task DoShowPkgManWindowAsync(
         IInteractionContext<PkgManWindowViewModel, Unit> interaction
     )
@@ -267,6 +283,8 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         Log.Info("Initializing Main Window...");
         InitializeComponent();
 
+        AddHandler(DragDrop.DropEvent, DoDragAndDrop);
+
         this.WhenActivated(disposables =>
         {
             if (ViewModel is not null)
@@ -287,6 +305,7 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
                 ViewModel.ShowShiftTimesDialog.RegisterHandler(DoShowShiftTimesDialogAsync);
                 // Video
                 ViewModel.OpenVideo.RegisterHandler(DoShowOpenVideoDialogAsync);
+                ViewModel.ShowJumpDialog.RegisterHandler(DoShowJumpDialogAsync);
                 // Scripts
                 ViewModel.ShowPackageManager.RegisterHandler(DoShowPkgManWindowAsync);
                 // Help
@@ -351,5 +370,34 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
             KeybindContext.Global,
             this
         );
+    }
+
+    private void DoDragAndDrop(object? sender, DragEventArgs e)
+    {
+        if (e.Data.GetFiles() is not { } files || ViewModel is null)
+            return;
+
+        foreach (var file in files)
+        {
+            var ext = Path.GetExtension(file.Path.LocalPath);
+
+            if (ScriptExtensions.Contains(ext))
+            {
+                ViewModel.OpenSubtitleNoGuiCommand.Execute(file.Path);
+                continue;
+            }
+
+            if (VideoExtensions.Contains(ext))
+            {
+                ViewModel.OpenVideoNoGuiCommand.Execute(file.Path);
+                continue;
+            }
+
+            if (ext == SolutionExtension)
+            {
+                ViewModel.OpenSolutionNoGuiCommand.Execute(file.Path);
+                continue;
+            }
+        }
     }
 }

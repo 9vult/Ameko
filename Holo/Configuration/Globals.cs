@@ -102,7 +102,7 @@ public class Globals : BindableBase, IGlobals
 
             if (!fileSystem.File.Exists(path))
             {
-                Logger.Info("Globals file does not exist, using defaults...");
+                Logger.Warn("Globals file does not exist, using defaults...");
                 return new Globals(fileSystem);
             }
 
@@ -131,7 +131,7 @@ public class Globals : BindableBase, IGlobals
         catch (Exception ex) when (ex is IOException or JsonException)
         {
             Logger.Error(ex);
-            Logger.Info("Failed to parse globals, using defaults...");
+            Logger.Error("Failed to parse globals, using defaults...");
             return new Globals(fileSystem);
         }
     }

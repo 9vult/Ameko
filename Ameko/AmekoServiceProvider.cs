@@ -47,9 +47,10 @@ public static class AmekoServiceProvider
 
         // --- Application Services ---
         services.AddSingleton<Directories>();
-        services.AddSingleton<ISolutionProvider, SolutionProvider>();
+        services.AddSingleton<DiscordRpcService>();
         services.AddSingleton<IGitService, GitService>();
         services.AddSingleton<ILayoutProvider, LayoutProvider>();
+        services.AddSingleton<ISolutionProvider, SolutionProvider>();
 
         // --- Presentation ---
         services.AddSingleton<CultureService>();
@@ -78,6 +79,7 @@ public static class AmekoServiceProvider
         // Load the logger and locator services immediately
         _ = Provider.GetRequiredService<ILogProvider>();
         _ = Provider.GetRequiredService<ScriptServiceLocator>();
+        _ = Provider.GetRequiredService<DiscordRpcService>();
 
         Logger.Info("Ameko and Holo are ready to go!");
 

@@ -5,7 +5,7 @@ fn linkLibraries(b: *std.Build, obj: *std.Build.Step.Compile) void {
     obj.addIncludePath(b.path("include"));
     obj.addLibraryPath(b.path("lib"));
     obj.linkSystemLibrary("ffms2");
-    // obj.linkSystemLibrary("libass");
+    obj.linkSystemLibrary("ass");
     obj.linkLibC();
 }
 
