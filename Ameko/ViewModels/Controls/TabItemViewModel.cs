@@ -100,6 +100,12 @@ public partial class TabItemViewModel : ViewModelBase
     [KeybindTarget("ameko.video.keyframe.previous", KeybindContext.Video)]
     public ICommand PreviousKeyframeCommand { get; }
 
+    [KeybindTarget("ameko.video.active.start", "Ctrl+1", KeybindContext.Video)]
+    public ICommand ActiveStartCommand { get; }
+
+    [KeybindTarget("ameko.video.active.end", "Ctrl+2", KeybindContext.Video)]
+    public ICommand ActiveEndCommand { get; }
+
     [KeybindTarget("ameko.video.zoom.in", "Ctrl+OemPlus", KeybindContext.Video)]
     public ICommand ZoomInCommand { get; }
 
@@ -177,6 +183,8 @@ public partial class TabItemViewModel : ViewModelBase
         PreviousBoundaryCommand = CreatePreviousBoundaryCommand();
         NextKeyframeCommand = CreateNextKeyframeCommand();
         PreviousKeyframeCommand = CreatePreviousKeyframeCommand();
+        ActiveStartCommand = CreateActiveStartCommand();
+        ActiveEndCommand = CreateActiveEndCommand();
         ZoomInCommand = CreateZoomInCommand();
         ZoomOutCommand = CreateZoomOutCommand();
         #endregion
