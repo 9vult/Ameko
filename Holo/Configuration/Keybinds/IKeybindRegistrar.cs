@@ -66,6 +66,12 @@ public interface IKeybindRegistrar
     bool IsKeybindRegistered(string qualifiedName);
 
     /// <summary>
+    /// Retrieves all keybinds
+    /// </summary>
+    /// <returns>Keybinds</returns>
+    IEnumerable<Keybind> GetKeybinds();
+
+    /// <summary>
     /// Retrieves all keybinds that match the specified context filter
     /// </summary>
     /// <param name="filter">A combination of <see cref="KeybindContext"/> flags used to filter keybinds</param>

@@ -111,6 +111,12 @@ public class KeybindRegistrar(IFileSystem fileSystem) : IKeybindRegistrar
     }
 
     /// <inheritdoc />
+    public IEnumerable<Keybind> GetKeybinds()
+    {
+        return _keybinds.Values;
+    }
+
+    /// <inheritdoc />
     public IEnumerable<Keybind> GetKeybinds(KeybindContext filter)
     {
         return _keybinds.Values.Where(keybind => (keybind.Context & filter) != 0);
