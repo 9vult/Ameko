@@ -43,7 +43,7 @@ public static class AmekoServiceProvider
             Globals.Parse(p.GetRequiredService<IFileSystem>())
         );
         services.AddSingleton<IKeybindRegistrar, KeybindRegistrar>();
-        services.AddSingleton<KeybindService>();
+        services.AddSingleton<IKeybindService, KeybindService>();
 
         // --- Application Services ---
         services.AddSingleton<Directories>();
@@ -67,6 +67,7 @@ public static class AmekoServiceProvider
         services.AddSingleton<GitToolboxViewModel>();
         services.AddTransient<LogWindowViewModel>();
         services.AddTransient<PkgManWindowViewModel>();
+        services.AddTransient<KeybindsWindowViewModel>();
 
         // --- Scripting ---
         services.AddSingleton<IScriptService, ScriptService>();

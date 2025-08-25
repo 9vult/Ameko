@@ -16,6 +16,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Holo;
+using Holo.Configuration.Keybinds;
 using Holo.Models;
 using Microsoft.Extensions.DependencyInjection;
 using MsBox.Avalonia;
@@ -498,6 +499,18 @@ public partial class MainWindowViewModel : ViewModelBase
         {
             var vm = new AboutWindowViewModel();
             await ShowAboutWindow.Handle(vm);
+        });
+    }
+
+    /// <summary>
+    /// Display the <see cref="KeybindsWindow"/>
+    /// </summary>
+    private ReactiveCommand<Unit, Unit> CreateShowKeybindsWindowCommand()
+    {
+        return ReactiveCommand.CreateFromTask(async () =>
+        {
+            var vm = _serviceProvider.GetRequiredService<KeybindsWindowViewModel>();
+            await ShowKeybindsWindow.Handle(vm);
         });
     }
 

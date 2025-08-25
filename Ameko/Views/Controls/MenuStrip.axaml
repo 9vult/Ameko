@@ -96,7 +96,8 @@
             <MenuItem Header="{x:Static i18n:Resources.Menu_Configuration}"
                       Icon="{icons:MaterialIconExt Kind=CogOutline}" />
             <MenuItem Header="{x:Static i18n:Resources.Menu_Keybinds}"
-                      Icon="{icons:MaterialIconExt Kind=Keyboard}" />
+                      Icon="{icons:MaterialIconExt Kind=Keyboard}"
+                      Command="{Binding ShowKeybindsWindowCommand}" />
             <Separator />
             <MenuItem Header="{x:Static i18n:Resources.Menu_ShowLogs}"
                       Icon="{icons:MaterialIconExt Kind=FormatListGroup}"

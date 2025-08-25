@@ -84,7 +84,7 @@ public partial class App : Application
     private static void InitializeKeybindService(IServiceProvider provider)
     {
         // Commence keybind registration
-        _ = provider.GetRequiredService<KeybindService>();
+        _ = provider.GetRequiredService<IKeybindService>();
     }
 
     /// <summary>

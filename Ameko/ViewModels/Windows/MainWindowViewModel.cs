@@ -61,6 +61,7 @@ public partial class MainWindowViewModel : ViewModelBase
     // Help
     public Interaction<LogWindowViewModel, Unit> ShowLogWindow { get; }
     public Interaction<AboutWindowViewModel, Unit> ShowAboutWindow { get; }
+    public Interaction<KeybindsWindowViewModel, Unit> ShowKeybindsWindow { get; }
     #endregion
 
     #region Commands
@@ -135,6 +136,9 @@ public partial class MainWindowViewModel : ViewModelBase
     [KeybindTarget("ameko.about.show", "Shift+F1")]
     public ICommand ShowAboutWindowCommand { get; }
 
+    [KeybindTarget("ameko.keybinds.show")]
+    public ICommand ShowKeybindsWindowCommand { get; }
+
     // Other
     // These commands are specific to the solution explorer and don't need keybinds
     public ICommand RemoveDocumentFromSolutionCommand { get; }
@@ -144,7 +148,7 @@ public partial class MainWindowViewModel : ViewModelBase
     #endregion
 
     public ISolutionProvider SolutionProvider { get; }
-    public KeybindService KeybindService { get; }
+    public IKeybindService KeybindService { get; }
     public GitToolboxViewModel GitToolboxViewModel { get; }
 
     public ObservableCollection<TemplatedControl> ScriptMenuItems { get; }
@@ -201,24 +205,24 @@ public partial class MainWindowViewModel : ViewModelBase
 
     public MainWindowViewModel(
         IServiceProvider serviceProvider,
+        IFileSystem fileSystem,
+        IIoService ioService,
+        ILayoutProvider layoutProvider,
         ISolutionProvider solutionProvider,
         IStylesManagerFactory stylesManagerFactory,
-        IIoService ioService,
         IScriptService scriptService,
-        ILayoutProvider layoutProvider,
-        IFileSystem fileSystem,
-        KeybindService keybindService,
+        IKeybindService keybindService,
         GitToolboxViewModel gitToolboxViewModel
     )
     {
         _serviceProvider = serviceProvider;
+        _fileSystem = fileSystem;
+        _ioService = ioService;
+        LayoutProvider = layoutProvider;
         SolutionProvider = solutionProvider;
         _stylesManagerFactory = stylesManagerFactory;
-        _ioService = ioService;
         _scriptService = scriptService;
-        _fileSystem = fileSystem;
         KeybindService = keybindService;
-        LayoutProvider = layoutProvider;
         GitToolboxViewModel = gitToolboxViewModel;
 
         #region Interactions
@@ -242,6 +246,7 @@ public partial class MainWindowViewModel : ViewModelBase
         // Help
         ShowLogWindow = new Interaction<LogWindowViewModel, Unit>();
         ShowAboutWindow = new Interaction<AboutWindowViewModel, Unit>();
+        ShowKeybindsWindow = new Interaction<KeybindsWindowViewModel, Unit>();
         #endregion
 
         #region Commands
@@ -277,6 +282,7 @@ public partial class MainWindowViewModel : ViewModelBase
         // Help
         ShowLogWindowCommand = CreateShowLogWindowCommand();
         ShowAboutWindowCommand = CreateShowAboutWindowCommand();
+        ShowKeybindsWindowCommand = CreateShowKeybindsWindowCommand();
         // Other
         RemoveDocumentFromSolutionCommand = CreateRemoveDocumentFromSolutionCommand();
         RemoveDirectoryFromSolutionCommand = CreateRemoveDirectoryFromSolutionCommand();
