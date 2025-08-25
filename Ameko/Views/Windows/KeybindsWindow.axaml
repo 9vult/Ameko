@@ -1,0 +1,56 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        d:DesignWidth="400"
+        d:DesignHeight="400"
+        
+        xmlns:vm="clr-namespace:Ameko.ViewModels.Windows"
+        xmlns:i18n="clr-namespace:Ameko.I18N"
+        
+        x:Class="Ameko.Views.Windows.KeybindsWindow"
+        x:DataType="vm:KeybindsWindowViewModel"
+        
+        CanResize="False"
+        Icon="/Assets/Ameko-Simplified-BG-64.ico"
+        Width="400"
+        Height="400"
+        Title="{x:Static i18n:Keybinds.KeybindsWindow_Title}">
+    <DataGrid IsReadOnly="False"
+              CanUserReorderColumns="False"
+              CanUserResizeColumns="False"
+              VerticalScrollBarVisibility="Auto"
+              ItemsSource="{Binding Keybinds}">
+        <DataGrid.Columns>
+            <DataGridTextColumn Header="{x:Static i18n:Keybinds.Keybinds_Header_Identifier}"
+                                Binding="{Binding QualifiedName}"
+                                IsReadOnly="True" />
+            
+            <DataGridTemplateColumn Header="{x:Static i18n:Keybinds.Keybinds_Header_Context}">
+                <DataGridTemplateColumn.CellEditingTemplate>
+                    
+                </DataGridTemplateColumn.CellEditingTemplate>
+                <DataGridTemplateColumn.CellTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Key}" />
+                    </DataTemplate>
+                </DataGridTemplateColumn.CellTemplate>
+            </DataGridTemplateColumn>
+            
+            <DataGridTemplateColumn Header="{x:Static i18n:Keybinds.Keybinds_Header_Keybind}">
+                <DataGridTemplateColumn.CellEditingTemplate>
+                    <DataTemplate>
+                        <TextBox Text="{Binding Key}"
+                                 Watermark="{Binding DefaultKey, FallbackValue=''}" />
+                    </DataTemplate>
+                </DataGridTemplateColumn.CellEditingTemplate>
+                <DataGridTemplateColumn.CellTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Key}" />
+                    </DataTemplate>
+                </DataGridTemplateColumn.CellTemplate>
+            </DataGridTemplateColumn>
+        </DataGrid.Columns>
+    </DataGrid>
+</Window>

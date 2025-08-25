@@ -122,6 +122,11 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Jump.resx</DependentUpon>
     </Compile>
+    <Compile Update="I18N\Keybinds.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Keybinds.resx</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Update="I18N\Resources.resx">
@@ -163,6 +168,10 @@
     <EmbeddedResource Update="I18N\Jump.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Jump.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="I18N\Keybinds.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Keybinds.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
