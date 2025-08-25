@@ -51,13 +51,15 @@
                                           ItemsSource="{Binding $parent[Window].((vm:KeybindsWindowViewModel)DataContext).Contexts, FallbackValue=.}"
                                           SelectedItem="{Binding Context}" />
                                     <TextBlock IsVisible="{Binding IsBuiltin}"
-                                               Text="{Binding Context.Display, FallbackValue=''}" />
+                                               Text="{Binding Context.Display, FallbackValue=''}"
+                                               VerticalAlignment="Center" />
                                 </StackPanel>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellEditingTemplate>
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <TextBlock Text="{Binding Context.Display, FallbackValue=''}" />
+                            <TextBlock Text="{Binding Context.Display, FallbackValue=''}"
+                                       VerticalAlignment="Center"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
@@ -71,7 +73,8 @@
                     </DataGridTemplateColumn.CellEditingTemplate>
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <TextBlock Text="{Binding Key}" />
+                            <TextBlock Text="{Binding Key}"
+                                       VerticalAlignment="Center" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
