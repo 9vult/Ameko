@@ -27,10 +27,16 @@ public class KeybindService : IKeybindService
     public IKeybindRegistrar KeybindRegistrar { get; }
 
     /// <inheritdoc />
-    public void AttachKeybinds(ViewModelBase viewModel, IInputElement target)
+    public void AttachKeybinds(
+        ViewModelBase viewModel,
+        IInputElement target,
+        KeybindContext context
+    )
     {
         var viewModelType = viewModel.GetType();
         target.KeyBindings.Clear();
+
+        var applicableKeybinds = KeybindRegistrar.GetKeybinds(context).ToList();
 
         foreach (var (qualifiedName, (declaringType, memberName)) in _commandMap)
         {
@@ -51,7 +57,7 @@ public class KeybindService : IKeybindService
                 continue;
 
             // Find keybind associated with this qualified name
-            var keybind = KeybindRegistrar.GetKeybind(qualifiedName);
+            var keybind = applicableKeybinds.FirstOrDefault(k => k.QualifiedName == qualifiedName);
 
             if (keybind?.Key is null)
                 continue;
@@ -80,14 +86,9 @@ public class KeybindService : IKeybindService
         IInputElement target
     )
     {
-        // Keybinds with the "ameko" prefix are assumed to be built-ins for command execution
-        const string amekoPrefix = "ameko";
-
         var scriptBindings = KeybindRegistrar
             .GetKeybinds(context)
-            .Where(kb =>
-                !kb.QualifiedName.StartsWith(amekoPrefix) && !string.IsNullOrWhiteSpace(kb.Key)
-            );
+            .Where(kb => !kb.IsBuiltin && !string.IsNullOrWhiteSpace(kb.Key));
 
         foreach (var scriptBinding in scriptBindings)
         {

@@ -37,24 +37,17 @@ public partial class KeybindsWindowViewModel : ViewModelBase
     {
         foreach (var keybind in Keybinds)
         {
-            _registrar.ApplyOverride(
-                keybind.QualifiedName,
-                keybind.OverrideKey,
-                keybind.OverrideContext?.Context
-            );
+            _registrar.ApplyOverride(keybind.QualifiedName, keybind.OverrideKey);
         }
         _registrar.Save();
         return new EmptyMessage(); // Funky workaround to get the super clean commands
     }
 
-    private static EditableKeybindContext? GetEditableContext(KeybindContext? context)
+    private static EditableKeybindContext GetEditableContext(KeybindContext context)
     {
-        if (context is null)
-            return null;
-
         return new EditableKeybindContext
         {
-            Context = context.Value,
+            Context = context,
             Display = context switch
             {
                 KeybindContext.None => I18N.Keybinds.KeybindContext_None,
@@ -77,11 +70,11 @@ public partial class KeybindsWindowViewModel : ViewModelBase
                 .GetKeybinds()
                 .Select(k => new EditableKeybind
                 {
+                    IsBuiltin = k.IsBuiltin,
                     QualifiedName = k.QualifiedName,
                     DefaultKey = k.DefaultKey ?? string.Empty,
                     OverrideKey = k.OverrideKey,
-                    DefaultContext = GetEditableContext(k.DefaultContext)!,
-                    OverrideContext = GetEditableContext(k.OverrideContext),
+                    Context = GetEditableContext(k.Context),
                 })
                 .OrderBy(k => k.QualifiedName)
                 .ToList()

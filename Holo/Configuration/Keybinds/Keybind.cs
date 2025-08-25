@@ -9,8 +9,8 @@ namespace Holo.Configuration.Keybinds;
 /// </summary>
 /// <param name="qualifiedName">Unique accessor for the action the keybind is assigned to</param>
 /// <param name="defaultKey">Key combination</param>
-/// <param name="defaultContext">Contexts the keybind is registered to by default</param>
-public class Keybind(string qualifiedName, string? defaultKey, KeybindContext defaultContext)
+/// <param name="context">Contexts the keybind is registered to</param>
+public class Keybind(string qualifiedName, string? defaultKey, KeybindContext context)
 {
     /// <summary>
     /// Unique accessor for the action the keybind is assigned to
@@ -46,28 +46,20 @@ public class Keybind(string qualifiedName, string? defaultKey, KeybindContext de
     public string? Key => OverrideKey ?? DefaultKey;
 
     /// <summary>
-    /// The contexts the keybind is registered to by default
+    /// The contexts the keybind is registered to
     /// </summary>
     /// <example><c>var contexts = KeybindContext.Editor | KeybindContext.Grid;</c></example>
-    public KeybindContext DefaultContext { get; set; } = defaultContext;
-
-    /// <summary>
-    /// User-set contexts
-    /// </summary>
-    public KeybindContext? OverrideContext { get; set; }
-
-    /// <summary>
-    /// Effective contexts
-    /// </summary>
-    /// <returns>
-    /// <see cref="OverrideContext"/> if set, otherwise <see cref="DefaultContext"/>
-    /// </returns>
-    [JsonIgnore]
-    public KeybindContext Context => OverrideContext ?? DefaultContext;
+    public KeybindContext Context { get; set; } = context;
 
     /// <summary>
     /// If the keybind is enabled
     /// </summary>
     [JsonIgnore]
-    public bool IsEnabled => Context != KeybindContext.None;
+    public bool IsEnabled => Context != KeybindContext.None || string.IsNullOrEmpty(Key);
+
+    /// <summary>
+    /// If the keybind is for a builtin command
+    /// </summary>
+    [JsonIgnore]
+    public bool IsBuiltin => QualifiedName.StartsWith("ameko");
 }
