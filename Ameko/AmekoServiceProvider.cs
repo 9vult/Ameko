@@ -44,6 +44,7 @@ public static class AmekoServiceProvider
         );
         services.AddSingleton<IKeybindRegistrar, KeybindRegistrar>();
         services.AddSingleton<IKeybindService, KeybindService>();
+        services.AddSingleton<AssOptionsBinder>();
 
         // --- Application Services ---
         services.AddSingleton<Directories>();
@@ -81,6 +82,7 @@ public static class AmekoServiceProvider
         _ = Provider.GetRequiredService<ILogProvider>();
         _ = Provider.GetRequiredService<ScriptServiceLocator>();
         _ = Provider.GetRequiredService<DiscordRpcService>();
+        _ = Provider.GetRequiredService<AssOptionsBinder>();
 
         Logger.Info("Ameko and Holo are ready to go!");
 

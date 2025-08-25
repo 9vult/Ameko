@@ -299,8 +299,7 @@ public class KeybindRegistrarTests
             "ameko.document.open": {
                 "DefaultKey": "Ctrl\u002BO",
                 "OverrideKey": null,
-                "DefaultContext": "global",
-                "OverrideContext": null
+                "Context": "global"
             }
         }
         """;
@@ -310,8 +309,7 @@ public class KeybindRegistrarTests
             "ameko.document.open": {
                 "DefaultKey": "Ctrl\u002BO",
                 "OverrideKey": "Ctrl\u002BOJ",
-                "DefaultContext": "global",
-                "OverrideContext": null
+                "Context": "global"
             }
         }
         """;

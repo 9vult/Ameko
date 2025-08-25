@@ -20,6 +20,7 @@ internal record ConfigurationModel
     public required bool LineWidthIncludesWhitespace;
     public required bool LineWidthIncludesPunctuation;
     public required bool DiscordRpcEnabled;
+    public required int DefaultLayer;
     public required string Culture;
     public required Theme Theme;
     public required uint GridPadding;

@@ -18,11 +18,13 @@ public interface IConfiguration
     /// <summary>
     /// If whitespace should be included in <see cref="Event.Cps"/> calculation
     /// </summary>
+    /// <remarks>This value may be overloaded by <see cref="Solution.UseSoftLinebreaks"/>.</remarks>
     bool CpsIncludesWhitespace { get; set; }
 
     /// <summary>
     /// If punctuation should be included in <see cref="Event.Cps"/> calculation
     /// </summary>
+    /// <remarks>This value may be overloaded by <see cref="Solution.UseSoftLinebreaks"/>.</remarks>
     bool CpsIncludesPunctuation { get; set; }
 
     /// <summary>
@@ -30,6 +32,12 @@ public interface IConfiguration
     /// </summary>
     /// <remarks>This value may be overloaded by <see cref="Solution.UseSoftLinebreaks"/>.</remarks>
     bool UseSoftLinebreaks { get; set; }
+
+    /// <summary>
+    /// Default layer preference
+    /// </summary>
+    /// <remarks>This value may be overloaded by <see cref="Solution.DefaultLayer"/>.</remarks>
+    int DefaultLayer { get; set; }
 
     /// <summary>
     /// Whether autosave is enabled
@@ -44,11 +52,13 @@ public interface IConfiguration
     /// <summary>
     /// If whitespace should be included in <see cref="Event.MaxLineWidth"/> calculation
     /// </summary>
+    /// <remarks>This value may be overloaded by <see cref="Solution.UseSoftLinebreaks"/>.</remarks>
     bool LineWidthIncludesWhitespace { get; set; }
 
     /// <summary>
     /// If punctuation should be included in <see cref="Event.MaxLineWidth"/> calculation
     /// </summary>
+    /// <remarks>This value may be overloaded by <see cref="Solution.UseSoftLinebreaks"/>.</remarks>
     bool LineWidthIncludesPunctuation { get; set; }
 
     /// <summary>

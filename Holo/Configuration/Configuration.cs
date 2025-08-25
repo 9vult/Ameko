@@ -49,6 +49,7 @@ public partial class Configuration : BindableBase, IConfiguration
     private bool _lineWidthIncludesWhitespace;
     private bool _lineWidthIncludesPunctuation;
     private bool _discordRpcEnabled;
+    private int _defaultLayer;
     private string _culture;
     private Theme _theme;
     private uint _gridPadding;
@@ -80,6 +81,13 @@ public partial class Configuration : BindableBase, IConfiguration
     {
         get => _useSoftLinebreaks;
         set => SetProperty(ref _useSoftLinebreaks, value);
+    }
+
+    /// <inheritdoc />
+    public int DefaultLayer
+    {
+        get => _defaultLayer;
+        set => SetProperty(ref _defaultLayer, value);
     }
 
     /// <inheritdoc />
@@ -188,6 +196,7 @@ public partial class Configuration : BindableBase, IConfiguration
                 LineWidthIncludesWhitespace = _lineWidthIncludesWhitespace,
                 LineWidthIncludesPunctuation = _lineWidthIncludesPunctuation,
                 DiscordRpcEnabled = _discordRpcEnabled,
+                DefaultLayer = _defaultLayer,
                 Culture = _culture,
                 Theme = _theme,
                 GridPadding = _gridPadding,
@@ -249,6 +258,7 @@ public partial class Configuration : BindableBase, IConfiguration
                 _lineWidthIncludesWhitespace = model.LineWidthIncludesWhitespace,
                 _lineWidthIncludesPunctuation = model.LineWidthIncludesPunctuation,
                 _discordRpcEnabled = model.DiscordRpcEnabled,
+                _defaultLayer = model.DefaultLayer,
                 _culture = model.Culture,
                 _theme = model.Theme,
                 _gridPadding = model.GridPadding,
