@@ -94,24 +94,10 @@ public class KeybindRegistrarTests
         var bind = new Keybind("test.bind", "Ctrl+A", KeybindContext.Grid);
 
         k.RegisterKeybind(bind);
-        var result = k.ApplyOverride(bind.QualifiedName, keybind: "Ctrl+J", null);
+        var result = k.ApplyOverride(bind.QualifiedName, keybind: "Ctrl+J");
 
         result.ShouldBeTrue();
         k.GetKeybinds(KeybindContext.Grid).First().Key.ShouldBe("Ctrl+J");
-    }
-
-    [Fact]
-    public void ApplyOverride_Context_Exists()
-    {
-        var fs = new MockFileSystem();
-        var k = new KeybindRegistrar(fs);
-        var bind = new Keybind("test.bind", "Ctrl+A", KeybindContext.Grid);
-
-        k.RegisterKeybind(bind);
-        var result = k.ApplyOverride(bind.QualifiedName, null, context: KeybindContext.Global);
-
-        result.ShouldBeTrue();
-        k.GetKeybinds(KeybindContext.Global).First().Key.ShouldBe("Ctrl+A");
     }
 
     [Fact]
@@ -121,7 +107,7 @@ public class KeybindRegistrarTests
         var k = new KeybindRegistrar(fs);
         var bind = new Keybind("test.bind", "Ctrl+A", KeybindContext.Grid);
 
-        var result = k.ApplyOverride(bind.QualifiedName, keybind: "Ctrl+J", null);
+        var result = k.ApplyOverride(bind.QualifiedName, keybind: "Ctrl+J");
 
         result.ShouldBeFalse();
     }
@@ -134,11 +120,11 @@ public class KeybindRegistrarTests
         var bind = new Keybind("test.bind", "Ctrl+A", KeybindContext.Grid);
 
         k.RegisterKeybind(bind);
-        k.ApplyOverride(bind.QualifiedName, null, context: KeybindContext.Global);
+        k.ApplyOverride(bind.QualifiedName, "Ctrl+J");
         var result = k.ClearOverride(bind.QualifiedName);
 
         result.ShouldBeTrue();
-        k.GetKeybinds(KeybindContext.Grid).First().OverrideContext.ShouldBeNull();
+        k.GetKeybinds(KeybindContext.Grid).First().OverrideKey.ShouldBeNull();
     }
 
     [Fact]
@@ -242,7 +228,7 @@ public class KeybindRegistrarTests
         var bind2 = new Keybind("test.bind2", "Ctrl+D", KeybindContext.Audio);
 
         k.RegisterKeybinds([bind1, bind2], false);
-        k.ApplyOverride(bind2.QualifiedName, null, context: KeybindContext.Global);
+        k.ApplyOverride(bind2.QualifiedName, "T");
 
         var result = k.GetOverridenKeybinds().ToList();
 

@@ -6,11 +6,11 @@ namespace Ameko.DataModels;
 
 public class EditableKeybind
 {
+    public required bool IsBuiltin { get; init; }
     public required string QualifiedName { get; init; }
     public required string DefaultKey { get; init; }
     public required string? OverrideKey { get; set; }
-    public required EditableKeybindContext DefaultContext { get; init; }
-    public required EditableKeybindContext? OverrideContext { get; set; }
+    public required EditableKeybindContext Context { get; set; }
 
     public string Key
     {
@@ -23,12 +23,6 @@ public class EditableKeybind
             return string.Empty;
         }
         set => OverrideKey = value != DefaultKey ? value : null;
-    }
-
-    public EditableKeybindContext? Context
-    {
-        get => OverrideContext ?? DefaultContext;
-        set => OverrideContext = value != DefaultContext ? value : null;
     }
 }
 

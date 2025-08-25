@@ -33,8 +33,13 @@
                 <DataGridTemplateColumn Header="{x:Static i18n:Keybinds.Keybinds_Header_Context}">
                     <DataGridTemplateColumn.CellEditingTemplate>
                         <DataTemplate>
-                            <ComboBox ItemsSource="{Binding $parent[Window].((vm:KeybindsWindowViewModel)DataContext).Contexts, FallbackValue=.}"
-                                      SelectedItem="{Binding Context}" />
+                            <StackPanel>
+                                <ComboBox IsVisible="{Binding !IsBuiltin}"
+                                          ItemsSource="{Binding $parent[Window].((vm:KeybindsWindowViewModel)DataContext).Contexts, FallbackValue=.}"
+                                          SelectedItem="{Binding Context}" />
+                                    <TextBlock IsVisible="{Binding IsBuiltin}"
+                                               Text="{Binding Context.Display, FallbackValue=''}" />
+                                </StackPanel>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellEditingTemplate>
                     <DataGridTemplateColumn.CellTemplate>

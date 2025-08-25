@@ -207,8 +207,8 @@ public partial class TabItem : ReactiveUserControl<TabItemViewModel>
     {
         if (vm is null)
             return;
-        vm.KeybindService.AttachKeybinds(vm, TabItemEventsArea);
-        vm.KeybindService.AttachKeybinds(vm, TabItemVideoArea);
+        vm.KeybindService.AttachKeybinds(vm, TabItemEventsArea, KeybindContext.Grid);
+        vm.KeybindService.AttachKeybinds(vm, TabItemVideoArea, KeybindContext.Video);
         vm.KeybindService.AttachScriptKeybinds(
             vm.ExecuteScriptCommand,
             KeybindContext.Grid,
