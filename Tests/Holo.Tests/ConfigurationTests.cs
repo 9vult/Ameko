@@ -94,6 +94,7 @@ public class ConfigurationTests
             "CpsIncludesPunctuation": false,
             "UseSoftLinebreaks": true,
             "AutosaveEnabled": false,
+            "DefaultLayer": 0,
             "AutosaveInterval": 120,
             "LineWidthIncludesWhitespace": true,
             "LineWidthIncludesPunctuation": true,

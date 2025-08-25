@@ -52,6 +52,7 @@ public class Solution : BindableBase
     private bool? _cpsIncludesWhitespace;
     private bool? _cpsIncludesPunctuation;
     private bool? _useSoftLinebreaks;
+    private int? _defaultLayer;
 
     /// <summary>
     /// All items referenced by the solution
@@ -163,12 +164,25 @@ public class Solution : BindableBase
     }
 
     /// <summary>
+    /// Workspace-scoped default layer preference
+    /// </summary>
+    public int? DefaultLayer
+    {
+        get => _defaultLayer;
+        set
+        {
+            SetProperty(ref _defaultLayer, value);
+            IsSaved = false;
+        }
+    }
+
+    /// <summary>
     /// Solution title/name
     /// </summary>
     public string Title =>
         SavePath is not null
             ? Path.GetFileNameWithoutExtension(SavePath.LocalPath)
-            : $"Default Solution";
+            : "Default Solution";
 
     /// <summary>
     /// Get a loaded <see cref="Workspace"/> by ID

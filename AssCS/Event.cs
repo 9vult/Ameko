@@ -1,5 +1,6 @@
 ﻿// SPDX-License-Identifier: MPL-2.0
 
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -16,7 +17,7 @@ namespace AssCS;
 public partial class Event(int id) : BindableBase, IEntry
 {
     private bool _isComment;
-    private int _layer;
+    private int _layer = Options.DefaultLayer;
     private Time _start = Time.FromSeconds(0);
     private Time _end = Time.FromSeconds(5);
     private string _style = "Default";
@@ -69,7 +70,8 @@ public partial class Event(int id) : BindableBase, IEntry
     /// <summary>
     /// Name of the style applied to this event
     /// </summary>
-    public string Style
+    [NotNull]
+    public string? Style
     {
         get => _style;
         set
@@ -130,7 +132,6 @@ public partial class Event(int id) : BindableBase, IEntry
     /// </summary>
     public List<int> LinkedExtradatas { get; set; } = [];
 
-    // TODO: Implement configuration
     /// <summary>
     /// Characters per second
     /// </summary>
@@ -153,10 +154,10 @@ public partial class Event(int id) : BindableBase, IEntry
             {
                 var element = tee.GetTextElement();
                 if (true)
-                    if (Char.IsWhiteSpace(element[0]))
+                    if (char.IsWhiteSpace(element[0]))
                         continue;
                 if (true)
-                    if (Char.IsPunctuation(element[0]))
+                    if (char.IsPunctuation(element[0]))
                         continue;
                 charCount++;
             }
@@ -164,7 +165,6 @@ public partial class Event(int id) : BindableBase, IEntry
         }
     }
 
-    // TODO: Implement configuration
     /// <summary>
     /// Length (in characters) of the longest line in the event
     /// </summary>
@@ -185,11 +185,11 @@ public partial class Event(int id) : BindableBase, IEntry
                     while (tee.MoveNext())
                     {
                         var element = tee.GetTextElement();
-                        if (true)
-                            if (Char.IsWhiteSpace(element[0]))
+                        if (Options.LineWidthIncludesWhitespace)
+                            if (char.IsWhiteSpace(element[0]))
                                 continue;
-                        if (false)
-                            if (Char.IsPunctuation(element[0]))
+                        if (Options.LineWidthIncludesPunctuation)
+                            if (char.IsPunctuation(element[0]))
                                 continue;
                         charCount++;
                     }
@@ -212,7 +212,7 @@ public partial class Event(int id) : BindableBase, IEntry
                 Text,
                 m =>
                 {
-                    int spacesCount = m.Groups[2].Value.Length;
+                    var spacesCount = m.Groups[2].Value.Length;
                     return $"--[[{spacesCount}]]";
                 }
             );
@@ -232,7 +232,7 @@ public partial class Event(int id) : BindableBase, IEntry
                 Text,
                 m =>
                 {
-                    int spacesCount = int.Parse(m.Groups[1].Value);
+                    var spacesCount = int.Parse(m.Groups[1].Value);
                     return Environment.NewLine + new string(' ', spacesCount);
                 }
             );
@@ -306,7 +306,7 @@ public partial class Event(int id) : BindableBase, IEntry
     /// <returns>Ass-formatted string</returns>
     public string AsAss()
     {
-        string extradatas =
+        var extradatas =
             LinkedExtradatas.Count > 0 ? $"{{{string.Join("=", LinkedExtradatas)}}}" : "";
         var textContent = Effect.Contains("code") ? TransformCodeToAss() : Text;
 
@@ -417,7 +417,7 @@ public partial class Event(int id) : BindableBase, IEntry
             return blocks;
         }
 
-        int drawingLevel = 0;
+        var drawingLevel = 0;
         string text = new(_text);
 
         for (int len = text.Length, cur = 0; cur < len; )
@@ -427,7 +427,7 @@ public partial class Event(int id) : BindableBase, IEntry
             int endPlain;
             if (text[cur] == '{')
             {
-                int end = text.IndexOf('}', cur);
+                var end = text.IndexOf('}', cur);
                 if (end == -1)
                 {
                     // ----- Plain -----
@@ -536,10 +536,10 @@ public partial class Event(int id) : BindableBase, IEntry
         if (selStart > selEnd)
             (selStart, selEnd) = (selEnd, selStart);
 
-        int normSelStart = NormalizePos(selStart);
-        int normSelEnd = NormalizePos(selEnd);
+        var normSelStart = NormalizePos(selStart);
+        var normSelEnd = NormalizePos(selEnd);
 
-        bool state =
+        var state =
             style is not null
             && tag switch
             {
@@ -550,11 +550,11 @@ public partial class Event(int id) : BindableBase, IEntry
                 _ => false,
             };
 
-        ParsedEvent parsed = new ParsedEvent(this);
-        int blockN = parsed.BlockAt(normSelStart);
+        var parsed = new ParsedEvent(this);
+        var blockN = parsed.BlockAt(normSelStart);
         state = parsed.FindTag(blockN, tag, "")?.Parameters[0].GetBool() ?? state;
 
-        int shift = parsed.SetTag(tag, state ? "0" : "1", normSelStart, selStart);
+        var shift = parsed.SetTag(tag, state ? "0" : "1", normSelStart, selStart);
         if (selStart != selEnd)
             parsed.SetTag(tag, state ? "1" : "0", normSelEnd, selEnd + shift);
         return shift;
@@ -633,7 +633,7 @@ public partial class Event(int id) : BindableBase, IEntry
 
         List<int> result = [];
 
-        for (int i = 1; i < match.Groups.Count; i++)
+        for (var i = 1; i < match.Groups.Count; i++)
         {
             var rawId = match.Groups[i].Value[1..]; // =123 → 123
             var id = Convert.ToInt32(rawId);
@@ -651,8 +651,8 @@ public partial class Event(int id) : BindableBase, IEntry
     /// <returns>Normalized position</returns>
     private int NormalizePos(int pos)
     {
-        int plainLength = 0;
-        bool inside = false;
+        var plainLength = 0;
+        var inside = false;
         for (int i = 0, max = Text.Length - 1; i < pos && i <= max; i++)
         {
             if (Text[i] == '{')
@@ -701,8 +701,8 @@ public partial class Event(int id) : BindableBase, IEntry
         /// <returns>Block number</returns>
         public int BlockAt(int index)
         {
-            int n = 0;
-            bool inside = false;
+            var n = 0;
+            var inside = false;
             for (var i = 0; i <= _line.Text.Length - 1; i++)
             {
                 switch (_line.Text[i])
@@ -750,12 +750,12 @@ public partial class Event(int id) : BindableBase, IEntry
         /// <returns>Number of characters to shift the caret</returns>
         public int SetTag(string tag, string value, int normPos, int originPos)
         {
-            int blockN = BlockAt(normPos);
+            var blockN = BlockAt(normPos);
             PlainBlock? plain = null;
             OverrideBlock? ovr = null;
             while (blockN >= 0 && plain is null && ovr is null)
             {
-                Block block = _blocks[blockN];
+                var block = _blocks[blockN];
                 switch (block.Type)
                 {
                     case BlockType.Plain:
@@ -780,8 +780,8 @@ public partial class Event(int id) : BindableBase, IEntry
             if (blockN < 0)
                 originPos = 0;
 
-            string insert = tag + value;
-            int shift = insert.Length;
+            var insert = tag + value;
+            var shift = insert.Length;
 
             if (plain is not null || blockN < 0)
             {
@@ -795,10 +795,10 @@ public partial class Event(int id) : BindableBase, IEntry
             }
             else if (ovr is not null)
             {
-                string alt = string.Empty;
+                var alt = string.Empty;
                 if (tag == "\\c")
                     alt = "\\1c";
-                bool found = false;
+                var found = false;
                 for (var i = 0; i < ovr.Tags.Count; i++)
                 {
                     var name = ovr.Tags[i].Name;
@@ -841,9 +841,6 @@ public partial class Event(int id) : BindableBase, IEntry
 
     [GeneratedRegex(@"--\[\[([0-9]+)\]\]")]
     private static partial Regex AssToCodeRegex();
-
-    [GeneratedRegex(@"[\p{L}\p{N}]")]
-    private static partial Regex CpsRegex();
 
     [GeneratedRegex(@"\\[Nnh]")]
     private static partial Regex NewlineHardSpaceRegex();
