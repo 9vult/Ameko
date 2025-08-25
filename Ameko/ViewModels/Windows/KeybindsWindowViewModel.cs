@@ -90,7 +90,8 @@ public partial class KeybindsWindowViewModel : ViewModelBase
                     OverrideKey = k.OverrideKey,
                     Context = GetEditableContext(k.Context),
                 })
-                .OrderBy(k => k.QualifiedName)
+                .OrderByDescending(k => k.Context.Context) // Places Global first and None last
+                .ThenBy(k => k.QualifiedName)
                 .ToList()
         );
 

@@ -94,7 +94,7 @@ public class KeybindRegistrarTests
         var bind = new Keybind("test.bind", "Ctrl+A", KeybindContext.Grid);
 
         k.RegisterKeybind(bind);
-        var result = k.ApplyOverride(bind.QualifiedName, keybind: "Ctrl+J");
+        var result = k.ApplyOverride(bind.QualifiedName, keybind: "Ctrl+J", null);
 
         result.ShouldBeTrue();
         k.GetKeybinds(KeybindContext.Grid).First().Key.ShouldBe("Ctrl+J");
@@ -107,7 +107,7 @@ public class KeybindRegistrarTests
         var k = new KeybindRegistrar(fs);
         var bind = new Keybind("test.bind", "Ctrl+A", KeybindContext.Grid);
 
-        var result = k.ApplyOverride(bind.QualifiedName, keybind: "Ctrl+J");
+        var result = k.ApplyOverride(bind.QualifiedName, keybind: "Ctrl+J", null);
 
         result.ShouldBeFalse();
     }
@@ -120,7 +120,7 @@ public class KeybindRegistrarTests
         var bind = new Keybind("test.bind", "Ctrl+A", KeybindContext.Grid);
 
         k.RegisterKeybind(bind);
-        k.ApplyOverride(bind.QualifiedName, "Ctrl+J");
+        k.ApplyOverride(bind.QualifiedName, "Ctrl+J", null);
         var result = k.ClearOverride(bind.QualifiedName);
 
         result.ShouldBeTrue();
@@ -228,7 +228,7 @@ public class KeybindRegistrarTests
         var bind2 = new Keybind("test.bind2", "Ctrl+D", KeybindContext.Audio);
 
         k.RegisterKeybinds([bind1, bind2], false);
-        k.ApplyOverride(bind2.QualifiedName, "T");
+        k.ApplyOverride(bind2.QualifiedName, "T", null);
 
         var result = k.GetOverridenKeybinds().ToList();
 
