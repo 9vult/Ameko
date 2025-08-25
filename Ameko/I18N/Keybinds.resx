@@ -30,4 +30,25 @@
     <data name="Keybinds_Header_Context" xml:space="preserve">
         <value>Context</value>
     </data>
+    <data name="KeybindContext_None" xml:space="preserve">
+        <value>None</value>
+    </data>
+    <data name="KeybindContext_Global" xml:space="preserve">
+        <value>Global</value>
+    </data>
+    <data name="KeybindContext_Video" xml:space="preserve">
+        <value>Video</value>
+    </data>
+    <data name="KeybindContext_Audio" xml:space="preserve">
+        <value>Audio</value>
+    </data>
+    <data name="KeybindContext_Grid" xml:space="preserve">
+        <value>Grid</value>
+    </data>
+    <data name="Keybinds_Button_Save" xml:space="preserve">
+        <value>Save</value>
+    </data>
+    <data name="KeybindContext_Editor" xml:space="preserve">
+        <value>Editor</value>
+    </data>
 </root>

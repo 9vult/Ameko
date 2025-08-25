@@ -17,23 +17,16 @@ namespace Ameko.Services;
 /// Uses reflection to index key-bound commands
 /// and register them with a <see cref="IKeybindRegistrar"/>
 /// </summary>
-public class KeybindService
+public class KeybindService : IKeybindService
 {
     private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
     private readonly FrozenDictionary<string, (Type, string)> _commandMap;
 
-    /// <summary>
-    /// Expose the Keybind Registrar so VMs only have to pull in this service
-    /// </summary>
+    /// <inheritdoc />
     public IKeybindRegistrar KeybindRegistrar { get; }
 
-    /// <summary>
-    /// Attach keybinds to a ViewModel's commands
-    /// </summary>
-    /// <param name="viewModel">ViewModel to attach keybinds to</param>
-    /// <param name="target">Window or Control handling the inputs</param>
-    /// <remarks>This method clears pre-existing keybinds before adding new ones</remarks>
+    /// <inheritdoc />
     public void AttachKeybinds(ViewModelBase viewModel, IInputElement target)
     {
         var viewModelType = viewModel.GetType();
@@ -80,13 +73,7 @@ public class KeybindService
         }
     }
 
-    /// <summary>
-    /// Register keybinds for script execution
-    /// </summary>
-    /// <param name="executeScriptCommand">Command handling script execution</param>
-    /// <param name="context">Keybind context</param>
-    /// <param name="target">Window or Control handling the input</param>
-    /// <remarks>This method does not clear pre-existing keybinds</remarks>
+    /// <inheritdoc />
     public void AttachScriptKeybinds(
         ICommand executeScriptCommand,
         KeybindContext context,

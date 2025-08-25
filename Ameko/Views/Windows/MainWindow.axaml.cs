@@ -200,7 +200,7 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         IInteractionContext<StylesManagerWindowViewModel, Unit> interaction
     )
     {
-        Log.Trace("Displaying Styles Manager");
+        Log.Debug("Displaying Styles Manager");
         var window = new StylesManagerWindow { DataContext = interaction.Input };
         window.Show();
         interaction.SetOutput(Unit.Default);
@@ -210,7 +210,7 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         IInteractionContext<ShiftTimesDialogViewModel, Unit> interaction
     )
     {
-        Log.Trace("Displaying Shift Times dialog");
+        Log.Debug("Displaying Shift Times dialog");
         var window = new ShiftTimesDialog { DataContext = interaction.Input };
         await window.ShowDialog(this);
         interaction.SetOutput(Unit.Default);
@@ -244,7 +244,7 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         IInteractionContext<JumpDialogViewModel, JumpDialogClosedMessage?> interaction
     )
     {
-        Log.Trace("Displaying Jump dialog");
+        Log.Debug("Displaying Jump dialog");
         var dialog = new JumpDialog { DataContext = interaction.Input };
         var result = await dialog.ShowDialog<JumpDialogClosedMessage?>(this);
         interaction.SetOutput(result);
@@ -254,7 +254,7 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         IInteractionContext<PkgManWindowViewModel, Unit> interaction
     )
     {
-        Log.Trace("Displaying Dependency Control");
+        Log.Debug("Displaying Dependency Control");
         var window = new PkgManWindow { DataContext = interaction.Input };
         await window.ShowDialog(this);
         interaction.SetOutput(Unit.Default);
@@ -262,7 +262,7 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
 
     private static void DoShowLogWindow(IInteractionContext<LogWindowViewModel, Unit> interaction)
     {
-        Log.Trace("Displaying Log Window");
+        Log.Debug("Displaying Log Window");
         var window = new LogWindow { DataContext = interaction.Input };
         window.Show();
         interaction.SetOutput(Unit.Default);
@@ -272,9 +272,19 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         IInteractionContext<AboutWindowViewModel, Unit> interaction
     )
     {
-        Log.Trace("Displaying About Window");
+        Log.Debug("Displaying About Window");
         var window = new AboutWindow() { DataContext = interaction.Input };
         await window.ShowDialog(this);
+        interaction.SetOutput(Unit.Default);
+    }
+
+    private static void DoShowKeybindsWindow(
+        IInteractionContext<KeybindsWindowViewModel, Unit> interaction
+    )
+    {
+        Log.Debug("Displaying Keybinds Window");
+        var window = new KeybindsWindow() { DataContext = interaction.Input };
+        window.Show();
         interaction.SetOutput(Unit.Default);
     }
 
@@ -311,6 +321,7 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
                 // Help
                 ViewModel.ShowLogWindow.RegisterHandler(DoShowLogWindow);
                 ViewModel.ShowAboutWindow.RegisterHandler(DoShowAboutWindowAsync);
+                ViewModel.ShowKeybindsWindow.RegisterHandler(DoShowKeybindsWindow);
 
                 // Register keybinds
                 AttachKeybinds();

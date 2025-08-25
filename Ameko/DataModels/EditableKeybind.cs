@@ -9,8 +9,8 @@ public class EditableKeybind
     public required string QualifiedName { get; init; }
     public required string DefaultKey { get; init; }
     public required string? OverrideKey { get; set; }
-    public required KeybindContext DefaultContext { get; init; }
-    public required KeybindContext? OverrideContext { get; set; }
+    public required EditableKeybindContext DefaultContext { get; init; }
+    public required EditableKeybindContext? OverrideContext { get; set; }
 
     public string Key
     {
@@ -25,9 +25,44 @@ public class EditableKeybind
         set => OverrideKey = value != DefaultKey ? value : null;
     }
 
-    public KeybindContext? Context
+    public EditableKeybindContext? Context
     {
         get => OverrideContext ?? DefaultContext;
         set => OverrideContext = value != DefaultContext ? value : null;
+    }
+}
+
+public class EditableKeybindContext
+{
+    public required KeybindContext Context { get; init; }
+    public required string Display { get; init; }
+
+    protected bool Equals(EditableKeybindContext other)
+    {
+        return Context == other.Context;
+    }
+
+    /// <inheritdoc />
+    public override string ToString()
+    {
+        return Display;
+    }
+
+    /// <inheritdoc />
+    public override bool Equals(object? obj)
+    {
+        if (obj is null)
+            return false;
+        if (ReferenceEquals(this, obj))
+            return true;
+        if (obj.GetType() != GetType())
+            return false;
+        return Equals((EditableKeybindContext)obj);
+    }
+
+    /// <inheritdoc />
+    public override int GetHashCode()
+    {
+        return (int)Context;
     }
 }

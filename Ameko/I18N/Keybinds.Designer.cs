@@ -60,6 +60,69 @@ namespace Ameko.I18N {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Audio.
+        /// </summary>
+        public static string KeybindContext_Audio {
+            get {
+                return ResourceManager.GetString("KeybindContext_Audio", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Editor.
+        /// </summary>
+        public static string KeybindContext_Editor {
+            get {
+                return ResourceManager.GetString("KeybindContext_Editor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Global.
+        /// </summary>
+        public static string KeybindContext_Global {
+            get {
+                return ResourceManager.GetString("KeybindContext_Global", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Grid.
+        /// </summary>
+        public static string KeybindContext_Grid {
+            get {
+                return ResourceManager.GetString("KeybindContext_Grid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to None.
+        /// </summary>
+        public static string KeybindContext_None {
+            get {
+                return ResourceManager.GetString("KeybindContext_None", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Video.
+        /// </summary>
+        public static string KeybindContext_Video {
+            get {
+                return ResourceManager.GetString("KeybindContext_Video", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Save.
+        /// </summary>
+        public static string Keybinds_Button_Save {
+            get {
+                return ResourceManager.GetString("Keybinds_Button_Save", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Context.
         /// </summary>
         public static string Keybinds_Header_Context {
