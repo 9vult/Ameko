@@ -131,10 +131,10 @@ public partial class TabItem : ReactiveUserControl<TabItemViewModel>
                     vm.ShowPasteOverDialog.RegisterHandler(DoShowPasteOverDialogAsync);
 
                     // Register keybinds
-                    AttachGridKeybinds(vm);
+                    AttachKeybinds(vm);
                     vm.KeybindService.KeybindRegistrar.OnKeybindsChanged += (_, _) =>
                     {
-                        AttachGridKeybinds(vm);
+                        AttachKeybinds(vm);
                     };
 
                     // Apply layouts
@@ -203,12 +203,15 @@ public partial class TabItem : ReactiveUserControl<TabItemViewModel>
         }
     }
 
-    private void AttachGridKeybinds(TabItemViewModel? vm)
+    private void AttachKeybinds(TabItemViewModel? vm)
     {
         if (vm is null)
             return;
-        vm.KeybindService.AttachKeybinds(vm, TabItemEventsArea, KeybindContext.Grid);
-        vm.KeybindService.AttachKeybinds(vm, TabItemVideoArea, KeybindContext.Video);
+        vm.KeybindService.AttachKeybinds(vm, KeybindContext.Grid, TabItemEventsArea);
+        vm.KeybindService.AttachKeybinds(vm, KeybindContext.Editor, TabItemEditorArea);
+        vm.KeybindService.AttachKeybinds(vm, KeybindContext.Video, TabItemVideoArea);
+        vm.KeybindService.AttachKeybinds(vm, KeybindContext.Audio, TabItemAudioArea);
+
         vm.KeybindService.AttachScriptKeybinds(
             vm.ExecuteScriptCommand,
             KeybindContext.Grid,
@@ -216,8 +219,18 @@ public partial class TabItem : ReactiveUserControl<TabItemViewModel>
         );
         vm.KeybindService.AttachScriptKeybinds(
             vm.ExecuteScriptCommand,
+            KeybindContext.Editor,
+            TabItemEditorArea
+        );
+        vm.KeybindService.AttachScriptKeybinds(
+            vm.ExecuteScriptCommand,
             KeybindContext.Video,
             TabItemVideoArea
+        );
+        vm.KeybindService.AttachScriptKeybinds(
+            vm.ExecuteScriptCommand,
+            KeybindContext.Audio,
+            TabItemAudioArea
         );
     }
 }

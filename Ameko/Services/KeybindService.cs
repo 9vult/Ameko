@@ -29,8 +29,8 @@ public class KeybindService : IKeybindService
     /// <inheritdoc />
     public void AttachKeybinds(
         ViewModelBase viewModel,
-        IInputElement target,
-        KeybindContext context
+        KeybindContext context,
+        IInputElement target
     )
     {
         var viewModelType = viewModel.GetType();

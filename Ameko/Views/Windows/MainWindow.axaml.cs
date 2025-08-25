@@ -375,7 +375,7 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
     {
         if (ViewModel is null)
             return;
-        ViewModel.KeybindService.AttachKeybinds(ViewModel, this, KeybindContext.Global);
+        ViewModel.KeybindService.AttachKeybinds(ViewModel, KeybindContext.Global, this);
         ViewModel.KeybindService.AttachScriptKeybinds(
             ViewModel.ExecuteScriptCommand,
             KeybindContext.Global,

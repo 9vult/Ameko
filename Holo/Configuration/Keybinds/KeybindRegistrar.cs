@@ -39,13 +39,17 @@ public class KeybindRegistrar(IFileSystem fileSystem) : IKeybindRegistrar
     /// <inheritdoc />
     public bool RegisterKeybinds(IList<Keybind> keybinds, bool save)
     {
-        var result = keybinds.All(keybind => _keybinds.TryAdd(keybind.QualifiedName, keybind));
-        if (result)
-            OnKeybindsChanged?.Invoke(this, EventArgs.Empty);
+        var changed = false;
+        foreach (var keybind in keybinds)
+        {
+            if (_keybinds.TryAdd(keybind.QualifiedName, keybind))
+                changed = true;
+        }
+        OnKeybindsChanged?.Invoke(this, EventArgs.Empty);
 
-        if (save)
+        if (save && changed)
             Save();
-        return result;
+        return true;
     }
 
     /// <inheritdoc />
@@ -58,7 +62,7 @@ public class KeybindRegistrar(IFileSystem fileSystem) : IKeybindRegistrar
     }
 
     /// <inheritdoc />
-    public bool ApplyOverride(string qualifiedName, string? keybind)
+    public bool ApplyOverride(string qualifiedName, string? keybind, KeybindContext? context)
     {
         if (!_keybinds.TryGetValue(qualifiedName, out var target))
         {
@@ -66,10 +70,22 @@ public class KeybindRegistrar(IFileSystem fileSystem) : IKeybindRegistrar
             return false;
         }
 
-        if (keybind != target.OverrideKey)
-            target.OverrideKey = keybind;
+        var changed = false;
 
-        OnKeybindsChanged?.Invoke(this, EventArgs.Empty);
+        if (keybind != target.OverrideKey)
+        {
+            changed = true;
+            target.OverrideKey = keybind;
+        }
+
+        if (context is not null && context != target.Context)
+        {
+            changed = true;
+            target.Context = context.Value;
+        }
+
+        if (changed)
+            OnKeybindsChanged?.Invoke(this, EventArgs.Empty);
         return true;
     }
 
@@ -192,6 +208,8 @@ public class KeybindRegistrar(IFileSystem fileSystem) : IKeybindRegistrar
 
             foreach (var import in imports)
             {
+                import.Value.QualifiedName = import.Key;
+
                 if (_keybinds.TryGetValue(import.Key, out var target))
                 {
                     if (import.Value.OverrideKey is not null)

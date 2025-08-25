@@ -12,6 +12,7 @@ using Ameko.Converters;
 using AssCS.History;
 using Avalonia.Threading;
 using CSScriptLib;
+using Holo.Configuration.Keybinds;
 using Holo.IO;
 using Holo.Providers;
 using Holo.Scripting;
@@ -33,6 +34,7 @@ public class ScriptService : IScriptService
 
     private readonly IFileSystem _fileSystem;
     private readonly ISolutionProvider _solutionProvider;
+    private readonly IKeybindRegistrar _keybindRegistrar;
     private readonly ObservableCollection<IHoloExecutable> _scripts;
     private readonly Dictionary<string, HoloScript?> _scriptMap;
     private readonly Dictionary<string, HoloScriptlet?> _scriptletMap;
@@ -207,17 +209,32 @@ public class ScriptService : IScriptService
             _scriptMap.Clear();
             _scriptletMap.Clear();
 
+            var qnames = new HashSet<string>();
+
             foreach (var script in loadedScripts)
             {
                 _scripts.Add(script);
                 _scriptMap.Add(script.Info.QualifiedName, script);
+
+                if (!script.Info.Headless)
+                    qnames.Add(script.Info.QualifiedName);
+                foreach (var export in script.Info.Exports)
+                    qnames.Add($"{script.Info.QualifiedName}+{export.QualifiedName}");
             }
 
             foreach (var script in loadedScriptlets)
             {
                 _scripts.Add(script);
                 _scriptletMap.Add(script.Info.QualifiedName, script);
+
+                qnames.Add(script.Info.QualifiedName);
             }
+
+            // Register the script qualified names for keybinding
+            _keybindRegistrar.RegisterKeybinds(
+                qnames.Select(name => new Keybind(name, null, KeybindContext.None)).ToList(),
+                true
+            );
 
             // Fire event
             OnReload?.Invoke(this, EventArgs.Empty);
@@ -240,10 +257,15 @@ public class ScriptService : IScriptService
         await box.ShowAsync();
     }
 
-    public ScriptService(IFileSystem fileSystem, ISolutionProvider solutionProvider)
+    public ScriptService(
+        IFileSystem fileSystem,
+        ISolutionProvider solutionProvider,
+        IKeybindRegistrar keybindRegistrar
+    )
     {
         _fileSystem = fileSystem;
         _solutionProvider = solutionProvider;
+        _keybindRegistrar = keybindRegistrar;
 
         _scripts = [];
         _scriptMap = [];

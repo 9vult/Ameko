@@ -114,6 +114,15 @@ namespace Ameko.I18N {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Remove.
+        /// </summary>
+        public static string Keybinds_Button_Remove_ToolTip {
+            get {
+                return ResourceManager.GetString("Keybinds_Button_Remove_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Save.
         /// </summary>
         public static string Keybinds_Button_Save {

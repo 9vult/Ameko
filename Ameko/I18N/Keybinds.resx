@@ -51,4 +51,7 @@
     <data name="KeybindContext_Editor" xml:space="preserve">
         <value>Editor</value>
     </data>
+    <data name="Keybinds_Button_Remove_ToolTip" xml:space="preserve">
+        <value>Remove</value>
+    </data>
 </root>
