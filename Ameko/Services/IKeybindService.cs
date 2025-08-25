@@ -18,10 +18,10 @@ public interface IKeybindService
     /// Attach keybinds to a ViewModel's commands
     /// </summary>
     /// <param name="viewModel">ViewModel to attach keybinds to</param>
-    /// <param name="target">Window or Control handling the inputs</param>
     /// <param name="context">Context to limit queries to</param>
+    /// <param name="target">Window or Control handling the inputs</param>
     /// <remarks>This method clears pre-existing keybinds before adding new ones</remarks>
-    void AttachKeybinds(ViewModelBase viewModel, IInputElement target, KeybindContext context);
+    void AttachKeybinds(ViewModelBase viewModel, KeybindContext context, IInputElement target);
 
     /// <summary>
     /// Register keybinds for script execution

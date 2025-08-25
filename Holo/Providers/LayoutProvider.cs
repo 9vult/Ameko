@@ -51,7 +51,7 @@ public class LayoutProvider : BindableBase, ILayoutProvider
         {
             try
             {
-                Logger.Info($"Loading Layout {path}...");
+                Logger.Debug($"Loading Layout {path}...");
 
                 using var readFs = _fileSystem.FileStream.New(
                     path,

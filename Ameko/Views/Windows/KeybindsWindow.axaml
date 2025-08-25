@@ -8,6 +8,7 @@
         
         xmlns:vm="clr-namespace:Ameko.ViewModels.Windows"
         xmlns:i18n="clr-namespace:Ameko.I18N"
+        xmlns:icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
         
         x:Class="Ameko.Views.Windows.KeybindsWindow"
         x:DataType="vm:KeybindsWindowViewModel"
@@ -26,6 +27,18 @@
                   VerticalScrollBarVisibility="Auto"
                   ItemsSource="{Binding Keybinds}">
             <DataGrid.Columns>
+                <DataGridTemplateColumn>
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button IsVisible="{Binding !IsBuiltin}"
+                                    Background="Transparent"
+                                    Content="{icons:MaterialIconExt Kind=MinusCircle, Size=12}"
+                                    ToolTip.Tip="{x:Static i18n:Keybinds.Keybinds_Button_Remove_ToolTip}"
+                                    Command="{Binding $parent[Window].((vm:KeybindsWindowViewModel)DataContext).DeleteCommand, FallbackValue=.}"
+                                    CommandParameter="{Binding .}" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
                 <DataGridTextColumn Header="{x:Static i18n:Keybinds.Keybinds_Header_Identifier}"
                                     Binding="{Binding QualifiedName}"
                                     IsReadOnly="True" />

@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reactive;
+using System.Windows.Input;
 using Ameko.DataModels;
 using Ameko.Messages;
 using Holo.Configuration.Keybinds;
@@ -15,9 +16,9 @@ namespace Ameko.ViewModels.Windows;
 
 public partial class KeybindsWindowViewModel : ViewModelBase
 {
-    private IKeybindRegistrar _registrar;
+    private readonly IKeybindRegistrar _registrar;
 
-    public ReadOnlyCollection<EditableKeybind> Keybinds { get; }
+    public ObservableCollection<EditableKeybind> Keybinds { get; }
 
     public ReadOnlyCollection<EditableKeybindContext> Contexts { get; } =
         new(
@@ -32,16 +33,9 @@ public partial class KeybindsWindowViewModel : ViewModelBase
         );
 
     public ReactiveCommand<Unit, EmptyMessage> SaveCommand { get; }
+    public ICommand DeleteCommand { get; }
 
-    private EmptyMessage Save()
-    {
-        foreach (var keybind in Keybinds)
-        {
-            _registrar.ApplyOverride(keybind.QualifiedName, keybind.OverrideKey);
-        }
-        _registrar.Save();
-        return new EmptyMessage(); // Funky workaround to get the super clean commands
-    }
+    private List<string> _keybindsToRemove = [];
 
     private static EditableKeybindContext GetEditableContext(KeybindContext context)
     {
@@ -61,11 +55,31 @@ public partial class KeybindsWindowViewModel : ViewModelBase
         };
     }
 
+    private EmptyMessage Save()
+    {
+        foreach (var keybind in Keybinds)
+        {
+            _registrar.ApplyOverride(
+                keybind.QualifiedName,
+                keybind.OverrideKey,
+                keybind.Context.Context
+            );
+        }
+
+        foreach (var keybind in _keybindsToRemove)
+        {
+            _registrar.DeregisterKeybind(keybind);
+        }
+
+        _registrar.Save();
+        return new EmptyMessage(); // Funky workaround to get the super clean commands
+    }
+
     public KeybindsWindowViewModel(IKeybindRegistrar registrar)
     {
         _registrar = registrar;
 
-        Keybinds = new ReadOnlyCollection<EditableKeybind>(
+        Keybinds = new ObservableCollection<EditableKeybind>(
             registrar
                 .GetKeybinds()
                 .Select(k => new EditableKeybind
@@ -81,5 +95,12 @@ public partial class KeybindsWindowViewModel : ViewModelBase
         );
 
         SaveCommand = ReactiveCommand.Create(Save);
+        DeleteCommand = ReactiveCommand.Create(
+            (EditableKeybind keybind) =>
+            {
+                Keybinds.Remove(Keybinds.First(k => k.QualifiedName == keybind.QualifiedName));
+                _keybindsToRemove.Add(keybind.QualifiedName);
+            }
+        );
     }
 }
