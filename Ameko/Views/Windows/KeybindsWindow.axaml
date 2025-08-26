@@ -17,7 +17,8 @@
         Icon="/Assets/Ameko-Simplified-BG-64.ico"
         Width="500"
         Height="400"
-        Title="{x:Static i18n:Keybinds.KeybindsWindow_Title}">
+        Title="{x:Static i18n:Keybinds.KeybindsWindow_Title}"
+        WindowStartupLocation="CenterScreen">
     <Grid RowDefinitions="*, Auto">
         <DataGrid Grid.Row="0"
                   Margin="2"
