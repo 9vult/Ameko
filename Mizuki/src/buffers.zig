@@ -27,16 +27,16 @@ pub fn Init(num_buffers: usize, max_cache_mb: c_int, width: usize, height: usize
 }
 
 /// Initialize audio buffer
-pub fn InitAudio(channel_count: c_int, sample_count: i64, sample_rate: c_int) ffms.FfmsError!void {
-    const total_samples: usize = @intCast(sample_count * channel_count);
+pub fn InitAudio() ffms.FfmsError!void {
+    const total_samples: usize = @intCast(ffms.sample_count * ffms.channel_count);
     audio_buffer = try common.allocator.alloc(f32, total_samples);
     audio_frame = try common.allocator.create(frames.AudioFrame);
     audio_frame.?.* = .{
         .data = audio_buffer.?.ptr,
         .length = @intCast(audio_buffer.?.len),
-        .channel_count = channel_count,
-        .sample_count = sample_count,
-        .sample_rate = sample_rate,
+        .channel_count = ffms.sample_rate,
+        .sample_count = ffms.sample_count,
+        .sample_rate = ffms.sample_rate,
         .valid = 0,
     };
 }
@@ -47,7 +47,7 @@ pub fn GetAudio() ffms.FfmsError!*frames.AudioFrame {
         return ffms.FfmsError.NoAudioTracks;
     }
     if (audio_frame.?.*.valid == 0) {
-        try ffms.GetAudio(@ptrCast(audio_buffer.?.ptr), 0, ffms.num_samples);
+        try ffms.GetAudio(@ptrCast(audio_buffer.?.ptr), 0, ffms.sample_count);
         audio_frame.?.*.valid = 1;
     }
     return audio_frame.?;

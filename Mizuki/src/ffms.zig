@@ -54,9 +54,9 @@ pub var frame_width: usize = 0;
 pub var frame_height: usize = 0;
 pub var frame_pitch: usize = 0;
 
-pub var channels: c_int = -1;
+pub var channel_count: c_int = -1;
 pub var sample_rate: c_int = -1;
-pub var num_samples: i64 = -1;
+pub var sample_count: i64 = -1;
 
 /// Get the current FFMS version
 ///
@@ -278,9 +278,9 @@ pub fn LoadVideo(file_name: [*c]u8, cache_file_name: [*c]u8, color_matrix: [*c]u
         // Get video properties
         const audio_info = c.FFMS_GetAudioProperties(audio_source);
 
-        channels = audio_info.*.Channels;
+        channel_count = audio_info.*.Channels;
         sample_rate = audio_info.*.SampleRate;
-        num_samples = audio_info.*.NumSamples;
+        sample_count = audio_info.*.NumSamples;
     }
     logger.Debug("[FFMS2] Successfully loaded video file");
 }

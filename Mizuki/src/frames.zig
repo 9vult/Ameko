@@ -29,7 +29,7 @@ pub const SubtitleFrame = extern struct {
 /// Frame containing audio samples
 pub const AudioFrame = extern struct {
     data: [*]f32,
-    length: c_int,
+    length: i64,
     channel_count: c_int,
     sample_count: i64,
     sample_rate: c_int,

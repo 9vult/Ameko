@@ -54,6 +54,12 @@ public interface ISourceProvider
     int AllocateBuffers(int numBuffers, int maxCacheSize);
 
     /// <summary>
+    /// Allocate audio buffer
+    /// </summary>
+    /// <returns>0 on success</returns>
+    int AllocateAudioBuffer();
+
+    /// <summary>
     /// Free frame buffers
     /// </summary>
     /// <returns>0 on success</returns>
@@ -67,6 +73,12 @@ public interface ISourceProvider
     /// <param name="raw">Just the video</param>
     /// <returns>Output frame</returns>
     unsafe FrameGroup* GetFrame(int frameNumber, long timestamp, bool raw);
+
+    /// <summary>
+    /// Get the audio frame buffer
+    /// </summary>
+    /// <returns>Audio frame</returns>
+    unsafe AudioFrame* GetAudio();
 
     /// <summary>
     /// Release a frame

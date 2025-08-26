@@ -63,6 +63,12 @@ public class MizukiSourceProvider : ISourceProvider
     }
 
     /// <inheritdoc />
+    public int AllocateAudioBuffer()
+    {
+        return External.AllocateAudioBuffer();
+    }
+
+    /// <inheritdoc />
     public int FreeBuffers()
     {
         return External.FreeBuffers();
@@ -72,6 +78,12 @@ public class MizukiSourceProvider : ISourceProvider
     public unsafe FrameGroup* GetFrame(int frameNumber, long timestamp, bool raw)
     {
         return External.GetFrame(frameNumber, timestamp, raw ? 1 : 0);
+    }
+
+    /// <inheritdoc />
+    public unsafe AudioFrame* GetAudio()
+    {
+        return External.GetAudio();
     }
 
     /// <inheritdoc />
@@ -158,10 +170,16 @@ internal static unsafe partial class External
     internal static partial int AllocateBuffers(int numBuffers, int maxCacheSize);
 
     [LibraryImport("mizuki")]
+    internal static partial int AllocateAudioBuffer();
+
+    [LibraryImport("mizuki")]
     internal static partial int FreeBuffers();
 
     [LibraryImport("mizuki")]
     internal static unsafe partial FrameGroup* GetFrame(int frameNumber, long timestamp, int raw);
+
+    [LibraryImport("mizuki")]
+    internal static unsafe partial AudioFrame* GetAudio();
 
     [LibraryImport("mizuki")]
     internal static unsafe partial int ReleaseFrame(FrameGroup* frame);

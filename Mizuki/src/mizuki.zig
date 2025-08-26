@@ -46,8 +46,8 @@ pub export fn AllocateBuffers(num_buffers: c_int, max_cache_mb: c_int) c_int {
     return 0;
 }
 
-pub export fn AllocateAudioBuffer(channel_count: c_int, sample_count: i64, sample_rate: c_int) c_int {
-    buffers.InitAudio(channel_count, sample_count, sample_rate) catch |err| {
+pub export fn AllocateAudioBuffer() c_int {
+    buffers.InitAudio() catch |err| {
         return errors.IntFromFfmsError(err);
     };
     return 0;
