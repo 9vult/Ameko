@@ -46,6 +46,13 @@ pub export fn AllocateBuffers(num_buffers: c_int, max_cache_mb: c_int) c_int {
     return 0;
 }
 
+pub export fn AllocateAudioBuffer(channel_count: c_int, sample_count: i64, sample_rate: c_int) c_int {
+    buffers.InitAudio(channel_count, sample_count, sample_rate) catch |err| {
+        return errors.IntFromFfmsError(err);
+    };
+    return 0;
+}
+
 /// Free frame buffers
 pub export fn FreeBuffers() c_int {
     buffers.Deinit();
@@ -55,6 +62,13 @@ pub export fn FreeBuffers() c_int {
 /// Get a frame
 pub export fn GetFrame(frame_number: c_int, timestamp: c_longlong, raw: c_int) ?*frames.FrameGroup {
     return buffers.ProcFrame(frame_number, timestamp, raw) catch {
+        return null;
+    };
+}
+
+/// Get the audio
+pub export fn GetAudio() ?*frames.AudioFrame {
+    return buffers.GetAudio() catch {
         return null;
     };
 }

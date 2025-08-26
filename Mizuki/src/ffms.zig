@@ -11,7 +11,9 @@ const logger = @import("logger.zig");
 pub const FfmsError = error{
     FileNotFound,
     VideoNotSupported,
+    NoAudioTracks,
     NoVideoTracks,
+    AudioTrackLoadingFailed,
     VideoTrackLoadingFailed,
     DecodingFirstFrameFailed,
     GetTrackInfoFailed,
@@ -20,6 +22,8 @@ pub const FfmsError = error{
     OutOfMemory,
     VideoDecodeError,
     SettingOutputFormatFailed,
+    AudioDataNotFound,
+    DecodingAudioFailed,
 };
 
 // Zero-init
@@ -32,6 +36,7 @@ var err_info = c.FFMS_ErrorInfo{
 // Local variables
 var index: ?*c.FFMS_Index = null;
 var video_source: ?*c.FFMS_VideoSource = null;
+var audio_source: ?*c.FFMS_AudioSource = null;
 
 var color_space_buffer = std.mem.zeroes([128]u8);
 var color_space = &color_space_buffer[0];
@@ -48,6 +53,10 @@ pub var frame_count: c_int = undefined;
 pub var frame_width: usize = 0;
 pub var frame_height: usize = 0;
 pub var frame_pitch: usize = 0;
+
+pub var channels: c_int = -1;
+pub var sample_rate: c_int = -1;
+pub var num_samples: i64 = -1;
 
 /// Get the current FFMS version
 ///
@@ -78,19 +87,34 @@ pub fn LoadVideo(file_name: [*c]u8, cache_file_name: [*c]u8, color_matrix: [*c]u
         }
     }
 
-    // Get video tracks
-    var tracks = GetTracksOfType(indexer, c.FFMS_TYPE_VIDEO) catch |err| {
+    // Get tracks
+    var video_tracks = GetTracksOfType(indexer, c.FFMS_TYPE_VIDEO) catch |err| {
+        return err; // Theoretically this is an OutOfMemory error
+    };
+    var audio_tracks = GetTracksOfType(indexer, c.FFMS_TYPE_AUDIO) catch |err| {
         return err; // Theoretically this is an OutOfMemory error
     };
 
-    if (tracks.count() <= 0) {
+    if (video_tracks.count() <= 0) {
         return FfmsError.NoVideoTracks;
     }
 
-    var track_number: c_int = -1;
-    if (tracks.count() > 1) {
+    const has_audio = audio_tracks.count() > 0;
+
+    var video_track_number: c_int = -1;
+    if (video_tracks.count() > 1) {
         // TODO: Ask which track should be opened!
-        track_number = 0;
+        video_track_number = 0;
+    }
+
+    var audio_track_number: c_int = -1;
+    if (has_audio) {
+        // TODO: Ask which track should be opened!
+        // Get a random audio track lol
+        var itr = audio_tracks.iterator();
+        if (itr.next()) |entry| {
+            audio_track_number = entry.key_ptr.*;
+        }
     }
 
     // Check if there's a cached version of the index
@@ -102,16 +126,27 @@ pub fn LoadVideo(file_name: [*c]u8, cache_file_name: [*c]u8, color_matrix: [*c]u
     }
 
     // Make sure the track we want is indexed
-    if (index != null and track_number >= 0) {
-        const temp_track = c.FFMS_GetTrackFromIndex(index, track_number);
-        if (c.FFMS_GetNumFrames(temp_track) <= 0) {
+    if (index != null and video_track_number >= 0) {
+        const temp_video_track = c.FFMS_GetTrackFromIndex(index, video_track_number);
+        if (c.FFMS_GetNumFrames(temp_video_track) <= 0) {
             index = null;
+        }
+
+        if (has_audio) {
+            const temp_audio_track = c.FFMS_GetTrackFromIndex(index, audio_track_number);
+            if (c.FFMS_GetNumFrames(temp_audio_track) <= 0) {
+                index = null;
+            }
         }
     }
 
     // If we still don't have an index, index now
     if (index == null) {
-        // TODO: Audio handling
+        c.FFMS_TrackTypeIndexSettings(indexer, c.FFMS_TYPE_VIDEO, 1, 0);
+        if (has_audio) { // TODO: Option to index all audio tracks
+            c.FFMS_TrackIndexSettings(indexer, audio_track_number, 1, 0);
+        }
+
         index = c.FFMS_DoIndexing2(indexer, c.FFMS_IEH_ABORT, &err_info);
 
         // Write the index to the cache
@@ -124,19 +159,16 @@ pub fn LoadVideo(file_name: [*c]u8, cache_file_name: [*c]u8, color_matrix: [*c]u
     // TODO: Clean up the cache
 
     // If no track number has been selected, use the first one
-    if (track_number < 0) {
-        track_number = c.FFMS_GetFirstIndexedTrackOfType(index, c.FFMS_TYPE_VIDEO, &err_info);
+    if (video_track_number < 0) {
+        video_track_number = c.FFMS_GetFirstIndexedTrackOfType(index, c.FFMS_TYPE_VIDEO, &err_info);
 
-        if (track_number < 0) {
+        if (video_track_number < 0) {
             return FfmsError.NoVideoTracks;
         }
     }
 
-    // TODO: Audio (again)
-    // const has_audio = c.FFMS_GetFirstTrackOfType(index, c.FFMS_TYPE_AUDIO, &err_info) != -1;
-
     // TODO: Add an option for unsafe seeking
-    video_source = c.FFMS_CreateVideoSource(file_name, track_number, index, -1, c.FFMS_SEEK_NORMAL, &err_info);
+    video_source = c.FFMS_CreateVideoSource(file_name, video_track_number, index, -1, c.FFMS_SEEK_NORMAL, &err_info);
 
     if (video_source == null) {
         return FfmsError.VideoTrackLoadingFailed;
@@ -230,6 +262,26 @@ pub fn LoadVideo(file_name: [*c]u8, cache_file_name: [*c]u8, color_matrix: [*c]u
     try intervals_list.append(0);
 
     frame_intervals = intervals_list.toOwnedSlice() catch unreachable;
+
+    if (has_audio) {
+        audio_source = c.FFMS_CreateAudioSource(file_name, audio_track_number, index, c.FFMS_DELAY_FIRST_VIDEO_TRACK, &err_info);
+        if (audio_source == null) {
+            return FfmsError.AudioTrackLoadingFailed;
+        }
+
+        // Force usage of floats
+        const rs_options = c.FFMS_CreateResampleOptions(audio_source);
+        defer c.FFMS_DestroyResampleOptions(rs_options);
+        rs_options.*.SampleFormat = c.FFMS_FMT_FLT;
+        _ = c.FFMS_SetOutputFormatA(audio_source, rs_options, &err_info);
+
+        // Get video properties
+        const audio_info = c.FFMS_GetAudioProperties(audio_source);
+
+        channels = audio_info.*.Channels;
+        sample_rate = audio_info.*.SampleRate;
+        num_samples = audio_info.*.NumSamples;
+    }
     logger.Debug("[FFMS2] Successfully loaded video file");
 }
 
@@ -251,6 +303,13 @@ pub fn GetFrame(frame_number: c_int, out: *frames.VideoFrame) FfmsError!void {
 
     out.*.frame_number = frame_number;
     out.*.valid = 1;
+}
+
+pub fn GetAudio(buffer: *f32, start: i64, count: i64) FfmsError!void {
+    const result = c.FFMS_GetAudio(audio_source, buffer, start, count, &err_info);
+    if (result != 0) {
+        return FfmsError.DecodingAudioFailed;
+    }
 }
 
 // TODO: This thing
