@@ -26,6 +26,16 @@ pub const SubtitleFrame = extern struct {
     valid: c_int = 0, // bool
 };
 
+/// Frame containing audio samples
+pub const AudioFrame = extern struct {
+    data: [*]f32,
+    length: c_int,
+    channel_count: c_int,
+    sample_count: i64,
+    sample_rate: c_int,
+    valid: c_int = 0, // bool
+};
+
 /// Collection of the VideoFrame and SubtitleFrame
 pub const FrameGroup = extern struct {
     video_frame: *VideoFrame,

@@ -15,5 +15,9 @@ pub fn IntFromFfmsError(err: FfmsError) c_int {
         FfmsError.OutOfMemory => 9,
         FfmsError.VideoDecodeError => 10,
         FfmsError.SettingOutputFormatFailed => 11,
+        FfmsError.NoAudioTracks => 12,
+        FfmsError.AudioTrackLoadingFailed => 13,
+        FfmsError.AudioDataNotFound => 14,
+        FfmsError.DecodingAudioFailed => 15,
     };
 }

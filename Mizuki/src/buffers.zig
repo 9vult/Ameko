@@ -10,8 +10,10 @@ const common = @import("common.zig");
 var max_size: c_int = 0;
 var total_size: c_int = 0;
 var buffers: std.ArrayList(*frames.FrameGroup) = undefined;
+var audio_buffer: ?[]f32 = null;
+var audio_frame: ?*frames.AudioFrame = null;
 
-/// Pre-initialize some buffers
+/// Pre-initialize video buffers
 pub fn Init(num_buffers: usize, max_cache_mb: c_int, width: usize, height: usize, pitch: usize) ffms.FfmsError!void {
     buffers = std.ArrayList(*frames.FrameGroup).init(common.allocator);
     max_size = max_cache_mb * (1024 ^ 2);
@@ -24,6 +26,33 @@ pub fn Init(num_buffers: usize, max_cache_mb: c_int, width: usize, height: usize
     }
 }
 
+/// Initialize audio buffer
+pub fn InitAudio(channel_count: c_int, sample_count: i64, sample_rate: c_int) ffms.FfmsError!void {
+    const total_samples: usize = @intCast(sample_count * channel_count);
+    audio_buffer = try common.allocator.alloc(f32, total_samples);
+    audio_frame = try common.allocator.create(frames.AudioFrame);
+    audio_frame.?.* = .{
+        .data = audio_buffer.?.ptr,
+        .length = @intCast(audio_buffer.?.len),
+        .channel_count = channel_count,
+        .sample_count = sample_count,
+        .sample_rate = sample_rate,
+        .valid = 0,
+    };
+}
+
+/// Get the audio buffer
+pub fn GetAudio() ffms.FfmsError!*frames.AudioFrame {
+    if (audio_frame == null) {
+        return ffms.FfmsError.NoAudioTracks;
+    }
+    if (audio_frame.?.*.valid == 0) {
+        try ffms.GetAudio(@ptrCast(audio_buffer.?.ptr), 0, ffms.num_samples);
+        audio_frame.?.*.valid = 1;
+    }
+    return audio_frame.?;
+}
+
 /// Free the buffers
 pub fn Deinit() void {
     for (buffers.items) |buffer| {
@@ -32,6 +61,7 @@ pub fn Deinit() void {
         common.allocator.destroy(buffer);
     }
     buffers.deinit();
+    common.allocator.destroy(audio_frame.?);
 }
 
 /// Get a frame
