@@ -8,6 +8,7 @@ namespace Ameko.DataModels;
 
 public class EditableKeybind
 {
+    public required bool IsEnabled { get; set; }
     public required bool IsBuiltin { get; init; }
     public required string QualifiedName { get; init; }
     public required string DefaultKey { get; init; }

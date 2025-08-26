@@ -52,10 +52,16 @@ public class Keybind(string qualifiedName, string? defaultKey, KeybindContext co
     public KeybindContext Context { get; set; } = context;
 
     /// <summary>
-    /// If the keybind is enabled
+    /// If the keybind is currently enabled
+    /// </summary>
+    public bool IsEnabled { get; set; } = true;
+
+    /// <summary>
+    /// If the keybind is active
     /// </summary>
     [JsonIgnore]
-    public bool IsEnabled => Context != KeybindContext.None || string.IsNullOrEmpty(Key);
+    public bool IsActive =>
+        !IsEnabled || Context != KeybindContext.None || string.IsNullOrEmpty(Key);
 
     /// <summary>
     /// If the keybind is for a builtin command
