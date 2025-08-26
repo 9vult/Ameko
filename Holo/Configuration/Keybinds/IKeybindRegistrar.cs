@@ -33,8 +33,14 @@ public interface IKeybindRegistrar
     /// <param name="qualifiedName">Name of the keybind to override</param>
     /// <param name="keybind">Keybind to override the default with</param>
     /// <param name="context">Context to set</param>
+    /// <param name="isEnabled">If the keybind is enabled</param>
     /// <returns><see langword="true"/> if successful</returns>
-    bool ApplyOverride(string qualifiedName, string? keybind, KeybindContext? context);
+    bool ApplyOverride(
+        string qualifiedName,
+        string? keybind,
+        KeybindContext? context,
+        bool? isEnabled
+    );
 
     /// <summary>
     /// Clears overrides from a keybind

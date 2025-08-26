@@ -17,13 +17,12 @@ namespace Ameko.ViewModels.Windows;
 public partial class KeybindsWindowViewModel : ViewModelBase
 {
     private readonly IKeybindRegistrar _registrar;
+    private readonly List<string> _keybindsToRemove = [];
 
     public ObservableCollection<EditableKeybind> Keybinds { get; }
 
     public ReactiveCommand<Unit, EmptyMessage> SaveCommand { get; }
     public ICommand DeleteCommand { get; }
-
-    private List<string> _keybindsToRemove = [];
 
     private EmptyMessage Save()
     {
@@ -32,7 +31,8 @@ public partial class KeybindsWindowViewModel : ViewModelBase
             _registrar.ApplyOverride(
                 keybind.QualifiedName,
                 keybind.OverrideKey,
-                keybind.Context.Context
+                keybind.Context.Context,
+                keybind.IsEnabled
             );
         }
 
@@ -54,6 +54,7 @@ public partial class KeybindsWindowViewModel : ViewModelBase
                 .GetKeybinds()
                 .Select(k => new EditableKeybind
                 {
+                    IsEnabled = k.IsEnabled,
                     IsBuiltin = k.IsBuiltin,
                     QualifiedName = k.QualifiedName,
                     DefaultKey = k.DefaultKey ?? string.Empty,

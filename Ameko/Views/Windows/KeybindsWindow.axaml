@@ -39,6 +39,7 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
+                <DataGridCheckBoxColumn Binding="{Binding IsEnabled}" />
                 <DataGridTextColumn Width="*"
                                     Header="{x:Static i18n:Keybinds.Keybinds_Header_Identifier}"
                                     Binding="{Binding QualifiedName}"
