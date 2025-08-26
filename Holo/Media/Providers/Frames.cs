@@ -36,3 +36,14 @@ public struct SubtitleFrame
     public unsafe byte* Data;
     public int Valid;
 }
+
+[StructLayout(LayoutKind.Sequential)]
+public struct AudioFrame
+{
+    public unsafe float* Data;
+    public long Length;
+    public int ChannelCount;
+    public long SampleCount;
+    public int SampleRate;
+    public int Valid;
+}

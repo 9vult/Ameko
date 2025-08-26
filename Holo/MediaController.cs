@@ -18,6 +18,7 @@ public class MediaController : BindableBase
 
     private unsafe FrameGroup* _lastFrame;
     private unsafe FrameGroup* _nextFrame;
+    private unsafe AudioFrame* _audioFrame;
     private int _currentFrame;
     private readonly object _frameLock = new();
     private Task? _fetchTask;
@@ -299,6 +300,22 @@ public class MediaController : BindableBase
 
         DisplayWidth = VideoInfo.Width;
         DisplayHeight = VideoInfo.Height;
+
+        // Audio time
+        if (_provider.AllocateAudioBuffer() != 0)
+        {
+            return false; // ??
+        }
+
+        unsafe
+        {
+            _audioFrame = _provider.GetAudio();
+            if (_audioFrame->Valid != 1)
+            {
+                return false; // ??
+            }
+        }
+
         IsVideoLoaded = true;
 
         // Re-fetch frame 0 with subtitles
