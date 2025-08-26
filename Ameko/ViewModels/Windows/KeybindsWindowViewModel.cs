@@ -20,40 +20,10 @@ public partial class KeybindsWindowViewModel : ViewModelBase
 
     public ObservableCollection<EditableKeybind> Keybinds { get; }
 
-    public ReadOnlyCollection<EditableKeybindContext> Contexts { get; } =
-        new(
-            [
-                GetEditableContext(KeybindContext.None)!,
-                GetEditableContext(KeybindContext.Global)!,
-                GetEditableContext(KeybindContext.Grid)!,
-                GetEditableContext(KeybindContext.Editor)!,
-                GetEditableContext(KeybindContext.Video)!,
-                GetEditableContext(KeybindContext.Audio)!,
-            ]
-        );
-
     public ReactiveCommand<Unit, EmptyMessage> SaveCommand { get; }
     public ICommand DeleteCommand { get; }
 
     private List<string> _keybindsToRemove = [];
-
-    private static EditableKeybindContext GetEditableContext(KeybindContext context)
-    {
-        return new EditableKeybindContext
-        {
-            Context = context,
-            Display = context switch
-            {
-                KeybindContext.None => I18N.Keybinds.KeybindContext_None,
-                KeybindContext.Global => I18N.Keybinds.KeybindContext_Global,
-                KeybindContext.Grid => I18N.Keybinds.KeybindContext_Grid,
-                KeybindContext.Editor => I18N.Keybinds.KeybindContext_Editor,
-                KeybindContext.Video => I18N.Keybinds.KeybindContext_Video,
-                KeybindContext.Audio => I18N.Keybinds.KeybindContext_Audio,
-                _ => throw new ArgumentOutOfRangeException(nameof(context), context, null),
-            },
-        };
-    }
 
     private EmptyMessage Save()
     {
@@ -88,7 +58,7 @@ public partial class KeybindsWindowViewModel : ViewModelBase
                     QualifiedName = k.QualifiedName,
                     DefaultKey = k.DefaultKey ?? string.Empty,
                     OverrideKey = k.OverrideKey,
-                    Context = GetEditableContext(k.Context),
+                    Context = new EditableKeybindContext(k.Context),
                 })
                 .OrderByDescending(k => k.Context.Context) // Places Global first and None last
                 .ThenBy(k => k.QualifiedName)
