@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
+using System;
+using System.Collections.ObjectModel;
 using Holo.Configuration.Keybinds;
 
 namespace Ameko.DataModels;
@@ -11,6 +13,18 @@ public class EditableKeybind
     public required string DefaultKey { get; init; }
     public required string? OverrideKey { get; set; }
     public required EditableKeybindContext Context { get; set; }
+
+    public static ReadOnlyCollection<EditableKeybindContext> Contexts { get; } =
+        new(
+            [
+                new EditableKeybindContext(KeybindContext.None),
+                new EditableKeybindContext(KeybindContext.Global),
+                new EditableKeybindContext(KeybindContext.Grid),
+                new EditableKeybindContext(KeybindContext.Editor),
+                new EditableKeybindContext(KeybindContext.Video),
+                new EditableKeybindContext(KeybindContext.Audio),
+            ]
+        );
 
     public string Key
     {
@@ -28,8 +42,23 @@ public class EditableKeybind
 
 public class EditableKeybindContext
 {
-    public required KeybindContext Context { get; init; }
-    public required string Display { get; init; }
+    public KeybindContext Context { get; init; }
+    public string Display { get; init; }
+
+    public EditableKeybindContext(KeybindContext context)
+    {
+        Context = context;
+        Display = context switch
+        {
+            KeybindContext.None => I18N.Keybinds.KeybindContext_None,
+            KeybindContext.Global => I18N.Keybinds.KeybindContext_Global,
+            KeybindContext.Grid => I18N.Keybinds.KeybindContext_Grid,
+            KeybindContext.Editor => I18N.Keybinds.KeybindContext_Editor,
+            KeybindContext.Video => I18N.Keybinds.KeybindContext_Video,
+            KeybindContext.Audio => I18N.Keybinds.KeybindContext_Audio,
+            _ => throw new ArgumentOutOfRangeException(nameof(context), context, null),
+        };
+    }
 
     protected bool Equals(EditableKeybindContext other)
     {

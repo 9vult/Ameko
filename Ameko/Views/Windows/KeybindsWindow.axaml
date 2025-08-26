@@ -3,7 +3,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        d:DesignWidth="400"
+        d:DesignWidth="500"
         d:DesignHeight="400"
         
         xmlns:vm="clr-namespace:Ameko.ViewModels.Windows"
@@ -15,7 +15,7 @@
         
         CanResize="False"
         Icon="/Assets/Ameko-Simplified-BG-64.ico"
-        Width="400"
+        Width="500"
         Height="400"
         Title="{x:Static i18n:Keybinds.KeybindsWindow_Title}">
     <Grid RowDefinitions="*, Auto">
@@ -39,42 +39,35 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTextColumn Header="{x:Static i18n:Keybinds.Keybinds_Header_Identifier}"
+                <DataGridTextColumn Width="*"
+                                    Header="{x:Static i18n:Keybinds.Keybinds_Header_Identifier}"
                                     Binding="{Binding QualifiedName}"
                                     IsReadOnly="True" />
                 
                 <DataGridTemplateColumn Header="{x:Static i18n:Keybinds.Keybinds_Header_Context}">
-                    <DataGridTemplateColumn.CellEditingTemplate>
+                    <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <StackPanel>
                                 <ComboBox IsVisible="{Binding !IsBuiltin}"
-                                          ItemsSource="{Binding $parent[Window].((vm:KeybindsWindowViewModel)DataContext).Contexts, FallbackValue=.}"
-                                          SelectedItem="{Binding Context}" />
+                                          ItemsSource="{Binding Contexts, FallbackValue=.}"
+                                          SelectedItem="{Binding Context}"
+                                          Margin="1"
+                                          Padding="0" />
                                     <TextBlock IsVisible="{Binding IsBuiltin}"
                                                Text="{Binding Context.Display, FallbackValue=''}"
                                                VerticalAlignment="Center" />
                                 </StackPanel>
                         </DataTemplate>
-                    </DataGridTemplateColumn.CellEditingTemplate>
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding Context.Display, FallbackValue=''}"
-                                       VerticalAlignment="Center"/>
-                        </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                
-                <DataGridTemplateColumn Header="{x:Static i18n:Keybinds.Keybinds_Header_Keybind}">
-                    <DataGridTemplateColumn.CellEditingTemplate>
-                        <DataTemplate>
-                            <TextBox Text="{Binding Key}"
-                                     Watermark="{Binding DefaultKey, FallbackValue=''}" />
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellEditingTemplate>
+                <DataGridTemplateColumn Width="85"
+                                        Header="{x:Static i18n:Keybinds.Keybinds_Header_Keybind}">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <TextBlock Text="{Binding Key}"
-                                       VerticalAlignment="Center" />
+                            <TextBox Text="{Binding Key}"
+                                     Watermark="{Binding DefaultKey, FallbackValue=''}"
+                                     Margin="1"
+                                     Padding="0" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
