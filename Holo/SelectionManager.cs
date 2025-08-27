@@ -16,7 +16,7 @@ public class SelectionManager : BindableBase
     /// Denotes if the selection is currently changing
     /// </summary>
     /// <remarks>GUIs can use this property to determine if a change should be reported</remarks>
-    public bool IsSelectionChanging { get; private set; } = true;
+    public bool IsSelectionChanging { get; private set; }
 
     /// <summary>
     /// Sets <see cref="IsSelectionChanging"/> to <see langword="true"/>
