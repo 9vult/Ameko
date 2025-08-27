@@ -24,7 +24,7 @@ feature-rich subtitle editor with several key features to provide a robust found
   subtitling workflow.
   Rendering is handled via a plugin-based system, ensuring flexibility and independence from any single backend. The
   initial video provider will be [FFMS2](https://github.com/FFMS/ffms2), and [libass](https://github.com/libass/libass/)
-  will be the first subtitle renderer.
+  will be the first subtitle renderer. Video rendering is handled by OpenGL. The first audio renderer is OpenAL Soft.
 - **Tabs and Solutions:** Ameko will feature tabs, allowing users to easily switch between multiple open subtitle files.
   Alongside this, Ameko is introducing *Solution Files*. Solutions enable logical grouping and organization of
   subtitle files
@@ -41,7 +41,7 @@ feature-rich subtitle editor with several key features to provide a robust found
 Ameko is envisioned as a comprehensive editing suite, and while the exact path is still unclear, future development will
 focus on significantly expanding its capabilities. Potential upcoming milestones include:
 
-- **Audio Integration:** Implementing audio playback and waveform and spectrum visualizations.
+- **Audio Integration:** Implementing audio waveform and spectrum visualizations, related audio tooling.
 - **Graphical Tools:** Tools for visually manipulating subtitles on the video.
 
 These are initial ideas—milestones will be added or removed based on user feedback, community contributions, and
