@@ -30,12 +30,13 @@ public class Buffer : IDisposable
         long startingSample,
         long sampleCount,
         int sampleRate,
+        int channels,
         BufferFormat format
     )
     {
-        var dataStart = data + startingSample * sizeof(short);
-        var dataCount = (int)sampleCount * sizeof(short);
-        _al.BufferData(Handle, format, dataStart, dataCount, sampleRate);
+        var dataStart = data + startingSample * channels;
+        var dataSize = checked((int)(sampleCount * channels * sizeof(short)));
+        _al.BufferData(Handle, format, dataStart, dataSize, sampleRate);
     }
 
     public unsafe void LoadData(
@@ -43,12 +44,14 @@ public class Buffer : IDisposable
         long startingSample,
         long sampleCount,
         int sampleRate,
+        int channels,
         FloatBufferFormat format
     )
     {
-        var dataStart = data + startingSample * sizeof(float);
-        var dataCount = (int)sampleCount * sizeof(short);
-        _al.BufferData(Handle, format, dataStart, dataCount, sampleRate);
+        var dataStart = data + startingSample * channels;
+        var dataSize = checked((int)(sampleCount * channels * sizeof(float)));
+
+        _al.BufferData(Handle, format, dataStart, dataSize, sampleRate);
     }
 
     /// <summary>

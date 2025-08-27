@@ -127,11 +127,12 @@ public class MediaController : BindableBase
     /// </summary>
     public void Stop()
     {
-        Logger.Trace("Stopping playback");
+        Logger.Debug("Stopping playback");
         if (!IsPlaying)
             return;
         IsPlaying = false;
         _playback.Stop();
+        OnPlaybackStop?.Invoke(this, EventArgs.Empty);
     }
 
     /// <summary>
@@ -152,9 +153,16 @@ public class MediaController : BindableBase
             throw new InvalidOperationException("Video is not loaded");
 
         Stop();
-        Logger.Trace("Playing to end");
+        Logger.Debug("Playing to end");
         _destinationFrame = _videoInfo.FrameCount - 1;
         _playback.IntervalIndex = _currentFrame;
+
+        var e = new PlaybackStartEventArgs(
+            _videoInfo.MillisecondsFromFrame(_currentFrame),
+            _videoInfo.MillisecondsFromFrame(_destinationFrame)
+        );
+        OnPlaybackStart?.Invoke(this, e);
+
         _playback.Start();
         IsPlaying = true;
         IsPaused = false;
@@ -171,7 +179,7 @@ public class MediaController : BindableBase
 
         var startTime = selection.Min(e => e.Start);
         var endTime = selection.Max(e => e.End);
-        Logger.Trace($"Playing selection [{startTime}, {endTime}]");
+        Logger.Debug($"Playing selection [{startTime}, {endTime}]");
 
         if (startTime is null || endTime is null)
             return;
@@ -182,6 +190,13 @@ public class MediaController : BindableBase
         CurrentFrame = startFrame;
         _destinationFrame = endFrame;
         _playback.IntervalIndex = _currentFrame;
+
+        var e = new PlaybackStartEventArgs(
+            _videoInfo.MillisecondsFromFrame(_currentFrame),
+            _videoInfo.MillisecondsFromFrame(_destinationFrame)
+        );
+        OnPlaybackStart?.Invoke(this, e);
+
         _playback.Start();
         IsPlaying = true;
         IsPaused = false;
@@ -192,8 +207,20 @@ public class MediaController : BindableBase
     /// </summary>
     public void Resume()
     {
-        Logger.Trace("Resuming playback");
+        if (_videoInfo is null)
+            throw new InvalidOperationException("Video is not loaded");
+
+        Logger.Debug("Resuming playback");
         _playback.IntervalIndex = _currentFrame;
+
+        OnPlaybackStart?.Invoke(
+            this,
+            new PlaybackStartEventArgs(
+                _videoInfo.MillisecondsFromFrame(_currentFrame),
+                _videoInfo.MillisecondsFromFrame(_destinationFrame)
+            )
+        );
+
         _playback.Start();
         IsPlaying = true;
         IsPaused = false;
@@ -448,4 +475,7 @@ public class MediaController : BindableBase
         _playback = new HighResolutionTimer();
         _playback.Elapsed += AdvanceFrame;
     }
+
+    public event EventHandler<PlaybackStartEventArgs>? OnPlaybackStart;
+    public event EventHandler<EventArgs>? OnPlaybackStop;
 }
