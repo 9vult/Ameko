@@ -34,10 +34,10 @@ pub fn InitAudio() ffms.FfmsError!void {
     audio_frame.?.* = .{
         .data = audio_buffer.?.ptr,
         .length = @intCast(audio_buffer.?.len),
-        .channel_count = ffms.sample_rate,
+        .channel_count = ffms.channel_count,
         .sample_count = ffms.sample_count,
         .sample_rate = ffms.sample_rate,
-        .duration_ms = (ffms.sample_count * 1000) / ffms.sample_rate,
+        .duration_ms = @divFloor((ffms.sample_count * 1000), ffms.sample_rate),
         .valid = 0,
     };
 }

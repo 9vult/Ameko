@@ -68,7 +68,8 @@ public class OpenAlAudioRenderer(MediaController mediaController) : IAudioRender
         {
             var frame = mediaController.GetAudioFrame();
             start = Math.Clamp(start, 0, frame->DurationMillis);
-            end = Math.Clamp(start, 0, frame->DurationMillis);
+            end = Math.Clamp(end, start, frame->DurationMillis);
+
             var duration = end - start;
             var format =
                 frame->ChannelCount == 1 ? FloatBufferFormat.Mono : FloatBufferFormat.Stereo;
@@ -76,14 +77,16 @@ public class OpenAlAudioRenderer(MediaController mediaController) : IAudioRender
             _buffer = new Buffer(_al);
             _buffer.LoadData(
                 frame->Data,
-                start * frame->SampleRate,
-                duration * frame->SampleRate,
+                start * frame->SampleRate / 1000,
+                duration * frame->SampleRate / 1000,
                 frame->SampleRate,
+                frame->ChannelCount,
                 format
             );
 
             _source.QueueBuffer(_buffer);
             _source.Play();
+            IsPlaying = true;
         }
     }
 
