@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Reactive;
 using System.Reactive.Disposables;
-using Ameko.Services;
 using Ameko.Utilities;
 using Ameko.ViewModels.Controls;
 using AssCS.History;
@@ -13,15 +12,14 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.ReactiveUI;
-using Holo;
-using Holo.Providers;
-using Microsoft.Extensions.DependencyInjection;
 using ReactiveUI;
 
 namespace Ameko.Views.Controls;
 
 public partial class TabItemEditorArea : ReactiveUserControl<TabItemViewModel>
 {
+    private static readonly List<TabItemViewModel> PreviousVMs = [];
+
     private bool UseSoftLinebreaks =>
         ViewModel?.SolutionProvider.Current.UseSoftLinebreaks
         ?? ViewModel?.Configuration.UseSoftLinebreaks
@@ -94,8 +92,6 @@ public partial class TabItemEditorArea : ReactiveUserControl<TabItemViewModel>
     {
         InitializeComponent();
 
-        var previousVMs = new List<TabItemViewModel>();
-
         this.WhenActivated(disposables =>
         {
             this.GetObservable(ViewModelProperty)
@@ -104,19 +100,29 @@ public partial class TabItemEditorArea : ReactiveUserControl<TabItemViewModel>
                 {
                     // TODO: Keybinds
 
-                    if (previousVMs.Contains(vm))
+                    if (PreviousVMs.Contains(vm))
                         return;
-                    previousVMs.Add(vm);
+                    PreviousVMs.Add(vm);
 
                     StartBox.AddHandler(
-                        KeyDownEvent,
+                        TextBox.KeyDownEvent,
                         Extras.PreKeyDownEventHandler,
                         RoutingStrategies.Tunnel
                     );
                     EndBox.AddHandler(
-                        KeyDownEvent,
+                        TextBox.KeyDownEvent,
                         Extras.PreKeyDownEventHandler,
                         RoutingStrategies.Tunnel
+                    );
+                    EditBox.AddHandler(
+                        TextBox.TextChangedEvent,
+                        EditBox_OnTextChanged,
+                        RoutingStrategies.Bubble
+                    );
+                    EditBox.AddHandler(
+                        TextBox.KeyDownEvent,
+                        EditBox_OnKeyDown,
+                        RoutingStrategies.Bubble
                     );
                 })
                 .DisposeWith(disposables);

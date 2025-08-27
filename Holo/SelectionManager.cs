@@ -16,12 +16,12 @@ public class SelectionManager : BindableBase
     /// Denotes if the selection is currently changing
     /// </summary>
     /// <remarks>GUIs can use this property to determine if a change should be reported</remarks>
-    public bool IsSelectionChanging { get; private set; }
+    public bool IsSelectionChanging { get; private set; } = true;
 
     /// <summary>
     /// Sets <see cref="IsSelectionChanging"/> to <see langword="true"/>
     /// </summary>
-    private void BeginSelectionChange()
+    public void BeginSelectionChange()
     {
         IsSelectionChanging = true;
     }
@@ -36,6 +36,7 @@ public class SelectionManager : BindableBase
     public void EndSelectionChange()
     {
         IsSelectionChanging = false;
+        Logger.Trace("Selection change ended");
     }
 
     /// <summary>

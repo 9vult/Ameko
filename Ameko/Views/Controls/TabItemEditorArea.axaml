@@ -187,8 +187,6 @@
                  Margin="2 1"
                  FontFamily="{StaticResource MartianMonoFont}"
                  TextWrapping="Wrap"
-                 IsUndoEnabled="False"
-                 KeyDown="EditBox_OnKeyDown"
-                 TextChanged="EditBox_OnTextChanged"/>
+                 IsUndoEnabled="False" />
     </Grid>
 </UserControl>

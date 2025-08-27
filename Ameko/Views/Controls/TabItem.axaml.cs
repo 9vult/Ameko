@@ -24,6 +24,8 @@ namespace Ameko.Views.Controls;
 
 public partial class TabItem : ReactiveUserControl<TabItemViewModel>
 {
+    private static readonly List<TabItemViewModel> PreviousVMs = [];
+
     private async Task DoCopyEventsAsync(IInteractionContext<TabItemViewModel, string?> interaction)
     {
         var window = TopLevel.GetTopLevel(this);
@@ -108,7 +110,6 @@ public partial class TabItem : ReactiveUserControl<TabItemViewModel>
     public TabItem()
     {
         InitializeComponent();
-        List<TabItemViewModel> previousVMs = [];
 
         this.WhenActivated(disposables =>
         {
@@ -121,9 +122,9 @@ public partial class TabItem : ReactiveUserControl<TabItemViewModel>
                     // Listen for scroll messages (?)
 
                     // Skip if already subscribed
-                    if (previousVMs.Contains(vm))
+                    if (PreviousVMs.Contains(vm))
                         return;
-                    previousVMs.Add(vm);
+                    PreviousVMs.Add(vm);
 
                     vm.CopyEvents.RegisterHandler(DoCopyEventsAsync);
                     vm.CutEvents.RegisterHandler(DoCutEventsAsync);
