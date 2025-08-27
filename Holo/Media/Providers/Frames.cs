@@ -45,5 +45,6 @@ public struct AudioFrame
     public int ChannelCount;
     public long SampleCount;
     public int SampleRate;
+    public long DurationMillis;
     public int Valid;
 }

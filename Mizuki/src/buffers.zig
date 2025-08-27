@@ -37,6 +37,7 @@ pub fn InitAudio() ffms.FfmsError!void {
         .channel_count = ffms.sample_rate,
         .sample_count = ffms.sample_count,
         .sample_rate = ffms.sample_rate,
+        .duration_ms = (ffms.sample_count * 1000) / ffms.sample_rate,
         .valid = 0,
     };
 }
