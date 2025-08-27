@@ -9,6 +9,7 @@ using Ameko.ViewModels.Controls;
 using AssCS;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Interactivity;
 using Avalonia.ReactiveUI;
 using Avalonia.Threading;
 using ReactiveUI;
@@ -17,7 +18,7 @@ namespace Ameko.Views.Controls;
 
 public partial class TabItemEventsArea : ReactiveUserControl<TabItemViewModel>
 {
-    private readonly List<TabItemViewModel> _previousVMs = [];
+    private static readonly List<TabItemViewModel> PreviousVMs = [];
 
     public TabItemEventsArea()
     {
@@ -30,9 +31,15 @@ public partial class TabItemEventsArea : ReactiveUserControl<TabItemViewModel>
                 .Subscribe(vm =>
                 {
                     // Skip the rest if already subscribed
-                    if (_previousVMs.Contains(vm))
+                    if (PreviousVMs.Contains(vm))
                         return;
-                    _previousVMs.Add(vm);
+                    PreviousVMs.Add(vm);
+
+                    EventsGrid.AddHandler(
+                        DataGrid.SelectionChangedEvent,
+                        DataGrid_OnSelectionChanged,
+                        RoutingStrategies.Bubble
+                    );
                 })
                 .DisposeWith(disposables);
         });

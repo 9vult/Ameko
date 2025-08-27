@@ -108,7 +108,13 @@ public class Solution : BindableBase
     public Workspace? WorkingSpace
     {
         get => _workingSpace;
-        set => SetProperty(ref _workingSpace, value);
+        set
+        {
+            _workingSpace?.SelectionManager.BeginSelectionChange();
+            value?.SelectionManager.BeginSelectionChange();
+
+            SetProperty(ref _workingSpace, value);
+        }
     }
 
     /// <summary>
