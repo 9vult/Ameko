@@ -8,16 +8,14 @@ const fnv = @import("fnv.zig");
 const frames = @import("frames.zig");
 const common = @import("common.zig");
 const logger = @import("logger.zig");
+const context = @import("context.zig");
 
 pub const LibassError = error{
     NotInitialized,
 };
 
-// Local variables
+// Global
 var library: ?*c.ASS_Library = null;
-var renderer: ?*c.ass_renderer = null;
-var track: ?*c.ass_track = null;
-var current_hash: u32 = 0;
 
 /// Get the current libass version
 ///
@@ -33,72 +31,79 @@ pub fn GetVersion() common.BackingVersion {
 
 /// Initialize libass
 pub fn Initialize() void {
-    library = c.ass_library_init();
+    if (library == null) {
+        library = c.ass_library_init();
+    }
     // c.ass_set_message_cb(library, &AssLogCallback, null); // TODO: When va_args is supported
 }
 
 /// Deinitialize libass
-pub fn Deinitialize() void {
-    c.ass_renderer_done(renderer);
+pub fn Deinitialize(g_ctx: *context.GlobalContext) void {
+    var ctx = &g_ctx.*.libass;
+    c.ass_renderer_done(ctx.renderer);
     c.ass_library_done(library);
-    if (track != null) {
-        c.ass_free_track(track);
-        track = null;
+    if (ctx.track != null) {
+        c.ass_free_track(ctx.track);
+        ctx.track = null;
     }
 }
 
 /// Load subtitles in from memory
-pub fn SetSubtitles(data: [*c]u8, data_len: c_int, code_page: [*c]u8) void {
-    if (track != null) {
-        c.ass_free_track(track);
-        track = null;
+pub fn SetSubtitles(g_ctx: *context.GlobalContext, data: [*c]u8, data_len: c_int, code_page: [*c]u8) void {
+    var ctx = &g_ctx.*.libass;
+    if (ctx.track != null) {
+        c.ass_free_track(ctx.track);
+        ctx.track = null;
     }
-    track = c.ass_read_memory(library, data, @intCast(data_len), code_page);
-    current_hash = fnv.fnv1a_32(data, data_len);
+    ctx.track = c.ass_read_memory(library, data, @intCast(data_len), code_page);
+    ctx.current_hash = fnv.fnv1a_32(data, data_len);
 }
 
 /// Set up renderer
-pub fn LoadVideo(frame_width: c_int, frame_height: c_int) void {
-    if (renderer != null) {
-        c.ass_renderer_done(renderer);
-        renderer = null;
+pub fn LoadVideo(g_ctx: *context.GlobalContext, frame_width: c_int, frame_height: c_int) void {
+    var ctx = &g_ctx.*.libass;
+    if (ctx.renderer != null) {
+        c.ass_renderer_done(ctx.renderer);
+        ctx.renderer = null;
     }
 
-    renderer = c.ass_renderer_init(library);
-    c.ass_set_frame_size(renderer, frame_width, frame_height);
-    c.ass_set_storage_size(renderer, frame_width, frame_height);
-    c.ass_set_font_scale(renderer, 1.0);
+    ctx.renderer = c.ass_renderer_init(library);
+    c.ass_set_frame_size(ctx.renderer, frame_width, frame_height);
+    c.ass_set_storage_size(ctx.renderer, frame_width, frame_height);
+    c.ass_set_font_scale(ctx.renderer, 1.0);
 
-    c.ass_set_fonts(renderer, null, "Sans", 1, null, 1);
+    c.ass_set_fonts(ctx.renderer, null, "Sans", 1, null, 1);
 }
 
 /// Verify a frame's hash
-pub fn VerifyHash(frame: ?*frames.SubtitleFrame) bool {
-    return current_hash != 0 and current_hash == frame.?.*.hash;
+pub fn VerifyHash(g_ctx: *context.GlobalContext, frame: ?*frames.SubtitleFrame) bool {
+    const ctx = &g_ctx.*.libass;
+    return ctx.current_hash != 0 and ctx.current_hash == frame.?.*.hash;
 }
 
 /// Get the subtitles (On a transparent frame)
-pub fn GetFrame(timestamp: c_longlong, out: *frames.SubtitleFrame) !void {
+pub fn GetFrame(g_ctx: *context.GlobalContext, timestamp: c_longlong, out: *frames.SubtitleFrame) !void {
+    const ctx = &g_ctx.*.libass;
     const frame_w: i32 = @intCast(out.*.width);
     const frame_h: i32 = @intCast(out.*.height);
     const buffer_size: usize = @intCast(out.*.pitch * out.*.height);
 
     // Set the frame's hash
-    out.*.hash = current_hash;
+    out.*.hash = ctx.current_hash;
 
     // Reset buffer to transparent
     const buf = out.data[0..buffer_size];
     @memset(buf, 0);
 
-    if (track == null) {
+    if (ctx.track == null) {
         return;
     }
 
-    c.ass_set_frame_size(renderer, out.*.width, out.*.height);
-    c.ass_set_storage_size(renderer, out.*.width, out.*.height);
+    c.ass_set_frame_size(ctx.renderer, out.*.width, out.*.height);
+    c.ass_set_storage_size(ctx.renderer, out.*.width, out.*.height);
 
     const detect_change = 0;
-    var img: ?*c.ASS_Image = c.ass_render_frame(renderer, track, timestamp, detect_change);
+    var img: ?*c.ASS_Image = c.ass_render_frame(ctx.renderer, ctx.track, timestamp, detect_change);
 
     while (img) |i| {
         const o: u32 = (255 - (i.*.color & 0xFF)); // opacity
