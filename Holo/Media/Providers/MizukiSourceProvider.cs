@@ -11,10 +11,12 @@ namespace Holo.Media.Providers;
 /// <summary>
 /// Interop with the Mizuki source provider
 /// </summary>
-public class MizukiSourceProvider : ISourceProvider
+public unsafe class MizukiSourceProvider : ISourceProvider
 {
     private static readonly Logger Logger = LogManager.GetLogger("Mizuki");
     private static readonly External.LogCallback LogDelegate = Log;
+
+    private GlobalContext* _context;
 
     /// <summary>
     /// If this provider is initialized
@@ -31,15 +33,17 @@ public class MizukiSourceProvider : ISourceProvider
     {
         External.SetLoggerCallback(LogDelegate);
         External.Initialize();
+
+        _context = External.CreateContext();
         IsInitialized = true;
     }
 
     public int LoadVideo(string filename)
     {
-        var status = External.LoadVideo(filename, GetCachePath(filename), "bgra");
+        var status = External.LoadVideo(_context, filename, GetCachePath(filename), "bgra");
         if (status == 0)
         {
-            FrameCount = External.GetFrameCount();
+            FrameCount = External.GetFrameCount(_context);
         }
 
         return status;
@@ -54,40 +58,40 @@ public class MizukiSourceProvider : ISourceProvider
     public int SetSubtitles(string data, string? codePage)
     {
         var bytes = Encoding.UTF8.GetBytes(data);
-        return External.SetSubtitles(bytes, bytes.Length, codePage);
+        return External.SetSubtitles(_context, bytes, bytes.Length, codePage);
     }
 
     public int AllocateBuffers(int numBuffers, int maxCacheSize)
     {
-        return External.AllocateBuffers(numBuffers, maxCacheSize);
+        return External.AllocateBuffers(_context, numBuffers, maxCacheSize);
     }
 
     /// <inheritdoc />
     public int AllocateAudioBuffer()
     {
-        return External.AllocateAudioBuffer();
+        return External.AllocateAudioBuffer(_context);
     }
 
     /// <inheritdoc />
     public int FreeBuffers()
     {
-        return External.FreeBuffers();
+        return External.FreeBuffers(_context);
     }
 
     /// <inheritdoc />
-    public unsafe FrameGroup* GetFrame(int frameNumber, long timestamp, bool raw)
+    public FrameGroup* GetFrame(int frameNumber, long timestamp, bool raw)
     {
-        return External.GetFrame(frameNumber, timestamp, raw ? 1 : 0);
+        return External.GetFrame(_context, frameNumber, timestamp, raw ? 1 : 0);
     }
 
     /// <inheritdoc />
-    public unsafe AudioFrame* GetAudio()
+    public AudioFrame* GetAudio()
     {
-        return External.GetAudio();
+        return External.GetAudio(_context);
     }
 
     /// <inheritdoc />
-    public unsafe int ReleaseFrame(FrameGroup* frame)
+    public int ReleaseFrame(FrameGroup* frame)
     {
         return External.ReleaseFrame(frame);
     }
@@ -95,21 +99,21 @@ public class MizukiSourceProvider : ISourceProvider
     /// <inheritdoc />
     public int[] GetKeyframes()
     {
-        var ptr = External.GetKeyframes();
+        var ptr = External.GetKeyframes(_context);
         return ptr.ToIntArray();
     }
 
     /// <inheritdoc />
     public long[] GetTimecodes()
     {
-        var ptr = External.GetTimecodes();
+        var ptr = External.GetTimecodes(_context);
         return ptr.ToLongArray();
     }
 
     /// <inheritdoc />
     public long[] GetFrameIntervals()
     {
-        var ptr = External.GetFrameIntervals();
+        var ptr = External.GetFrameIntervals(_context);
         return ptr.ToLongArray();
     }
 
@@ -156,45 +160,66 @@ internal static unsafe partial class External
     [LibraryImport("mizuki")]
     internal static partial void Initialize();
 
+    [LibraryImport("mizuki")]
+    internal static unsafe partial GlobalContext* CreateContext();
+
+    [LibraryImport("mizuki")]
+    internal static partial void DestroyContext(GlobalContext* context);
+
     [LibraryImport("mizuki", StringMarshalling = StringMarshalling.Utf8)]
     internal static partial int LoadVideo(
+        GlobalContext* context,
         string fileName,
         string cacheFileName,
         string colorMatrix
     );
 
     [LibraryImport("mizuki", StringMarshalling = StringMarshalling.Utf8)]
-    internal static partial int SetSubtitles(byte[] data, int dataLen, string? codePage);
+    internal static partial int SetSubtitles(
+        GlobalContext* context,
+        byte[] data,
+        int dataLen,
+        string? codePage
+    );
 
     [LibraryImport("mizuki")]
-    internal static partial int AllocateBuffers(int numBuffers, int maxCacheSize);
+    internal static partial int AllocateBuffers(
+        GlobalContext* context,
+        int numBuffers,
+        int maxCacheSize
+    );
 
     [LibraryImport("mizuki")]
-    internal static partial int AllocateAudioBuffer();
+    internal static partial int AllocateAudioBuffer(GlobalContext* context);
 
     [LibraryImport("mizuki")]
-    internal static partial int FreeBuffers();
+    internal static partial int FreeBuffers(GlobalContext* context);
 
     [LibraryImport("mizuki")]
-    internal static unsafe partial FrameGroup* GetFrame(int frameNumber, long timestamp, int raw);
+    internal static unsafe partial FrameGroup* GetFrame(
+        GlobalContext* context,
+        int frameNumber,
+        long timestamp,
+        int raw
+    );
 
     [LibraryImport("mizuki")]
-    internal static unsafe partial AudioFrame* GetAudio();
+    internal static unsafe partial AudioFrame* GetAudio(GlobalContext* context);
 
     [LibraryImport("mizuki")]
     internal static unsafe partial int ReleaseFrame(FrameGroup* frame);
 
     [LibraryImport("mizuki")]
-    internal static partial int GetFrameCount();
+    internal static partial int GetFrameCount(GlobalContext* context);
 
     [LibraryImport("mizuki")]
-    internal static partial UnmanagedArray GetKeyframes();
+    internal static partial UnmanagedArray GetKeyframes(GlobalContext* context);
 
     [LibraryImport("mizuki")]
-    internal static partial UnmanagedArray GetTimecodes();
+    internal static partial UnmanagedArray GetTimecodes(GlobalContext* context);
 
     [LibraryImport("mizuki")]
-    internal static partial UnmanagedArray GetFrameIntervals();
+    internal static partial UnmanagedArray GetFrameIntervals(GlobalContext* context);
 
     [LibraryImport("mizuki")]
     internal static partial void SetLoggerCallback(LogCallback callback);
@@ -202,6 +227,11 @@ internal static unsafe partial class External
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     public delegate void LogCallback(int level, nint message);
 }
+
+/// <summary>
+/// Used for contextualization
+/// </summary>
+internal struct GlobalContext;
 
 /// <summary>
 /// An unmanaged integer array

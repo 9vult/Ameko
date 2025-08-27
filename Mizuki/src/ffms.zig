@@ -7,6 +7,7 @@ const c = @import("c.zig").c;
 const frames = @import("frames.zig");
 const common = @import("common.zig");
 const logger = @import("logger.zig");
+const context = @import("context.zig");
 
 pub const FfmsError = error{
     FileNotFound,
@@ -26,37 +27,13 @@ pub const FfmsError = error{
     DecodingAudioFailed,
 };
 
-// Zero-init
+// Global
 var err_buffer = std.mem.zeroes([1024]u8);
 var err_info = c.FFMS_ErrorInfo{
     .BufferSize = err_buffer.len,
     .Buffer = &err_buffer[0],
 };
-
-// Local variables
-var index: ?*c.FFMS_Index = null;
-var video_source: ?*c.FFMS_VideoSource = null;
-var audio_source: ?*c.FFMS_AudioSource = null;
-
-var color_space_buffer = std.mem.zeroes([128]u8);
-var color_space = &color_space_buffer[0];
-var video_color_space: c_int = -1;
-var video_color_range: c_int = -1;
-
-// Public variables
-
-pub var keyframes: []c_int = undefined;
-pub var timecodes: []c_longlong = undefined;
-pub var frame_intervals: []c_longlong = undefined;
-pub var frame_count: c_int = undefined;
-
-pub var frame_width: usize = 0;
-pub var frame_height: usize = 0;
-pub var frame_pitch: usize = 0;
-
-pub var channel_count: c_int = -1;
-pub var sample_rate: c_int = -1;
-pub var sample_count: i64 = -1;
+var is_initialized = false;
 
 /// Get the current FFMS version
 ///
@@ -72,11 +49,17 @@ pub fn GetVersion() common.BackingVersion {
 
 /// Initialize FFMS
 pub fn Initialize() void {
-    c.FFMS_Init(0, 0);
+    if (!is_initialized) {
+        c.FFMS_Init(0, 0);
+        is_initialized = true;
+    }
 }
 
 /// Load a video
-pub fn LoadVideo(file_name: [*c]u8, cache_file_name: [*c]u8, color_matrix: [*c]u8) FfmsError!void {
+pub fn LoadVideo(g_ctx: *context.GlobalContext, file_name: [*c]u8, cache_file_name: [*c]u8, color_matrix: [*c]u8) FfmsError!void {
+    var ctx = &g_ctx.*.ffms;
+    var index = ctx.index;
+
     const indexer = c.FFMS_CreateIndexer(file_name, &err_info);
 
     if (indexer == null) {
@@ -168,15 +151,15 @@ pub fn LoadVideo(file_name: [*c]u8, cache_file_name: [*c]u8, color_matrix: [*c]u
     }
 
     // TODO: Add an option for unsafe seeking
-    video_source = c.FFMS_CreateVideoSource(file_name, video_track_number, index, -1, c.FFMS_SEEK_NORMAL, &err_info);
+    ctx.video_source = c.FFMS_CreateVideoSource(file_name, video_track_number, index, -1, c.FFMS_SEEK_NORMAL, &err_info);
 
-    if (video_source == null) {
+    if (ctx.video_source == null) {
         return FfmsError.VideoTrackLoadingFailed;
     }
 
     // Get video properties
-    const video_info = c.FFMS_GetVideoProperties(video_source);
-    const temp_frame = c.FFMS_GetFrame(video_source, 0, &err_info);
+    const video_info = c.FFMS_GetVideoProperties(ctx.video_source);
+    const temp_frame = c.FFMS_GetFrame(ctx.video_source, 0, &err_info);
 
     if (temp_frame == null) {
         return FfmsError.DecodingFirstFrameFailed;
@@ -194,23 +177,23 @@ pub fn LoadVideo(file_name: [*c]u8, cache_file_name: [*c]u8, color_matrix: [*c]u
         dar = @as(f64, @floatFromInt(width)) / @as(f64, @floatFromInt(height));
     }
 
-    video_color_space = temp_frame.*.ColorSpace;
-    video_color_range = temp_frame.*.ColorRange;
+    ctx.video_color_space = temp_frame.*.ColorSpace;
+    ctx.video_color_range = temp_frame.*.ColorRange;
     SetColorSpace(color_matrix);
 
     const target_formats = [2]c_int{ c.FFMS_GetPixFmt("bgra"), -1 };
-    if (c.FFMS_SetOutputFormatV2(video_source, &target_formats[0], width, height, c.FFMS_RESIZER_BICUBIC, &err_info) != 0) {
+    if (c.FFMS_SetOutputFormatV2(ctx.video_source, &target_formats[0], width, height, c.FFMS_RESIZER_BICUBIC, &err_info) != 0) {
         return FfmsError.SettingOutputFormatFailed;
     }
 
     // TODO: Clean up
-    const pitch_frame = c.FFMS_GetFrame(video_source, 0, &err_info);
-    frame_width = @intCast(pitch_frame.*.EncodedWidth);
-    frame_height = @intCast(pitch_frame.*.EncodedHeight);
-    frame_pitch = @intCast(pitch_frame.*.Linesize[0]);
+    const pitch_frame = c.FFMS_GetFrame(ctx.video_source, 0, &err_info);
+    ctx.frame_width = @intCast(pitch_frame.*.EncodedWidth);
+    ctx.frame_height = @intCast(pitch_frame.*.EncodedHeight);
+    ctx.frame_pitch = @intCast(pitch_frame.*.Linesize[0]);
 
     // Frame information
-    const track = c.FFMS_GetTrackFromVideo(video_source);
+    const track = c.FFMS_GetTrackFromVideo(ctx.video_source);
     if (track == null) {
         return FfmsError.GetTrackInfoFailed;
     }
@@ -220,7 +203,7 @@ pub fn LoadVideo(file_name: [*c]u8, cache_file_name: [*c]u8, color_matrix: [*c]u
     }
 
     // Build list of timecodes and keyframes
-    frame_count = video_info.*.NumFrames;
+    ctx.frame_count = video_info.*.NumFrames;
 
     // Allocate ArrayLists
     var keyframes_list = std.ArrayList(c_int).init(common.allocator);
@@ -232,7 +215,7 @@ pub fn LoadVideo(file_name: [*c]u8, cache_file_name: [*c]u8, color_matrix: [*c]u
     errdefer intervals_list.deinit();
 
     var frame_number: c_int = 0;
-    while (frame_number < frame_count) : (frame_number += 1) {
+    while (frame_number < ctx.frame_count) : (frame_number += 1) {
         const frame_info = c.FFMS_GetFrameInfo(track, frame_number);
         if (frame_info == null) {
             return FfmsError.GetFrameInfoFailed;
@@ -249,44 +232,45 @@ pub fn LoadVideo(file_name: [*c]u8, cache_file_name: [*c]u8, color_matrix: [*c]u
     }
 
     // Get the slices (de-inits the ArrayLists)
-    keyframes = keyframes_list.toOwnedSlice() catch unreachable;
-    timecodes = timecodes_list.toOwnedSlice() catch unreachable;
+    ctx.keyframes = keyframes_list.toOwnedSlice() catch unreachable;
+    ctx.timecodes = timecodes_list.toOwnedSlice() catch unreachable;
 
     // Calculate frame intervals
     var i: usize = 0;
-    while (i + 1 < frame_count) : (i += 1) {
-        try intervals_list.append(timecodes[i + 1] - timecodes[i]);
+    while (i + 1 < ctx.frame_count) : (i += 1) {
+        try intervals_list.append(ctx.timecodes[i + 1] - ctx.timecodes[i]);
     }
 
     // Last interval is 0
     try intervals_list.append(0);
 
-    frame_intervals = intervals_list.toOwnedSlice() catch unreachable;
+    ctx.frame_intervals = intervals_list.toOwnedSlice() catch unreachable;
 
     if (has_audio) {
-        audio_source = c.FFMS_CreateAudioSource(file_name, audio_track_number, index, c.FFMS_DELAY_FIRST_VIDEO_TRACK, &err_info);
-        if (audio_source == null) {
+        ctx.audio_source = c.FFMS_CreateAudioSource(file_name, audio_track_number, index, c.FFMS_DELAY_FIRST_VIDEO_TRACK, &err_info);
+        if (ctx.audio_source == null) {
             return FfmsError.AudioTrackLoadingFailed;
         }
 
         // Force usage of floats
-        const rs_options = c.FFMS_CreateResampleOptions(audio_source);
+        const rs_options = c.FFMS_CreateResampleOptions(ctx.audio_source);
         defer c.FFMS_DestroyResampleOptions(rs_options);
         rs_options.*.SampleFormat = c.FFMS_FMT_FLT;
-        _ = c.FFMS_SetOutputFormatA(audio_source, rs_options, &err_info);
+        _ = c.FFMS_SetOutputFormatA(ctx.audio_source, rs_options, &err_info);
 
         // Get video properties
-        const audio_info = c.FFMS_GetAudioProperties(audio_source);
+        const audio_info = c.FFMS_GetAudioProperties(ctx.audio_source);
 
-        channel_count = audio_info.*.Channels;
-        sample_rate = audio_info.*.SampleRate;
-        sample_count = audio_info.*.NumSamples;
+        ctx.channel_count = audio_info.*.Channels;
+        ctx.sample_rate = audio_info.*.SampleRate;
+        ctx.sample_count = audio_info.*.NumSamples;
     }
     logger.Debug("[FFMS2] Successfully loaded video file");
 }
 
-pub fn GetFrame(frame_number: c_int, out: *frames.VideoFrame) FfmsError!void {
-    const frame = c.FFMS_GetFrame(video_source, frame_number, &err_info);
+pub fn GetFrame(g_ctx: *context.GlobalContext, frame_number: c_int, out: *frames.VideoFrame) FfmsError!void {
+    const ctx = &g_ctx.*.ffms;
+    const frame = c.FFMS_GetFrame(ctx.video_source, frame_number, &err_info);
     if (frame == null) {
         return FfmsError.VideoDecodeError;
     }
@@ -305,8 +289,9 @@ pub fn GetFrame(frame_number: c_int, out: *frames.VideoFrame) FfmsError!void {
     out.*.valid = 1;
 }
 
-pub fn GetAudio(buffer: *f32, start: i64, count: i64) FfmsError!void {
-    const result = c.FFMS_GetAudio(audio_source, buffer, start, count, &err_info);
+pub fn GetAudio(g_ctx: *context.GlobalContext, buffer: *f32, start: i64, count: i64) FfmsError!void {
+    const ctx = &g_ctx.*.ffms;
+    const result = c.FFMS_GetAudio(ctx.audio_source, buffer, start, count, &err_info);
     if (result != 0) {
         return FfmsError.DecodingAudioFailed;
     }

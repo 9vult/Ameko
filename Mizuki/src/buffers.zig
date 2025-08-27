@@ -6,67 +6,73 @@ const ffms = @import("ffms.zig");
 const libass = @import("libass.zig");
 const frames = @import("frames.zig");
 const common = @import("common.zig");
-
-var max_size: c_int = 0;
-var total_size: c_int = 0;
-var buffers: std.ArrayList(*frames.FrameGroup) = undefined;
-var audio_buffer: ?[]f32 = null;
-var audio_frame: ?*frames.AudioFrame = null;
+const context = @import("context.zig");
 
 /// Pre-initialize video buffers
-pub fn Init(num_buffers: usize, max_cache_mb: c_int, width: usize, height: usize, pitch: usize) ffms.FfmsError!void {
-    buffers = std.ArrayList(*frames.FrameGroup).init(common.allocator);
-    max_size = max_cache_mb * (1024 ^ 2);
+pub fn Init(g_ctx: *context.GlobalContext, num_buffers: usize, max_cache_mb: c_int, width: usize, height: usize, pitch: usize) ffms.FfmsError!void {
+    var ctx = &g_ctx.*.buffers;
+    ctx.buffers = std.ArrayList(*frames.FrameGroup).init(common.allocator);
+    ctx.max_size = max_cache_mb * (1024 ^ 2);
 
     // Pre-allocate buffers
     var i: usize = 0;
     while (i < num_buffers) : (i += 1) {
         const frame = try AllocateFrame(width, height, pitch);
-        try buffers.append(frame);
+        try ctx.buffers.append(frame);
     }
 }
 
 /// Initialize audio buffer
-pub fn InitAudio() ffms.FfmsError!void {
-    const total_samples: usize = @intCast(ffms.sample_count * ffms.channel_count);
-    audio_buffer = try common.allocator.alloc(f32, total_samples);
-    audio_frame = try common.allocator.create(frames.AudioFrame);
-    audio_frame.?.* = .{
-        .data = audio_buffer.?.ptr,
-        .length = @intCast(audio_buffer.?.len),
-        .channel_count = ffms.channel_count,
-        .sample_count = ffms.sample_count,
-        .sample_rate = ffms.sample_rate,
-        .duration_ms = @divFloor((ffms.sample_count * 1000), ffms.sample_rate),
+pub fn InitAudio(g_ctx: *context.GlobalContext) ffms.FfmsError!void {
+    var ctx = &g_ctx.*.buffers;
+    const ffms_ctx = &g_ctx.*.ffms;
+
+    const total_samples: usize = @intCast(ffms_ctx.sample_count * ffms_ctx.channel_count);
+    ctx.audio_buffer = try common.allocator.alloc(f32, total_samples);
+    ctx.audio_frame = try common.allocator.create(frames.AudioFrame);
+    ctx.audio_frame.?.* = .{
+        .data = ctx.audio_buffer.?.ptr,
+        .length = @intCast(ctx.audio_buffer.?.len),
+        .channel_count = ffms_ctx.channel_count,
+        .sample_count = ffms_ctx.sample_count,
+        .sample_rate = ffms_ctx.sample_rate,
+        .duration_ms = @divFloor((ffms_ctx.sample_count * 1000), ffms_ctx.sample_rate),
         .valid = 0,
     };
 }
 
 /// Get the audio buffer
-pub fn GetAudio() ffms.FfmsError!*frames.AudioFrame {
-    if (audio_frame == null) {
+pub fn GetAudio(g_ctx: *context.GlobalContext) ffms.FfmsError!*frames.AudioFrame {
+    const ctx = &g_ctx.*.buffers;
+    const ffms_ctx = &g_ctx.*.ffms;
+
+    if (ctx.audio_frame == null) {
         return ffms.FfmsError.NoAudioTracks;
     }
-    if (audio_frame.?.*.valid == 0) {
-        try ffms.GetAudio(@ptrCast(audio_buffer.?.ptr), 0, ffms.sample_count);
-        audio_frame.?.*.valid = 1;
+    if (ctx.audio_frame.?.*.valid == 0) {
+        try ffms.GetAudio(g_ctx, @ptrCast(ctx.audio_buffer.?.ptr), 0, ffms_ctx.sample_count);
+        ctx.audio_frame.?.*.valid = 1;
     }
-    return audio_frame.?;
+    return ctx.audio_frame.?;
 }
 
 /// Free the buffers
-pub fn Deinit() void {
-    for (buffers.items) |buffer| {
+pub fn Deinit(g_ctx: *context.GlobalContext) void {
+    var ctx = &g_ctx.*.buffers;
+    for (ctx.buffers.items) |buffer| {
         common.allocator.destroy(buffer.*.video_frame);
         common.allocator.destroy(buffer.*.subtitle_frame);
         common.allocator.destroy(buffer);
     }
-    buffers.deinit();
-    common.allocator.destroy(audio_frame.?);
+    ctx.buffers.deinit();
+    common.allocator.destroy(ctx.audio_frame.?);
 }
 
 /// Get a frame
-pub fn ProcFrame(frame_number: c_int, timestamp: c_longlong, raw: c_int) ffms.FfmsError!*frames.FrameGroup {
+pub fn ProcFrame(g_ctx: *context.GlobalContext, frame_number: c_int, timestamp: c_longlong, raw: c_int) ffms.FfmsError!*frames.FrameGroup {
+    var ctx = &g_ctx.*.buffers;
+    var buffers = ctx.buffers;
+
     _ = raw; // For sub-less frame
     var result: ?*frames.FrameGroup = null;
 
@@ -82,8 +88,8 @@ pub fn ProcFrame(frame_number: c_int, timestamp: c_longlong, raw: c_int) ffms.Ff
             }
 
             // Check if we need to (re)render the subtitles
-            if (!libass.VerifyHash(result.?.*.subtitle_frame)) {
-                try libass.GetFrame(timestamp, result.?.*.subtitle_frame);
+            if (!libass.VerifyHash(g_ctx, result.?.*.subtitle_frame)) {
+                try libass.GetFrame(g_ctx, timestamp, result.?.*.subtitle_frame);
             }
 
             return result.?;
@@ -94,7 +100,7 @@ pub fn ProcFrame(frame_number: c_int, timestamp: c_longlong, raw: c_int) ffms.Ff
     // (or create a new one if there's space in the cache)
 
     // If we're at the size limit, make space
-    if (total_size >= max_size) {
+    if (ctx.total_size >= ctx.max_size) {
         const last = buffers.swapRemove(buffers.items.len - 1);
         _ = ReleaseFrame(last);
         try buffers.insert(0, last);
@@ -118,11 +124,11 @@ pub fn ProcFrame(frame_number: c_int, timestamp: c_longlong, raw: c_int) ffms.Ff
             @intCast(reference.*.video_frame.*.pitch),
         );
         try buffers.insert(0, result.?);
-        total_size = total_size + (result.?.*.video_frame.*.height * result.?.*.video_frame.*.pitch) * 2; // add size
+        ctx.total_size += (result.?.*.video_frame.*.height * result.?.*.video_frame.*.pitch) * 2; // add size
     }
 
-    try ffms.GetFrame(frame_number, result.?.*.video_frame);
-    try libass.GetFrame(timestamp, result.?.*.subtitle_frame);
+    try ffms.GetFrame(g_ctx, frame_number, result.?.*.video_frame);
+    try libass.GetFrame(g_ctx, timestamp, result.?.*.subtitle_frame);
 
     result.?.*.video_frame.*.valid = 1;
     result.?.*.subtitle_frame.valid = 1;

@@ -10,100 +10,120 @@ const common = @import("common.zig");
 const errors = @import("errors.zig");
 const logger = @import("logger.zig");
 const buffers = @import("buffers.zig");
+const context = @import("context.zig");
+
+var is_initialized = false;
 
 /// Initialize the library
 pub export fn Initialize() void {
+    if (is_initialized) {
+        return;
+    }
     logger.Debug("Initializing Mizuki...");
+
     ffms.Initialize();
     libass.Initialize();
+
+    is_initialized = true;
     logger.Debug("Done!");
 }
 
+/// Create a context
+pub export fn CreateContext() ?*context.GlobalContext {
+    const g_ctx = context.CreateContext() catch {
+        return null;
+    };
+    return g_ctx;
+}
+
+/// Destroy a context
+pub export fn DestroyContext(g_ctx: *context.GlobalContext) void {
+    context.DestroyContext(g_ctx);
+}
+
 /// Open a video file
-pub export fn LoadVideo(file_name: [*c]u8, cache_file_name: [*c]u8, color_matrix: [*c]u8) c_int {
-    ffms.LoadVideo(file_name, cache_file_name, color_matrix) catch |err| {
+pub export fn LoadVideo(g_ctx: *context.GlobalContext, file_name: [*c]u8, cache_file_name: [*c]u8, color_matrix: [*c]u8) c_int {
+    const ffms_ctx = g_ctx.*.ffms;
+    ffms.LoadVideo(g_ctx, file_name, cache_file_name, color_matrix) catch |err| {
         return errors.IntFromFfmsError(err);
     };
-    libass.LoadVideo(@intCast(ffms.frame_width), @intCast(ffms.frame_height));
+    libass.LoadVideo(g_ctx, @intCast(ffms_ctx.frame_width), @intCast(ffms_ctx.frame_height));
     return 0;
 }
 
 /// Close the open video file
-pub export fn CloseVideo() c_int {
+pub export fn CloseVideo(g_ctx: *context.GlobalContext) c_int {
+    _ = g_ctx;
     return 0; // TODO: implement
 }
 
-pub export fn SetSubtitles(data: [*c]u8, data_len: c_int, code_page: [*c]u8) c_int {
-    libass.SetSubtitles(data, data_len, code_page);
+pub export fn SetSubtitles(g_ctx: *context.GlobalContext, data: [*c]u8, data_len: c_int, code_page: [*c]u8) c_int {
+    libass.SetSubtitles(g_ctx, data, data_len, code_page);
     return 0;
 }
 
 /// Allocate frame buffers
-pub export fn AllocateBuffers(num_buffers: c_int, max_cache_mb: c_int) c_int {
-    buffers.Init(@intCast(num_buffers), max_cache_mb, ffms.frame_width, ffms.frame_height, ffms.frame_pitch) catch |err| {
+pub export fn AllocateBuffers(g_ctx: *context.GlobalContext, num_buffers: c_int, max_cache_mb: c_int) c_int {
+    const ffms_ctx = g_ctx.*.ffms;
+    buffers.Init(g_ctx, @intCast(num_buffers), max_cache_mb, ffms_ctx.frame_width, ffms_ctx.frame_height, ffms_ctx.frame_pitch) catch |err| {
         return errors.IntFromFfmsError(err);
     };
     return 0;
 }
 
-pub export fn AllocateAudioBuffer() c_int {
-    buffers.InitAudio() catch |err| {
+pub export fn AllocateAudioBuffer(g_ctx: *context.GlobalContext) c_int {
+    buffers.InitAudio(g_ctx) catch |err| {
         return errors.IntFromFfmsError(err);
     };
     return 0;
 }
 
 /// Free frame buffers
-pub export fn FreeBuffers() c_int {
-    buffers.Deinit();
+pub export fn FreeBuffers(g_ctx: *context.GlobalContext) c_int {
+    buffers.Deinit(g_ctx);
     return 0;
 }
 
 /// Get a frame
-pub export fn GetFrame(frame_number: c_int, timestamp: c_longlong, raw: c_int) ?*frames.FrameGroup {
-    return buffers.ProcFrame(frame_number, timestamp, raw) catch {
+pub export fn GetFrame(g_ctx: *context.GlobalContext, frame_number: c_int, timestamp: c_longlong, raw: c_int) ?*frames.FrameGroup {
+    return buffers.ProcFrame(g_ctx, frame_number, timestamp, raw) catch {
         return null;
     };
 }
 
 /// Get the audio
-pub export fn GetAudio() ?*frames.AudioFrame {
-    return buffers.GetAudio() catch {
+pub export fn GetAudio(g_ctx: *context.GlobalContext) ?*frames.AudioFrame {
+    return buffers.GetAudio(g_ctx) catch {
         return null;
     };
 }
 
-/// Release a frame
-pub export fn ReleaseFrame(frame: *frames.FrameGroup) c_int {
-    return buffers.ReleaseFrame(frame);
-}
-
 /// Get the number of frames in the video
-pub export fn GetFrameCount() c_int {
-    return ffms.frame_count;
+pub export fn GetFrameCount(g_ctx: *context.GlobalContext) c_int {
+    return g_ctx.*.ffms.frame_count;
 }
 
 /// Get array of keyframes
-pub export fn GetKeyframes() common.IntArray {
+pub export fn GetKeyframes(g_ctx: *context.GlobalContext) common.IntArray {
     return .{
-        .ptr = ffms.keyframes.ptr,
-        .len = ffms.keyframes.len,
+        .ptr = g_ctx.*.ffms.keyframes.ptr,
+        .len = g_ctx.*.ffms.keyframes.len,
     };
 }
 
 /// Get array of timecodes
-pub export fn GetTimecodes() common.LongArray {
+pub export fn GetTimecodes(g_ctx: *context.GlobalContext) common.LongArray {
     return .{
-        .ptr = ffms.timecodes.ptr,
-        .len = ffms.timecodes.len,
+        .ptr = g_ctx.*.ffms.timecodes.ptr,
+        .len = g_ctx.*.ffms.timecodes.len,
     };
 }
 
 /// Get array of frame intervals
-pub export fn GetFrameIntervals() common.LongArray {
+pub export fn GetFrameIntervals(g_ctx: *context.GlobalContext) common.LongArray {
     return .{
-        .ptr = ffms.frame_intervals.ptr,
-        .len = ffms.frame_intervals.len,
+        .ptr = g_ctx.*.ffms.frame_intervals.ptr,
+        .len = g_ctx.*.ffms.frame_intervals.len,
     };
 }
 
