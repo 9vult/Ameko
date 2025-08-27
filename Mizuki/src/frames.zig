@@ -33,6 +33,7 @@ pub const AudioFrame = extern struct {
     channel_count: c_int,
     sample_count: i64,
     sample_rate: c_int,
+    duration_ms: i64,
     valid: c_int = 0, // bool
 };
 

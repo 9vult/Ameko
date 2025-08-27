@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using Silk.NET.OpenAL;
 
 namespace Ameko.DataModels.OpenAl;
@@ -16,15 +14,20 @@ public class Source : IDisposable
     /// Create a source
     /// </summary>
     /// <param name="al">OpenGL instance</param>
-    public unsafe Source(AL al)
+    public Source(AL al)
     {
         _al = al;
         _handle = _al.GenSource();
     }
 
-    public void QueueBuffers(uint[] buffers)
+    public void QueueBuffer(Buffer buffer)
     {
-        _al.SourceQueueBuffers(_handle, buffers);
+        _al.SourceQueueBuffers(_handle, [buffer.Handle]);
+    }
+
+    public void DequeueBuffer(Buffer buffer)
+    {
+        _al.SourceUnqueueBuffers(_handle, [buffer.Handle]);
     }
 
     public void Play()
