@@ -366,6 +366,15 @@ public class MediaController : BindableBase
         throw new InvalidOperationException("Frame is unavailable");
     }
 
+    public unsafe AudioFrame* GetAudioFrame()
+    {
+        if (!_provider.IsInitialized)
+            throw new InvalidOperationException("Provider is not initialized");
+        if (_videoInfo is null)
+            throw new InvalidOperationException("Video is not loaded");
+        return _audioFrame;
+    }
+
     /// <summary>
     /// Set the subtitles to be displayed
     /// </summary>
