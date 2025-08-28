@@ -255,7 +255,7 @@ pub fn LoadVideo(g_ctx: *context.GlobalContext, file_name: [*c]u8, cache_file_na
         // Force usage of floats
         const rs_options = c.FFMS_CreateResampleOptions(ctx.audio_source);
         defer c.FFMS_DestroyResampleOptions(rs_options);
-        rs_options.*.SampleFormat = c.FFMS_FMT_FLT;
+        rs_options.*.SampleFormat = c.FFMS_FMT_S16;
         _ = c.FFMS_SetOutputFormatA(ctx.audio_source, rs_options, &err_info);
 
         // Get video properties
@@ -289,7 +289,7 @@ pub fn GetFrame(g_ctx: *context.GlobalContext, frame_number: c_int, out: *frames
     out.*.valid = 1;
 }
 
-pub fn GetAudio(g_ctx: *context.GlobalContext, buffer: *f32, start: i64, count: i64) FfmsError!void {
+pub fn GetAudio(g_ctx: *context.GlobalContext, buffer: *i16, start: i64, count: i64) FfmsError!void {
     const ctx = &g_ctx.*.ffms;
     const result = c.FFMS_GetAudio(ctx.audio_source, buffer, start, count, &err_info);
     if (result != 0) {

@@ -40,7 +40,7 @@ public struct SubtitleFrame
 [StructLayout(LayoutKind.Sequential)]
 public struct AudioFrame
 {
-    public unsafe float* Data;
+    public unsafe short* Data;
     public long Length;
     public int ChannelCount;
     public long SampleCount;
