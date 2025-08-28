@@ -206,6 +206,32 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         interaction.SetOutput(Unit.Default);
     }
 
+    private async Task DoShowAttachReferenceFileDialogAsync(
+        IInteractionContext<Unit, Uri?> interaction
+    )
+    {
+        var files = await StorageProvider.OpenFilePickerAsync(
+            new FilePickerOpenOptions
+            {
+                Title = I18N.Other.FileDialog_AttachReferenceFile_Title,
+                AllowMultiple = false,
+                FileTypeFilter =
+                [
+                    new FilePickerFileType(I18N.Other.FileDialog_FileType_Ass)
+                    {
+                        Patterns = ["*.ass"],
+                    },
+                ],
+            }
+        );
+        if (files.Count > 0)
+        {
+            interaction.SetOutput(files[0].Path);
+            return;
+        }
+        interaction.SetOutput(null);
+    }
+
     private async Task DoShowShiftTimesDialogAsync(
         IInteractionContext<ShiftTimesDialogViewModel, Unit> interaction
     )
@@ -310,6 +336,7 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
                 ViewModel.SaveSolutionAs.RegisterHandler(DoShowSaveSolutionAsDialogAsync);
                 // Subtitle
                 ViewModel.ShowStylesManager.RegisterHandler(DoShowStylesManager);
+                ViewModel.AttachReferenceFile.RegisterHandler(DoShowAttachReferenceFileDialogAsync);
                 // Solution
                 // Timing
                 ViewModel.ShowShiftTimesDialog.RegisterHandler(DoShowShiftTimesDialogAsync);

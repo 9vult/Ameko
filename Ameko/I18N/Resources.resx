@@ -282,4 +282,7 @@
     <data name="Video_LockAR_ToolTip" xml:space="preserve">
         <value>Lock aspect ratio</value>
     </data>
+    <data name="Menu_AttachReferenceFile" xml:space="preserve">
+        <value>_Attach Reference File...</value>
+    </data>
 </root>

@@ -314,6 +314,26 @@ public partial class MainWindowViewModel : ViewModelBase
     }
 
     /// <summary>
+    /// Display the Open Subtitle dialog
+    /// </summary>
+    private ReactiveCommand<Unit, Unit> CreateAttachReferenceFileCommand()
+    {
+        return ReactiveCommand.CreateFromTask(async () =>
+        {
+            Logger.Debug("Preparing to attach a reference file");
+            var uri = await AttachReferenceFile.Handle(Unit.Default);
+            if (uri is null)
+                return;
+
+            var wsp = SolutionProvider.Current.WorkingSpace;
+            if (wsp is null)
+                return;
+
+            wsp.ReferenceFileManager.Reference = new AssParser().Parse(_fileSystem, uri);
+        });
+    }
+
+    /// <summary>
     /// Display the <see cref="ShiftTimesDialog"/>
     /// </summary>
     private ReactiveCommand<Unit, Unit> CreateShowShiftTimesDialogCommand()

@@ -42,6 +42,11 @@ public class Workspace : BindableBase
     public MediaController MediaController { get; }
 
     /// <summary>
+    /// Manages the closed captions attached to the workspace
+    /// </summary>
+    public ReferenceFileManager ReferenceFileManager { get; }
+
+    /// <summary>
     /// The path the <see cref="Document"/> is saved to,
     /// or <see langword="null"/> if the document has not been saved.
     /// </summary>
@@ -148,6 +153,7 @@ public class Workspace : BindableBase
         IsSaved = true;
 
         SelectionManager = new SelectionManager(Document.EventManager.Head);
+        ReferenceFileManager = new ReferenceFileManager(SelectionManager);
 
         // TODO: make this cleaner
         var mp = new MizukiSourceProvider();

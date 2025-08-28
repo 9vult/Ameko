@@ -43,6 +43,7 @@ public partial class MainWindowViewModel : ViewModelBase
     public Interaction<Unit, Uri?> OpenSolution { get; }
     public Interaction<Unit, Uri?> OpenFolderAsSolution { get; }
     public Interaction<string, Uri?> SaveSolutionAs { get; }
+    public Interaction<Unit, Uri?> AttachReferenceFile { get; }
 
     // Subtitle
     public Interaction<StylesManagerWindowViewModel, Unit> ShowStylesManager { get; }
@@ -101,6 +102,9 @@ public partial class MainWindowViewModel : ViewModelBase
     // Subtitle
     [KeybindTarget("ameko.stylesManager.show")]
     public ICommand ShowStylesManagerCommand { get; }
+
+    [KeybindTarget("ameko.reference.attach")]
+    public ICommand AttachReferenceFileCommand { get; }
 
     // Solution
     // Timing
@@ -235,6 +239,7 @@ public partial class MainWindowViewModel : ViewModelBase
         SaveSolutionAs = new Interaction<string, Uri?>();
         // Subtitle
         ShowStylesManager = new Interaction<StylesManagerWindowViewModel, Unit>();
+        AttachReferenceFile = new Interaction<Unit, Uri?>();
         // Solution
         // Video
         OpenVideo = new Interaction<Unit, Uri?>();
@@ -265,6 +270,7 @@ public partial class MainWindowViewModel : ViewModelBase
         QuitCommand = CreateQuitCommand();
         // Subtitle
         ShowStylesManagerCommand = CreateShowStylesManagerCommand();
+        AttachReferenceFileCommand = CreateAttachReferenceFileCommand();
         // Solution
         // Timing
         ShowShiftTimesDialogCommand = CreateShowShiftTimesDialogCommand();
