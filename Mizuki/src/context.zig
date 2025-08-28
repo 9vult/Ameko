@@ -74,7 +74,7 @@ pub const BuffersContext = struct {
     max_size: c_int,
     total_size: c_int,
     buffers: std.ArrayList(*frames.FrameGroup),
-    audio_buffer: ?[]f32,
+    audio_buffer: ?[]i16,
     audio_frame: ?*frames.AudioFrame,
 
     pub fn Init() BuffersContext {

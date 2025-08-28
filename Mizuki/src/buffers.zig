@@ -28,7 +28,7 @@ pub fn InitAudio(g_ctx: *context.GlobalContext) ffms.FfmsError!void {
     const ffms_ctx = &g_ctx.*.ffms;
 
     const total_samples: usize = @intCast(ffms_ctx.sample_count * ffms_ctx.channel_count);
-    ctx.audio_buffer = try common.allocator.alloc(f32, total_samples);
+    ctx.audio_buffer = try common.allocator.alloc(i16, total_samples);
     ctx.audio_frame = try common.allocator.create(frames.AudioFrame);
     ctx.audio_frame.?.* = .{
         .data = ctx.audio_buffer.?.ptr,

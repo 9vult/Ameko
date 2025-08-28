@@ -71,8 +71,7 @@ public class OpenAlAudioRenderer(MediaController mediaController) : IAudioRender
             end = Math.Clamp(end, start, frame->DurationMillis);
 
             var duration = end - start;
-            var format =
-                frame->ChannelCount == 1 ? FloatBufferFormat.Mono : FloatBufferFormat.Stereo;
+            var format = frame->ChannelCount == 1 ? BufferFormat.Mono16 : BufferFormat.Stereo16;
 
             _buffer = new Buffer(_al);
             _buffer.LoadData(
