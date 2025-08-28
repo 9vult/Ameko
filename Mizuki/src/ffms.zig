@@ -252,18 +252,23 @@ pub fn LoadVideo(g_ctx: *context.GlobalContext, file_name: [*c]u8, cache_file_na
             return FfmsError.AudioTrackLoadingFailed;
         }
 
-        // Force usage of floats
-        const rs_options = c.FFMS_CreateResampleOptions(ctx.audio_source);
-        defer c.FFMS_DestroyResampleOptions(rs_options);
-        rs_options.*.SampleFormat = c.FFMS_FMT_S16;
-        _ = c.FFMS_SetOutputFormatA(ctx.audio_source, rs_options, &err_info);
-
         // Get video properties
         const audio_info = c.FFMS_GetAudioProperties(ctx.audio_source);
 
         ctx.channel_count = audio_info.*.Channels;
         ctx.sample_rate = audio_info.*.SampleRate;
         ctx.sample_count = audio_info.*.NumSamples;
+
+        // Configure output
+        const rs_options = c.FFMS_CreateResampleOptions(ctx.audio_source);
+        defer c.FFMS_DestroyResampleOptions(rs_options);
+
+        rs_options.*.SampleFormat = c.FFMS_FMT_S16;  // Use i16
+        if (ctx.channel_count > 2) { // Downmix to stereo
+            rs_options.*.ChannelLayout = c.FFMS_CH_FRONT_LEFT | c.FFMS_CH_FRONT_RIGHT;
+            ctx.channel_count = 2;
+        }
+        _ = c.FFMS_SetOutputFormatA(ctx.audio_source, rs_options, &err_info);
     }
     logger.Debug("[FFMS2] Successfully loaded video file");
 }
