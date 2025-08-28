@@ -200,5 +200,11 @@ namespace Ameko.I18N {
                 return ResourceManager.GetString("FileDialog_OpenFolderAsSolution_Title", resourceCulture);
             }
         }
+        
+        public static string FileDialog_AttachReferenceFile_Title {
+            get {
+                return ResourceManager.GetString("FileDialog_AttachReferenceFile_Title", resourceCulture);
+            }
+        }
     }
 }

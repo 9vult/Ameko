@@ -68,6 +68,10 @@
                       Icon="{icons:MaterialIconExt Kind=PaletteOutline}"
                       Command="{Binding ShowStylesManagerCommand}" />
             <Separator />
+            <MenuItem Header="{x:Static i18n:Resources.Menu_AttachReferenceFile}"
+                      Icon="{icons:MaterialIconExt Kind=ClosedCaptionOutline}"
+                      Command="{Binding AttachReferenceFileCommand}"/>
+            <Separator />
             <MenuItem Header="{x:Static i18n:Resources.Menu_ScriptProperties}"
                       Icon="{icons:MaterialIconExt Kind=ListBoxOutline}" />
         </MenuItem>
