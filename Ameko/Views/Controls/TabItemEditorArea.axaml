@@ -23,7 +23,8 @@
         <TextBox DockPanel.Dock="Bottom"
                  Margin="2"
                  IsReadOnly="True"
-                 FontFamily="{StaticResource MartianMonoFont}"
+                 FontSize="12"
+                 FontFamily="{StaticResource ZenKakuGothicNew}"
                  TextWrapping="Wrap"
                  IsVisible="{Binding Workspace.ReferenceFileManager.ReferenceLoaded}"
                  Text="{Binding Workspace.ReferenceFileManager.CurrentLines}" />
@@ -80,7 +81,7 @@
                            Margin="2"
                            IsTabStop="False"
                            VerticalAlignment="Center"
-                           FontFamily="{StaticResource MartianMonoFont}"
+                           FontFamily="{StaticResource MartianMono}"
                            Text="{Binding Workspace.SelectionManager.ActiveEvent.MaxLineWidth}"
                            ToolTip.Tip="{x:Static i18n:Resources.Editor_MaxLineWidth_ToolTip}" />
             </Grid>
@@ -101,7 +102,7 @@
                          Margin="2"
                          AcceptsReturn="False"
                          AcceptsTab="False"
-                         FontFamily="{StaticResource MartianMonoFont}"
+                         FontFamily="{StaticResource MartianMono}"
                          Text="{Binding Workspace.SelectionManager.ActiveEvent.Start.UpdatableText}"
                          ToolTip.Tip="{x:Static i18n:Resources.Editor_StartBox_ToolTip}"
                          TextChanged="AnyControl_EventTimeChanged" />
@@ -110,7 +111,7 @@
                          Margin="2"
                          AcceptsReturn="False"
                          AcceptsTab="False"
-                         FontFamily="{StaticResource MartianMonoFont}"
+                         FontFamily="{StaticResource MartianMono}"
                          Text="{Binding Workspace.SelectionManager.ActiveEvent.End.UpdatableText}"
                          ToolTip.Tip="{x:Static i18n:Resources.Editor_EndBox_ToolTip}"
                          TextChanged="AnyControl_EventTimeChanged" />
@@ -193,7 +194,8 @@
                      SelectionStart="{Binding EditBoxSelectionStart, Mode=TwoWay}"
                      SelectionEnd="{Binding EditBoxSelectionEnd, Mode=TwoWay}"
                      Margin="2 1"
-                     FontFamily="{StaticResource MartianMonoFont}"
+                     FontSize="14"
+                     FontFamily="{StaticResource ZenKakuGothicNew}"
                      TextWrapping="Wrap"
                      IsUndoEnabled="False" />
         </Grid>

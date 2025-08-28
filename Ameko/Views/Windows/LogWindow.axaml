@@ -21,7 +21,7 @@
 
     <ListBox Name="LogList"
              ItemsSource="{Binding LogEntries}"
-             FontFamily="{StaticResource MartianMonoFont}"
+             FontFamily="{StaticResource MartianMono}"
              SelectedItem="{Binding SelectedLog}"
              SelectionMode="Multiple"
              AutoScrollToSelectedItem="True" />
