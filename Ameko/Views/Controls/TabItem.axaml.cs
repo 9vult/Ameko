@@ -16,6 +16,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Media;
 using Avalonia.ReactiveUI;
+using Avalonia.Threading;
 using Holo.Configuration.Keybinds;
 using Holo.Models;
 using ReactiveUI;
@@ -120,6 +121,14 @@ public partial class TabItem : ReactiveUserControl<TabItemViewModel>
                     // Alert that the working space has changed
                     MessageBus.Current.SendMessage(new WorkingSpaceChangedMessage());
                     // Listen for scroll messages (?)
+
+                    Dispatcher.UIThread.Post(
+                        () =>
+                        {
+                            vm.Workspace.SelectionManager.EndSelectionChange();
+                        },
+                        DispatcherPriority.Background
+                    );
 
                     // Skip if already subscribed
                     if (PreviousVMs.Contains(vm))
