@@ -560,4 +560,30 @@ public partial class TabItemViewModel : ViewModelBase
                 Workspace.MediaController.ScaleFactor = scales[index - 1];
         });
     }
+
+    /// <summary>
+    /// Shift reference file forwards
+    /// </summary>
+    private ReactiveCommand<Unit, Unit> CreateShiftReferenceForwardCommand()
+    {
+        return ReactiveCommand.Create(() =>
+        {
+            if (!Workspace.ReferenceFileManager.ReferenceLoaded)
+                return;
+            Workspace.ReferenceFileManager.Shift(1);
+        });
+    }
+
+    /// <summary>
+    /// Shift reference file forwards
+    /// </summary>
+    private ReactiveCommand<Unit, Unit> CreateShiftReferenceBackwardCommand()
+    {
+        return ReactiveCommand.Create(() =>
+        {
+            if (!Workspace.ReferenceFileManager.ReferenceLoaded)
+                return;
+            Workspace.ReferenceFileManager.Shift(-1);
+        });
+    }
 }
