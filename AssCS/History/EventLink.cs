@@ -12,7 +12,7 @@ namespace AssCS.History;
 /// </remarks>
 public struct EventLink
 {
-    private Event _target;
+    private readonly Event _target;
 
     /// <summary>
     /// ID of the parent event, or <see langword="null"/> if there is no parent
@@ -34,7 +34,7 @@ public struct EventLink
     public Event Target
     {
         readonly get => _target.Clone();
-        set => _target = value.Clone();
+        init => _target = value.Clone();
     }
 
     /// <summary>

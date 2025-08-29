@@ -15,6 +15,7 @@ using AssCS.IO;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Threading;
 using Holo;
 using Holo.Configuration.Keybinds;
 using Holo.Models;
@@ -292,6 +293,42 @@ public partial class MainWindowViewModel : ViewModelBase
 
             Logger.Info("Shutting down...");
             desktop.Shutdown();
+        });
+    }
+
+    /// <summary>
+    /// Undo
+    /// </summary>
+    private ReactiveCommand<Unit, Unit> CreateUndoCommand()
+    {
+        return ReactiveCommand.Create(() =>
+        {
+            SolutionProvider.Current.WorkingSpace?.Undo();
+            Dispatcher.UIThread.Post(
+                () =>
+                {
+                    SolutionProvider.Current.WorkingSpace?.SelectionManager.EndSelectionChange();
+                },
+                DispatcherPriority.Background
+            );
+        });
+    }
+
+    /// <summary>
+    /// Redo
+    /// </summary>
+    private ReactiveCommand<Unit, Unit> CreateRedoCommand()
+    {
+        return ReactiveCommand.Create(() =>
+        {
+            SolutionProvider.Current.WorkingSpace?.Redo();
+            Dispatcher.UIThread.Post(
+                () =>
+                {
+                    SolutionProvider.Current.WorkingSpace?.SelectionManager.EndSelectionChange();
+                },
+                DispatcherPriority.Background
+            );
         });
     }
 

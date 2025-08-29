@@ -56,9 +56,15 @@
         </MenuItem>
         <MenuItem Header="{x:Static i18n:Resources.Menu_Edit}">
             <MenuItem Header="{x:Static i18n:Resources.Menu_Undo}"
-                      Icon="{icons:MaterialIconExt Kind=Undo}" />
+                      Icon="{icons:MaterialIconExt Kind=Undo}"
+                      IsEnabled="{Binding SolutionProvider.Current.WorkingSpace.Document.HistoryManager.CanUndo,
+                                          FallbackValue=false}"
+                      Command="{Binding UndoCommand}" />
             <MenuItem Header="{x:Static i18n:Resources.Menu_Redo}"
-                      Icon="{icons:MaterialIconExt Kind=Redo}" />
+                      Icon="{icons:MaterialIconExt Kind=Redo}"
+                      IsEnabled="{Binding SolutionProvider.Current.WorkingSpace.Document.HistoryManager.CanRedo,
+                                          FallbackValue=false}"
+                      Command="{Binding RedoCommand}" />
             <Separator />
             <MenuItem Header="{x:Static i18n:Resources.Menu_Search}"
                       Icon="{icons:MaterialIconExt Kind=TextSearch}"/>
