@@ -36,7 +36,7 @@ public class SelectionManager : BindableBase
     public void EndSelectionChange()
     {
         IsSelectionChanging = false;
-        Logger.Trace("Selection change ended");
+        Logger.Debug("Selection change ended");
     }
 
     /// <summary>
@@ -83,7 +83,7 @@ public class SelectionManager : BindableBase
         if (active == ActiveEvent && selection.Count == SelectedEventCollection.Count)
             return;
 
-        Logger.Info($"Now selecting {active.Id} ({selection.Count})");
+        Logger.Debug($"Now selecting {active.Id} ({selection.Count})");
         if (active == ActiveEvent && selection.Count == SelectedEventCollection.Count)
             return;
 

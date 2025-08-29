@@ -573,9 +573,15 @@ namespace Ameko.I18N {
             }
         }
         
-        public static string Menu_AttachReferenceFile {
+        public static string Menu_ReferenceFile_Attach {
             get {
-                return ResourceManager.GetString("Menu_AttachReferenceFile", resourceCulture);
+                return ResourceManager.GetString("Menu_ReferenceFile_Attach", resourceCulture);
+            }
+        }
+        
+        public static string Menu_ReferenceFile_Detatch {
+            get {
+                return ResourceManager.GetString("Menu_ReferenceFile_Detatch", resourceCulture);
             }
         }
     }

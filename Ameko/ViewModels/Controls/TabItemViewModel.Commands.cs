@@ -568,7 +568,7 @@ public partial class TabItemViewModel : ViewModelBase
     {
         return ReactiveCommand.Create(() =>
         {
-            if (!Workspace.ReferenceFileManager.ReferenceLoaded)
+            if (!Workspace.ReferenceFileManager.IsReferenceLoaded)
                 return;
             Workspace.ReferenceFileManager.Shift(1);
         });
@@ -581,7 +581,7 @@ public partial class TabItemViewModel : ViewModelBase
     {
         return ReactiveCommand.Create(() =>
         {
-            if (!Workspace.ReferenceFileManager.ReferenceLoaded)
+            if (!Workspace.ReferenceFileManager.IsReferenceLoaded)
                 return;
             Workspace.ReferenceFileManager.Shift(-1);
         });
