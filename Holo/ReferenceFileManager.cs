@@ -11,19 +11,26 @@ public class ReferenceFileManager : BindableBase
     private string _currentLines = string.Empty;
     private readonly SelectionManager _selectionManager;
 
+    /// <summary>
+    /// Document being referenced
+    /// </summary>
     public Document? Reference
     {
         get => _reference;
         set
         {
             SetProperty(ref _reference, value);
-            ReferenceLoaded = value is not null;
-            RaisePropertyChanged(nameof(ReferenceLoaded));
+            IsReferenceLoaded = value is not null;
+            RaisePropertyChanged(nameof(IsReferenceLoaded));
             GetCorrespondingLines();
         }
     }
 
-    public bool ReferenceLoaded { get; private set; }
+    /// <summary>
+    /// If the reference file is loaded
+    /// </summary>
+    [MemberNotNullWhen(true, nameof(Reference))]
+    public bool IsReferenceLoaded { get; private set; }
 
     public string CurrentLines
     {
@@ -33,11 +40,11 @@ public class ReferenceFileManager : BindableBase
 
     public void Shift(int seconds)
     {
-        if (_reference is null)
+        if (!IsReferenceLoaded)
             return;
 
         var offset = Time.FromSeconds(seconds);
-        foreach (var @event in _reference.EventManager.Events)
+        foreach (var @event in Reference.EventManager.Events)
         {
             @event.Start += offset;
             @event.End += offset;
@@ -47,7 +54,7 @@ public class ReferenceFileManager : BindableBase
 
     private void GetCorrespondingLines()
     {
-        if (Reference is null)
+        if (!IsReferenceLoaded)
             return;
         var hits = Reference
             .EventManager.Events.Where(e => e.CollidesWith(_selectionManager.ActiveEvent))

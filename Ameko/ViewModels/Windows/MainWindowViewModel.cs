@@ -103,8 +103,11 @@ public partial class MainWindowViewModel : ViewModelBase
     [KeybindTarget("ameko.stylesManager.show")]
     public ICommand ShowStylesManagerCommand { get; }
 
-    [KeybindTarget("ameko.reference.attach")]
+    [KeybindTarget("ameko.reference.attach", KeybindContext.Global)]
     public ICommand AttachReferenceFileCommand { get; }
+
+    [KeybindTarget("ameko.reference.detach", KeybindContext.Global)]
+    public ICommand DetachReferenceFileCommand { get; }
 
     // Solution
     // Timing
@@ -271,6 +274,7 @@ public partial class MainWindowViewModel : ViewModelBase
         // Subtitle
         ShowStylesManagerCommand = CreateShowStylesManagerCommand();
         AttachReferenceFileCommand = CreateAttachReferenceFileCommand();
+        DetachReferenceFileCommand = CreateDetachReferenceFileCommand();
         // Solution
         // Timing
         ShowShiftTimesDialogCommand = CreateShowShiftTimesDialogCommand();

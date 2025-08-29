@@ -68,9 +68,15 @@
                       Icon="{icons:MaterialIconExt Kind=PaletteOutline}"
                       Command="{Binding ShowStylesManagerCommand}" />
             <Separator />
-            <MenuItem Header="{x:Static i18n:Resources.Menu_AttachReferenceFile}"
+            <MenuItem Header="{x:Static i18n:Resources.Menu_ReferenceFile_Attach}"
                       Icon="{icons:MaterialIconExt Kind=ClosedCaptionOutline}"
-                      Command="{Binding AttachReferenceFileCommand}"/>
+                      IsVisible="{Binding !SolutionProvider.Current.WorkingSpace.ReferenceFileManager.IsReferenceLoaded}"
+                      Command="{Binding AttachReferenceFileCommand}" />
+            <MenuItem Header="{x:Static i18n:Resources.Menu_ReferenceFile_Detatch}"
+                      Icon="{icons:MaterialIconExt Kind=ClosedCaptionOutline}"
+                      IsVisible="{Binding SolutionProvider.Current.WorkingSpace.ReferenceFileManager.IsReferenceLoaded,
+                                          FallbackValue=false}"
+                      Command="{Binding DetachReferenceFileCommand}" />
             <Separator />
             <MenuItem Header="{x:Static i18n:Resources.Menu_ScriptProperties}"
                       Icon="{icons:MaterialIconExt Kind=ListBoxOutline}" />

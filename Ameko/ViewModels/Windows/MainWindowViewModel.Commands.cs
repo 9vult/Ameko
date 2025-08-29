@@ -314,7 +314,7 @@ public partial class MainWindowViewModel : ViewModelBase
     }
 
     /// <summary>
-    /// Display the Open Subtitle dialog
+    /// Display the "attach reference file" dialog
     /// </summary>
     private ReactiveCommand<Unit, Unit> CreateAttachReferenceFileCommand()
     {
@@ -330,6 +330,21 @@ public partial class MainWindowViewModel : ViewModelBase
                 return;
 
             wsp.ReferenceFileManager.Reference = new AssParser().Parse(_fileSystem, uri);
+        });
+    }
+
+    /// <summary>
+    /// Detatch the reference file
+    /// </summary>
+    private ReactiveCommand<Unit, Unit> CreateDetachReferenceFileCommand()
+    {
+        return ReactiveCommand.Create(() =>
+        {
+            Logger.Debug("Detaching reference file");
+            var wsp = SolutionProvider.Current.WorkingSpace;
+            if (wsp is null)
+                return;
+            wsp.ReferenceFileManager.Reference = null;
         });
     }
 

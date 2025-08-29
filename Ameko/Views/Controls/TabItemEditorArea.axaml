@@ -26,7 +26,7 @@
                  FontSize="12"
                  FontFamily="{StaticResource ZenKakuGothicNew}"
                  TextWrapping="Wrap"
-                 IsVisible="{Binding Workspace.ReferenceFileManager.ReferenceLoaded}"
+                 IsVisible="{Binding Workspace.ReferenceFileManager.IsReferenceLoaded}"
                  Text="{Binding Workspace.ReferenceFileManager.CurrentLines}" />
         <Grid Name="EditorPanel"
               RowDefinitions="Auto, Auto, *">
