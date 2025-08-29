@@ -48,6 +48,8 @@ public partial class TabItemEventsArea : ReactiveUserControl<TabItemViewModel>
     private void DataGrid_OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
         var active = (Event)EventsGrid.SelectedItem;
+        if (active is null)
+            return;
         var selection = EventsGrid.SelectedItems.Cast<Event>().ToList();
         // Side effect: set SelectionChanging to true to prevent Commit() calls
         ViewModel?.Workspace.SelectionManager.Select(active, selection);

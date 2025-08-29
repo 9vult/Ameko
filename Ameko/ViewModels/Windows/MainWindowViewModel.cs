@@ -99,6 +99,13 @@ public partial class MainWindowViewModel : ViewModelBase
     [KeybindTarget("ameko.application.quit", "Ctrl+Q")]
     public ICommand QuitCommand { get; }
 
+    // Edit
+    [KeybindTarget("ameko.document.undo", "Ctrl+Z")]
+    public ICommand UndoCommand { get; }
+
+    [KeybindTarget("ameko.document.redo", "Ctrl+Y")]
+    public ICommand RedoCommand { get; }
+
     // Subtitle
     [KeybindTarget("ameko.stylesManager.show")]
     public ICommand ShowStylesManagerCommand { get; }
@@ -271,6 +278,9 @@ public partial class MainWindowViewModel : ViewModelBase
         SaveSolutionCommand = CreateSaveSolutionCommand();
         CloseTabCommand = CreateCloseTabCommand();
         QuitCommand = CreateQuitCommand();
+        //Edit
+        UndoCommand = CreateUndoCommand();
+        RedoCommand = CreateRedoCommand();
         // Subtitle
         ShowStylesManagerCommand = CreateShowStylesManagerCommand();
         AttachReferenceFileCommand = CreateAttachReferenceFileCommand();

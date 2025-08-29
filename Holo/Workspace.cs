@@ -138,6 +138,116 @@ public class Workspace : BindableBase
         IsSaved = false;
     }
 
+    public void Undo()
+    {
+        if (!Document.HistoryManager.CanUndo)
+            return;
+        SelectionManager.BeginSelectionChange();
+        Logger.Trace("Undoing");
+        var commit = Document.HistoryManager.Undo();
+
+        if (commit is EventCommit eventCommit)
+        {
+            foreach (var link in eventCommit.Targets)
+            {
+                switch (link.Type)
+                {
+                    case CommitType.EventAdd:
+                        Document.EventManager.Remove(link.Target.Id);
+                        break;
+                    case CommitType.EventRemove:
+                        if (link.ParentId.HasValue)
+                            Document.EventManager.AddAfter(link.ParentId.Value, link.Target);
+                        break;
+                    case CommitType.EventMeta:
+                    case CommitType.EventTime:
+                    case CommitType.EventText:
+                    case CommitType.EventFull:
+                        Document.EventManager.ReplaceInPlace(link.Target);
+                        break;
+                    default:
+                        Logger.Warn($"Unknown event commit type: {link.Type}");
+                        break;
+                }
+            }
+        }
+        else if (commit is StyleCommit styleCommit)
+        {
+            switch (styleCommit.Type)
+            {
+                case CommitType.StyleAdd:
+                    Document.StyleManager.Remove(styleCommit.Target.Id);
+                    break;
+                case CommitType.StyleRemove:
+                case CommitType.StyleMeta:
+                    Document.StyleManager.AddOrReplace(styleCommit.Target);
+                    break;
+                default:
+                    Logger.Warn($"Unknown style commit type: {styleCommit.Type}");
+                    break;
+            }
+        }
+        else
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public void Redo()
+    {
+        if (!Document.HistoryManager.CanRedo)
+            return;
+        SelectionManager.BeginSelectionChange();
+        Logger.Trace("Redoing");
+        var commit = Document.HistoryManager.Redo();
+
+        if (commit is EventCommit eventCommit)
+        {
+            foreach (var link in eventCommit.Targets)
+            {
+                switch (link.Type)
+                {
+                    case CommitType.EventAdd:
+                        if (link.ParentId.HasValue)
+                            Document.EventManager.AddAfter(link.ParentId.Value, link.Target);
+                        break;
+                    case CommitType.EventRemove:
+                        Document.EventManager.Remove(link.Target.Id);
+                        break;
+                    case CommitType.EventMeta:
+                    case CommitType.EventTime:
+                    case CommitType.EventText:
+                    case CommitType.EventFull:
+                        Document.EventManager.ReplaceInPlace(link.Target);
+                        break;
+                    default:
+                        Logger.Warn($"Unknown event commit type: {link.Type}");
+                        break;
+                }
+            }
+        }
+        else if (commit is StyleCommit styleCommit)
+        {
+            switch (styleCommit.Type)
+            {
+                case CommitType.StyleAdd:
+                case CommitType.StyleMeta:
+                    Document.StyleManager.AddOrReplace(styleCommit.Target);
+                    break;
+                case CommitType.StyleRemove:
+                    Document.StyleManager.Remove(styleCommit.Target.Id);
+                    break;
+                default:
+                    Logger.Warn($"Unknown style commit type: {styleCommit.Type}");
+                    break;
+            }
+        }
+        else
+        {
+            throw new NotImplementedException();
+        }
+    }
+
     /// <summary>
     /// A group of related files for editing, part of a <see cref="Solution"/>
     /// </summary>

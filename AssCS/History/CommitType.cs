@@ -27,7 +27,7 @@ public enum CommitType
     /// <summary>
     /// A style has been changed
     /// </summary>
-    Style = 1 << 2,
+    StyleMeta = 1 << 2,
 
     /// <summary>
     /// Attachments have been changed
