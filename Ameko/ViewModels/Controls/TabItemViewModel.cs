@@ -112,6 +112,12 @@ public partial class TabItemViewModel : ViewModelBase
     [KeybindTarget("ameko.video.zoom.out", "Ctrl+OemMinus", KeybindContext.Video)]
     public ICommand ZoomOutCommand { get; }
 
+    [KeybindTarget("ameko.reference.shift.forward", KeybindContext.Editor)]
+    public ICommand ShiftReferenceForwardCommand { get; }
+
+    [KeybindTarget("ameko.reference.shift.backward", KeybindContext.Editor)]
+    public ICommand ShiftReferenceBackwardCommand { get; }
+
     #endregion
 
     private readonly IScriptService _scriptService;
@@ -187,6 +193,7 @@ public partial class TabItemViewModel : ViewModelBase
         ActiveEndCommand = CreateActiveEndCommand();
         ZoomInCommand = CreateZoomInCommand();
         ZoomOutCommand = CreateZoomOutCommand();
+
         #endregion
 
         _workspace = workspace;

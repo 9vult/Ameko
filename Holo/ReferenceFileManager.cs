@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 
+using System.Diagnostics.CodeAnalysis;
 using AssCS;
 
 namespace Holo;
@@ -28,6 +29,20 @@ public class ReferenceFileManager : BindableBase
     {
         get => _currentLines;
         set => SetProperty(ref _currentLines, value);
+    }
+
+    public void Shift(int seconds)
+    {
+        if (_reference is null)
+            return;
+
+        var offset = Time.FromSeconds(seconds);
+        foreach (var @event in _reference.EventManager.Events)
+        {
+            @event.Start += offset;
+            @event.End += offset;
+        }
+        GetCorrespondingLines();
     }
 
     private void GetCorrespondingLines()
