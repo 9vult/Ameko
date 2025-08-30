@@ -15,10 +15,10 @@ public class WorkspaceTests
         var e = new Event(99);
         wsp.Document.EventManager.AddLast(e);
 
-        wsp.Commit(e, CommitType.EventAdd);
+        wsp.Commit(e, ChangeType.Add);
 
         wsp.Document.HistoryManager.CanUndo.ShouldBeTrue();
-        wsp.Document.HistoryManager.LastCommitType.ShouldBe(CommitType.EventAdd);
+        wsp.Document.HistoryManager.LastCommitType.ShouldBe(ChangeType.Add);
     }
 
     [Fact]
@@ -30,14 +30,14 @@ public class WorkspaceTests
         wsp.Document.EventManager.AddLast(e1);
         wsp.Document.EventManager.AddLast(e2);
 
-        wsp.Commit([e1, e2], CommitType.EventAdd);
+        wsp.Commit([e1, e2], ChangeType.Add);
 
         wsp.Document.HistoryManager.CanUndo.ShouldBeTrue();
-        wsp.Document.HistoryManager.LastCommitType.ShouldBe(CommitType.EventAdd);
+        wsp.Document.HistoryManager.LastCommitType.ShouldBe(ChangeType.Add);
 
         var commit = wsp.Document.HistoryManager.Undo() as EventCommit;
         commit.ShouldNotBeNull();
-        commit.Targets.Count.ShouldBe(2);
+        commit.Deltas.Count.ShouldBe(2);
     }
 
     [Fact]
@@ -46,16 +46,16 @@ public class WorkspaceTests
         var wsp = new Workspace(new Document(true), 1);
         var e1 = new Event(99);
         wsp.Document.EventManager.AddLast(e1);
-        wsp.Commit(e1, CommitType.EventAdd);
+        wsp.Commit(e1, ChangeType.Add);
 
         var e2 = new Event(100);
         wsp.Document.EventManager.AddLast(e2);
-        wsp.Commit(e2, CommitType.EventAdd);
+        wsp.Commit(e2, ChangeType.Add);
 
         wsp.Document.HistoryManager.CanUndo.ShouldBeTrue();
         var commit = wsp.Document.HistoryManager.Undo() as EventCommit;
         commit.ShouldNotBeNull();
-        commit.Targets.Count.ShouldBe(2);
+        commit.Deltas.Count.ShouldBe(2);
     }
 
     [Fact]
@@ -64,16 +64,16 @@ public class WorkspaceTests
         var wsp = new Workspace(new Document(true), 1);
         var e1 = new Event(99);
         wsp.Document.EventManager.AddLast(e1);
-        wsp.Commit(e1, CommitType.EventAdd);
+        wsp.Commit(e1, ChangeType.Add);
 
         e1.Text = "test";
-        wsp.Commit(wsp.Document.EventManager.Tail, CommitType.EventText);
+        wsp.Commit(wsp.Document.EventManager.Tail, ChangeType.Modify);
 
         wsp.Document.HistoryManager.CanUndo.ShouldBeTrue();
         var commit = wsp.Document.HistoryManager.Undo() as EventCommit;
         commit.ShouldNotBeNull();
-        commit.Targets.Count.ShouldBe(1);
-        commit.Targets.First().Target.ShouldBeEquivalentTo(e1);
+        commit.Deltas.Count.ShouldBe(1);
+        commit.Deltas.First().NewEvent.ShouldBeEquivalentTo(e1);
     }
 
     [Fact]

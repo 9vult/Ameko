@@ -98,6 +98,9 @@ public class HistoryManager : BindableBase
                 );
                 break;
         }
+        if (!coalesce)
+            _history.Push(commit);
+
         LastCommitTime = DateTimeOffset.Now;
         LastCommitType = type;
         LastId = commit.Id;
