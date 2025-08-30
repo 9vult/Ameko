@@ -122,6 +122,22 @@ public class Time : BindableBase, IComparable<Time>
     }
 
     /// <summary>
+    /// Initialize a Time object from a srt-formatted Time string
+    /// </summary>
+    /// <param name="data">Srt-formatted string</param>
+    /// <returns>Time object represented by the string</returns>
+    /// <exception cref="ArgumentException">If the data is malformed</exception>
+    public static Time FromSrt(string data)
+    {
+        var splits = data.Split(':', '.', ',');
+        if (splits.Length != 4)
+            throw new ArgumentException($"Time: {data} is an invalid timecode.");
+        int[] multiplier = [3600 * 1000, 60 * 1000, 1000, 1];
+        long millis = splits.Select((t, i) => Convert.ToInt64(t) * multiplier[i]).Sum();
+        return FromMillis(millis);
+    }
+
+    /// <summary>
     /// Create a Time object from milliseconds
     /// </summary>
     /// <param name="millis">Number of milliseconds</param>
