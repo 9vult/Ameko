@@ -206,23 +206,5 @@ namespace Ameko.I18N {
                 return ResourceManager.GetString("FileDialog_AttachReferenceFile_Title", resourceCulture);
             }
         }
-        
-        public static string MsgBox_FileModified_Title {
-            get {
-                return ResourceManager.GetString("MsgBox_FileModified_Title", resourceCulture);
-            }
-        }
-        
-        public static string MsgBox_FileModified_Body_L1 {
-            get {
-                return ResourceManager.GetString("MsgBox_FileModified_Body_L1", resourceCulture);
-            }
-        }
-        
-        public static string MsgBox_FileModified_Body_L2 {
-            get {
-                return ResourceManager.GetString("MsgBox_FileModified_Body_L2", resourceCulture);
-            }
-        }
     }
 }

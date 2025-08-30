@@ -1,11 +1,11 @@
 ﻿// SPDX-License-Identifier: GPL-3.0-only
 
-using System.Reactive;
+using System;
+using System.Reactive.Linq;
 using System.Windows.Input;
 using Ameko.Messages;
 using Ameko.Services;
 using Ameko.ViewModels.Dialogs;
-using AssCS;
 using Holo;
 using Holo.Configuration;
 using Holo.Configuration.Keybinds;
@@ -26,6 +26,10 @@ public partial class TabItemViewModel : ViewModelBase
         PasteOverDialogViewModel,
         PasteOverDialogClosedMessage
     > ShowPasteOverDialog { get; }
+    public Interaction<
+        FileModifiedDialogViewModel,
+        FileModifiedDialogClosedMessage
+    > ShowFileModifiedDialog { get; }
 
     #endregion
 
@@ -159,6 +163,8 @@ public partial class TabItemViewModel : ViewModelBase
         PasteEvents = new Interaction<TabItemViewModel, string[]?>();
         ShowPasteOverDialog =
             new Interaction<PasteOverDialogViewModel, PasteOverDialogClosedMessage>();
+        ShowFileModifiedDialog =
+            new Interaction<FileModifiedDialogViewModel, FileModifiedDialogClosedMessage>();
         #endregion
 
         #region Commands
@@ -203,11 +209,16 @@ public partial class TabItemViewModel : ViewModelBase
         KeybindService = keybindService;
         LayoutProvider = layoutProvider;
 
-        _workspace.OnFileModifiedExternally += (_, _) =>
+        _workspace.OnFileModifiedExternally += async (_, _) =>
         {
-            MessageBus.Current.SendMessage(
-                new FileModifiedExternallyMessage { FileName = _workspace.Title }
+            var result = await ShowFileModifiedDialog.Handle(
+                new FileModifiedDialogViewModel(Workspace.Title)
             );
+
+            if (result.Result == FileModifiedDialogClosedResult.Ignore)
+                return;
+
+            throw new NotImplementedException("FileModifiedDialogClosedResult.SaveAs");
         };
     }
 }
