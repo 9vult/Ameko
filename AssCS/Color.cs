@@ -145,6 +145,41 @@ public partial class Color : BindableBase
     }
 
     /// <summary>
+    /// Initialize a color from hex <c>#RRGGBB[AA]</c> string
+    /// </summary>
+    /// <param name="hex">Hexadecimal representation of the color</param>
+    /// <returns>Color object set to the values provided</returns>
+    /// <exception cref="ArgumentException">If the hex is invalid</exception>
+    public static Color FromHex(string hex)
+    {
+        if (hex.Length < 6)
+            throw new ArgumentException($"Hex color {hex} is invalid.");
+        if (hex[0] == '#')
+            hex = hex[1..];
+
+        var red = Convert.ToByte(hex[..2], 16);
+        var green = Convert.ToByte(hex[2..4], 16);
+        var blue = Convert.ToByte(hex[4..6], 16);
+
+        if (hex.Length == 6)
+            return FromRgb(red, green, blue);
+
+        var alpha = Convert.ToByte(hex[6..8], 16);
+        return FromRgba(red, green, blue, alpha);
+    }
+
+    /// <summary>
+    /// Initialize a color from an HTML color name
+    /// </summary>
+    /// <param name="name">HTML color name</param>
+    /// <returns>Color object set to the values provided</returns>
+    public static Color FromHtml(string name)
+    {
+        var color = System.Drawing.Color.FromName(name);
+        return FromRgb(color.R, color.G, color.B);
+    }
+
+    /// <summary>
     /// Initialize a color from another Color
     /// </summary>
     /// <param name="color">Color to use as the basis</param>
