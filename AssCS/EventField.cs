@@ -17,4 +17,16 @@ public enum EventField
     MarginVertical = 256,
     Effect = 512,
     Text = 1024,
+    All =
+        Comment
+        | Layer
+        | StartTime
+        | EndTime
+        | Style
+        | Actor
+        | MarginLeft
+        | MarginRight
+        | MarginVertical
+        | Effect
+        | Text,
 }
