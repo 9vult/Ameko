@@ -99,4 +99,13 @@
     <data name="FileDialog_AttachReferenceFile_Title" xml:space="preserve">
         <value>Attach Reference File</value>
     </data>
+    <data name="MsgBox_FileModified_Title" xml:space="preserve">
+        <value>File Modified</value>
+    </data>
+    <data name="MsgBox_FileModified_Body_L1" xml:space="preserve">
+        <value>"{0}" was modified outside of Ameko.</value>
+    </data>
+    <data name="MsgBox_FileModified_Body_L2" xml:space="preserve">
+        <value>Saving will overwrite those changes.</value>
+    </data>
 </root>

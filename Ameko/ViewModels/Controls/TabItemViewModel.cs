@@ -202,5 +202,12 @@ public partial class TabItemViewModel : ViewModelBase
         Configuration = configuration;
         KeybindService = keybindService;
         LayoutProvider = layoutProvider;
+
+        _workspace.OnFileModifiedExternally += (_, _) =>
+        {
+            MessageBus.Current.SendMessage(
+                new FileModifiedExternallyMessage { FileName = _workspace.Title }
+            );
+        };
     }
 }
