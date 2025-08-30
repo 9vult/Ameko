@@ -108,6 +108,26 @@ public partial class TabItem : ReactiveUserControl<TabItemViewModel>
         interaction.SetOutput(result);
     }
 
+    private async Task DoShowFileModifiedDialogAsync(
+        IInteractionContext<
+            FileModifiedDialogViewModel,
+            FileModifiedDialogClosedMessage
+        > interaction
+    )
+    {
+        var window = TopLevel.GetTopLevel(this);
+        if (window is null)
+        {
+            interaction.SetOutput(
+                new FileModifiedDialogClosedMessage(FileModifiedDialogClosedResult.Ignore)
+            );
+            return;
+        }
+        var dialog = new FileModifiedDialog { DataContext = interaction.Input };
+        var result = await dialog.ShowDialog<FileModifiedDialogClosedMessage>((Window)window);
+        interaction.SetOutput(result);
+    }
+
     public TabItem()
     {
         InitializeComponent();
@@ -139,6 +159,7 @@ public partial class TabItem : ReactiveUserControl<TabItemViewModel>
                     vm.CutEvents.RegisterHandler(DoCutEventsAsync);
                     vm.PasteEvents.RegisterHandler(DoPasteEventsAsync);
                     vm.ShowPasteOverDialog.RegisterHandler(DoShowPasteOverDialogAsync);
+                    vm.ShowFileModifiedDialog.RegisterHandler(DoShowFileModifiedDialogAsync);
 
                     // Register keybinds
                     AttachKeybinds(vm);
