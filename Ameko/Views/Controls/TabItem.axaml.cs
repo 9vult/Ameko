@@ -142,6 +142,9 @@ public partial class TabItem : ReactiveUserControl<TabItemViewModel>
                     MessageBus.Current.SendMessage(new WorkingSpaceChangedMessage());
                     // Listen for scroll messages (?)
 
+                    AttachKeybinds(vm);
+                    ApplyLayout(vm, vm.LayoutProvider.Current);
+
                     Dispatcher.UIThread.Post(
                         () =>
                         {
@@ -162,14 +165,12 @@ public partial class TabItem : ReactiveUserControl<TabItemViewModel>
                     vm.ShowFileModifiedDialog.RegisterHandler(DoShowFileModifiedDialogAsync);
 
                     // Register keybinds
-                    AttachKeybinds(vm);
                     vm.KeybindService.KeybindRegistrar.OnKeybindsChanged += (_, _) =>
                     {
                         AttachKeybinds(vm);
                     };
 
                     // Apply layouts
-                    ApplyLayout(vm, vm.LayoutProvider.Current);
                     vm.LayoutProvider.OnLayoutChanged += (_, args) =>
                     {
                         ApplyLayout(vm, args.Layout);

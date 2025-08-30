@@ -33,6 +33,7 @@ public partial class TabItemEditorArea : ReactiveUserControl<TabItemViewModel>
         if (e.Key != Key.Enter)
             return;
 
+        e.Handled = true;
         if (e.KeyModifiers.HasFlag(KeyModifiers.Shift))
         {
             var idx = EditBox.CaretIndex;
@@ -100,10 +101,6 @@ public partial class TabItemEditorArea : ReactiveUserControl<TabItemViewModel>
                 {
                     // TODO: Keybinds
 
-                    if (PreviousVMs.Contains(vm))
-                        return;
-                    PreviousVMs.Add(vm);
-
                     StartBox.AddHandler(
                         TextBox.KeyDownEvent,
                         Extras.PreKeyDownEventHandler,
@@ -124,6 +121,10 @@ public partial class TabItemEditorArea : ReactiveUserControl<TabItemViewModel>
                         EditBox_OnKeyDown,
                         RoutingStrategies.Bubble
                     );
+
+                    if (PreviousVMs.Contains(vm))
+                        return;
+                    PreviousVMs.Add(vm);
                 })
                 .DisposeWith(disposables);
         });
