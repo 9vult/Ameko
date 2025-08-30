@@ -48,9 +48,12 @@ public class WorkspaceTests
         wsp.Document.EventManager.AddLast(e1);
         wsp.Commit(e1, ChangeType.Add);
 
-        var e2 = new Event(100);
-        wsp.Document.EventManager.AddLast(e2);
-        wsp.Commit(e2, ChangeType.Add);
+        wsp.Document.HistoryManager.BeginTransaction([e1]);
+        e1.Text = "Hello";
+        wsp.Commit(e1, ChangeType.Modify);
+
+        e1.Text = "Hello World";
+        wsp.Commit(e1, ChangeType.Modify);
 
         wsp.Document.HistoryManager.CanUndo.ShouldBeTrue();
         var commit = wsp.Document.HistoryManager.Undo() as EventCommit;

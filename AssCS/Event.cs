@@ -379,13 +379,21 @@ public partial class Event(int id) : BindableBase, IEntry
     /// Clone this event
     /// </summary>
     /// <returns>Clone of the event</returns>
-    /// <remarks>
-    /// This method currently uses serialization
-    /// as the clone method. This is subject to change.
-    /// </remarks>
     public Event Clone()
     {
-        return FromAss(Id, AsAss());
+        return new Event(Id)
+        {
+            IsComment = IsComment,
+            Layer = Layer,
+            Start = Time.FromTime(Start),
+            End = Time.FromTime(End),
+            Style = Style,
+            Actor = Actor,
+            Margins = new Margins(Margins.Left, Margins.Right, Margins.Vertical),
+            Effect = Effect,
+            Text = Text,
+            LinkedExtradatas = [.. LinkedExtradatas],
+        };
     }
 
     /// <summary>
@@ -393,13 +401,21 @@ public partial class Event(int id) : BindableBase, IEntry
     /// </summary>
     /// <param name="eventId">New ID</param>
     /// <returns>Clone of the event</returns>
-    /// <remarks>
-    /// This method currently uses serialization
-    /// as the clone method. This is subject to change.
-    /// </remarks>
     public Event Clone(int eventId)
     {
-        return FromAss(eventId, AsAss());
+        return new Event(eventId)
+        {
+            IsComment = IsComment,
+            Layer = Layer,
+            Start = Time.FromTime(Start),
+            End = Time.FromTime(End),
+            Style = Style,
+            Actor = Actor,
+            Margins = new Margins(Margins.Left, Margins.Right, Margins.Vertical),
+            Effect = Effect,
+            Text = Text,
+            LinkedExtradatas = [.. LinkedExtradatas],
+        };
     }
 
     #region Tags n stuff
