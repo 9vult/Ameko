@@ -181,6 +181,24 @@ public class HistoryManager : BindableBase
         return commit;
     }
 
+    public ICommit PeekHistory()
+    {
+        if (!CanUndo || !_history.TryPeek(out var commit))
+            throw new InvalidOperationException(
+                "Cannot peek history, no commits in the undo stack!"
+            );
+        return commit;
+    }
+
+    public ICommit PeekFuture()
+    {
+        if (!CanRedo || !_future.TryPeek(out var commit))
+            throw new InvalidOperationException(
+                "Cannot peek future, no commits in the redo stack!"
+            );
+        return commit;
+    }
+
     /// <summary>
     /// Raise property changed events for undo/redo abilities.
     /// </summary>

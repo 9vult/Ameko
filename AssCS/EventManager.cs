@@ -443,8 +443,7 @@ public class EventManager : BindableBase
                     $"Cannot replace event id={e.Id} because that id cannot be found."
                 );
 
-            original.Node.Value = e.Id; // Set the LinkedList value to the new ID
-            _events[e.Id] = new Link(original.Node, e); // Add the new ID
+            original.Event.SetFields(EventField.All, e);
         }
         Notify();
     }

@@ -128,6 +128,8 @@ public class Workspace : BindableBase
                 || (
                     Document.HistoryManager.LastCommitType == changeType
                     && Document.HistoryManager.LastCommitTime.AddSeconds(30) > DateTimeOffset.Now // TODO: Add an option for this
+                    && Document.HistoryManager.PeekHistory() is EventCommit eventCommit
+                    && selection.Any(e => e.Id == eventCommit.Deltas.Last().NewEvent?.Id)
                 )
             );
 
@@ -151,6 +153,41 @@ public class Workspace : BindableBase
         SelectionManager.BeginSelectionChange();
         Logger.Trace("Undoing");
         var commit = Document.HistoryManager.Undo();
+
+        if (commit is EventCommit eventCommit)
+        {
+            for (int i = eventCommit.Deltas.Count - 1; i >= 0; i--)
+            {
+                var delta = eventCommit.Deltas[i];
+
+                switch (delta.Type)
+                {
+                    case ChangeType.Add:
+                        if (delta.NewEvent is not null)
+                            Document.EventManager.Remove(delta.NewEvent.Id);
+                        else
+                            Logger.Warn($"Cannot undo event addition because newEvent is null");
+                        break;
+                    case ChangeType.Remove:
+                        if (delta.OldEvent is not null)
+                        {
+                            if (delta.ParentId is null)
+                                Document.EventManager.AddFirst(delta.OldEvent);
+                            else
+                                Document.EventManager.AddAfter(
+                                    delta.ParentId.Value,
+                                    delta.OldEvent
+                                );
+                        }
+                        else
+                            Logger.Warn($"Cannot undo event removal because oldEvent is null");
+                        break;
+                    case ChangeType.Modify:
+                        Document.EventManager.ReplaceInPlace(delta.OldEvent!);
+                        break;
+                }
+            }
+        }
     }
 
     public void Redo()
@@ -160,6 +197,42 @@ public class Workspace : BindableBase
         SelectionManager.BeginSelectionChange();
         Logger.Trace("Redoing");
         var commit = Document.HistoryManager.Redo();
+
+        if (commit is EventCommit eventCommit)
+        {
+            for (int i = 0; i <= eventCommit.Deltas.Count - 1; i++)
+            {
+                var delta = eventCommit.Deltas[i];
+
+                switch (delta.Type)
+                {
+                    case ChangeType.Add:
+                        if (delta.NewEvent is not null)
+                        {
+                            if (delta.ParentId is null)
+                                Document.EventManager.AddFirst(delta.NewEvent);
+                            else
+                                Document.EventManager.AddAfter(
+                                    delta.ParentId.Value,
+                                    delta.NewEvent
+                                );
+                        }
+                        else
+                            Logger.Warn($"Cannot redo event addition because newEvent is null");
+
+                        break;
+                    case ChangeType.Remove:
+                        if (delta.OldEvent is not null)
+                            Document.EventManager.Remove(delta.OldEvent.Id);
+                        else
+                            Logger.Warn($"Cannot redo event removal because oldEvent is null");
+                        break;
+                    case ChangeType.Modify:
+                        Document.EventManager.ReplaceInPlace(delta.NewEvent!);
+                        break;
+                }
+            }
+        }
     }
 
     /// <summary>
@@ -178,6 +251,8 @@ public class Workspace : BindableBase
 
         SelectionManager = new SelectionManager(Document.EventManager.Head);
         ReferenceFileManager = new ReferenceFileManager(SelectionManager);
+
+        Document.HistoryManager.BeginTransaction([Document.EventManager.Head]);
 
         // TODO: make this cleaner
         var mp = new MizukiSourceProvider();

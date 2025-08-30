@@ -12,12 +12,14 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.ReactiveUI;
 using Avalonia.Threading;
+using NLog;
 using ReactiveUI;
 
 namespace Ameko.Views.Controls;
 
 public partial class TabItemEventsArea : ReactiveUserControl<TabItemViewModel>
 {
+    private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
     private static readonly List<TabItemViewModel> PreviousVMs = [];
 
     public TabItemEventsArea()
@@ -54,6 +56,10 @@ public partial class TabItemEventsArea : ReactiveUserControl<TabItemViewModel>
         // Side effect: set SelectionChanging to true to prevent Commit() calls
         ViewModel?.Workspace.SelectionManager.Select(active, selection);
         ViewModel?.Workspace.MediaController.AutoSeekTo(active);
+
+        // Prepare for edits
+        ViewModel?.Workspace.Document.HistoryManager.BeginTransaction(selection);
+        Logger.Debug($"Began transaction for {selection.Count} events");
 
         // Mark the selection change complete (on the UI thread)
         // to re-allow Commit() calls
