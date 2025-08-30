@@ -10,15 +10,15 @@ using Ameko.Messages;
 using Ameko.ViewModels.Dialogs;
 using Ameko.ViewModels.Windows;
 using Ameko.Views.Dialogs;
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Platform.Storage;
 using Avalonia.ReactiveUI;
-using Avalonia.Styling;
-using Holo;
+using Avalonia.Threading;
 using Holo.Configuration.Keybinds;
 using Holo.Models;
+using MsBox.Avalonia;
+using MsBox.Avalonia.Enums;
 using NLog;
 using ReactiveUI;
 
@@ -314,6 +314,18 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         interaction.SetOutput(Unit.Default);
     }
 
+    private void OnFileModifiedExternally(FileModifiedExternallyMessage message)
+    {
+        Dispatcher.UIThread.Post(() =>
+        {
+            var title = I18N.Other.MsgBox_FileModified_Title;
+            var content1 = string.Format(I18N.Other.MsgBox_FileModified_Body_L1, message.FileName);
+            var content2 = I18N.Other.MsgBox_FileModified_Body_L2;
+            var content = $"{content1}\n{content2}";
+            MessageBoxManager.GetMessageBoxStandard(title, content).ShowWindowDialogAsync(this);
+        });
+    }
+
     public MainWindow()
     {
         Log.Info("Initializing Main Window...");
@@ -363,6 +375,10 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
                 {
                     ApplyLayout(ViewModel, args.Layout);
                 };
+
+                MessageBus
+                    .Current.Listen<FileModifiedExternallyMessage>()
+                    .Subscribe(OnFileModifiedExternally);
             }
 
             Disposable.Create(() => { }).DisposeWith(disposables);

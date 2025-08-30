@@ -18,6 +18,9 @@ namespace Holo;
 public class Workspace : BindableBase
 {
     private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+    private FileSystemWatcher? _fileSystemWatcher;
+    private DateTimeOffset? _lastWriteTime;
+
     private Uri? _savePath;
     private bool _isSaved;
 
@@ -57,6 +60,19 @@ public class Workspace : BindableBase
         {
             SetProperty(ref _savePath, value);
             RaisePropertyChanged(nameof(DisplayTitle));
+
+            if (_fileSystemWatcher is null && value is not null)
+            {
+                _fileSystemWatcher = new FileSystemWatcher(
+                    Path.GetDirectoryName(value.LocalPath) ?? "/",
+                    Path.GetFileName(value.LocalPath)
+                );
+                _fileSystemWatcher.NotifyFilter =
+                    NotifyFilters.LastWrite | NotifyFilters.Size | NotifyFilters.FileName;
+                _fileSystemWatcher.EnableRaisingEvents = true;
+                _fileSystemWatcher.Changed += FileSystemWatcherOnChanged;
+                _fileSystemWatcher.Renamed += FileSystemWatcherOnChanged;
+            }
         }
     }
 
@@ -70,6 +86,8 @@ public class Workspace : BindableBase
         {
             SetProperty(ref _isSaved, value);
             RaisePropertyChanged(nameof(DisplayTitle));
+            if (value)
+                _lastWriteTime = DateTimeOffset.Now;
         }
     }
 
@@ -236,6 +254,23 @@ public class Workspace : BindableBase
     }
 
     /// <summary>
+    /// Listen for updates from the <see cref="_fileSystemWatcher"/>
+    /// </summary>
+    /// <param name="sender">The FileSystemWatcher</param>
+    /// <param name="e"></param>
+    /// <exception cref="NotImplementedException"></exception>
+    private void FileSystemWatcherOnChanged(object sender, FileSystemEventArgs e)
+    {
+        if (
+            _lastWriteTime is not null
+            && DateTimeOffset.Now - _lastWriteTime <= TimeSpan.FromSeconds(5)
+        )
+            return;
+        // Also alert if last write time is null
+        OnFileModifiedExternally?.Invoke(this, EventArgs.Empty);
+    }
+
+    /// <summary>
     /// A group of related files for editing, part of a <see cref="Solution"/>
     /// </summary>
     /// <param name="document">Ass document</param>
@@ -248,6 +283,19 @@ public class Workspace : BindableBase
         Id = id;
         _savePath = savePath;
         IsSaved = true;
+
+        if (_savePath is not null)
+        {
+            _fileSystemWatcher = new FileSystemWatcher(
+                Path.GetDirectoryName(_savePath.LocalPath) ?? "/",
+                Path.GetFileName(_savePath.LocalPath)
+            );
+            _fileSystemWatcher.NotifyFilter =
+                NotifyFilters.LastWrite | NotifyFilters.Size | NotifyFilters.FileName;
+            _fileSystemWatcher.Changed += FileSystemWatcherOnChanged;
+            _fileSystemWatcher.Renamed += FileSystemWatcherOnChanged;
+            _fileSystemWatcher.EnableRaisingEvents = true;
+        }
 
         SelectionManager = new SelectionManager(Document.EventManager.Head);
         ReferenceFileManager = new ReferenceFileManager(SelectionManager);
@@ -262,4 +310,6 @@ public class Workspace : BindableBase
         // TODO: Should this be here or elsewhere?
         document.HistoryManager.OnChangeMade += (_, _) => MediaController.SetSubtitles(document);
     }
+
+    public event EventHandler<EventArgs>? OnFileModifiedExternally;
 }
