@@ -104,9 +104,10 @@ public class Workspace : BindableBase
     /// </summary>
     /// <param name="active">Active event (<see cref="SelectionManager.ActiveEvent"/>)</param>
     /// <param name="changeType">Type of change</param>
-    public void Commit(Event active, CommitType changeType)
+    /// <param name="amend">Force amend</param>
+    public void Commit(Event active, ChangeType changeType, bool amend = false)
     {
-        Commit([active], changeType);
+        Commit([active], changeType, amend);
     }
 
     /// <summary>
@@ -114,25 +115,30 @@ public class Workspace : BindableBase
     /// </summary>
     /// <param name="selection">Entire selection (<see cref="SelectionManager.SelectedEventCollection"/>)</param>
     /// <param name="changeType">Type of change</param>
-    public void Commit(IList<Event> selection, CommitType changeType)
+    /// <param name="amend">Force amend</param>
+    public void Commit(IList<Event> selection, ChangeType changeType, bool amend = false)
     {
         // See: SubsEditBox::SetSelectedRows
         // https://github.com/arch1t3cht/Aegisub/blob/b2a0b098215d7028ba26f1bf728731fc585f2b99/src/subs_edit_box.cpp#L476
 
-        var amend =
+        amend =
             Document.HistoryManager.CanUndo
-            && Document.HistoryManager.LastCommitType == changeType
-            && Document.HistoryManager.LastCommitTime.AddSeconds(30) > DateTimeOffset.Now; // TODO: Add an option for this
+            && (
+                amend
+                || (
+                    Document.HistoryManager.LastCommitType == changeType
+                    && Document.HistoryManager.LastCommitTime.AddSeconds(30) > DateTimeOffset.Now // TODO: Add an option for this
+                )
+            );
 
         Logger.Trace(
             $"Commiting {selection.Count} events under change {changeType} (amend={amend})"
         );
 
-        // TODO: Determine how to best include descriptions here
         foreach (var e in selection)
         {
             var parent = Document.EventManager.GetBefore(e.Id);
-            Document.HistoryManager.Commit("", changeType, e, parent?.Id, amend);
+            Document.HistoryManager.Commit(changeType, e, parent?.Id, amend);
             amend = true;
         }
         IsSaved = false;
@@ -145,52 +151,6 @@ public class Workspace : BindableBase
         SelectionManager.BeginSelectionChange();
         Logger.Trace("Undoing");
         var commit = Document.HistoryManager.Undo();
-
-        if (commit is EventCommit eventCommit)
-        {
-            foreach (var link in eventCommit.Targets)
-            {
-                switch (link.Type)
-                {
-                    case CommitType.EventAdd:
-                        Document.EventManager.Remove(link.Target.Id);
-                        break;
-                    case CommitType.EventRemove:
-                        if (link.ParentId.HasValue)
-                            Document.EventManager.AddAfter(link.ParentId.Value, link.Target);
-                        break;
-                    case CommitType.EventMeta:
-                    case CommitType.EventTime:
-                    case CommitType.EventText:
-                    case CommitType.EventFull:
-                        Document.EventManager.ReplaceInPlace(link.Target);
-                        break;
-                    default:
-                        Logger.Warn($"Unknown event commit type: {link.Type}");
-                        break;
-                }
-            }
-        }
-        else if (commit is StyleCommit styleCommit)
-        {
-            switch (styleCommit.Type)
-            {
-                case CommitType.StyleAdd:
-                    Document.StyleManager.Remove(styleCommit.Target.Id);
-                    break;
-                case CommitType.StyleRemove:
-                case CommitType.StyleMeta:
-                    Document.StyleManager.AddOrReplace(styleCommit.Target);
-                    break;
-                default:
-                    Logger.Warn($"Unknown style commit type: {styleCommit.Type}");
-                    break;
-            }
-        }
-        else
-        {
-            throw new NotImplementedException();
-        }
     }
 
     public void Redo()
@@ -200,52 +160,6 @@ public class Workspace : BindableBase
         SelectionManager.BeginSelectionChange();
         Logger.Trace("Redoing");
         var commit = Document.HistoryManager.Redo();
-
-        if (commit is EventCommit eventCommit)
-        {
-            foreach (var link in eventCommit.Targets)
-            {
-                switch (link.Type)
-                {
-                    case CommitType.EventAdd:
-                        if (link.ParentId.HasValue)
-                            Document.EventManager.AddAfter(link.ParentId.Value, link.Target);
-                        break;
-                    case CommitType.EventRemove:
-                        Document.EventManager.Remove(link.Target.Id);
-                        break;
-                    case CommitType.EventMeta:
-                    case CommitType.EventTime:
-                    case CommitType.EventText:
-                    case CommitType.EventFull:
-                        Document.EventManager.ReplaceInPlace(link.Target);
-                        break;
-                    default:
-                        Logger.Warn($"Unknown event commit type: {link.Type}");
-                        break;
-                }
-            }
-        }
-        else if (commit is StyleCommit styleCommit)
-        {
-            switch (styleCommit.Type)
-            {
-                case CommitType.StyleAdd:
-                case CommitType.StyleMeta:
-                    Document.StyleManager.AddOrReplace(styleCommit.Target);
-                    break;
-                case CommitType.StyleRemove:
-                    Document.StyleManager.Remove(styleCommit.Target.Id);
-                    break;
-                default:
-                    Logger.Warn($"Unknown style commit type: {styleCommit.Type}");
-                    break;
-            }
-        }
-        else
-        {
-            throw new NotImplementedException();
-        }
     }
 
     /// <summary>

@@ -103,7 +103,7 @@ public class ScriptService : IScriptService
         if (TryGetScriptlet(qualifiedName, out var scriptlet))
         {
             var engine = new Engine(cfg => cfg.AllowClr())
-                .SetValue("CommitType", typeof(CommitType))
+                .SetValue("ChangeType", typeof(ChangeType))
                 .SetValue("logger", LogManager.GetLogger(scriptlet.Info.QualifiedName));
 
             var success = engine

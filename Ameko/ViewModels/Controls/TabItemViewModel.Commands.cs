@@ -73,7 +73,7 @@ public partial class TabItemViewModel : ViewModelBase
                 Workspace.SelectionManager.ActiveEvent.Id,
                 events
             );
-            Workspace.Commit(events, CommitType.EventAdd);
+            Workspace.Commit(events, ChangeType.Add);
             Workspace.SelectionManager.Select(events.Last());
         });
     }
@@ -126,9 +126,9 @@ public partial class TabItemViewModel : ViewModelBase
             } while (i < lines.Length);
 
             if (editedEvents.Count != 0)
-                Workspace.Commit(editedEvents, CommitType.EventFull);
+                Workspace.Commit(editedEvents, ChangeType.Modify);
             if (newEvents.Count != 0)
-                Workspace.Commit(newEvents, CommitType.EventAdd);
+                Workspace.Commit(newEvents, ChangeType.Add);
             if (newEvents.Count != 0 && editedEvents.Count != 0)
                 Workspace.SelectionManager.Select(
                     newEvents.Concat(editedEvents).OrderBy(e => e.Id).Last()
@@ -151,7 +151,7 @@ public partial class TabItemViewModel : ViewModelBase
                 .Select(@event => Workspace.Document.EventManager.Duplicate(@event))
                 .ToList();
 
-            Workspace.Commit(events, CommitType.EventAdd);
+            Workspace.Commit(events, ChangeType.Add);
             Workspace.SelectionManager.Select(events.Last());
         });
     }
@@ -166,7 +166,7 @@ public partial class TabItemViewModel : ViewModelBase
             var @event = Workspace.Document.EventManager.InsertBefore(
                 Workspace.SelectionManager.ActiveEvent
             );
-            Workspace.Commit(@event, CommitType.EventAdd);
+            Workspace.Commit(@event, ChangeType.Add);
             Workspace.SelectionManager.Select(@event);
         });
     }
@@ -181,7 +181,7 @@ public partial class TabItemViewModel : ViewModelBase
             var @event = Workspace.Document.EventManager.InsertAfter(
                 Workspace.SelectionManager.ActiveEvent
             );
-            Workspace.Commit(@event, CommitType.EventAdd);
+            Workspace.Commit(@event, ChangeType.Add);
             Workspace.SelectionManager.Select(@event);
         });
     }
@@ -212,7 +212,7 @@ public partial class TabItemViewModel : ViewModelBase
                 ?? eventManager.GetOrCreateAfter(selectionManager.ActiveEvent.Id);
 
             eventManager.Remove(selectionManager.ActiveEvent.Id);
-            Workspace.Commit(nextEvent, CommitType.EventRemove);
+            Workspace.Commit(nextEvent, ChangeType.Remove);
             selectionManager.Select(nextEvent);
         });
     }
@@ -239,7 +239,8 @@ public partial class TabItemViewModel : ViewModelBase
             if (newEvent is null)
                 return;
 
-            Workspace.Commit(newEvent, CommitType.EventAdd | CommitType.EventRemove);
+            Workspace.Commit([one, two], ChangeType.Remove);
+            Workspace.Commit(newEvent, ChangeType.Add, amend: true);
             selectionManager.Select(newEvent);
         });
     }
@@ -265,7 +266,8 @@ public partial class TabItemViewModel : ViewModelBase
             if (newEvents.Count == 0)
                 return;
 
-            Workspace.Commit(newEvents, CommitType.EventAdd | CommitType.EventRemove);
+            Workspace.Commit(selectionManager.SelectedEventCollection, ChangeType.Remove);
+            Workspace.Commit(newEvents, ChangeType.Add, amend: true);
             selectionManager.Select(newEvents.Last());
         });
     }
@@ -283,7 +285,7 @@ public partial class TabItemViewModel : ViewModelBase
             );
             if (Workspace.Document.EventManager.Count != initialCount)
             {
-                Workspace.Commit(nextEvent, CommitType.EventAdd);
+                Workspace.Commit(nextEvent, ChangeType.Add);
             }
             Workspace.SelectionManager.Select(nextEvent);
         });
@@ -323,10 +325,7 @@ public partial class TabItemViewModel : ViewModelBase
             {
                 @event.IsComment = !@event.IsComment;
             }
-            Workspace.Commit(
-                Workspace.SelectionManager.SelectedEventCollection,
-                CommitType.EventMeta
-            );
+            Workspace.Commit(Workspace.SelectionManager.SelectedEventCollection, ChangeType.Modify);
         });
     }
 

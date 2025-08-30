@@ -13,6 +13,9 @@ public class HistoryManager : BindableBase
     private readonly ConcurrentStack<ICommit> _history = [];
     private readonly ConcurrentStack<ICommit> _future = [];
 
+    private readonly List<Event> _initialState = [];
+    private Style? _initialStyleState = null;
+
     /// <summary>
     /// Next commit ID
     /// </summary>
@@ -36,8 +39,19 @@ public class HistoryManager : BindableBase
     /// <summary>
     /// The type of the most recent commit, used for coalescing
     /// </summary>
-    public CommitType LastCommitType { get; private set; }
+    public ChangeType LastCommitType { get; private set; }
     public DateTimeOffset LastCommitTime { get; private set; }
+
+    public void BeginTransaction(IEnumerable<Event> events)
+    {
+        _initialState.Clear();
+        _initialState.AddRange(events.Select(e => e.Clone()));
+    }
+
+    public void BeginTransaction(Style style)
+    {
+        _initialStyleState = style;
+    }
 
     /// <summary>
     /// Commit an event change to history
@@ -45,68 +59,48 @@ public class HistoryManager : BindableBase
     /// <remarks>
     /// Side effect: Clears future stack
     /// </remarks>
-    /// <param name="description">Short description of the change</param>
     /// <param name="type">Type of change</param>
-    /// <param name="target">Target line</param>
+    /// <param name="event">Target line</param>
     /// <param name="parentId">ID of the parent of the target</param>
-    /// <param name="amend">Whether to amend the previous commit or not</param>
+    /// <param name="coalesce">Whether to amend the previous commit or not</param>
     /// <returns>ID of the commit</returns>
     /// <exception cref="InvalidOperationException">If an amend is attempted to a non-Event commit</exception>
-    public int Commit(
-        string description,
-        CommitType type,
-        Event target,
-        int? parentId,
-        bool amend = false
-    )
+    public int Commit(ChangeType type, Event @event, int? parentId, bool coalesce = false)
     {
-        if (!amend)
+        EventCommit commit;
+        if (coalesce)
         {
-            var id = NextId;
-            _history.Push(
-                new EventCommit
-                {
-                    Id = id,
-                    Message = description,
-                    Targets =
-                    [
-                        new EventLink
-                        {
-                            ParentId = parentId,
-                            Target = target,
-                            Type = type,
-                        },
-                    ],
-                }
-            );
-
-            LastCommitTime = DateTimeOffset.Now;
-            LastCommitType = type;
-            _future.Clear();
-            NotifyAbilitiesChanged();
-
-            return id;
+            if (!CanUndo)
+                throw new InvalidOperationException("Cannot amend, no commits in the undo stack!");
+            if (!_history.TryPeek(out var latest) || latest is not EventCommit eventCommit)
+                throw new InvalidOperationException("Cannot amend to a non-Event commit");
+            commit = eventCommit;
         }
+        else
+            commit = new EventCommit(NextId);
 
-        if (!CanUndo)
-            throw new InvalidOperationException("Cannot amend, no commits in the undo stack!");
-        if (!_history.TryPeek(out var latest) || latest is not EventCommit commit)
-            throw new InvalidOperationException(
-                "Cannot amend an Event commit to a non-Event commit"
-            );
-
-        commit.Message += ";" + description;
-        commit.Targets.Add(
-            new EventLink
-            {
-                ParentId = parentId,
-                Target = target,
-                Type = type,
-            }
-        );
-
+        switch (type)
+        {
+            case ChangeType.Add:
+                commit.Deltas.Add(new EventDelta(type, null, @event, parentId));
+                break;
+            case ChangeType.Remove:
+                commit.Deltas.Add(new EventDelta(type, @event, null, parentId));
+                break;
+            case ChangeType.Modify:
+                commit.Deltas.Add(
+                    new EventDelta(
+                        type,
+                        _initialState.FirstOrDefault(e => e.Id == @event.Id),
+                        @event,
+                        parentId
+                    )
+                );
+                break;
+        }
         LastCommitTime = DateTimeOffset.Now;
         LastCommitType = type;
+        LastId = commit.Id;
         _future.Clear();
         NotifyAbilitiesChanged();
         return commit.Id;
@@ -118,18 +112,16 @@ public class HistoryManager : BindableBase
     /// <remarks>
     /// Side effect: Clears future stack
     /// </remarks>
-    /// <param name="description"></param>
     /// <param name="type">Type of change</param>
     /// <param name="target">Target style</param>
     /// <returns>ID of the commit</returns>
-    public int Commit(string description, CommitType type, Style target)
+    public int Commit(ChangeType type, Style target)
     {
         var id = NextId;
         _history.Push(
             new StyleCommit
             {
                 Id = id,
-                Message = description,
                 Target = target,
                 Type = type,
             }
@@ -159,7 +151,7 @@ public class HistoryManager : BindableBase
         _future.Push(commit);
 
         LastCommitTime = DateTimeOffset.Now;
-        LastCommitType = CommitType.TimeMachine;
+        LastCommitType = ChangeType.TimeMachine;
         NotifyAbilitiesChanged();
         return commit;
     }
@@ -181,7 +173,7 @@ public class HistoryManager : BindableBase
         _history.Push(commit);
 
         LastCommitTime = DateTimeOffset.Now;
-        LastCommitType = CommitType.TimeMachine;
+        LastCommitType = ChangeType.TimeMachine;
         NotifyAbilitiesChanged();
         return commit;
     }

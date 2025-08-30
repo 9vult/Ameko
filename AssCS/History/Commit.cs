@@ -8,17 +8,15 @@ namespace AssCS.History;
 public interface ICommit
 {
     public int Id { get; }
-    public string Message { get; }
 }
 
 /// <summary>
 /// A commit for changes to events
 /// </summary>
-public class EventCommit : ICommit
+public class EventCommit(int id) : ICommit
 {
-    public required int Id { get; set; }
-    public required string Message { get; set; }
-    public required List<EventLink> Targets { get; set; }
+    public int Id { get; } = id;
+    public List<EventDelta> Deltas { get; init; } = [];
 }
 
 /// <summary>
@@ -27,7 +25,6 @@ public class EventCommit : ICommit
 public class StyleCommit : ICommit
 {
     public required int Id { get; set; }
-    public required string Message { get; set; }
     public required Style Target { get; set; }
-    public required CommitType Type { get; set; }
+    public required ChangeType Type { get; set; }
 }
