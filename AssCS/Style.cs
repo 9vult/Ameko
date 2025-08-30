@@ -302,19 +302,20 @@ public partial class Style(int id) : BindableBase
         {
             _name = data.Name,
             _fontFamily = data.FontFamily,
-            _fontSize = data._fontSize,
+            _fontSize = data.FontSize,
             _primaryColor = Color.FromColor(data.PrimaryColor),
             _secondaryColor = Color.FromColor(data.SecondaryColor),
             _outlineColor = Color.FromColor(data.OutlineColor),
             _shadowColor = Color.FromColor(data.ShadowColor),
-            _isBold = data._isBold,
+            _isBold = data.IsBold,
             _isItalic = data.IsItalic,
             _isUnderline = data.IsUnderline,
-            _isStrikethrough = data._isStrikethrough,
+            _isStrikethrough = data.IsStrikethrough,
             _scaleX = data.ScaleX,
             _scaleY = data.ScaleY,
             _spacing = data.Spacing,
             _borderStyle = data.BorderStyle,
+            _borderThickness = data.BorderThickness,
             _shadowDistance = data.ShadowDistance,
             _alignment = data.Alignment,
             _margins = new Margins(data.Margins.Left, data.Margins.Right, data.Margins.Vertical),
@@ -326,13 +327,31 @@ public partial class Style(int id) : BindableBase
     /// Clone this style
     /// </summary>
     /// <returns>Clone of the style</returns>
-    /// <remarks>
-    /// This method currently uses serialization
-    /// as the clone method. This is subject to change.
-    /// </remarks>
     public Style Clone()
     {
-        return FromAss(Id, AsAss());
+        return new Style(Id)
+        {
+            Name = Name,
+            FontFamily = FontFamily,
+            FontSize = FontSize,
+            PrimaryColor = Color.FromColor(PrimaryColor),
+            SecondaryColor = Color.FromColor(SecondaryColor),
+            OutlineColor = Color.FromColor(OutlineColor),
+            ShadowColor = Color.FromColor(ShadowColor),
+            IsBold = IsBold,
+            IsItalic = IsItalic,
+            IsUnderline = IsUnderline,
+            IsStrikethrough = IsStrikethrough,
+            ScaleX = ScaleX,
+            ScaleY = ScaleY,
+            Spacing = Spacing,
+            BorderStyle = BorderStyle,
+            BorderThickness = BorderThickness,
+            ShadowDistance = ShadowDistance,
+            Alignment = Alignment,
+            Margins = new Margins(Margins.Left, Margins.Right, Margins.Vertical),
+            Encoding = Encoding,
+        };
     }
 
     public override bool Equals(object? obj)
