@@ -15,64 +15,58 @@ public class HistoryManagerTests
     public void Event_Commit()
     {
         var hm = new HistoryManager();
-        var message = "Added event";
 
-        hm.Commit(message, CommitType.EventAdd, event1, null, false);
+        hm.Commit(ChangeType.Add, event1, null, false);
 
         hm.CanUndo.ShouldBeTrue();
         hm.CanRedo.ShouldBeFalse();
 
         var lastCommit = hm.Undo();
         lastCommit.ShouldBeOfType<EventCommit>();
-        lastCommit.Message.ShouldBe(message);
     }
 
     [Fact]
     public void Style_Commit()
     {
         var hm = new HistoryManager();
-        var message = "Added style";
 
-        hm.Commit(message, CommitType.StyleAdd, style1);
+        hm.Commit(ChangeType.Add, style1);
 
         hm.CanUndo.ShouldBeTrue();
         hm.CanRedo.ShouldBeFalse();
 
         var lastCommit = hm.Undo();
         lastCommit.ShouldBeOfType<StyleCommit>();
-        lastCommit.Message.ShouldBe(message);
+        var styleCommit = lastCommit as StyleCommit;
+        styleCommit?.Type.ShouldBe(ChangeType.Add);
     }
 
     [Fact]
     public void Event_Commit_Amend()
     {
         var hm = new HistoryManager();
-        var initial = "Added event";
-        var amended = "Amended event";
-        hm.Commit(initial, CommitType.EventAdd, event1, null, false);
+        hm.Commit(ChangeType.Add, event1, null, false);
 
-        hm.Commit(amended, CommitType.EventAdd, event2, null, true);
+        hm.Commit(ChangeType.Add, event2, null, true);
 
         hm.CanUndo.ShouldBeTrue();
         hm.CanRedo.ShouldBeFalse();
 
         var lastCommit = (EventCommit)hm.Undo();
-        lastCommit.Message.ShouldBe($"{initial};{amended}");
-        lastCommit.Targets.Count.ShouldBe(2);
+        lastCommit.Deltas.Count.ShouldBe(2);
     }
 
     [Fact]
     public void Event_Commit_Amend_Invalid()
     {
         var hm = new HistoryManager();
-        hm.Commit("Added style", CommitType.StyleAdd, style1);
+        hm.Commit(ChangeType.Add, style1);
 
-        Action amendToStyleCommit = () =>
-            hm.Commit("Invalid amend", CommitType.EventText, event1, null, true);
+        Action amendToStyleCommit = () => hm.Commit(ChangeType.Add, event1, null, true);
 
         amendToStyleCommit
             .ShouldThrow<InvalidOperationException>()
-            .Message.ShouldBe("Cannot amend an Event commit to a non-Event commit");
+            .Message.ShouldBe("Cannot amend to a non-Event commit");
     }
 
     [Fact]
@@ -80,8 +74,7 @@ public class HistoryManagerTests
     {
         var hm = new HistoryManager();
 
-        Action amendToStyleCommit = () =>
-            hm.Commit("Invalid amend", CommitType.EventText, event1, null, true);
+        Action amendToStyleCommit = () => hm.Commit(ChangeType.Add, event1, null, true);
 
         amendToStyleCommit
             .ShouldThrow<InvalidOperationException>()
@@ -92,7 +85,7 @@ public class HistoryManagerTests
     public void Undo()
     {
         var hm = new HistoryManager();
-        hm.Commit("Test", CommitType.EventAdd, event1, null, false);
+        hm.Commit(ChangeType.Add, event1, null, false);
         var c = hm.Undo();
 
         c.ShouldNotBeNull();
@@ -117,7 +110,7 @@ public class HistoryManagerTests
     public void Redo()
     {
         var hm = new HistoryManager();
-        hm.Commit("Test", CommitType.EventAdd, event1, null, false);
+        hm.Commit(ChangeType.Add, event1, null, false);
         var cU = hm.Undo();
         var cR = hm.Redo();
 
