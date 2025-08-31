@@ -27,7 +27,7 @@ public partial class SearchDialogViewModel : ViewModelBase
 
     private List<Event> _results = [];
     private int _resultIndex = 0;
-    private Workspace _lastWorkspace;
+    private Workspace? _lastWorkspace;
 
     public SearchDialogViewModel(ISolutionProvider solutionProvider, ITabFactory tabFactory)
     {
