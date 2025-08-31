@@ -8,6 +8,7 @@ using System.Windows.Input;
 using Ameko.DataModels;
 using Ameko.Utilities;
 using AssCS;
+using Holo;
 using Holo.Providers;
 using ReactiveUI;
 
@@ -26,6 +27,7 @@ public partial class SearchDialogViewModel : ViewModelBase
 
     private List<Event> _results = [];
     private int _resultIndex = 0;
+    private Workspace _lastWorkspace;
 
     public SearchDialogViewModel(ISolutionProvider solutionProvider, ITabFactory tabFactory)
     {
@@ -33,12 +35,17 @@ public partial class SearchDialogViewModel : ViewModelBase
 
         FindNextCommand = ReactiveCommand.CreateFromTask(async () =>
         {
+            var wsp = _solutionProvider.Current.WorkingSpace;
+            if (wsp is null)
+                return;
+
             // Check if this is a new query or a continuation of the previous one
-            if (Query != _previousQuery || Filter != _previousFilter)
+            if (wsp != _lastWorkspace || Query != _previousQuery || Filter != _previousFilter)
             {
                 GenerateResults();
                 _previousQuery = Query;
                 _previousFilter = Filter;
+                _lastWorkspace = wsp;
             }
 
             // Loop back if needed
@@ -48,9 +55,6 @@ public partial class SearchDialogViewModel : ViewModelBase
             if (_resultIndex >= _results.Count)
                 _resultIndex = 0;
 
-            var wsp = _solutionProvider.Current.WorkingSpace;
-            if (wsp is null)
-                return;
             if (!tabFactory.TryGetViewModel(wsp, out var vm))
                 return;
             await vm.ScrollToAndSelectEvent.Handle(_results[_resultIndex++]);

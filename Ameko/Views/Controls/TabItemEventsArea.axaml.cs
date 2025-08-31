@@ -20,7 +20,6 @@ namespace Ameko.Views.Controls;
 public partial class TabItemEventsArea : ReactiveUserControl<TabItemViewModel>
 {
     private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-    private static readonly List<TabItemViewModel> PreviousVMs = [];
 
     private void DoScrollToAndSelectEvent(IInteractionContext<Event, Unit> interaction)
     {
@@ -39,11 +38,6 @@ public partial class TabItemEventsArea : ReactiveUserControl<TabItemViewModel>
                 .WhereNotNull()
                 .Subscribe(vm =>
                 {
-                    // Skip the rest if already subscribed
-                    if (PreviousVMs.Contains(vm))
-                        return;
-                    PreviousVMs.Add(vm);
-
                     vm.ScrollToAndSelectEvent.RegisterHandler(DoScrollToAndSelectEvent);
 
                     EventsGrid.AddHandler(
