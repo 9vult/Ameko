@@ -67,7 +67,8 @@
                       Command="{Binding RedoCommand}" />
             <Separator />
             <MenuItem Header="{x:Static i18n:Resources.Menu_Search}"
-                      Icon="{icons:MaterialIconExt Kind=TextSearch}"/>
+                      Icon="{icons:MaterialIconExt Kind=TextSearch}"
+                      Command="{Binding ShowSearchDialogCommand}" />
         </MenuItem>
         <MenuItem Header="{x:Static i18n:Resources.Menu_Subtitle}">
             <MenuItem Header="{x:Static i18n:Resources.Menu_StylesManager}"

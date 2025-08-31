@@ -45,6 +45,9 @@ public partial class MainWindowViewModel : ViewModelBase
     public Interaction<string, Uri?> SaveSolutionAs { get; }
     public Interaction<Unit, Uri?> AttachReferenceFile { get; }
 
+    // Edit
+    public Interaction<SearchDialogViewModel, Unit> ShowSearchDialog { get; }
+
     // Subtitle
     public Interaction<StylesManagerWindowViewModel, Unit> ShowStylesManager { get; }
 
@@ -105,6 +108,9 @@ public partial class MainWindowViewModel : ViewModelBase
 
     [KeybindTarget("ameko.document.redo", "Ctrl+Y")]
     public ICommand RedoCommand { get; }
+
+    [KeybindTarget("ameko.document.search", "Ctrl+F")]
+    public ICommand ShowSearchDialogCommand { get; }
 
     // Subtitle
     [KeybindTarget("ameko.stylesManager.show")]
@@ -247,6 +253,8 @@ public partial class MainWindowViewModel : ViewModelBase
         OpenSolution = new Interaction<Unit, Uri?>();
         OpenFolderAsSolution = new Interaction<Unit, Uri?>();
         SaveSolutionAs = new Interaction<string, Uri?>();
+        // Edit
+        ShowSearchDialog = new Interaction<SearchDialogViewModel, Unit>();
         // Subtitle
         ShowStylesManager = new Interaction<StylesManagerWindowViewModel, Unit>();
         AttachReferenceFile = new Interaction<Unit, Uri?>();
@@ -281,6 +289,7 @@ public partial class MainWindowViewModel : ViewModelBase
         //Edit
         UndoCommand = CreateUndoCommand();
         RedoCommand = CreateRedoCommand();
+        ShowSearchDialogCommand = CreateShowSearchDialogCommand();
         // Subtitle
         ShowStylesManagerCommand = CreateShowStylesManagerCommand();
         AttachReferenceFileCommand = CreateAttachReferenceFileCommand();

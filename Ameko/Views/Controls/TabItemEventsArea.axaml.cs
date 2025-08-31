@@ -22,6 +22,13 @@ public partial class TabItemEventsArea : ReactiveUserControl<TabItemViewModel>
     private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
     private static readonly List<TabItemViewModel> PreviousVMs = [];
 
+    private void DoScrollToAndSelectEvent(IInteractionContext<Event, Unit> interaction)
+    {
+        EventsGrid.ScrollIntoView(interaction.Input, null);
+        EventsGrid.SelectedItem = interaction.Input;
+        interaction.SetOutput(Unit.Default);
+    }
+
     public TabItemEventsArea()
     {
         InitializeComponent();
@@ -36,6 +43,8 @@ public partial class TabItemEventsArea : ReactiveUserControl<TabItemViewModel>
                     if (PreviousVMs.Contains(vm))
                         return;
                     PreviousVMs.Add(vm);
+
+                    vm.ScrollToAndSelectEvent.RegisterHandler(DoScrollToAndSelectEvent);
 
                     EventsGrid.AddHandler(
                         DataGrid.SelectionChangedEvent,
@@ -56,6 +65,8 @@ public partial class TabItemEventsArea : ReactiveUserControl<TabItemViewModel>
         // Side effect: set SelectionChanging to true to prevent Commit() calls
         ViewModel?.Workspace.SelectionManager.Select(active, selection);
         ViewModel?.Workspace.MediaController.AutoSeekTo(active);
+
+        EventsGrid.ScrollIntoView(active, null);
 
         // Prepare for edits
         ViewModel?.Workspace.Document.HistoryManager.BeginTransaction(selection);
