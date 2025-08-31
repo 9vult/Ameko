@@ -201,7 +201,7 @@ public class WorkspaceTests
         var wsp = new Workspace(new Document(true), 1);
         var e1 = wsp.Document.EventManager.Head;
 
-        wsp.Document.HistoryManager.BeginTransaction([e1]);
+        wsp.Document.HistoryManager.BeginTransaction(e1);
         e1.Text = "Hello!";
         wsp.Commit(e1, ChangeType.Modify);
 
@@ -215,7 +215,7 @@ public class WorkspaceTests
         var wsp = new Workspace(new Document(true), 1);
         var e1 = wsp.Document.EventManager.Head;
 
-        wsp.Document.HistoryManager.BeginTransaction([e1]);
+        wsp.Document.HistoryManager.BeginTransaction(e1);
         e1.Text = "Hello!";
         wsp.Commit(e1, ChangeType.Modify);
         wsp.Undo();
