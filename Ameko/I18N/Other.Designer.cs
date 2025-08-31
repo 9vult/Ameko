@@ -153,6 +153,12 @@ namespace Ameko.I18N {
             }
         }
         
+        public static string FileDialog_FileType_Srt {
+            get {
+                return ResourceManager.GetString("FileDialog_FileType_Srt", resourceCulture);
+            }
+        }
+        
         public static string FileDialog_SaveSubtitle_Title {
             get {
                 return ResourceManager.GetString("FileDialog_SaveSubtitle_Title", resourceCulture);
