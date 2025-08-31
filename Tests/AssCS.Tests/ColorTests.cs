@@ -39,6 +39,56 @@ public class ColorTests
     }
 
     [Fact]
+    public void FromRgb()
+    {
+        var c = Color.FromRgb(0, 0xFF, 0x33);
+        c.Red.ShouldBe<byte>(0x00);
+        c.Green.ShouldBe<byte>(0xFF);
+        c.Blue.ShouldBe<byte>(0x33);
+        c.Alpha.ShouldBe<byte>(0x00);
+    }
+
+    [Fact]
+    public void FromRgba()
+    {
+        var c = Color.FromRgba(0, 0xFF, 0x33, 0x80);
+        c.Red.ShouldBe<byte>(0x00);
+        c.Green.ShouldBe<byte>(0xFF);
+        c.Blue.ShouldBe<byte>(0x33);
+        c.Alpha.ShouldBe<byte>(0x80);
+    }
+
+    [Fact]
+    public void FromHex_Rgb()
+    {
+        var c = Color.FromHex("#FF00AA");
+        c.Red.ShouldBe<byte>(0xFF);
+        c.Green.ShouldBe<byte>(0x00);
+        c.Blue.ShouldBe<byte>(0xAA);
+        c.Alpha.ShouldBe<byte>(0x00);
+    }
+
+    [Fact]
+    public void FromHex_Rgba()
+    {
+        var c = Color.FromHex("#FF00AA55");
+        c.Red.ShouldBe<byte>(0xFF);
+        c.Green.ShouldBe<byte>(0x00);
+        c.Blue.ShouldBe<byte>(0xAA);
+        c.Alpha.ShouldBe<byte>(0x55);
+    }
+
+    [Fact]
+    public void FromHtml()
+    {
+        var c = Color.FromHtml("red");
+        c.Red.ShouldBe<byte>(0xFF);
+        c.Green.ShouldBe<byte>(0x00);
+        c.Blue.ShouldBe<byte>(0x00);
+        c.Alpha.ShouldBe<byte>(0x00);
+    }
+
+    [Fact]
     public void AsStyleColor_RGB()
     {
         var c = Color.FromRgb(0x44, 0xFF, 0x25);
