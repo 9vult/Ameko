@@ -22,6 +22,7 @@ internal record ConfigurationModel
     public required bool DiscordRpcEnabled;
     public required int DefaultLayer;
     public required string Culture;
+    public required string SpellcheckCulture;
     public required Theme Theme;
     public required uint GridPadding;
     public required string[] RepositoryUrls;

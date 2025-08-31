@@ -18,6 +18,11 @@ public interface IGlobals
     AssCS.Utilities.ReadOnlyObservableCollection<Color> Colors { get; }
 
     /// <summary>
+    /// Global custom words
+    /// </summary>
+    AssCS.Utilities.ReadOnlyObservableCollection<string> CustomWords { get; }
+
+    /// <summary>
     /// Add a global color
     /// </summary>
     /// <param name="color">Color to add</param>
@@ -30,6 +35,20 @@ public interface IGlobals
     /// <param name="color">Color to remove</param>
     /// <returns><see langword="true"/> if the color was removed</returns>
     bool RemoveColor(Color color);
+
+    /// <summary>
+    /// Add a global custom word
+    /// </summary>
+    /// <param name="word">Word to add</param>
+    /// <returns><see langword="true"/> if the word was added</returns>
+    bool AddCustomWord(string word);
+
+    /// <summary>
+    /// Remove a global custom word
+    /// </summary>
+    /// <param name="word">Word to remove</param>
+    /// <returns><see langword="true"/> if the word was removed</returns>
+    bool RemoveCustomWord(string word);
 
     /// <summary>
     /// Write the globals to file

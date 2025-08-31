@@ -20,4 +20,6 @@ internal record SolutionModel
     public required bool? CpsIncludesWhitespace;
     public required bool? CpsIncludesPunctuation;
     public required bool? UseSoftLinebreaks;
+    public required string? SpellcheckCulture;
+    public required string[] CustomWords;
 }

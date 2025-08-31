@@ -100,6 +100,7 @@ public class ConfigurationTests
             "LineWidthIncludesPunctuation": true,
             "DiscordRpcEnabled": true,
             "Culture": "en-US",
+            "SpellcheckCulture": "en_US",
             "Theme": "light",
             "GridPadding": 2,
             "RepositoryUrls": []

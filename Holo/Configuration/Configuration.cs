@@ -51,6 +51,7 @@ public partial class Configuration : BindableBase, IConfiguration
     private bool _discordRpcEnabled;
     private int _defaultLayer;
     private string _culture;
+    private string _spellcheckCulture;
     private Theme _theme;
     private uint _gridPadding;
     private RangeObservableCollection<string> _repositoryUrls;
@@ -133,6 +134,13 @@ public partial class Configuration : BindableBase, IConfiguration
     }
 
     /// <inheritdoc />
+    public string SpellcheckCulture
+    {
+        get => _spellcheckCulture;
+        set => SetProperty(ref _spellcheckCulture, value);
+    }
+
+    /// <inheritdoc />
     public Theme Theme
     {
         get => _theme;
@@ -198,6 +206,7 @@ public partial class Configuration : BindableBase, IConfiguration
                 DiscordRpcEnabled = _discordRpcEnabled,
                 DefaultLayer = _defaultLayer,
                 Culture = _culture,
+                SpellcheckCulture = _spellcheckCulture,
                 Theme = _theme,
                 GridPadding = _gridPadding,
                 RepositoryUrls = RepositoryUrls.ToArray(),
@@ -260,6 +269,7 @@ public partial class Configuration : BindableBase, IConfiguration
                 _discordRpcEnabled = model.DiscordRpcEnabled,
                 _defaultLayer = model.DefaultLayer,
                 _culture = model.Culture,
+                _spellcheckCulture = model.SpellcheckCulture,
                 _theme = model.Theme,
                 _gridPadding = model.GridPadding,
                 _repositoryUrls = new RangeObservableCollection<string>(model.RepositoryUrls),

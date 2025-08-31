@@ -258,7 +258,9 @@ public class SolutionTests
              "Cps": 21,
              "CpsIncludesWhitespace": null,
              "CpsIncludesPunctuation": null,
-             "UseSoftLinebreaks": null
+             "UseSoftLinebreaks": null,
+             "SpellcheckCulture": null,
+             "CustomWords": []
          }
         """;
 }

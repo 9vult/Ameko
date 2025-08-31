@@ -54,6 +54,9 @@ public class Solution : BindableBase
     private bool? _useSoftLinebreaks;
     private int? _defaultLayer;
 
+    private string? _spellcheckCulture;
+    private List<string> _customWords;
+
     /// <summary>
     /// All items referenced by the solution
     /// </summary>
@@ -119,7 +122,7 @@ public class Solution : BindableBase
     }
 
     /// <summary>
-    /// Workspace-scoped characters-per-second threshold
+    /// Solution-scoped characters-per-second threshold
     /// </summary>
     public int? Cps
     {
@@ -171,7 +174,7 @@ public class Solution : BindableBase
     }
 
     /// <summary>
-    /// Workspace-scoped default layer preference
+    /// Solution-scoped default layer preference
     /// </summary>
     public int? DefaultLayer
     {
@@ -182,6 +185,24 @@ public class Solution : BindableBase
             IsSaved = false;
         }
     }
+
+    /// <summary>
+    /// Solution-scoped spellcheck preference
+    /// </summary>
+    public string? SpellcheckCulture
+    {
+        get => _spellcheckCulture;
+        set
+        {
+            SetProperty(ref _spellcheckCulture, value);
+            IsSaved = false;
+        }
+    }
+
+    /// <summary>
+    /// Custom spellcheck words for the solution
+    /// </summary>
+    public IReadOnlyList<string> CustomWords => _customWords.AsReadOnly();
 
     /// <summary>
     /// Solution title/name
@@ -388,6 +409,28 @@ public class Solution : BindableBase
     }
 
     /// <summary>
+    /// Add a custom word to the solution
+    /// </summary>
+    /// <param name="word">Word to add</param>
+    public void AddCustomWord(string word)
+    {
+        _customWords.Add(word);
+        IsSaved = false;
+        RaisePropertyChanged(nameof(CustomWords));
+    }
+
+    /// <summary>
+    /// Remove a custom word from the solution
+    /// </summary>
+    /// <param name="word">Word to remove</param>
+    public void RemoveCustomWord(string word)
+    {
+        _customWords.Remove(word);
+        IsSaved = false;
+        RaisePropertyChanged(nameof(CustomWords));
+    }
+
+    /// <summary>
     /// Close an open document
     /// </summary>
     /// <param name="id">ID of the document to close</param>
@@ -457,6 +500,8 @@ public class Solution : BindableBase
                 CpsIncludesWhitespace = _cpsIncludesWhitespace,
                 CpsIncludesPunctuation = _cpsIncludesPunctuation,
                 UseSoftLinebreaks = _useSoftLinebreaks,
+                SpellcheckCulture = _spellcheckCulture,
+                CustomWords = _customWords.ToArray(),
             };
 
             var content = JsonSerializer.Serialize(model, JsonOptions);
@@ -517,6 +562,8 @@ public class Solution : BindableBase
             sln._cpsIncludesWhitespace = model.CpsIncludesWhitespace;
             sln._cpsIncludesPunctuation = model.CpsIncludesPunctuation;
             sln._useSoftLinebreaks = model.UseSoftLinebreaks;
+            sln._spellcheckCulture = model.SpellcheckCulture;
+            sln._customWords = model.CustomWords.ToList();
 
             model
                 .Styles.Select(s => Style.FromAss(sln.StyleManager.NextId, s))
@@ -754,6 +801,7 @@ public class Solution : BindableBase
         _fileSystem = fileSystem;
         _referencedItems = [];
         _loadedWorkspaces = [];
+        _customWords = [];
         StyleManager = new StyleManager();
 
         ReferencedItems = new ReadOnlyObservableCollection<SolutionItem>(_referencedItems);
