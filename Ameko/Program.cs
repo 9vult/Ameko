@@ -2,6 +2,7 @@
 
 using System;
 using Avalonia;
+using Avalonia.Controls;
 using Avalonia.ReactiveUI;
 
 namespace Ameko;
@@ -13,7 +14,7 @@ sealed class Program
     // yet and stuff might break.
     [STAThread]
     public static void Main(string[] args) =>
-        BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
+        BuildAvaloniaApp().StartWithClassicDesktopLifetime(args, ShutdownMode.OnMainWindowClose);
 
     // Avalonia configuration, don't remove; also used by visual designer.
     public static AppBuilder BuildAvaloniaApp() =>

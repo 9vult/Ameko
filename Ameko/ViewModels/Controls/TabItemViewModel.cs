@@ -1,11 +1,13 @@
 ﻿// SPDX-License-Identifier: GPL-3.0-only
 
 using System;
+using System.Reactive;
 using System.Reactive.Linq;
 using System.Windows.Input;
 using Ameko.Messages;
 using Ameko.Services;
 using Ameko.ViewModels.Dialogs;
+using AssCS;
 using Holo;
 using Holo.Configuration;
 using Holo.Configuration.Keybinds;
@@ -30,6 +32,7 @@ public partial class TabItemViewModel : ViewModelBase
         FileModifiedDialogViewModel,
         FileModifiedDialogClosedMessage
     > ShowFileModifiedDialog { get; }
+    public Interaction<Event, Unit> ScrollToAndSelectEvent { get; }
 
     #endregion
 
@@ -165,6 +168,7 @@ public partial class TabItemViewModel : ViewModelBase
             new Interaction<PasteOverDialogViewModel, PasteOverDialogClosedMessage>();
         ShowFileModifiedDialog =
             new Interaction<FileModifiedDialogViewModel, FileModifiedDialogClosedMessage>();
+        ScrollToAndSelectEvent = new Interaction<Event, Unit>();
         #endregion
 
         #region Commands

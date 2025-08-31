@@ -7,6 +7,7 @@ using System.Reactive;
 using System.Reactive.Linq;
 using Ameko.Messages;
 using Ameko.Services;
+using Ameko.Utilities;
 using Ameko.ViewModels.Dialogs;
 using Ameko.Views.Dialogs;
 using Ameko.Views.Windows;
@@ -353,6 +354,19 @@ public partial class MainWindowViewModel : ViewModelBase
                 },
                 DispatcherPriority.Background
             );
+        });
+    }
+
+    /// <summary>
+    /// Show search dialog
+    /// </summary>
+    private ReactiveCommand<Unit, Unit> CreateShowSearchDialogCommand()
+    {
+        return ReactiveCommand.CreateFromTask(async () =>
+        {
+            var tabFactory = _serviceProvider.GetRequiredService<ITabFactory>();
+            var vm = new SearchDialogViewModel(SolutionProvider, tabFactory);
+            await ShowSearchDialog.Handle(vm);
         });
     }
 

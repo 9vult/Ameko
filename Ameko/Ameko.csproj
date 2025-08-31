@@ -137,6 +137,15 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>FileModified.resx</DependentUpon>
     </Compile>
+    <Compile Update="Views\Dialogs\SearchDialog.axaml.cs">
+      <DependentUpon>SearchDialog.axaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="I18N\Search.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Search.resx</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Update="I18N\Resources.resx">
@@ -186,6 +195,10 @@
     <EmbeddedResource Update="I18N\FileModified.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>FileModified.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="I18N\Search.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Search.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">

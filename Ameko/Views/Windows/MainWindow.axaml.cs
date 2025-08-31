@@ -29,6 +29,9 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
     private static readonly string[] VideoExtensions = [".mkv", ".mp4"];
     private const string SolutionExtension = ".asln";
 
+    private SearchDialog _searchDialog;
+    private bool _isSearching = false;
+
     private async Task DoShowOpenSubtitleDialogAsync(IInteractionContext<Unit, Uri[]> interaction)
     {
         var files = await StorageProvider.OpenFilePickerAsync(
@@ -197,6 +200,22 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         interaction.SetOutput(null);
     }
 
+    private void DoShowSearchDialog(IInteractionContext<SearchDialogViewModel, Unit> interaction)
+    {
+        _searchDialog.DataContext ??= interaction.Input;
+
+        if (_isSearching)
+        {
+            _searchDialog.Activate();
+        }
+        else
+        {
+            _isSearching = true;
+            _searchDialog.Show();
+        }
+        interaction.SetOutput(Unit.Default);
+    }
+
     private static void DoShowStylesManager(
         IInteractionContext<StylesManagerWindowViewModel, Unit> interaction
     )
@@ -326,6 +345,17 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
 
         AddHandler(DragDrop.DropEvent, DoDragAndDrop);
 
+        // Set up search dialog
+        _searchDialog = new SearchDialog();
+        _searchDialog.Closing += (sender, args) =>
+        {
+            if (sender is not SearchDialog searchDialog)
+                return;
+            args.Cancel = true;
+            searchDialog.Hide();
+            _isSearching = false;
+        };
+
         this.WhenActivated(disposables =>
         {
             if (ViewModel is not null)
@@ -339,6 +369,8 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
                     DoShowOpenFolderAsSolutionDialogAsync
                 );
                 ViewModel.SaveSolutionAs.RegisterHandler(DoShowSaveSolutionAsDialogAsync);
+                // Edit
+                ViewModel.ShowSearchDialog.RegisterHandler(DoShowSearchDialog);
                 // Subtitle
                 ViewModel.ShowStylesManager.RegisterHandler(DoShowStylesManager);
                 ViewModel.AttachReferenceFile.RegisterHandler(DoShowAttachReferenceFileDialogAsync);
