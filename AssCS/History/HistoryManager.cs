@@ -42,10 +42,24 @@ public class HistoryManager : BindableBase
     public ChangeType LastCommitType { get; private set; }
     public DateTimeOffset LastCommitTime { get; private set; }
 
+    /// <summary>
+    /// Signal that modifications may be starting
+    /// </summary>
+    /// <param name="events">List of events to track</param>
     public void BeginTransaction(IEnumerable<Event> events)
     {
         _initialState.Clear();
         _initialState.AddRange(events.Select(e => e.Clone()));
+    }
+
+    /// <summary>
+    /// Signal that modifications may be starting
+    /// </summary>
+    /// <param name="event">Event to track</param>
+    public void BeginTransaction(Event @event)
+    {
+        _initialState.Clear();
+        _initialState.Add(@event.Clone());
     }
 
     public void BeginTransaction(Style style)
