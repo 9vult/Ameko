@@ -72,6 +72,11 @@ public interface IConfiguration
     string Culture { get; set; }
 
     /// <summary>
+    /// Culture to use for spellchecking
+    /// </summary>
+    string SpellcheckCulture { get; set; }
+
+    /// <summary>
     /// Display theme to use
     /// </summary>
     Theme Theme { get; set; }

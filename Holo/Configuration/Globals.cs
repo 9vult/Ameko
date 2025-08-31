@@ -19,6 +19,7 @@ public class Globals : BindableBase, IGlobals
     private static readonly JsonSerializerOptions JsonOptions = new() { IncludeFields = true };
 
     private readonly ObservableCollection<Color> _colors;
+    private readonly ObservableCollection<string> _customWords;
 
     /// <summary>
     /// The filesystem being used
@@ -30,6 +31,9 @@ public class Globals : BindableBase, IGlobals
 
     /// <inheritdoc cref="IGlobals.Colors"/>
     public AssCS.Utilities.ReadOnlyObservableCollection<Color> Colors { get; }
+
+    /// <inheritdoc />
+    public AssCS.Utilities.ReadOnlyObservableCollection<string> CustomWords { get; }
 
     /// <inheritdoc cref="IGlobals.AddColor"/>
     public bool AddColor(Color color)
@@ -47,6 +51,21 @@ public class Globals : BindableBase, IGlobals
             return false;
         _colors.Remove(color);
         return true;
+    }
+
+    /// <inheritdoc />
+    public bool AddCustomWord(string word)
+    {
+        if (_customWords.Contains(word))
+            return false;
+        _customWords.Add(word);
+        return true;
+    }
+
+    /// <inheritdoc />
+    public bool RemoveCustomWord(string word)
+    {
+        return _customWords.Remove(word);
     }
 
     /// <inheritdoc cref="IGlobals.Save"/>
@@ -72,6 +91,7 @@ public class Globals : BindableBase, IGlobals
                 Version = GlobalsModel.CurrentApiVersion,
                 Styles = StyleManager.Styles.Select(s => s.AsAss()).ToArray(),
                 Colors = Colors.Select(s => s.AsStyleColor()).ToArray(),
+                CustomWords = CustomWords.ToArray(),
             };
 
             var content = JsonSerializer.Serialize(model, JsonOptions);
@@ -125,6 +145,9 @@ public class Globals : BindableBase, IGlobals
             foreach (var color in model.Colors.Select(Color.FromAss))
                 g._colors.Add(color);
 
+            foreach (var word in model.CustomWords)
+                g._customWords.Add(word);
+
             Logger.Info("Done!");
             return g;
         }
@@ -144,9 +167,11 @@ public class Globals : BindableBase, IGlobals
     {
         _fileSystem = fileSystem;
         _colors = [];
+        _customWords = [];
 
         StyleManager = new StyleManager();
         Colors = new AssCS.Utilities.ReadOnlyObservableCollection<Color>(_colors);
+        CustomWords = new AssCS.Utilities.ReadOnlyObservableCollection<string>(_customWords);
 
         StyleManager.Styles.CollectionChanged += (_, _) => Save();
         Colors.CollectionChanged += (_, _) => Save();

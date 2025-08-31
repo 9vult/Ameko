@@ -150,7 +150,8 @@ public class GlobalsTests
          {
              "Version": 1,
              "Styles": [],
-             "Colors": []
+             "Colors": [],
+             "CustomWords": []
          }
         """;
 
@@ -158,7 +159,8 @@ public class GlobalsTests
          {
              "Version": 1,
              "Styles": ["Style: Default,Volkhov,69,&H00FFFFFF,&H000000FF,&H00052030,&HA0052030,-1,0,0,0,100,105,0,0,1,4.75,2.1,2,275,275,60,1"],
-             "Colors": ["&HFF00AA"]
+             "Colors": ["&HFF00AA"],
+             "CustomWords": ["xnopyt"]
          }
         """;
 }

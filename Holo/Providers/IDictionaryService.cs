@@ -13,10 +13,7 @@ public interface IDictionaryService
     /// <param name="lang">Language code</param>
     /// <param name="dictionary">Dictionary, if found</param>
     /// <returns><see langword="true"/> if found</returns>
-    bool TryGetDictionary(
-        string lang,
-        [NotNullWhen(true)] out SpellcheckDictionary? dictionary
-    );
+    bool TryGetDictionary(string lang, [NotNullWhen(true)] out SpellcheckDictionary? dictionary);
 
     /// <summary>
     /// Download a new dictionary

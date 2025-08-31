@@ -16,4 +16,5 @@ internal record GlobalsModel
     public required double Version;
     public required string[] Styles;
     public required string[] Colors;
+    public required string[] CustomWords;
 }
