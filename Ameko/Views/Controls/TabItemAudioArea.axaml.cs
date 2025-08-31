@@ -13,8 +13,6 @@ namespace Ameko.Views.Controls;
 
 public partial class TabItemAudioArea : ReactiveUserControl<TabItemViewModel>
 {
-    private static readonly List<TabItemViewModel> PreviousVMs = [];
-
     public TabItemAudioArea()
     {
         InitializeComponent();
@@ -24,10 +22,6 @@ public partial class TabItemAudioArea : ReactiveUserControl<TabItemViewModel>
                 .WhereNotNull()
                 .Subscribe(vm =>
                 {
-                    if (PreviousVMs.Contains(vm))
-                        return;
-                    PreviousVMs.Add(vm);
-
                     // TODO: Don't do this!!
                     var renderer = new OpenAlAudioRenderer(vm.Workspace.MediaController);
                     renderer.Initialize();

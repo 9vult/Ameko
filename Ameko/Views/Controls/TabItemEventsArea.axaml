@@ -94,7 +94,8 @@
 			              Icon="{icons:MaterialIconExt Kind=ContentPaste}"
 			              Command="{Binding PasteEventsCommand}" />
 			    <MenuItem Header="{x:Static i18n:Resources.EventsGrid_Menu_PasteOver}"
-			              Icon="{icons:MaterialIconExt Kind=ClipboardEditOutline}" />
+			              Icon="{icons:MaterialIconExt Kind=ClipboardEditOutline}"
+			              Command="{Binding PasteOverEventsCommand}"/>
 			    <Separator />
 			    <MenuItem Header="{x:Static i18n:Resources.EventsGrid_Menu_Delete}"
 			              Icon="{icons:MaterialIconExt Kind=TrashCanOutline}"
