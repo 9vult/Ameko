@@ -18,6 +18,7 @@
     <PackageReference Include="Samboy063.Tomlet" Version="6.1.0" />
     <PackageReference Include="TestableIO.System.IO.Abstractions" Version="22.0.14" />
     <PackageReference Include="TestableIO.System.IO.Abstractions.Wrappers" Version="22.0.14" />
+    <PackageReference Include="WeCantSpell.Hunspell" Version="6.0.1" />
     <PackageReference Include="Xdg.Directories" Version="0.1.2" />
   </ItemGroup>
 

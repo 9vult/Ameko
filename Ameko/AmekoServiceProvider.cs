@@ -52,6 +52,8 @@ public static class AmekoServiceProvider
         services.AddSingleton<IGitService, GitService>();
         services.AddSingleton<ILayoutProvider, LayoutProvider>();
         services.AddSingleton<ISolutionProvider, SolutionProvider>();
+        services.AddSingleton<IDictionaryService, DictionaryService>();
+        services.AddSingleton<ISpellcheckService, SpellcheckService>();
 
         // --- Presentation ---
         services.AddSingleton<CultureService>();
