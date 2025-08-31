@@ -57,10 +57,12 @@
                         ToolTip.Tip="{x:Static i18n:Resources.Video_Button_DisableAutoSeek_ToolTip}"
                         Command="{Binding ToggleAutoSeekCommand}" />
                 <TextBox IsReadOnly="true"
+                         FontFamily="{StaticResource MartianMono}"
                          Text="{Binding Workspace.MediaController.CurrentTime.MillisecondText,
                                         FallbackValue='0:00:00.000'}"
                          ToolTip.Tip="{x:Static i18n:Resources.Video_Time_ToolTip}" />
                 <TextBox IsReadOnly="true"
+                         FontFamily="{StaticResource MartianMono}"
                          Text="{Binding Workspace.MediaController.CurrentFrame,
                                         FallbackValue='0'}"
                          ToolTip.Tip="{x:Static i18n:Resources.Video_Frame_ToolTip}" />

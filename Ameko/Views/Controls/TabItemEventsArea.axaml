@@ -25,6 +25,7 @@
               CanUserReorderColumns="False"
               SelectionMode="Extended"
               VerticalScrollBarVisibility="Auto"
+              HorizontalScrollBarVisibility="Disabled"
               ItemsSource="{Binding Workspace.Document.EventManager.Events}"
               SelectedItem="{Binding Workspace.SelectionManager.ActiveEvent, Mode=OneWay}">
         <DataGrid.Columns>
@@ -47,14 +48,19 @@
                 
             </DataGridTextColumn>
             <DataGridTextColumn Header="{x:Static i18n:Resources.EventsGrid_Header_Style}"
+                                FontFamily="{StaticResource ZenKakuGothicNew}"
                                 Binding="{Binding Style}" />
 			<DataGridTextColumn Header="{x:Static i18n:Resources.EventsGrid_Header_Actor}"
+			                    FontFamily="{StaticResource ZenKakuGothicNew}"
 			                    Binding="{Binding Actor}"
 			                    IsVisible="{Binding Workspace.DisplayActorsColumn}" />
 			<DataGridTextColumn Header="{x:Static i18n:Resources.EventsGrid_Header_Effect}"
+			                    FontFamily="{StaticResource ZenKakuGothicNew}"
 			                    Binding="{Binding Effect}"
 			                    IsVisible="{Binding Workspace.DisplayEffectsColumn}" />
 			<DataGridTextColumn Header="{x:Static i18n:Resources.EventsGrid_Header_Content}"
+			                    FontFamily="{StaticResource ZenKakuGothicNew}"
+			                    Width="*"
 			                    Binding="{Binding Text,
 												  Mode=OneWay,
 												  Converter={StaticResource TextLengthConverter}}" />

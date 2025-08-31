@@ -66,6 +66,7 @@
                                  FilterMode="Contains"
                                  Watermark="{x:Static i18n:Resources.Editor_ActorAcBox_Watermark}"
                                  ToolTip.Tip="{x:Static i18n:Resources.Editor_ActorAcBox_ToolTip}"
+                                 FontFamily="{StaticResource ZenKakuGothicNew}"
                                  SelectionChanged="AnyControl_EventMetaChanged" />
                 <AutoCompleteBox Name="EffectAcBox"
                                  Grid.Column="4"
@@ -75,6 +76,7 @@
                                  FilterMode="Contains"
                                  Watermark="{x:Static i18n:Resources.Editor_EffectAcBox_Watermark}"
                                  ToolTip.Tip="{x:Static i18n:Resources.Editor_EffectAcBox_ToolTip}"
+                                 FontFamily="{StaticResource ZenKakuGothicNew}"
                                  SelectionChanged="AnyControl_EventMetaChanged" />
                 <TextBlock Name="MaxLineWidthBox"
                            Grid.Column="5"
@@ -96,6 +98,7 @@
                                ShowButtonSpinner="False"
                                Value="{Binding Workspace.SelectionManager.ActiveEvent.Layer}"
                                ToolTip.Tip="{x:Static i18n:Resources.Editor_LayerUpDown_ToolTip}"
+                               FontFamily="{StaticResource MartianMono}"
                                ValueChanged="AnyControl_EventMetaChanged" />
                 <TextBox Name="StartBox"
                          Grid.Column="1"
@@ -124,9 +127,10 @@
                                ShowButtonSpinner="False"
                                ToolTip.Tip="{x:Static i18n:Resources.Editor_MarginLeft_ToolTip}"
                                Value="{Binding Workspace.SelectionManager.ActiveEvent.Margins.Left}"
+                               FontFamily="{StaticResource MartianMono}"
                                ValueChanged="AnyControl_EventMetaChanged" />
                 <NumericUpDown Name="MarginRightUpDown"
-                               Grid.Column="3"
+                               Grid.Column="4"
                                Margin="2"
                                Padding="0"
                                Increment="1"
@@ -134,9 +138,10 @@
                                ShowButtonSpinner="False"
                                ToolTip.Tip="{x:Static i18n:Resources.Editor_MarginRight_ToolTip}"
                                Value="{Binding Workspace.SelectionManager.ActiveEvent.Margins.Right}"
+                               FontFamily="{StaticResource MartianMono}"
                                ValueChanged="AnyControl_EventMetaChanged" />
                 <NumericUpDown Name="MarginVerticalUpDown"
-                               Grid.Column="3"
+                               Grid.Column="5"
                                Margin="2"
                                Padding="0"
                                Increment="1"
@@ -144,6 +149,7 @@
                                ShowButtonSpinner="False"
                                ToolTip.Tip="{x:Static i18n:Resources.Editor_MarginVertical_ToolTip}"
                                Value="{Binding Workspace.SelectionManager.ActiveEvent.Margins.Vertical}"
+                               FontFamily="{StaticResource MartianMono}"
                                ValueChanged="AnyControl_EventMetaChanged" />
                 <StackPanel Grid.Column="7"
                             Orientation="Horizontal">
