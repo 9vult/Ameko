@@ -19,6 +19,8 @@
         
         DragDrop.AllowDrop="True"
 
+        Width="1120"
+        Height="650"
         Icon="/Assets/Ameko-Simplified-BG-64.ico"
         Title="{Binding WindowTitle}">
     <!-- <Design.DataContext> -->
