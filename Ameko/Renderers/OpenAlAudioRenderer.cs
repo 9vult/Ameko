@@ -43,10 +43,10 @@ public class OpenAlAudioRenderer(MediaController mediaController) : IAudioRender
 
         _context = _alc.CreateContext(_device, null);
         _alc.MakeContextCurrent(_context);
-        OpenAlException.ThrowIfError(_al);
+        OpenAlException.ThrowIfError(_alc, _device);
 
         _source = new Source(_al);
-        OpenAlException.ThrowIfError(_al);
+        OpenAlException.ThrowIfError(_alc, _device);
 
         IsInitialized = true;
     }

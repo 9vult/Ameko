@@ -25,4 +25,19 @@ public class OpenAlException : Exception
             throw new OpenAlException(error.ToString());
         }
     }
+
+    /// <summary>
+    /// Throw if the <see cref="ALContext"/> instance is in an error state
+    /// </summary>
+    /// <param name="al">OpenAL Context</param>
+    /// <param name="device">OpenAL Device</param>
+    /// <exception cref="OpenAlException">If there is an error</exception>
+    public static unsafe void ThrowIfError(ALContext al, Device* device)
+    {
+        var error = al.GetError(device);
+        if (error != ContextError.NoError)
+        {
+            throw new OpenAlException(error.ToString());
+        }
+    }
 }

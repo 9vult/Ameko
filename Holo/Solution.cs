@@ -111,6 +111,7 @@ public class Solution : BindableBase
         set
         {
             _workingSpace?.SelectionManager.BeginSelectionChange();
+            _workingSpace?.MediaController.Stop();
             value?.SelectionManager.BeginSelectionChange();
 
             SetProperty(ref _workingSpace, value);

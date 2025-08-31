@@ -18,8 +18,6 @@ namespace Ameko.Views.Controls;
 
 public partial class TabItemEditorArea : ReactiveUserControl<TabItemViewModel>
 {
-    private static readonly List<TabItemViewModel> PreviousVMs = [];
-
     private bool UseSoftLinebreaks =>
         ViewModel?.SolutionProvider.Current.UseSoftLinebreaks
         ?? ViewModel?.Configuration.UseSoftLinebreaks
@@ -121,10 +119,6 @@ public partial class TabItemEditorArea : ReactiveUserControl<TabItemViewModel>
                         EditBox_OnKeyDown,
                         RoutingStrategies.Bubble
                     );
-
-                    if (PreviousVMs.Contains(vm))
-                        return;
-                    PreviousVMs.Add(vm);
                 })
                 .DisposeWith(disposables);
         });

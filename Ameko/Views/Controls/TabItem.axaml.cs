@@ -25,8 +25,6 @@ namespace Ameko.Views.Controls;
 
 public partial class TabItem : ReactiveUserControl<TabItemViewModel>
 {
-    private static readonly List<TabItemViewModel> PreviousVMs = [];
-
     private async Task DoCopyEventsAsync(IInteractionContext<TabItemViewModel, string?> interaction)
     {
         var window = TopLevel.GetTopLevel(this);
@@ -152,11 +150,6 @@ public partial class TabItem : ReactiveUserControl<TabItemViewModel>
                         },
                         DispatcherPriority.Background
                     );
-
-                    // Skip if already subscribed
-                    if (PreviousVMs.Contains(vm))
-                        return;
-                    PreviousVMs.Add(vm);
 
                     vm.CopyEvents.RegisterHandler(DoCopyEventsAsync);
                     vm.CutEvents.RegisterHandler(DoCutEventsAsync);
