@@ -55,15 +55,27 @@ public partial class MainWindowViewModel : ViewModelBase
 
             foreach (var uri in uris)
             {
-                var doc = Path.GetExtension(uri.LocalPath) switch
+                var ext = Path.GetExtension(uri.LocalPath);
+                var doc = ext switch
                 {
                     ".ass" => new AssParser().Parse(_fileSystem, uri),
+                    ".srt" => new SrtParser().Parse(_fileSystem, uri),
                     ".txt" => new TxtParser().Parse(_fileSystem, uri),
                     _ => throw new ArgumentOutOfRangeException(),
                 };
 
-                latest = SolutionProvider.Current.AddWorkspace(doc, uri);
-                latest.IsSaved = true;
+                if (ext == ".ass")
+                {
+                    latest = SolutionProvider.Current.AddWorkspace(doc, uri);
+                    latest.IsSaved = true;
+                }
+                else
+                {
+                    // Non-ass sourced documents need to be re-saved as an ass file
+                    latest = SolutionProvider.Current.AddWorkspace(doc);
+                    latest.IsSaved = false;
+                }
+
                 Logger.Info($"Opened subtitle file {latest.Title}");
             }
 
@@ -83,15 +95,27 @@ public partial class MainWindowViewModel : ViewModelBase
             {
                 Logger.Debug("Opening subtitle (no-gui)");
 
-                var doc = Path.GetExtension(uri.LocalPath) switch
+                var ext = Path.GetExtension(uri.LocalPath);
+                var doc = ext switch
                 {
                     ".ass" => new AssParser().Parse(_fileSystem, uri),
                     ".txt" => new TxtParser().Parse(_fileSystem, uri),
                     _ => throw new ArgumentOutOfRangeException(),
                 };
 
-                var latest = SolutionProvider.Current.AddWorkspace(doc, uri);
-                latest.IsSaved = true;
+                Workspace latest;
+
+                if (ext == ".ass")
+                {
+                    latest = SolutionProvider.Current.AddWorkspace(doc, uri);
+                    latest.IsSaved = true;
+                }
+                else
+                {
+                    // Non-ass sourced documents need to be re-saved as an ass file
+                    latest = SolutionProvider.Current.AddWorkspace(doc);
+                    latest.IsSaved = false;
+                }
                 Logger.Info($"Opened subtitle file {latest.Title}");
                 SolutionProvider.Current.WorkingSpace = latest;
             }
@@ -366,7 +390,13 @@ public partial class MainWindowViewModel : ViewModelBase
             if (wsp is null)
                 return;
 
-            wsp.ReferenceFileManager.Reference = new AssParser().Parse(_fileSystem, uri);
+            var ext = Path.GetExtension(uri.LocalPath);
+            wsp.ReferenceFileManager.Reference = ext switch
+            {
+                ".ass" => new AssParser().Parse(_fileSystem, uri),
+                ".srt" => new SrtParser().Parse(_fileSystem, uri),
+                _ => throw new ArgumentOutOfRangeException(),
+            };
         });
     }
 

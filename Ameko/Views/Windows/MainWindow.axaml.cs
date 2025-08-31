@@ -25,7 +25,7 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
 {
     private static readonly Logger Log = LogManager.GetCurrentClassLogger();
 
-    private static readonly string[] ScriptExtensions = [".ass", ".txt"];
+    private static readonly string[] ScriptExtensions = [".ass", ".srt", ".txt"];
     private static readonly string[] VideoExtensions = [".mkv", ".mp4"];
     private const string SolutionExtension = ".asln";
 
@@ -41,6 +41,10 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
                     new FilePickerFileType(I18N.Other.FileDialog_FileType_Ass)
                     {
                         Patterns = ["*.ass"],
+                    },
+                    new FilePickerFileType(I18N.Other.FileDialog_FileType_Srt)
+                    {
+                        Patterns = ["*.srt"],
                     },
                     new FilePickerFileType(I18N.Other.FileDialog_FileType_Text)
                     {
@@ -217,6 +221,10 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
                     new FilePickerFileType(I18N.Other.FileDialog_FileType_Ass)
                     {
                         Patterns = ["*.ass"],
+                    },
+                    new FilePickerFileType(I18N.Other.FileDialog_FileType_Srt)
+                    {
+                        Patterns = ["*.srt"],
                     },
                 ],
             }

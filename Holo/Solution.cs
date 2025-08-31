@@ -227,6 +227,19 @@ public class Solution : BindableBase
     }
 
     /// <summary>
+    /// Add a new <see cref="Workspace"/> to the solution using an existing <see cref="Document"/>, and open it
+    /// </summary>
+    /// <param name="document">Document to add</param>
+    /// <param name="parentId">Optional ID for adding to a directory</param>
+    /// <returns>The created workspace</returns>
+    public Workspace AddWorkspace(Document document, int parentId = -1)
+    {
+        Logger.Trace($"Creating a workspace from document with no save path");
+        var wsp = new Workspace(document, NextId, null);
+        return AddWorkspace(wsp, parentId);
+    }
+
+    /// <summary>
     /// Add an existing <see cref="Workspace"/> to the solution, and open it
     /// </summary>
     /// <param name="wsp">The workspace to add</param>

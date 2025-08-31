@@ -72,6 +72,9 @@
     <data name="FileDialog_FileType_Ass" xml:space="preserve">
         <value>ASS Files</value>
     </data>
+    <data name="FileDialog_FileType_Srt" xml:space="preserve">
+        <value>SRT Files</value>
+    </data>
     <data name="FileDialog_SaveSubtitle_Title" xml:space="preserve">
         <value>Save Subtitle File</value>
     </data>
