@@ -7,13 +7,16 @@ using System.Reactive;
 using System.Reactive.Disposables;
 using System.Threading.Tasks;
 using Ameko.Messages;
+using Ameko.Services;
 using Ameko.ViewModels.Dialogs;
 using Ameko.ViewModels.Windows;
 using Ameko.Views.Dialogs;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Platform.Storage;
 using Avalonia.ReactiveUI;
+using DynamicData;
 using Holo.Configuration.Keybinds;
 using Holo.Models;
 using NLog;
@@ -23,7 +26,7 @@ namespace Ameko.Views.Windows;
 
 public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
 {
-    private static readonly Logger Log = LogManager.GetCurrentClassLogger();
+    private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
     private static readonly string[] ScriptExtensions = [".ass", ".srt", ".txt"];
     private static readonly string[] VideoExtensions = [".mkv", ".mp4"];
@@ -218,7 +221,7 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         IInteractionContext<StylesManagerWindowViewModel, Unit> interaction
     )
     {
-        Log.Debug("Displaying Styles Manager");
+        Logger.Debug("Displaying Styles Manager");
         var window = new StylesManagerWindow { DataContext = interaction.Input };
         window.Show();
         interaction.SetOutput(Unit.Default);
@@ -258,7 +261,7 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         IInteractionContext<ShiftTimesDialogViewModel, Unit> interaction
     )
     {
-        Log.Debug("Displaying Shift Times dialog");
+        Logger.Debug("Displaying Shift Times dialog");
         var window = new ShiftTimesDialog { DataContext = interaction.Input };
         await window.ShowDialog(this);
         interaction.SetOutput(Unit.Default);
@@ -292,7 +295,7 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         IInteractionContext<JumpDialogViewModel, JumpDialogClosedMessage?> interaction
     )
     {
-        Log.Debug("Displaying Jump dialog");
+        Logger.Debug("Displaying Jump dialog");
         var dialog = new JumpDialog { DataContext = interaction.Input };
         var result = await dialog.ShowDialog<JumpDialogClosedMessage?>(this);
         interaction.SetOutput(result);
@@ -302,7 +305,7 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         IInteractionContext<PkgManWindowViewModel, Unit> interaction
     )
     {
-        Log.Debug("Displaying Dependency Control");
+        Logger.Debug("Displaying Dependency Control");
         var window = new PkgManWindow { DataContext = interaction.Input };
         await window.ShowDialog(this);
         interaction.SetOutput(Unit.Default);
@@ -310,7 +313,7 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
 
     private static void DoShowLogWindow(IInteractionContext<LogWindowViewModel, Unit> interaction)
     {
-        Log.Debug("Displaying Log Window");
+        Logger.Debug("Displaying Log Window");
         var window = new LogWindow { DataContext = interaction.Input };
         window.Show();
         interaction.SetOutput(Unit.Default);
@@ -320,7 +323,7 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         IInteractionContext<AboutWindowViewModel, Unit> interaction
     )
     {
-        Log.Debug("Displaying About Window");
+        Logger.Debug("Displaying About Window");
         var window = new AboutWindow() { DataContext = interaction.Input };
         await window.ShowDialog(this);
         interaction.SetOutput(Unit.Default);
@@ -330,7 +333,7 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         IInteractionContext<KeybindsWindowViewModel, Unit> interaction
     )
     {
-        Log.Debug("Displaying Keybinds Window");
+        Logger.Debug("Displaying Keybinds Window");
         var window = new KeybindsWindow() { DataContext = interaction.Input };
         window.Show();
         interaction.SetOutput(Unit.Default);
@@ -340,7 +343,7 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         IInteractionContext<InstallDictionaryDialogViewModel, Unit> interaction
     )
     {
-        Log.Debug("Displaying install dictionary dialog");
+        Logger.Debug("Displaying install dictionary dialog");
         var dialog = new InstallDictionaryDialog { DataContext = interaction.Input };
         await dialog.ShowDialog<EmptyMessage>(this);
         interaction.SetOutput(Unit.Default);
@@ -348,7 +351,7 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
 
     public MainWindow()
     {
-        Log.Info("Initializing Main Window...");
+        Logger.Info("Initializing Main Window...");
         InitializeComponent();
 
         AddHandler(DragDrop.DropEvent, DoDragAndDrop);
@@ -404,18 +407,27 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
                     AttachKeybinds();
                 };
 
-                // Apply layouts
+                // Generate layouts menu and apply current layout
                 ApplyLayout(ViewModel, ViewModel.LayoutProvider.Current);
+                GenerateLayoutsMenu();
                 ViewModel.LayoutProvider.OnLayoutChanged += (_, args) =>
                 {
                     ApplyLayout(ViewModel, args.Layout);
+                    GenerateLayoutsMenu();
+                };
+
+                // Generate scripts menu
+                GenerateScriptsMenu();
+                ViewModel.ScriptService.OnReload += (_, _) =>
+                {
+                    GenerateScriptsMenu();
                 };
             }
 
             Disposable.Create(() => { }).DisposeWith(disposables);
         });
 
-        Log.Info("Done!");
+        Logger.Info("Done!");
     }
 
     private void ApplyLayout(MainWindowViewModel? vm, Layout? layout)
@@ -443,6 +455,72 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
             ProjectExplorer.SetValue(Grid.ColumnProperty, 2);
             WorkspaceTabControl.SetValue(Grid.ColumnProperty, 0);
         }
+    }
+
+    private void GenerateLayoutsMenu()
+    {
+        if (ViewModel is null)
+            return;
+
+        Logger.Debug("Regenerating layouts native menu...");
+        var menuItems = LayoutMenuService.GenerateNativeMenuItemSource(
+            ViewModel.LayoutProvider.Layouts,
+            ViewModel.SelectLayoutCommand
+        );
+        var reloadItem = LayoutMenuService.GenerateReloadNativeMenuItem(
+            ViewModel.RefreshLayoutsCommand
+        );
+
+        var menu = NativeMenu
+            .GetMenu(this)
+            ?.Items.OfType<NativeMenuItem>()
+            .FirstOrDefault(m => m.Header == I18N.Resources.Menu_Layouts)
+            ?.Menu;
+
+        if (menu is null)
+            return;
+
+        menu.Items.Clear();
+        menu.Items.AddRange(menuItems);
+        if (menuItems.Count > 0)
+            menu.Items.Add(new NativeMenuItemSeparator());
+        menu.Items.Add(reloadItem);
+        Logger.Debug("Done!");
+    }
+
+    private void GenerateScriptsMenu()
+    {
+        if (ViewModel is null)
+            return;
+
+        Logger.Debug("Regenerating scripts native menu...");
+        var menuItems = ScriptMenuService.GenerateNativeMenuItemSource(
+            ViewModel.ScriptService.Scripts,
+            ViewModel.ExecuteScriptCommand
+        );
+        var reloadItem = ScriptMenuService.GenerateReloadNativeMenuItem(
+            ViewModel.ReloadScriptsCommand
+        );
+        var pkgManItem = ScriptMenuService.GeneratePkgManNativeMenuItem(
+            ViewModel.ShowPackageManagerCommand
+        );
+
+        var menu = NativeMenu
+            .GetMenu(this)
+            ?.Items.OfType<NativeMenuItem>()
+            .FirstOrDefault(m => m.Header == I18N.Resources.Menu_Scripts)
+            ?.Menu;
+
+        if (menu is null)
+            return;
+
+        menu.Items.Clear();
+        menu.Items.AddRange(menuItems);
+        if (menuItems.Count > 0)
+            menu.Items.Add(new NativeMenuItemSeparator());
+        menu.Items.Add(reloadItem);
+        menu.Items.Add(pkgManItem);
+        Logger.Debug("Done...");
     }
 
     private void AttachKeybinds()

@@ -30,12 +30,14 @@ public partial class MainWindowViewModel : ViewModelBase
     private readonly IServiceProvider _serviceProvider;
     private readonly IStylesManagerFactory _stylesManagerFactory;
     private readonly IIoService _ioService;
-    private readonly IScriptService _scriptService;
     private readonly ISpellcheckService _spellcheckService;
     private readonly IDictionaryService _dictionaryService;
     private readonly IFileSystem _fileSystem;
 
+    public IScriptService ScriptService { get; }
     public ILayoutProvider LayoutProvider { get; }
+
+    public bool DisplayInWindowMenu { get; } = !OperatingSystem.IsMacOS();
 
     #region Interactions
     // File
@@ -172,7 +174,7 @@ public partial class MainWindowViewModel : ViewModelBase
     public ICommand RenameDirectoryCommand { get; }
     #endregion
 
-    public IProjectProvider IProjectProvider { get; }
+    public IProjectProvider ProjectProvider { get; }
     public IKeybindService KeybindService { get; }
     public GitToolboxViewModel GitToolboxViewModel { get; }
 
@@ -190,27 +192,27 @@ public partial class MainWindowViewModel : ViewModelBase
     /// <param name="workspaceId">ID to open</param>
     public void TryLoadReferenced(int workspaceId)
     {
-        var wsp = IProjectProvider.Current.LoadedWorkspaces.FirstOrDefault(w =>
-            w.Id == workspaceId
-        );
+        var wsp = ProjectProvider.Current.LoadedWorkspaces.FirstOrDefault(w => w.Id == workspaceId);
         if (wsp is not null)
         {
-            IProjectProvider.Current.WorkingSpace = wsp;
+            ProjectProvider.Current.WorkingSpace = wsp;
             return;
         }
 
-        IProjectProvider.Current.OpenDocument(workspaceId);
+        ProjectProvider.Current.OpenDocument(workspaceId);
     }
 
     private void GenerateScriptsMenu()
     {
         Logger.Debug("Regenerating scripts menu...");
-        ScriptMenuItems.Clear();
-        ScriptMenuItems.AddRange(
-            ScriptMenuService.GenerateMenuItemSource(_scriptService.Scripts, ExecuteScriptCommand)
+        var menuItems = ScriptMenuService.GenerateMenuItemSource(
+            ScriptService.Scripts,
+            ExecuteScriptCommand
         );
-
-        ScriptMenuItems.Add(new Separator());
+        ScriptMenuItems.Clear();
+        ScriptMenuItems.AddRange(menuItems);
+        if (menuItems.Count > 0)
+            ScriptMenuItems.Add(new Separator());
         ScriptMenuItems.Add(ScriptMenuService.GenerateReloadMenuItem(ReloadScriptsCommand));
         ScriptMenuItems.Add(ScriptMenuService.GeneratePkgManMenuItem(ShowPackageManagerCommand));
         Logger.Debug("Done!");
@@ -219,11 +221,14 @@ public partial class MainWindowViewModel : ViewModelBase
     private void GenerateLayoutsMenu()
     {
         Logger.Debug("Regenerating layouts menu...");
-        LayoutMenuItems.Clear();
-        LayoutMenuItems.AddRange(
-            LayoutMenuService.GenerateMenuItemSource(LayoutProvider.Layouts, SelectLayoutCommand)
+        var menuItems = LayoutMenuService.GenerateMenuItemSource(
+            LayoutProvider.Layouts,
+            SelectLayoutCommand
         );
-        LayoutMenuItems.Add(new Separator());
+        LayoutMenuItems.Clear();
+        LayoutMenuItems.AddRange(menuItems);
+        if (menuItems.Count > 0)
+            LayoutMenuItems.Add(new Separator());
         LayoutMenuItems.Add(LayoutMenuService.GenerateReloadMenuItem(RefreshLayoutsCommand));
         Logger.Debug("Done!");
     }
@@ -233,7 +238,7 @@ public partial class MainWindowViewModel : ViewModelBase
         IFileSystem fileSystem,
         IIoService ioService,
         ILayoutProvider layoutProvider,
-        IProjectProvider iProjectProvider,
+        IProjectProvider projectProvider,
         IStylesManagerFactory stylesManagerFactory,
         IScriptService scriptService,
         IKeybindService keybindService,
@@ -246,9 +251,9 @@ public partial class MainWindowViewModel : ViewModelBase
         _fileSystem = fileSystem;
         _ioService = ioService;
         LayoutProvider = layoutProvider;
-        IProjectProvider = iProjectProvider;
+        ProjectProvider = projectProvider;
         _stylesManagerFactory = stylesManagerFactory;
-        _scriptService = scriptService;
+        ScriptService = scriptService;
         KeybindService = keybindService;
         _dictionaryService = dictionaryService;
         _spellcheckService = spellCheckService;
@@ -331,7 +336,7 @@ public partial class MainWindowViewModel : ViewModelBase
         #endregion
 
         ScriptMenuItems = [];
-        _scriptService.OnReload += (_, _) => GenerateScriptsMenu();
+        ScriptService.OnReload += (_, _) => GenerateScriptsMenu();
 
         LayoutMenuItems = [];
         LayoutProvider.OnLayoutChanged += (_, _) => GenerateLayoutsMenu();

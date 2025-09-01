@@ -57,12 +57,12 @@
         <MenuItem Header="{x:Static i18n:Resources.Menu_Edit}">
             <MenuItem Header="{x:Static i18n:Resources.Menu_Undo}"
                       Icon="{icons:MaterialIconExt Kind=Undo}"
-                      IsEnabled="{Binding IProjectProvider.Current.WorkingSpace.Document.HistoryManager.CanUndo,
+                      IsEnabled="{Binding ProjectProvider.Current.WorkingSpace.Document.HistoryManager.CanUndo,
                                           FallbackValue=false}"
                       Command="{Binding UndoCommand}" />
             <MenuItem Header="{x:Static i18n:Resources.Menu_Redo}"
                       Icon="{icons:MaterialIconExt Kind=Redo}"
-                      IsEnabled="{Binding IProjectProvider.Current.WorkingSpace.Document.HistoryManager.CanRedo,
+                      IsEnabled="{Binding ProjectProvider.Current.WorkingSpace.Document.HistoryManager.CanRedo,
                                           FallbackValue=false}"
                       Command="{Binding RedoCommand}" />
             <Separator />
@@ -77,11 +77,11 @@
             <Separator />
             <MenuItem Header="{x:Static i18n:Resources.Menu_ReferenceFile_Attach}"
                       Icon="{icons:MaterialIconExt Kind=ClosedCaptionOutline}"
-                      IsVisible="{Binding !IProjectProvider.Current.WorkingSpace.ReferenceFileManager.IsReferenceLoaded}"
+                      IsVisible="{Binding !ProjectProvider.Current.WorkingSpace.ReferenceFileManager.IsReferenceLoaded}"
                       Command="{Binding AttachReferenceFileCommand}" />
             <MenuItem Header="{x:Static i18n:Resources.Menu_ReferenceFile_Detatch}"
                       Icon="{icons:MaterialIconExt Kind=ClosedCaptionOutline}"
-                      IsVisible="{Binding IProjectProvider.Current.WorkingSpace.ReferenceFileManager.IsReferenceLoaded,
+                      IsVisible="{Binding ProjectProvider.Current.WorkingSpace.ReferenceFileManager.IsReferenceLoaded,
                                           FallbackValue=false}"
                       Command="{Binding DetachReferenceFileCommand}" />
             <Separator />

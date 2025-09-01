@@ -25,7 +25,7 @@ feature-rich subtitle editor with several key features to provide a robust found
   Rendering is handled via a plugin-based system, ensuring flexibility and independence from any single backend. The
   initial video provider will be [FFMS2](https://github.com/FFMS/ffms2), and [libass](https://github.com/libass/libass/)
   will be the first subtitle renderer. Video rendering is handled by OpenGL. The first audio renderer is OpenAL Soft.
-- **Tabs and Projectss:** Ameko will feature tabs, allowing users to easily switch between multiple open subtitle files.
+- **Tabs and Projects:** Ameko will feature tabs, allowing users to easily switch between multiple open subtitle files.
   Alongside this, Ameko is introducing *Project Files*. Projects enable logical grouping and organization of
   subtitle files
   independent of the physical filesystem structure. Furthermore, Projects provide a centralized place for common
