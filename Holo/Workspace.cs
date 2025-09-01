@@ -8,7 +8,7 @@ using NLog;
 namespace Holo;
 
 /// <summary>
-/// A group of related files for editing, part of a <see cref="Solution"/>
+/// A group of related files for editing, part of a <see cref="Project"/>
 /// </summary>
 /// <remarks>
 /// A workspace is the related content normally displayed in a single
@@ -271,7 +271,7 @@ public class Workspace : BindableBase
     }
 
     /// <summary>
-    /// A group of related files for editing, part of a <see cref="Solution"/>
+    /// A group of related files for editing, part of a <see cref="Project"/>
     /// </summary>
     /// <param name="document">Ass document</param>
     /// <param name="id">Workspace ID</param>

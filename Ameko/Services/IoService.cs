@@ -16,7 +16,7 @@ using ReactiveUI;
 namespace Ameko.Services;
 
 public class IoService(
-    ISolutionProvider solutionProvider,
+    IProjectProvider iProjectProvider,
     ITabFactory tabFactory,
     IFileSystem fileSystem
 ) : IIoService
@@ -89,7 +89,7 @@ public class IoService(
     )
     {
         Log.Trace($"Closing workspace {wsp.Title}");
-        var sln = solutionProvider.Current;
+        var sln = iProjectProvider.Current;
 
         if (wsp.IsSaved)
         {
@@ -126,10 +126,10 @@ public class IoService(
         }
     }
 
-    /// <inheritdoc cref="IIoService.SaveSolution"/>
-    public async Task<bool> SaveSolution(Interaction<string, Uri?> interaction, Solution sln)
+    /// <inheritdoc cref="IIoService.SaveProject"/>
+    public async Task<bool> SaveProject(Interaction<string, Uri?> interaction, Project sln)
     {
-        Log.Info($"Preparing to save solution file {sln.Title}");
+        Log.Info($"Preparing to save project file {sln.Title}");
         var uri = sln.SavePath ?? await interaction.Handle(sln.Title);
 
         if (uri is null)
@@ -141,7 +141,7 @@ public class IoService(
         sln.SavePath = uri;
         sln.Save();
 
-        Log.Info($"Saved solution file {sln.Title}");
+        Log.Info($"Saved project file {sln.Title}");
         return true;
     }
 }

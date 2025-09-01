@@ -5,16 +5,16 @@ using System.Text.Json.Serialization;
 namespace Holo.Models;
 
 /// <summary>
-/// Simplified representation of a <see cref="Solution"/> for
+/// Simplified representation of a <see cref="Project"/> for
 /// serialization purposes
 /// </summary>
-internal record SolutionModel
+internal record ProjectModel
 {
     [JsonIgnore]
     internal const double CurrentApiVersion = 1.0d;
 
     public required double Version;
-    public required SolutionItemModel[] ReferencedDocuments;
+    public required ProjectItemModel[] ReferencedDocuments;
     public required string[] Styles;
     public required int? Cps;
     public required bool? CpsIncludesWhitespace;

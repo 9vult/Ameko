@@ -123,21 +123,21 @@ namespace Ameko.I18N {
             }
         }
         
-        public static string FileDialog_FileType_Solution {
+        public static string FileDialog_FileType_Project {
             get {
-                return ResourceManager.GetString("FileDialog_FileType_Solution", resourceCulture);
+                return ResourceManager.GetString("FileDialog_FileType_Project", resourceCulture);
             }
         }
         
-        public static string FileDialog_OpenSolution_Title {
+        public static string FileDialog_OpenProject_Title {
             get {
-                return ResourceManager.GetString("FileDialog_OpenSolution_Title", resourceCulture);
+                return ResourceManager.GetString("FileDialog_OpenProject_Title", resourceCulture);
             }
         }
         
-        public static string FileDialog_SaveSolution_Title {
+        public static string FileDialog_SaveProject_Title {
             get {
-                return ResourceManager.GetString("FileDialog_SaveSolution_Title", resourceCulture);
+                return ResourceManager.GetString("FileDialog_SaveProject_Title", resourceCulture);
             }
         }
         
@@ -201,9 +201,9 @@ namespace Ameko.I18N {
             }
         }
         
-        public static string FileDialog_OpenFolderAsSolution_Title {
+        public static string FileDialog_OpenFolderAsProject_Title {
             get {
-                return ResourceManager.GetString("FileDialog_OpenFolderAsSolution_Title", resourceCulture);
+                return ResourceManager.GetString("FileDialog_OpenFolderAsProject_Title", resourceCulture);
             }
         }
         

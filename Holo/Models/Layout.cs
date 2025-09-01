@@ -137,5 +137,5 @@ public class Splitter
 
 public class WindowSection
 {
-    public required bool IsSolutionExplorerOnLeft { get; init; }
+    public required bool IsProjectExplorerOnLeft { get; init; }
 }

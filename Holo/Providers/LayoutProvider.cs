@@ -149,7 +149,7 @@ public class LayoutProvider : BindableBase, ILayoutProvider
             Author = "9volt",
             ColumnDefinitions = "*, 2, *",
             RowDefinitions = "0.5*, 2, *, 2, *",
-            Window = new WindowSection { IsSolutionExplorerOnLeft = true },
+            Window = new WindowSection { IsProjectExplorerOnLeft = true },
             Video = new TabSection
             {
                 IsVisible = true,
@@ -203,11 +203,11 @@ public class LayoutProvider : BindableBase, ILayoutProvider
     private static Layout DefaultRightSlnExplorer =>
         new()
         {
-            Name = "Default (Solution Explorer on Right)",
+            Name = "Default (Project Explorer on Right)",
             Author = "9volt",
             ColumnDefinitions = "*, 2, *",
             RowDefinitions = "0.5*, 2, *, 2, *",
-            Window = new WindowSection { IsSolutionExplorerOnLeft = false },
+            Window = new WindowSection { IsProjectExplorerOnLeft = false },
             Video = new TabSection
             {
                 IsVisible = true,
@@ -266,7 +266,7 @@ public class LayoutProvider : BindableBase, ILayoutProvider
             Author = "9volt",
             ColumnDefinitions = "*",
             RowDefinitions = "*, 2, 2*",
-            Window = new WindowSection { IsSolutionExplorerOnLeft = true },
+            Window = new WindowSection { IsProjectExplorerOnLeft = true },
             Video = new TabSection
             {
                 IsVisible = false,
@@ -309,7 +309,7 @@ public class LayoutProvider : BindableBase, ILayoutProvider
             Author = "9volt",
             ColumnDefinitions = "*, 2, *",
             RowDefinitions = "0.5*, 2, *, 2, *",
-            Window = new WindowSection { IsSolutionExplorerOnLeft = true },
+            Window = new WindowSection { IsProjectExplorerOnLeft = true },
             Video = new TabSection
             {
                 IsVisible = true,

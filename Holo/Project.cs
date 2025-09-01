@@ -12,28 +12,28 @@ using NLog;
 namespace Holo;
 
 /// <summary>
-/// A solution consisting of multiple <see cref="Workspace"/>s,
+/// A project consisting of multiple <see cref="Workspace"/>s,
 /// <see cref="Style"/>s, and options common to the files within.
 /// </summary>
 /// <remarks>
 /// <para>
-/// A solution primarily consists of multiple, potentially open,
-/// <see cref="Document"/>s. Not all documents in the solution need
+/// A project primarily consists of multiple, potentially open,
+/// <see cref="Document"/>s. Not all documents in the project need
 /// be opened at the same time.
 /// </para><para>
-/// Additionally, all open files exist within a solution. If the user
-/// has not opened a solution, the files implicitly are opened in the
-/// default solution.
+/// Additionally, all open files exist within a project. If the user
+/// has not opened a project, the files implicitly are opened in the
+/// default project.
 /// </para><para>
-/// Solutions can be saved to disk with the <c>*.asln</c> file extension.
+/// Projects can be saved to disk with the <c>*.aproj</c> file extension.
 /// </para>
 /// </remarks>
-public class Solution : BindableBase
+public class Project : BindableBase
 {
     private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
     private static readonly JsonSerializerOptions JsonOptions = new() { IncludeFields = true };
 
-    private readonly RangeObservableCollection<SolutionItem> _referencedItems;
+    private readonly RangeObservableCollection<ProjectItem> _referencedItems;
     private readonly RangeObservableCollection<Workspace> _loadedWorkspaces;
 
     /// <summary>
@@ -58,9 +58,9 @@ public class Solution : BindableBase
     private List<string> _customWords;
 
     /// <summary>
-    /// All items referenced by the solution
+    /// All items referenced by the project
     /// </summary>
-    public ReadOnlyObservableCollection<SolutionItem> ReferencedItems { get; }
+    public ReadOnlyObservableCollection<ProjectItem> ReferencedItems { get; }
 
     /// <summary>
     /// Currently-open workspaces
@@ -68,7 +68,7 @@ public class Solution : BindableBase
     public ReadOnlyObservableCollection<Workspace> LoadedWorkspaces { get; }
 
     /// <summary>
-    /// The solution's style manager
+    /// The project's style manager
     /// </summary>
     public StyleManager StyleManager { get; }
 
@@ -122,7 +122,7 @@ public class Solution : BindableBase
     }
 
     /// <summary>
-    /// Solution-scoped characters-per-second threshold
+    /// Project-scoped characters-per-second threshold
     /// </summary>
     public int? Cps
     {
@@ -174,7 +174,7 @@ public class Solution : BindableBase
     }
 
     /// <summary>
-    /// Solution-scoped default layer preference
+    /// Project-scoped default layer preference
     /// </summary>
     public int? DefaultLayer
     {
@@ -187,7 +187,7 @@ public class Solution : BindableBase
     }
 
     /// <summary>
-    /// Solution-scoped spellcheck preference
+    /// Project-scoped spellcheck preference
     /// </summary>
     public string? SpellcheckCulture
     {
@@ -200,17 +200,17 @@ public class Solution : BindableBase
     }
 
     /// <summary>
-    /// Custom spellcheck words for the solution
+    /// Custom spellcheck words for the project
     /// </summary>
     public IReadOnlyList<string> CustomWords => _customWords.AsReadOnly();
 
     /// <summary>
-    /// Solution title/name
+    /// Project title/name
     /// </summary>
     public string Title =>
         SavePath is not null
             ? Path.GetFileNameWithoutExtension(SavePath.LocalPath)
-            : "Default Solution";
+            : "Default Project";
 
     /// <summary>
     /// Get a loaded <see cref="Workspace"/> by ID
@@ -223,7 +223,7 @@ public class Solution : BindableBase
     }
 
     /// <summary>
-    /// Add a new, empty <see cref="Workspace"/> to the solution, and open it
+    /// Add a new, empty <see cref="Workspace"/> to the project, and open it
     /// </summary>
     /// <param name="parentId">Optional ID for adding to a directory</param>
     /// <returns>The created workspace</returns>
@@ -235,7 +235,7 @@ public class Solution : BindableBase
     }
 
     /// <summary>
-    /// Add a new <see cref="Workspace"/> to the solution using an existing <see cref="Document"/>, and open it
+    /// Add a new <see cref="Workspace"/> to the project using an existing <see cref="Document"/>, and open it
     /// </summary>
     /// <param name="document">Document to add</param>
     /// <param name="savePath">Save path of the document</param>
@@ -249,7 +249,7 @@ public class Solution : BindableBase
     }
 
     /// <summary>
-    /// Add a new <see cref="Workspace"/> to the solution using an existing <see cref="Document"/>, and open it
+    /// Add a new <see cref="Workspace"/> to the project using an existing <see cref="Document"/>, and open it
     /// </summary>
     /// <param name="document">Document to add</param>
     /// <param name="parentId">Optional ID for adding to a directory</param>
@@ -262,7 +262,7 @@ public class Solution : BindableBase
     }
 
     /// <summary>
-    /// Add an existing <see cref="Workspace"/> to the solution, and open it
+    /// Add an existing <see cref="Workspace"/> to the project, and open it
     /// </summary>
     /// <param name="wsp">The workspace to add</param>
     /// <param name="parentId">Optional ID for adding to a directory</param>
@@ -296,12 +296,12 @@ public class Solution : BindableBase
     }
 
     /// <summary>
-    /// Add a virtual directory to the solution
+    /// Add a virtual directory to the project
     /// </summary>
     /// <param name="name">Name of the directory</param>
     /// <param name="parentId">Optional ID for adding to a directory</param>
     /// <returns>The directory item</returns>
-    public SolutionItem AddDirectory(string name, int parentId = -1)
+    public ProjectItem AddDirectory(string name, int parentId = -1)
     {
         Logger.Trace($"Adding a new directory, parent: {parentId}");
         var dirItem = new DirectoryItem { Id = NextId, Name = name };
@@ -331,11 +331,11 @@ public class Solution : BindableBase
     {
         Logger.Trace($"Removing directory with id: {id}");
         var dir = FindItemById(id);
-        return dir?.Type == SolutionItemType.Directory && RemoveItemById(id);
+        return dir?.Type == ProjectItemType.Directory && RemoveItemById(id);
     }
 
     /// <summary>
-    /// Remove a <see cref="Workspace"/> from the solution
+    /// Remove a <see cref="Workspace"/> from the project
     /// </summary>
     /// <param name="id">ID of the workspace to remove</param>
     /// <returns><see langword="true"/> if the workspace was removed</returns>
@@ -375,13 +375,13 @@ public class Solution : BindableBase
         try
         {
             var item = FindItemById(id);
-            if (item is null || item.Type != SolutionItemType.Document)
+            if (item is null || item.Type != ProjectItemType.Document)
             {
                 Logger.Error($"A referenced document with id {id} was not found");
                 return -1;
             }
 
-            if (item.Type != SolutionItemType.Document)
+            if (item.Type != ProjectItemType.Document)
             {
                 Logger.Error($"Failed to parse document reference with id {id}");
                 return -1;
@@ -409,7 +409,7 @@ public class Solution : BindableBase
     }
 
     /// <summary>
-    /// Add a custom word to the solution
+    /// Add a custom word to the project
     /// </summary>
     /// <param name="word">Word to add</param>
     public void AddCustomWord(string word)
@@ -420,7 +420,7 @@ public class Solution : BindableBase
     }
 
     /// <summary>
-    /// Remove a custom word from the solution
+    /// Remove a custom word from the project
     /// </summary>
     /// <param name="word">Word to remove</param>
     public void RemoveCustomWord(string word)
@@ -462,7 +462,7 @@ public class Solution : BindableBase
     }
 
     /// <summary>
-    /// Write the solution to file
+    /// Write the project to file
     /// </summary>
     /// <returns><see langword="true"/> if saving was successful</returns>
     /// <remarks>
@@ -474,7 +474,7 @@ public class Solution : BindableBase
             throw new InvalidOperationException("SavePath is null");
 
         var path = SavePath.LocalPath;
-        Logger.Info($"Saving solution {Title} to {path}");
+        Logger.Info($"Saving project {Title} to {path}");
 
         var dir = _fileSystem.Path.GetDirectoryName(path) ?? string.Empty;
 
@@ -491,9 +491,9 @@ public class Solution : BindableBase
             );
             using var writer = new StreamWriter(fs);
 
-            var model = new SolutionModel
+            var model = new ProjectModel
             {
-                Version = SolutionModel.CurrentApiVersion,
+                Version = ProjectModel.CurrentApiVersion,
                 ReferencedDocuments = ConvertToModels(_referencedItems, dir),
                 Styles = StyleManager.Styles.Select(s => s.AsAss()).ToArray(),
                 Cps = _cps,
@@ -516,15 +516,15 @@ public class Solution : BindableBase
     }
 
     /// <summary>
-    /// Parse a saved solution file
+    /// Parse a saved project file
     /// </summary>
     /// <param name="fileSystem">FileSystem to use</param>
-    /// <param name="savePath">Path to the solution file</param>
-    /// <returns><see cref="Solution"/> object</returns>
-    public static Solution Parse(IFileSystem fileSystem, Uri savePath)
+    /// <param name="savePath">Path to the project file</param>
+    /// <returns><see cref="Project"/> object</returns>
+    public static Project Parse(IFileSystem fileSystem, Uri savePath)
     {
         var path = savePath.LocalPath;
-        Logger.Info($"Parsing solution {path}");
+        Logger.Info($"Parsing project {path}");
 
         try
         {
@@ -534,7 +534,7 @@ public class Solution : BindableBase
                 fileSystem.Directory.CreateDirectory(Path.GetDirectoryName(path) ?? "/");
 
             if (!fileSystem.File.Exists(path))
-                throw new FileNotFoundException($"Solution {path} was not found");
+                throw new FileNotFoundException($"Project {path} was not found");
 
             using var fs = fileSystem.FileStream.New(
                 path,
@@ -545,16 +545,16 @@ public class Solution : BindableBase
             using var reader = new StreamReader(fs);
 
             var model =
-                JsonSerializer.Deserialize<SolutionModel>(reader.ReadToEnd(), JsonOptions)
-                ?? throw new InvalidDataException("Solution model deserialization failed");
+                JsonSerializer.Deserialize<ProjectModel>(reader.ReadToEnd(), JsonOptions)
+                ?? throw new InvalidDataException("Project model deserialization failed");
 
-            // If the solution has no referenced documents, initialize it with one
-            var sln = new Solution(fileSystem, model.ReferencedDocuments.Length != 0)
+            // If the project has no referenced documents, initialize it with one
+            var sln = new Project(fileSystem, model.ReferencedDocuments.Length != 0)
             {
                 _savePath = savePath,
             };
 
-            // De-relative the file paths in the solution
+            // De-relative the file paths in the project
             sln._referencedItems.AddRange(
                 ConvertFromModels(model.ReferencedDocuments, dir, ref sln._docId)
             );
@@ -589,29 +589,29 @@ public class Solution : BindableBase
         catch (Exception ex) when (ex is IOException or JsonException)
         {
             Logger.Error(ex);
-            return new Solution(fileSystem);
+            return new Project(fileSystem);
         }
     }
 
     /// <summary>
-    /// Load a directory as a solution
+    /// Load a directory as a project
     /// </summary>
     /// <param name="fileSystem">Filesystem to use</param>
     /// <param name="dirPath">Path to the directory</param>
-    /// <returns>Populated solution</returns>
-    public static Solution LoadDirectory(IFileSystem fileSystem, Uri dirPath)
+    /// <returns>Populated project</returns>
+    public static Project LoadDirectory(IFileSystem fileSystem, Uri dirPath)
     {
         var root = dirPath.LocalPath;
-        Logger.Info($"Generating solution from directory {root}...");
-        var sln = new Solution(fileSystem, isEmpty: true);
+        Logger.Info($"Generating project from directory {root}...");
+        var sln = new Project(fileSystem, isEmpty: true);
         if (!fileSystem.Directory.Exists(Path.GetDirectoryName(root)))
         {
-            return new Solution(fileSystem, isEmpty: false);
+            return new Project(fileSystem, isEmpty: false);
         }
 
         var fileCount = 0;
         var dirCount = 0;
-        var stack = new Stack<(string, ObservableCollection<SolutionItem>)>();
+        var stack = new Stack<(string, ObservableCollection<ProjectItem>)>();
         stack.Push((root, sln._referencedItems));
 
         while (stack.Count > 0)
@@ -654,19 +654,19 @@ public class Solution : BindableBase
                 fileCount++;
             }
         }
-        Logger.Info($"Done! Solution contains {dirCount} directories and {fileCount} files");
-        return sln.ReferencedItems.Count > 0 ? sln : new Solution(fileSystem, isEmpty: false);
+        Logger.Info($"Done! Project contains {dirCount} directories and {fileCount} files");
+        return sln.ReferencedItems.Count > 0 ? sln : new Project(fileSystem, isEmpty: false);
     }
 
     /// <summary>
-    /// Find a referenced <see cref="SolutionItem"/> by ID
+    /// Find a referenced <see cref="ProjectItem"/> by ID
     /// </summary>
     /// <param name="id">ID of the item to find</param>
     /// <returns>The item, or <see langword="null"/> if not found</returns>
     /// <remarks>Uses breadth-first search</remarks>
-    public SolutionItem? FindItemById(int id)
+    public ProjectItem? FindItemById(int id)
     {
-        var queue = new Queue<SolutionItem>(_referencedItems);
+        var queue = new Queue<ProjectItem>(_referencedItems);
 
         while (queue.Count > 0)
         {
@@ -674,7 +674,7 @@ public class Solution : BindableBase
             if (current.Id == id)
                 return current;
 
-            if (current.Type != SolutionItemType.Directory)
+            if (current.Type != ProjectItemType.Directory)
                 continue;
 
             foreach (var child in current.Children)
@@ -685,14 +685,14 @@ public class Solution : BindableBase
     }
 
     /// <summary>
-    /// Remove a referenced <see cref="SolutionItem"/> by ID
+    /// Remove a referenced <see cref="ProjectItem"/> by ID
     /// </summary>
     /// <param name="id">ID of the item to remove</param>
     /// <returns><see langword="true"/> if successfully removed</returns>
     /// <remarks>Uses breadth-first search</remarks>
     private bool RemoveItemById(int id)
     {
-        var queue = new Queue<(ObservableCollection<SolutionItem> Parent, SolutionItem Item)>();
+        var queue = new Queue<(ObservableCollection<ProjectItem> Parent, ProjectItem Item)>();
 
         // Seed the queue
         foreach (var item in _referencedItems)
@@ -707,7 +707,7 @@ public class Solution : BindableBase
             if (current.Id == id)
                 return parent.Remove(current);
 
-            if (current.Type != SolutionItemType.Directory)
+            if (current.Type != ProjectItemType.Directory)
                 continue;
 
             foreach (var item in current.Children)
@@ -718,27 +718,27 @@ public class Solution : BindableBase
     }
 
     /// <summary>
-    /// Convert from <see cref="SolutionItem"/> to <see cref="SolutionItemModel"/>
+    /// Convert from <see cref="ProjectItem"/> to <see cref="ProjectItemModel"/>
     /// </summary>
-    /// <param name="items">List of solution items</param>
+    /// <param name="items">List of project items</param>
     /// <param name="dir">Directory for making relative paths</param>
-    /// <returns>Array of <see cref="SolutionItemModel"/>s</returns>
-    private static SolutionItemModel[] ConvertToModels(IList<SolutionItem> items, string dir)
+    /// <returns>Array of <see cref="ProjectItemModel"/>s</returns>
+    private static ProjectItemModel[] ConvertToModels(IList<ProjectItem> items, string dir)
     {
         return items
             .Where(item =>
-                item is not { Type: SolutionItemType.Document, IsSavedToFileSystem: false }
+                item is not { Type: ProjectItemType.Document, IsSavedToFileSystem: false }
             )
-            .Select(item => new SolutionItemModel
+            .Select(item => new ProjectItemModel
             {
                 Name = item.Name,
                 Type = item.Type,
                 RelativePath =
-                    item.Type == SolutionItemType.Document
+                    item.Type == ProjectItemType.Document
                         ? Path.GetRelativePath(dir, item.Uri!.LocalPath)
                         : null,
                 Children =
-                    item.Type == SolutionItemType.Directory
+                    item.Type == ProjectItemType.Directory
                         ? ConvertToModels(item.Children, dir).ToArray()
                         : [],
             })
@@ -746,27 +746,27 @@ public class Solution : BindableBase
     }
 
     /// <summary>
-    /// Convert from <see cref="SolutionItemModel"/> to <see cref="SolutionItem"/>
+    /// Convert from <see cref="ProjectItemModel"/> to <see cref="ProjectItem"/>
     /// </summary>
     /// <param name="models">Array of models</param>
     /// <param name="dir">Directory for resolving relative paths</param>
     /// <param name="nextId">Initial ID</param>
     /// <exception cref="ArgumentOutOfRangeException"></exception>
-    /// <returns>List of <see cref="SolutionItem"/>s</returns>
-    private static List<SolutionItem> ConvertFromModels(
-        SolutionItemModel[] models,
+    /// <returns>List of <see cref="ProjectItem"/>s</returns>
+    private static List<ProjectItem> ConvertFromModels(
+        ProjectItemModel[] models,
         string dir,
         ref int nextId
     )
     {
-        List<SolutionItem> result = [];
+        List<ProjectItem> result = [];
 
         foreach (var model in models)
         {
             result.Add(
                 model.Type switch
                 {
-                    SolutionItemType.Document => new DocumentItem
+                    ProjectItemType.Document => new DocumentItem
                     {
                         Id = nextId++,
                         Name = model.Name,
@@ -774,11 +774,11 @@ public class Solution : BindableBase
                             ? new Uri(Path.Combine(dir, model.RelativePath))
                             : null,
                     },
-                    SolutionItemType.Directory => new DirectoryItem
+                    ProjectItemType.Directory => new DirectoryItem
                     {
                         Id = nextId++,
                         Name = model.Name,
-                        Children = new RangeObservableCollection<SolutionItem>(
+                        Children = new RangeObservableCollection<ProjectItem>(
                             ConvertFromModels(model.Children, dir, ref nextId)
                         ),
                     },
@@ -791,12 +791,12 @@ public class Solution : BindableBase
     }
 
     /// <summary>
-    /// Initialize a solution
+    /// Initialize a project
     /// </summary>
     /// <param name="fileSystem">FileSystem to use</param>
-    /// <param name="isEmpty">If the solution should be created
+    /// <param name="isEmpty">If the project should be created
     /// without a default <see cref="Workspace"/></param>
-    public Solution(IFileSystem fileSystem, bool isEmpty = false)
+    public Project(IFileSystem fileSystem, bool isEmpty = false)
     {
         _fileSystem = fileSystem;
         _referencedItems = [];
@@ -804,7 +804,7 @@ public class Solution : BindableBase
         _customWords = [];
         StyleManager = new StyleManager();
 
-        ReferencedItems = new ReadOnlyObservableCollection<SolutionItem>(_referencedItems);
+        ReferencedItems = new ReadOnlyObservableCollection<ProjectItem>(_referencedItems);
         LoadedWorkspaces = new ReadOnlyObservableCollection<Workspace>(_loadedWorkspaces);
 
         if (isEmpty)

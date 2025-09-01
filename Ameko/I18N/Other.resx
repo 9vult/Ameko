@@ -25,13 +25,13 @@
         <value>Remove Document?</value>
     </data>
     <data name="MsgBox_RemoveDocument_Body" xml:space="preserve">
-        <value>Are you sure you want to remove this document from the solution?</value>
+        <value>Are you sure you want to remove this document from the project?</value>
     </data>
     <data name="MsgBox_RemoveDirectory_Title" xml:space="preserve">
         <value>Remove Directory?</value>
     </data>
     <data name="MsgBox_RemoveDirectory_Body" xml:space="preserve">
-        <value>Are you sure you want to remove this directory from the solution?</value>
+        <value>Are you sure you want to remove this directory from the project?</value>
     </data>
     <data name="MsgBox_NameDirectory_Title" xml:space="preserve">
         <value>Set Directory Name</value>
@@ -57,14 +57,14 @@
     <data name="MsgBox_Save_Body" xml:space="preserve">
         <value>{0} contains unsaved work. Do you want to save?</value>
     </data>
-    <data name="FileDialog_FileType_Solution" xml:space="preserve">
-        <value>Ameko Solution Files</value>
+    <data name="FileDialog_FileType_Project" xml:space="preserve">
+        <value>Ameko Project Files</value>
     </data>
-    <data name="FileDialog_OpenSolution_Title" xml:space="preserve">
-        <value>Open Solution File</value>
+    <data name="FileDialog_OpenProject_Title" xml:space="preserve">
+        <value>Open Project File</value>
     </data>
-    <data name="FileDialog_SaveSolution_Title" xml:space="preserve">
-        <value>Save Solution File</value>
+    <data name="FileDialog_SaveProject_Title" xml:space="preserve">
+        <value>Save Project File</value>
     </data>
     <data name="FileDialog_OpenSubtitle_Title" xml:space="preserve">
         <value>Open Subtitle File</value>
@@ -96,8 +96,8 @@
     <data name="FileDialog_FileType_Video" xml:space="preserve">
         <value>Video Files</value>
     </data>
-    <data name="FileDialog_OpenFolderAsSolution_Title" xml:space="preserve">
-        <value>Open Solution Folder</value>
+    <data name="FileDialog_OpenFolderAsProject_Title" xml:space="preserve">
+        <value>Open Project Folder</value>
     </data>
     <data name="FileDialog_AttachReferenceFile_Title" xml:space="preserve">
         <value>Attach Reference File</value>

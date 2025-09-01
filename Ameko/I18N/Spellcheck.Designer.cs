@@ -51,9 +51,9 @@ namespace Ameko.I18N {
             }
         }
         
-        public static string Spellcheck_Install_SolutionHeader {
+        public static string Spellcheck_Install_ProjectHeader {
             get {
-                return ResourceManager.GetString("Spellcheck_Install_SolutionHeader", resourceCulture);
+                return ResourceManager.GetString("Spellcheck_Install_ProjectHeader", resourceCulture);
             }
         }
         

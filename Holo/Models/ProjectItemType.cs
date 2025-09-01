@@ -3,17 +3,17 @@
 namespace Holo.Models;
 
 /// <summary>
-/// Represents different types of <see cref="SolutionItem"/>s
+/// Represents different types of <see cref="ProjectItem"/>s
 /// </summary>
-public enum SolutionItemType
+public enum ProjectItemType
 {
     /// <summary>
-    /// The <see cref="SolutionItem"/> is a <see cref="Document"/>
+    /// The <see cref="ProjectItem"/> is a <see cref="Document"/>
     /// </summary>
     Document = 0,
 
     /// <summary>
-    /// The <see cref="SolutionItem"/> is a virtual directory
+    /// The <see cref="ProjectItem"/> is a virtual directory
     /// </summary>
     Directory = 1,
 

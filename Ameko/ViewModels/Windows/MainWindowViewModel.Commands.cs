@@ -37,8 +37,8 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         return ReactiveCommand.Create(() =>
         {
-            var wsp = SolutionProvider.Current.AddWorkspace();
-            SolutionProvider.Current.WorkingSpace = wsp;
+            var wsp = IProjectProvider.Current.AddWorkspace();
+            IProjectProvider.Current.WorkingSpace = wsp;
         });
     }
 
@@ -67,13 +67,13 @@ public partial class MainWindowViewModel : ViewModelBase
 
                 if (ext == ".ass")
                 {
-                    latest = SolutionProvider.Current.AddWorkspace(doc, uri);
+                    latest = IProjectProvider.Current.AddWorkspace(doc, uri);
                     latest.IsSaved = true;
                 }
                 else
                 {
                     // Non-ass sourced documents need to be re-saved as an ass file
-                    latest = SolutionProvider.Current.AddWorkspace(doc);
+                    latest = IProjectProvider.Current.AddWorkspace(doc);
                     latest.IsSaved = false;
                 }
 
@@ -81,7 +81,7 @@ public partial class MainWindowViewModel : ViewModelBase
             }
 
             if (latest is not null)
-                SolutionProvider.Current.WorkingSpace = latest;
+                IProjectProvider.Current.WorkingSpace = latest;
         });
     }
 
@@ -108,17 +108,17 @@ public partial class MainWindowViewModel : ViewModelBase
 
                 if (ext == ".ass")
                 {
-                    latest = SolutionProvider.Current.AddWorkspace(doc, uri);
+                    latest = IProjectProvider.Current.AddWorkspace(doc, uri);
                     latest.IsSaved = true;
                 }
                 else
                 {
                     // Non-ass sourced documents need to be re-saved as an ass file
-                    latest = SolutionProvider.Current.AddWorkspace(doc);
+                    latest = IProjectProvider.Current.AddWorkspace(doc);
                     latest.IsSaved = false;
                 }
                 Logger.Info($"Opened subtitle file {latest.Title}");
-                SolutionProvider.Current.WorkingSpace = latest;
+                IProjectProvider.Current.WorkingSpace = latest;
             }
         );
     }
@@ -130,11 +130,11 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         return ReactiveCommand.CreateFromTask(async () =>
         {
-            if (SolutionProvider.Current.IsWorkspaceLoaded)
+            if (IProjectProvider.Current.IsWorkspaceLoaded)
             {
                 _ = await _ioService.SaveSubtitle(
                     SaveSubtitleAs,
-                    SolutionProvider.Current.WorkingSpace
+                    IProjectProvider.Current.WorkingSpace
                 );
             }
         });
@@ -147,11 +147,11 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         return ReactiveCommand.CreateFromTask(async () =>
         {
-            if (SolutionProvider.Current.IsWorkspaceLoaded)
+            if (IProjectProvider.Current.IsWorkspaceLoaded)
             {
                 _ = await _ioService.SaveSubtitleAs(
                     SaveSubtitleAs,
-                    SolutionProvider.Current.WorkingSpace
+                    IProjectProvider.Current.WorkingSpace
                 );
             }
         });
@@ -164,48 +164,48 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         return ReactiveCommand.CreateFromTask(async () =>
         {
-            if (SolutionProvider.Current.IsWorkspaceLoaded)
+            if (IProjectProvider.Current.IsWorkspaceLoaded)
             {
                 _ = await _ioService.ExportSubtitle(
                     ExportSubtitle,
-                    SolutionProvider.Current.WorkingSpace
+                    IProjectProvider.Current.WorkingSpace
                 );
             }
         });
     }
 
     /// <summary>
-    /// Display the Open Solution File dialog
+    /// Display the Open Project File dialog
     /// </summary>
-    private ReactiveCommand<Unit, Unit> CreateOpenSolutionCommand()
+    private ReactiveCommand<Unit, Unit> CreateOpenProjectCommand()
     {
         return ReactiveCommand.CreateFromTask(async () =>
         {
-            Logger.Debug("Preparing to open solution file");
-            var uri = await OpenSolution.Handle(Unit.Default);
+            Logger.Debug("Preparing to open project file");
+            var uri = await OpenProject.Handle(Unit.Default);
 
             if (uri is null)
             {
-                Logger.Info("Opening solution file aborted");
+                Logger.Info("Opening project file aborted");
                 return;
             }
 
-            foreach (var wsp in SolutionProvider.Current.LoadedWorkspaces.ToArray())
+            foreach (var wsp in IProjectProvider.Current.LoadedWorkspaces.ToArray())
             {
                 await _ioService.SafeCloseWorkspace(wsp, SaveSubtitleAs, false);
             }
 
-            if (SolutionProvider.Current.LoadedWorkspaces.Count > 0)
+            if (IProjectProvider.Current.LoadedWorkspaces.Count > 0)
             {
                 Logger.Info(
-                    $"Opening solution file aborted - {SolutionProvider.Current.LoadedWorkspaces.Count} workspaces remain open"
+                    $"Opening project file aborted - {IProjectProvider.Current.LoadedWorkspaces.Count} workspaces remain open"
                 );
                 return;
             }
 
-            var sln = Solution.Parse(_fileSystem, uri);
-            SolutionProvider.Current = sln;
-            Logger.Info("Loaded solution file");
+            var sln = Project.Parse(_fileSystem, uri);
+            IProjectProvider.Current = sln;
+            Logger.Info("Loaded project file");
 
             var culture = sln.SpellcheckCulture;
             if (culture is not null && !_dictionaryService.TryGetDictionary(culture, out _))
@@ -227,76 +227,76 @@ public partial class MainWindowViewModel : ViewModelBase
     }
 
     /// <summary>
-    /// Open a solution without using a dialog
+    /// Open a project without using a dialog
     /// </summary>
-    private ReactiveCommand<Uri, Unit> CreateOpenSolutionNoGuiCommand()
+    private ReactiveCommand<Uri, Unit> CreateOpenProjectNoGuiCommand()
     {
         return ReactiveCommand.CreateFromTask(
             async (Uri uri) =>
             {
-                Logger.Debug("Preparing to open solution file (no-gui)");
+                Logger.Debug("Preparing to open project file (no-gui)");
 
-                foreach (var wsp in SolutionProvider.Current.LoadedWorkspaces.ToArray())
+                foreach (var wsp in IProjectProvider.Current.LoadedWorkspaces.ToArray())
                 {
                     await _ioService.SafeCloseWorkspace(wsp, SaveSubtitleAs, false);
                 }
 
-                if (SolutionProvider.Current.LoadedWorkspaces.Count > 0)
+                if (IProjectProvider.Current.LoadedWorkspaces.Count > 0)
                 {
                     Logger.Info(
-                        $"Opening solution file aborted - {SolutionProvider.Current.LoadedWorkspaces.Count} workspaces remain open"
+                        $"Opening project file aborted - {IProjectProvider.Current.LoadedWorkspaces.Count} workspaces remain open"
                     );
                     return;
                 }
 
-                SolutionProvider.Current = Solution.Parse(_fileSystem, uri);
-                Logger.Info("Loaded solution file");
+                IProjectProvider.Current = Project.Parse(_fileSystem, uri);
+                Logger.Info("Loaded project file");
             }
         );
     }
 
     /// <summary>
-    /// Display the Open Folder as Solution File dialog
+    /// Display the Open Folder as Project File dialog
     /// </summary>
-    private ReactiveCommand<Unit, Unit> CreateOpenFolderAsSolutionCommand()
+    private ReactiveCommand<Unit, Unit> CreateOpenFolderAsProjectCommand()
     {
         return ReactiveCommand.CreateFromTask(async () =>
         {
-            Logger.Debug("Preparing to open a directory as a solution");
-            var uri = await OpenFolderAsSolution.Handle(Unit.Default);
+            Logger.Debug("Preparing to open a directory as a project");
+            var uri = await OpenFolderAsProject.Handle(Unit.Default);
 
             if (uri is null)
             {
-                Logger.Info("Opening solution directory aborted");
+                Logger.Info("Opening project directory aborted");
                 return;
             }
 
-            foreach (var wsp in SolutionProvider.Current.LoadedWorkspaces.ToArray())
+            foreach (var wsp in IProjectProvider.Current.LoadedWorkspaces.ToArray())
             {
                 await _ioService.SafeCloseWorkspace(wsp, SaveSubtitleAs, false);
             }
 
-            if (SolutionProvider.Current.LoadedWorkspaces.Count > 0)
+            if (IProjectProvider.Current.LoadedWorkspaces.Count > 0)
             {
                 Logger.Info(
-                    $"Opening solution directory aborted - {SolutionProvider.Current.LoadedWorkspaces.Count} workspaces remain open"
+                    $"Opening project directory aborted - {IProjectProvider.Current.LoadedWorkspaces.Count} workspaces remain open"
                 );
                 return;
             }
 
-            SolutionProvider.Current = Solution.LoadDirectory(_fileSystem, uri);
-            Logger.Info("Loaded solution directory");
+            IProjectProvider.Current = Project.LoadDirectory(_fileSystem, uri);
+            Logger.Info("Loaded project directory");
         });
     }
 
     /// <summary>
-    /// Display the Save Solution File dialog
+    /// Display the Save Project File dialog
     /// </summary>
-    private ReactiveCommand<Unit, Unit> CreateSaveSolutionCommand()
+    private ReactiveCommand<Unit, Unit> CreateSaveProjectCommand()
     {
         return ReactiveCommand.CreateFromTask(async () =>
         {
-            _ = await _ioService.SaveSolution(SaveSolutionAs, SolutionProvider.Current);
+            _ = await _ioService.SaveProject(SaveProjectAs, IProjectProvider.Current);
         });
     }
 
@@ -308,9 +308,9 @@ public partial class MainWindowViewModel : ViewModelBase
         return ReactiveCommand.CreateFromTask(
             async (int id) =>
             {
-                if (SolutionProvider.Current.IsWorkspaceLoaded)
+                if (IProjectProvider.Current.IsWorkspaceLoaded)
                 {
-                    var wsp = SolutionProvider.Current.GetWorkspace(id);
+                    var wsp = IProjectProvider.Current.GetWorkspace(id);
                     if (wsp is null)
                         return;
 
@@ -346,11 +346,11 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         return ReactiveCommand.Create(() =>
         {
-            SolutionProvider.Current.WorkingSpace?.Undo();
+            IProjectProvider.Current.WorkingSpace?.Undo();
             Dispatcher.UIThread.Post(
                 () =>
                 {
-                    SolutionProvider.Current.WorkingSpace?.SelectionManager.EndSelectionChange();
+                    IProjectProvider.Current.WorkingSpace?.SelectionManager.EndSelectionChange();
                 },
                 DispatcherPriority.Background
             );
@@ -364,11 +364,11 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         return ReactiveCommand.Create(() =>
         {
-            SolutionProvider.Current.WorkingSpace?.Redo();
+            IProjectProvider.Current.WorkingSpace?.Redo();
             Dispatcher.UIThread.Post(
                 () =>
                 {
-                    SolutionProvider.Current.WorkingSpace?.SelectionManager.EndSelectionChange();
+                    IProjectProvider.Current.WorkingSpace?.SelectionManager.EndSelectionChange();
                 },
                 DispatcherPriority.Background
             );
@@ -383,7 +383,7 @@ public partial class MainWindowViewModel : ViewModelBase
         return ReactiveCommand.CreateFromTask(async () =>
         {
             var tabFactory = _serviceProvider.GetRequiredService<ITabFactory>();
-            var vm = new SearchDialogViewModel(SolutionProvider, tabFactory);
+            var vm = new SearchDialogViewModel(IProjectProvider, tabFactory);
             await ShowSearchDialog.Handle(vm);
         });
     }
@@ -395,11 +395,11 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         return ReactiveCommand.CreateFromTask(async () =>
         {
-            if (SolutionProvider.Current.IsWorkspaceLoaded)
+            if (IProjectProvider.Current.IsWorkspaceLoaded)
             {
                 var vm = _stylesManagerFactory.Create(
-                    SolutionProvider.Current,
-                    SolutionProvider.Current.WorkingSpace.Document
+                    IProjectProvider.Current,
+                    IProjectProvider.Current.WorkingSpace.Document
                 );
                 await ShowStylesManager.Handle(vm);
             }
@@ -418,7 +418,7 @@ public partial class MainWindowViewModel : ViewModelBase
             if (uri is null)
                 return;
 
-            var wsp = SolutionProvider.Current.WorkingSpace;
+            var wsp = IProjectProvider.Current.WorkingSpace;
             if (wsp is null)
                 return;
 
@@ -440,7 +440,7 @@ public partial class MainWindowViewModel : ViewModelBase
         return ReactiveCommand.Create(() =>
         {
             Logger.Debug("Detaching reference file");
-            var wsp = SolutionProvider.Current.WorkingSpace;
+            var wsp = IProjectProvider.Current.WorkingSpace;
             if (wsp is null)
                 return;
             wsp.ReferenceFileManager.Reference = null;
@@ -454,9 +454,9 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         return ReactiveCommand.CreateFromTask(async () =>
         {
-            if (SolutionProvider.Current.IsWorkspaceLoaded)
+            if (IProjectProvider.Current.IsWorkspaceLoaded)
             {
-                var vm = new ShiftTimesDialogViewModel(SolutionProvider.Current.WorkingSpace);
+                var vm = new ShiftTimesDialogViewModel(IProjectProvider.Current.WorkingSpace);
                 await ShowShiftTimesDialog.Handle(vm);
             }
         });
@@ -475,11 +475,11 @@ public partial class MainWindowViewModel : ViewModelBase
             if (uri is null)
                 return;
 
-            var wsp = SolutionProvider.Current.WorkingSpace;
+            var wsp = IProjectProvider.Current.WorkingSpace;
             if (wsp is null)
             {
-                SolutionProvider.Current.WorkingSpace = wsp =
-                    SolutionProvider.Current.AddWorkspace();
+                IProjectProvider.Current.WorkingSpace = wsp =
+                    IProjectProvider.Current.AddWorkspace();
             }
 
             wsp.MediaController.OpenVideo(uri.LocalPath);
@@ -497,11 +497,11 @@ public partial class MainWindowViewModel : ViewModelBase
             {
                 Logger.Debug("Preparing to open video (no-gui)");
 
-                var wsp = SolutionProvider.Current.WorkingSpace;
+                var wsp = IProjectProvider.Current.WorkingSpace;
                 if (wsp is null)
                 {
-                    SolutionProvider.Current.WorkingSpace = wsp =
-                        SolutionProvider.Current.AddWorkspace();
+                    IProjectProvider.Current.WorkingSpace = wsp =
+                        IProjectProvider.Current.AddWorkspace();
                 }
 
                 wsp.MediaController.OpenVideo(uri.LocalPath);
@@ -519,7 +519,7 @@ public partial class MainWindowViewModel : ViewModelBase
         {
             Logger.Debug("Opening Jump dialog");
 
-            var wsp = SolutionProvider.Current.WorkingSpace;
+            var wsp = IProjectProvider.Current.WorkingSpace;
             if (wsp is null)
                 return;
 
@@ -649,15 +649,15 @@ public partial class MainWindowViewModel : ViewModelBase
     }
 
     /// <summary>
-    /// Remove workspace from the solution
+    /// Remove workspace from the project
     /// </summary>
-    private ReactiveCommand<int, Unit> CreateRemoveDocumentFromSolutionCommand()
+    private ReactiveCommand<int, Unit> CreateRemoveDocumentFromProjectCommand()
     {
         return ReactiveCommand.CreateFromTask(
             async (int id) =>
             {
                 Logger.Debug(
-                    $"Displaying message to confirm removal of document {id} from solution"
+                    $"Displaying message to confirm removal of document {id} from project"
                 );
 
                 var box = MessageBoxManager.GetMessageBoxStandard(
@@ -669,22 +669,22 @@ public partial class MainWindowViewModel : ViewModelBase
 
                 if (boxResult == ButtonResult.Yes)
                 {
-                    SolutionProvider.Current.RemoveWorkspace(id);
+                    IProjectProvider.Current.RemoveWorkspace(id);
                 }
             }
         );
     }
 
     /// <summary>
-    /// Remove directory from the solution
+    /// Remove directory from the project
     /// </summary>
-    private ReactiveCommand<int, Unit> CreateRemoveDirectoryFromSolutionCommand()
+    private ReactiveCommand<int, Unit> CreateRemoveDirectoryFromProjectCommand()
     {
         return ReactiveCommand.CreateFromTask(
             async (int id) =>
             {
                 Logger.Debug(
-                    $"Displaying message to confirm removal of directory {id} from solution"
+                    $"Displaying message to confirm removal of directory {id} from project"
                 );
 
                 var box = MessageBoxManager.GetMessageBoxStandard(
@@ -696,21 +696,21 @@ public partial class MainWindowViewModel : ViewModelBase
 
                 if (boxResult == ButtonResult.Yes)
                 {
-                    SolutionProvider.Current.RemoveDirectory(id);
+                    IProjectProvider.Current.RemoveDirectory(id);
                 }
             }
         );
     }
 
     /// <summary>
-    /// Rename solution directory
+    /// Rename project directory
     /// </summary>
     private ReactiveCommand<int, Unit> CreateRenameDirectoryCommand()
     {
         return ReactiveCommand.CreateFromTask(
             async (int id) =>
             {
-                if (SolutionProvider.Current.FindItemById(id) is not DirectoryItem dirItem)
+                if (IProjectProvider.Current.FindItemById(id) is not DirectoryItem dirItem)
                     return;
 
                 Logger.Debug(
@@ -743,14 +743,14 @@ public partial class MainWindowViewModel : ViewModelBase
     }
 
     /// <summary>
-    /// Rename solution document
+    /// Rename project document
     /// </summary>
     private ReactiveCommand<int, Unit> CreateRenameDocumentCommand()
     {
         return ReactiveCommand.CreateFromTask(
             async (int id) =>
             {
-                if (SolutionProvider.Current.FindItemById(id) is not DocumentItem docItem)
+                if (IProjectProvider.Current.FindItemById(id) is not DocumentItem docItem)
                     return;
 
                 Logger.Debug($"Displaying input box for rename of document {id} ({docItem.Title})");

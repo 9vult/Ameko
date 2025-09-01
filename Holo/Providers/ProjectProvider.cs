@@ -5,11 +5,11 @@ using AssCS;
 
 namespace Holo.Providers;
 
-public class SolutionProvider(IFileSystem fileSystem) : BindableBase, ISolutionProvider
+public class ProjectProvider(IFileSystem fileSystem) : BindableBase, IProjectProvider
 {
-    private Solution _current = new(fileSystem);
+    private Project _current = new(fileSystem);
 
-    public Solution Current
+    public Project Current
     {
         get => _current;
         set => SetProperty(ref _current, value);

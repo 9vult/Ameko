@@ -12,31 +12,31 @@ public interface IConfiguration
     /// <summary>
     /// Characters-per-second threshold
     /// </summary>
-    /// <remarks>This value may be overloaded by <see cref="Solution.Cps"/>.</remarks>
+    /// <remarks>This value may be overloaded by <see cref="Project.Cps"/>.</remarks>
     uint Cps { get; set; }
 
     /// <summary>
     /// If whitespace should be included in <see cref="Event.Cps"/> calculation
     /// </summary>
-    /// <remarks>This value may be overloaded by <see cref="Solution.UseSoftLinebreaks"/>.</remarks>
+    /// <remarks>This value may be overloaded by <see cref="Project.UseSoftLinebreaks"/>.</remarks>
     bool CpsIncludesWhitespace { get; set; }
 
     /// <summary>
     /// If punctuation should be included in <see cref="Event.Cps"/> calculation
     /// </summary>
-    /// <remarks>This value may be overloaded by <see cref="Solution.UseSoftLinebreaks"/>.</remarks>
+    /// <remarks>This value may be overloaded by <see cref="Project.UseSoftLinebreaks"/>.</remarks>
     bool CpsIncludesPunctuation { get; set; }
 
     /// <summary>
     /// Soft linebreaks preference
     /// </summary>
-    /// <remarks>This value may be overloaded by <see cref="Solution.UseSoftLinebreaks"/>.</remarks>
+    /// <remarks>This value may be overloaded by <see cref="Project.UseSoftLinebreaks"/>.</remarks>
     bool UseSoftLinebreaks { get; set; }
 
     /// <summary>
     /// Default layer preference
     /// </summary>
-    /// <remarks>This value may be overloaded by <see cref="Solution.DefaultLayer"/>.</remarks>
+    /// <remarks>This value may be overloaded by <see cref="Project.DefaultLayer"/>.</remarks>
     int DefaultLayer { get; set; }
 
     /// <summary>
@@ -52,17 +52,17 @@ public interface IConfiguration
     /// <summary>
     /// If whitespace should be included in <see cref="Event.MaxLineWidth"/> calculation
     /// </summary>
-    /// <remarks>This value may be overloaded by <see cref="Solution.UseSoftLinebreaks"/>.</remarks>
+    /// <remarks>This value may be overloaded by <see cref="Project.UseSoftLinebreaks"/>.</remarks>
     bool LineWidthIncludesWhitespace { get; set; }
 
     /// <summary>
     /// If punctuation should be included in <see cref="Event.MaxLineWidth"/> calculation
     /// </summary>
-    /// <remarks>This value may be overloaded by <see cref="Solution.UseSoftLinebreaks"/>.</remarks>
+    /// <remarks>This value may be overloaded by <see cref="Project.UseSoftLinebreaks"/>.</remarks>
     bool LineWidthIncludesPunctuation { get; set; }
 
     /// <summary>
-    /// If current workspace/solution should be announced to Discord
+    /// If current workspace/project should be announced to Discord
     /// </summary>
     bool DiscordRpcEnabled { get; set; }
 
@@ -105,7 +105,7 @@ public interface IConfiguration
     bool RemoveRepositoryUrl(string url);
 
     /// <summary>
-    /// Write the solution to file
+    /// Write the configuration to file
     /// </summary>
     /// <returns><see langword="true"/> if saving was successful</returns>
     bool Save();

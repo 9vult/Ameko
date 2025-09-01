@@ -230,7 +230,7 @@ public partial class TabItemViewModel : ViewModelBase
                 return;
 
             var useSoftBreaks =
-                SolutionProvider.Current.UseSoftLinebreaks ?? Configuration.UseSoftLinebreaks;
+                IProjectProvider.Current.UseSoftLinebreaks ?? Configuration.UseSoftLinebreaks;
 
             var one = selectionManager.SelectedEventCollection[0];
             var two = selectionManager.SelectedEventCollection[1];

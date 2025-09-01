@@ -99,9 +99,9 @@ namespace Ameko.I18N {
             }
         }
         
-        public static string SolutionExplorer_Header {
+        public static string ProjectExplorer_Header {
             get {
-                return ResourceManager.GetString("SolutionExplorer_Header", resourceCulture);
+                return ResourceManager.GetString("ProjectExplorer_Header", resourceCulture);
             }
         }
         
@@ -369,15 +369,15 @@ namespace Ameko.I18N {
             }
         }
         
-        public static string Menu_OpenSolution {
+        public static string Menu_OpenProject {
             get {
-                return ResourceManager.GetString("Menu_OpenSolution", resourceCulture);
+                return ResourceManager.GetString("Menu_OpenProject", resourceCulture);
             }
         }
         
-        public static string Menu_SaveSolution {
+        public static string Menu_SaveProject {
             get {
-                return ResourceManager.GetString("Menu_SaveSolution", resourceCulture);
+                return ResourceManager.GetString("Menu_SaveProject", resourceCulture);
             }
         }
         
@@ -417,15 +417,15 @@ namespace Ameko.I18N {
             }
         }
         
-        public static string Menu_Solution {
+        public static string Menu_Project {
             get {
-                return ResourceManager.GetString("Menu_Solution", resourceCulture);
+                return ResourceManager.GetString("Menu_Project", resourceCulture);
             }
         }
         
-        public static string Menu_SolutionConfig {
+        public static string Menu_ProjectConfig {
             get {
-                return ResourceManager.GetString("Menu_SolutionConfig", resourceCulture);
+                return ResourceManager.GetString("Menu_ProjectConfig", resourceCulture);
             }
         }
         
@@ -465,15 +465,15 @@ namespace Ameko.I18N {
             }
         }
         
-        public static string SolutionExplorer_ContextMenu_Remove {
+        public static string ProjectExplorer_ContextMenu_Remove {
             get {
-                return ResourceManager.GetString("SolutionExplorer_ContextMenu_Remove", resourceCulture);
+                return ResourceManager.GetString("ProjectExplorer_ContextMenu_Remove", resourceCulture);
             }
         }
         
-        public static string SolutionExplorer_ContextMenu_Open {
+        public static string ProjectExplorer_ContextMenu_Open {
             get {
-                return ResourceManager.GetString("SolutionExplorer_ContextMenu_Open", resourceCulture);
+                return ResourceManager.GetString("ProjectExplorer_ContextMenu_Open", resourceCulture);
             }
         }
         
@@ -483,9 +483,9 @@ namespace Ameko.I18N {
             }
         }
         
-        public static string Menu_CloseSolution {
+        public static string Menu_CloseProject {
             get {
-                return ResourceManager.GetString("Menu_CloseSolution", resourceCulture);
+                return ResourceManager.GetString("Menu_CloseProject", resourceCulture);
             }
         }
         
@@ -495,9 +495,9 @@ namespace Ameko.I18N {
             }
         }
         
-        public static string SolutionExplorer_ContextMenu_Rename {
+        public static string ProjectExplorer_ContextMenu_Rename {
             get {
-                return ResourceManager.GetString("SolutionExplorer_ContextMenu_Rename", resourceCulture);
+                return ResourceManager.GetString("ProjectExplorer_ContextMenu_Rename", resourceCulture);
             }
         }
         
@@ -513,9 +513,9 @@ namespace Ameko.I18N {
             }
         }
         
-        public static string Menu_OpenSolutionFolder {
+        public static string Menu_OpenProjectFolder {
             get {
-                return ResourceManager.GetString("Menu_OpenSolutionFolder", resourceCulture);
+                return ResourceManager.GetString("Menu_OpenProjectFolder", resourceCulture);
             }
         }
         

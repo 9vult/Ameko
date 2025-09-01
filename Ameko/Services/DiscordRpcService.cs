@@ -21,19 +21,19 @@ public class DiscordRpcService
 {
     private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-    private readonly ISolutionProvider _solutionProvider;
+    private readonly IProjectProvider _iProjectProvider;
     private readonly IConfiguration _configuration;
     private readonly DiscordRpcClient _client;
     private readonly Timestamps _timestamps;
 
     public void Update(WorkingSpaceChangedMessage _)
     {
-        var slnName = _solutionProvider.Current.Title;
-        var wspName = _solutionProvider.Current.WorkingSpace?.SavePath is not null
+        var slnName = _iProjectProvider.Current.Title;
+        var wspName = _iProjectProvider.Current.WorkingSpace?.SavePath is not null
             ? Path.GetFileNameWithoutExtension(
-                _solutionProvider.Current.WorkingSpace.SavePath.LocalPath
+                _iProjectProvider.Current.WorkingSpace.SavePath.LocalPath
             )
-            : _solutionProvider.Current.WorkingSpace?.Title;
+            : _iProjectProvider.Current.WorkingSpace?.Title;
 
         if (_configuration.DiscordRpcEnabled)
         {
@@ -43,7 +43,7 @@ public class DiscordRpcService
                 new RichPresence
                 {
                     Details = $"Editing {wspName}.ass",
-                    State = $"in {slnName}.asln",
+                    State = $"in {slnName}.aproj",
                     Timestamps = _timestamps,
                 }
             );
@@ -54,9 +54,9 @@ public class DiscordRpcService
         }
     }
 
-    public DiscordRpcService(ISolutionProvider solutionProvider, IConfiguration config)
+    public DiscordRpcService(IProjectProvider iProjectProvider, IConfiguration config)
     {
-        _solutionProvider = solutionProvider;
+        _iProjectProvider = iProjectProvider;
         _configuration = config;
 
         _client = new DiscordRpcClient("1209896771719921704");

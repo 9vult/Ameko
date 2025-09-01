@@ -3,9 +3,9 @@
 namespace Holo.Models;
 
 /// <summary>
-/// Model for an item in a <see cref="Solution"/>
+/// Model for an item in a <see cref="Project"/>
 /// </summary>
-public class SolutionItemModel
+public class ProjectItemModel
 {
     /// <summary>
     /// Optional display name override for the item
@@ -15,7 +15,7 @@ public class SolutionItemModel
     /// <summary>
     /// Type of item
     /// </summary>
-    public SolutionItemType Type { get; init; }
+    public ProjectItemType Type { get; init; }
 
     /// <summary>
     /// Relative path to the document
@@ -27,5 +27,5 @@ public class SolutionItemModel
     /// Children of this item.
     /// </summary>
     /// <remarks>Empty if the item is not a Directory</remarks>
-    public SolutionItemModel[] Children { get; init; } = [];
+    public ProjectItemModel[] Children { get; init; } = [];
 }

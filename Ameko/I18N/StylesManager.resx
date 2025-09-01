@@ -24,8 +24,8 @@
     <data name="StylesManager_GlobalStyles" xml:space="preserve">
         <value>Global Styles</value>
     </data>
-    <data name="StylesManager_SolutionStyles" xml:space="preserve">
-        <value>Solution Styles</value>
+    <data name="StylesManager_ProjectStyles" xml:space="preserve">
+        <value>Project Styles</value>
     </data>
     <data name="StylesManager_DocumentStyles" xml:space="preserve">
         <value>Document Styles</value>
@@ -42,8 +42,8 @@
     <data name="StylesManager_Button_New" xml:space="preserve">
         <value>New</value>
     </data>
-    <data name="StylesManager_Button_CopyToSolution" xml:space="preserve">
-        <value>Copy to Solution</value>
+    <data name="StylesManager_Button_CopyToProject" xml:space="preserve">
+        <value>Copy to Project</value>
     </data>
     <data name="StylesManager_Button_CopyToGlobal" xml:space="preserve">
         <value>Copy to Global</value>
@@ -72,7 +72,7 @@
     <data name="StylesManager_Button_CopyToGlobal_ToolTip" xml:space="preserve">
         <value>Copy the selected style to your global styles list</value>
     </data>
-    <data name="StylesManager_Button_CopyToSolution_ToolTip" xml:space="preserve">
-        <value>Copy the selected style to the open Solution</value>
+    <data name="StylesManager_Button_CopyToProject_ToolTip" xml:space="preserve">
+        <value>Copy the selected style to the open Project</value>
     </data>
 </root>

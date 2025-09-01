@@ -53,7 +53,7 @@ public sealed class ScriptServiceLocator
     /// <example>
     /// Example usage in a <see cref="HoloScript"/>:
     /// <code>
-    /// var slnProvider = ScriptServiceLocator.Get&lt;ISolutionProvider&gt;();
+    /// var slnProvider = ScriptServiceLocator.Get&lt;IProjectProvider&gt;();
     /// var workingSpace = slnProvider.Current.WorkingSpace;
     /// </code>
     /// </example>
@@ -80,7 +80,7 @@ public sealed class ScriptServiceLocator
     public ScriptServiceLocator(
         IConfiguration configuration,
         IGlobals globals,
-        ISolutionProvider solutionProvider,
+        IProjectProvider iProjectProvider,
         IScriptConfigurationService scriptConfigurationService
     )
     {
@@ -88,7 +88,7 @@ public sealed class ScriptServiceLocator
         {
             [typeof(IConfiguration)] = configuration,
             [typeof(IGlobals)] = globals,
-            [typeof(ISolutionProvider)] = solutionProvider,
+            [typeof(IProjectProvider)] = iProjectProvider,
             [typeof(IScriptConfigurationService)] = scriptConfigurationService,
         };
     }

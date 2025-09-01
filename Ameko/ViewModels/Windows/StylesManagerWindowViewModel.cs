@@ -14,10 +14,10 @@ public partial class StylesManagerWindowViewModel : ViewModelBase
     private readonly IPersistence _persistence;
 
     private Style? _selectedGlobalStyle;
-    private Style? _selectedSolutionStyle;
+    private Style? _selectedProjectStyle;
     private Style? _selectedDocumentStyle;
 
-    public Solution Solution { get; }
+    public Project Project { get; }
     public Document Document { get; }
     public IGlobals Globals { get; }
 
@@ -31,13 +31,13 @@ public partial class StylesManagerWindowViewModel : ViewModelBase
         }
     }
 
-    public Style? SelectedSolutionStyle
+    public Style? SelectedProjectStyle
     {
-        get => _selectedSolutionStyle;
+        get => _selectedProjectStyle;
         set
         {
-            this.RaiseAndSetIfChanged(ref _selectedSolutionStyle, value);
-            this.RaisePropertyChanged(nameof(SolutionButtonsEnabled));
+            this.RaiseAndSetIfChanged(ref _selectedProjectStyle, value);
+            this.RaisePropertyChanged(nameof(ProjectButtonsEnabled));
         }
     }
 
@@ -52,7 +52,7 @@ public partial class StylesManagerWindowViewModel : ViewModelBase
     }
 
     public bool GlobalButtonsEnabled => SelectedGlobalStyle is not null;
-    public bool SolutionButtonsEnabled => SelectedSolutionStyle is not null;
+    public bool ProjectButtonsEnabled => SelectedProjectStyle is not null;
     public bool DocumentButtonsEnabled => SelectedDocumentStyle is not null;
 
     public Interaction<StyleEditorWindowViewModel, Unit> ShowStyleEditorWindow { get; }
@@ -68,14 +68,14 @@ public partial class StylesManagerWindowViewModel : ViewModelBase
     public StylesManagerWindowViewModel(
         IPersistence persistence,
         IGlobals globals,
-        Solution solution,
+        Project project,
         Document document
     )
     {
         _persistence = persistence;
 
         Globals = globals;
-        Solution = solution;
+        Project = project;
         Document = document;
         DuplicateCommand = CreateDuplicateCommand();
         DeleteCommand = CreateDeleteCommand();

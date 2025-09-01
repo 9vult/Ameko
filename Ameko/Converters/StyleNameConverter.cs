@@ -12,18 +12,16 @@ namespace Ameko.Converters;
 
 public class StyleNameConverter : IValueConverter
 {
-    private static readonly ISolutionProvider? SolutionProvider =
-        AmekoServiceProvider.Provider?.GetRequiredService<ISolutionProvider>();
+    private static readonly IProjectProvider? ProjectProvider =
+        AmekoServiceProvider.Provider?.GetRequiredService<IProjectProvider>();
 
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
         if (value is not string name)
             return null;
         if (
-            SolutionProvider?.Current.WorkingSpace?.Document.StyleManager.TryGet(
-                name,
-                out var style
-            ) ?? false
+            ProjectProvider?.Current.WorkingSpace?.Document.StyleManager.TryGet(name, out var style)
+            ?? false
         )
             return style;
         return null;

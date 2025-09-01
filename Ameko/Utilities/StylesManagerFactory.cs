@@ -10,20 +10,20 @@ namespace Ameko.Utilities;
 public interface IStylesManagerFactory
 {
     /// <summary>
-    /// Create a new Styles Manager ViewModel for the given solution and document
+    /// Create a new Styles Manager ViewModel for the given project and document
     /// </summary>
-    /// <param name="solution">Solution for the manager</param>
+    /// <param name="project">Project for the manager</param>
     /// <param name="document">Document for the manager</param>
     /// <returns>Styles Manager ViewModel</returns>
-    StylesManagerWindowViewModel Create(Solution solution, Document document);
+    StylesManagerWindowViewModel Create(Project project, Document document);
 }
 
 public class StylesManagerFactory(IPersistence persistence, IGlobals globals)
     : IStylesManagerFactory
 {
     /// <inheritdoc cref="IStylesManagerFactory.Create"/>
-    public StylesManagerWindowViewModel Create(Solution solution, Document document)
+    public StylesManagerWindowViewModel Create(Project project, Document document)
     {
-        return new StylesManagerWindowViewModel(persistence, globals, solution, document);
+        return new StylesManagerWindowViewModel(persistence, globals, project, document);
     }
 }
