@@ -217,6 +217,16 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         interaction.SetOutput(Unit.Default);
     }
 
+    private async Task DoShowSpellcheckDialogAsync(
+        IInteractionContext<SpellcheckDialogViewModel, Unit> interaction
+    )
+    {
+        Logger.Debug("Displaying spellcheck dialog");
+        var dialog = new SpellcheckDialog { DataContext = interaction.Input };
+        await dialog.ShowDialog(this);
+        interaction.SetOutput(Unit.Default);
+    }
+
     private static void DoShowStylesManager(
         IInteractionContext<StylesManagerWindowViewModel, Unit> interaction
     )
@@ -380,6 +390,7 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
                 ViewModel.SaveProjectAs.RegisterHandler(DoShowSaveProjectAsDialogAsync);
                 // Edit
                 ViewModel.ShowSearchDialog.RegisterHandler(DoShowSearchDialog);
+                ViewModel.ShowSpellcheckDialog.RegisterHandler(DoShowSpellcheckDialogAsync);
                 // Subtitle
                 ViewModel.ShowStylesManager.RegisterHandler(DoShowStylesManager);
                 ViewModel.AttachReferenceFile.RegisterHandler(DoShowAttachReferenceFileDialogAsync);

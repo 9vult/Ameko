@@ -41,6 +41,7 @@ public class Globals : BindableBase, IGlobals
         if (_colors.Contains(color))
             return false;
         _colors.Add(color);
+        Save();
         return true;
     }
 
@@ -49,8 +50,9 @@ public class Globals : BindableBase, IGlobals
     {
         if (!_colors.Contains(color))
             return false;
-        _colors.Remove(color);
-        return true;
+        var result = _colors.Remove(color);
+        Save();
+        return result;
     }
 
     /// <inheritdoc />
@@ -59,13 +61,16 @@ public class Globals : BindableBase, IGlobals
         if (_customWords.Contains(word))
             return false;
         _customWords.Add(word);
+        Save();
         return true;
     }
 
     /// <inheritdoc />
     public bool RemoveCustomWord(string word)
     {
-        return _customWords.Remove(word);
+        var result = _customWords.Remove(word);
+        Save();
+        return result;
     }
 
     /// <inheritdoc cref="IGlobals.Save"/>

@@ -13,7 +13,7 @@ public class SpellcheckService(
     IDictionaryService dictionaryService,
     IConfiguration configuration,
     IGlobals globals,
-    IProjectProvider iProjectProvider
+    IProjectProvider projectProvider
 ) : ISpellcheckService
 {
     private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
@@ -21,6 +21,9 @@ public class SpellcheckService(
     private const string TypesettingHeuristic = @"\pos";
 
     private WordList _dictionary = WordList.CreateFromWords([]); // Empty
+
+    public SpellcheckLanguage CurrentLanguage { get; private set; } =
+        SpellcheckLanguage.AvailableLanguages[0];
 
     /// <summary>
     /// Check the current document,
@@ -34,7 +37,7 @@ public class SpellcheckService(
     /// </remarks>
     public IEnumerable<SpellcheckSuggestion> CheckSpelling()
     {
-        var document = iProjectProvider.Current.WorkingSpace?.Document;
+        var document = projectProvider.Current.WorkingSpace?.Document;
         if (document is null)
             yield break;
 
@@ -50,6 +53,8 @@ public class SpellcheckService(
         {
             foreach (var word in @event.Text.Split(' '))
             {
+                if (string.IsNullOrWhiteSpace(word))
+                    continue;
                 if (_dictionary.Check(word))
                     continue;
 
@@ -69,7 +74,11 @@ public class SpellcheckService(
     /// </summary>
     public void RebuildDictionary()
     {
-        var culture = iProjectProvider.Current.SpellcheckCulture ?? configuration.SpellcheckCulture;
+        var culture = projectProvider.Current.SpellcheckCulture ?? configuration.SpellcheckCulture;
+        CurrentLanguage =
+            SpellcheckLanguage.AvailableLanguages.FirstOrDefault(l => l.Locale == culture)
+            ?? CurrentLanguage;
+
         if (!dictionaryService.TryGetDictionary(culture, out var spd))
         {
             Logger.Warn($"Spellcheck dictionary could not be found for culture {culture}");
@@ -91,7 +100,7 @@ public class SpellcheckService(
 
         _dictionary = WordList.CreateFromStreams(dic, aff);
 
-        foreach (var word in iProjectProvider.Current.CustomWords)
+        foreach (var word in projectProvider.Current.CustomWords)
         {
             _dictionary.Add(word);
         }
@@ -120,5 +129,19 @@ public class SpellcheckService(
             return false;
         }
         return true;
+    }
+
+    /// <inheritdoc />
+    public void AddWordToProject(string word)
+    {
+        projectProvider.Current.AddCustomWord(word);
+        _dictionary.Add(word);
+    }
+
+    /// <inheritdoc />
+    public void AddWordToGlobals(string word)
+    {
+        globals.AddCustomWord(word);
+        _dictionary.Add(word);
     }
 }

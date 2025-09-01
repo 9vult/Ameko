@@ -53,6 +53,7 @@ public partial class MainWindowViewModel : ViewModelBase
 
     // Edit
     public Interaction<SearchDialogViewModel, Unit> ShowSearchDialog { get; }
+    public Interaction<SpellcheckDialogViewModel, Unit> ShowSpellcheckDialog { get; }
 
     // Subtitle
     public Interaction<StylesManagerWindowViewModel, Unit> ShowStylesManager { get; }
@@ -120,6 +121,9 @@ public partial class MainWindowViewModel : ViewModelBase
 
     [KeybindTarget("ameko.document.search", "Ctrl+F")]
     public ICommand ShowSearchDialogCommand { get; }
+
+    [KeybindTarget("ameko.document.spellcheck", "F7")]
+    public ICommand ShowSpellcheckDialogCommand { get; }
 
     // Subtitle
     [KeybindTarget("ameko.stylesManager.show")]
@@ -273,6 +277,7 @@ public partial class MainWindowViewModel : ViewModelBase
         SaveProjectAs = new Interaction<string, Uri?>();
         // Edit
         ShowSearchDialog = new Interaction<SearchDialogViewModel, Unit>();
+        ShowSpellcheckDialog = new Interaction<SpellcheckDialogViewModel, Unit>();
         // Subtitle
         ShowStylesManager = new Interaction<StylesManagerWindowViewModel, Unit>();
         AttachReferenceFile = new Interaction<Unit, Uri?>();
@@ -310,6 +315,7 @@ public partial class MainWindowViewModel : ViewModelBase
         UndoCommand = CreateUndoCommand();
         RedoCommand = CreateRedoCommand();
         ShowSearchDialogCommand = CreateShowSearchDialogCommand();
+        ShowSpellcheckDialogCommand = CreateShowSpellcheckDialogCommand();
         // Subtitle
         ShowStylesManagerCommand = CreateShowStylesManagerCommand();
         AttachReferenceFileCommand = CreateAttachReferenceFileCommand();

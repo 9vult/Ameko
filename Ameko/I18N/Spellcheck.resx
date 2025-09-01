@@ -39,4 +39,37 @@
     <data name="Spellcheck_Install_Button_Ignore" xml:space="preserve">
         <value>Ignore</value>
     </data>
+    <data name="Spellcheck_Button_Change" xml:space="preserve">
+        <value>Change</value>
+    </data>
+    <data name="Spellcheck_Button_FindNext" xml:space="preserve">
+        <value>Find Next</value>
+    </data>
+    <data name="Spellcheck_Label_NotFound" xml:space="preserve">
+        <value>This word was not found in the spelling dictionary.</value>
+    </data>
+    <data name="Spellcheck_Button_AddToProject" xml:space="preserve">
+        <value>Add to Project</value>
+    </data>
+    <data name="Spellcheck_Button_AddToGlobals" xml:space="preserve">
+        <value>Add to Globals</value>
+    </data>
+    <data name="Spellcheck_Button_AddToBoth" xml:space="preserve">
+        <value>Add to Both</value>
+    </data>
+    <data name="Spellcheck_Label_Dictionary" xml:space="preserve">
+        <value>Dictionary: {0}</value>
+    </data>
+    <data name="Spellcheck_Button_AddToProject_ToolTip" xml:space="preserve">
+        <value>Save this word to the current Project's word list</value>
+    </data>
+    <data name="Spellcheck_Button_AddToGlobals_ToolTip" xml:space="preserve">
+        <value>Save this word to the Global word list</value>
+    </data>
+    <data name="Spellcheck_Button_AddToBoth_ToolTip" xml:space="preserve">
+        <value>Save this word to the current Project and the Global word list</value>
+    </data>
+    <data name="Spellcheck_Label_NoIssues" xml:space="preserve">
+        <value>No issues found in the current document.</value>
+    </data>
 </root>

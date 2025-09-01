@@ -7,6 +7,11 @@ namespace Holo.Providers;
 public interface ISpellcheckService
 {
     /// <summary>
+    /// Language currently in use
+    /// </summary>
+    SpellcheckLanguage CurrentLanguage { get; }
+
+    /// <summary>
     /// Check the current document,
     /// using basic heuristics to exclude assumed typesetting events
     /// </summary>
@@ -29,4 +34,16 @@ public interface ISpellcheckService
     /// <param name="culture">Culture code</param>
     /// <returns><see langword="true"/> if it is installed or invalid</returns>
     bool IsDictionaryInstalled(string culture);
+
+    /// <summary>
+    /// Add a word to the current <see cref="Project"/>
+    /// </summary>
+    /// <param name="word">Word to add</param>
+    void AddWordToProject(string word);
+
+    /// <summary>
+    /// Add a word to the Globals
+    /// </summary>
+    /// <param name="word">Word to add</param>
+    void AddWordToGlobals(string word);
 }

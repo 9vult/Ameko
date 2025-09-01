@@ -155,6 +155,10 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Spellcheck.resx</DependentUpon>
     </Compile>
+    <Compile Update="Views\Dialogs\SpellcheckDialog.axaml.cs">
+      <DependentUpon>SpellcheckDialog.axaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Update="I18N\Resources.resx">

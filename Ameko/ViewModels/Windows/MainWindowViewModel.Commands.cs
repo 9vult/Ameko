@@ -383,6 +383,19 @@ public partial class MainWindowViewModel : ViewModelBase
     }
 
     /// <summary>
+    /// Show spellcheck dialog
+    /// </summary>
+    private ReactiveCommand<Unit, Unit> CreateShowSpellcheckDialogCommand()
+    {
+        return ReactiveCommand.CreateFromTask(async () =>
+        {
+            var tabFactory = _serviceProvider.GetRequiredService<ITabFactory>();
+            var vm = new SpellcheckDialogViewModel(ProjectProvider, _spellcheckService, tabFactory);
+            await ShowSpellcheckDialog.Handle(vm);
+        });
+    }
+
+    /// <summary>
     /// Display the <see cref="StylesManagerWindow"/>
     /// </summary>
     private ReactiveCommand<Unit, Unit> CreateShowStylesManagerCommand()
@@ -781,7 +794,7 @@ public partial class MainWindowViewModel : ViewModelBase
         return ReactiveCommand.CreateFromTask(async () =>
         {
             var culture = _configuration.SpellcheckCulture;
-            if (!_spellcheckService.IsDictionaryInstalled(culture))
+            if (!_spellcheckService.IsDictionaryInstalled(culture)) // Not installed
             {
                 Logger.Info($"Prompting user to download dictionary for {culture}");
                 var lang = SpellcheckLanguage.AvailableLanguages.First(l => l.Locale == culture);
@@ -789,6 +802,8 @@ public partial class MainWindowViewModel : ViewModelBase
                 await ShowInstallDictionaryDialog.Handle(vm);
                 _spellcheckService.RebuildDictionary();
             }
+            else
+                _spellcheckService.RebuildDictionary(); // Installed
         });
     }
 }
