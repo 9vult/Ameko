@@ -219,7 +219,7 @@ public partial class MainWindowViewModel : ViewModelBase
                     return;
                 }
                 Logger.Info($"Prompting user to download dictionary for {culture}");
-                var vm = new InstallDictionaryDialogViewModel(_dictionaryService, lang, false);
+                var vm = new InstallDictionaryDialogViewModel(_dictionaryService, lang, true);
                 await ShowInstallDictionaryDialog.Handle(vm);
             }
         });
