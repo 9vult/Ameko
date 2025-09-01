@@ -15,6 +15,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using DynamicData;
 using Holo;
+using Holo.Configuration;
 using Holo.Configuration.Keybinds;
 using Holo.Providers;
 using NLog;
@@ -32,6 +33,7 @@ public partial class MainWindowViewModel : ViewModelBase
     private readonly IIoService _ioService;
     private readonly ISpellcheckService _spellcheckService;
     private readonly IDictionaryService _dictionaryService;
+    private readonly IConfiguration _configuration;
     private readonly IFileSystem _fileSystem;
 
     public IScriptService ScriptService { get; }
@@ -167,11 +169,11 @@ public partial class MainWindowViewModel : ViewModelBase
     public ICommand ShowKeybindsWindowCommand { get; }
 
     // Other
-    // These commands are specific to the project explorer and don't need keybinds
     public ICommand RemoveDocumentFromProjectCommand { get; }
     public ICommand RemoveDirectoryFromProjectCommand { get; }
     public ICommand RenameDocumentCommand { get; }
     public ICommand RenameDirectoryCommand { get; }
+    public ICommand CheckSpellcheckDictionaryCommand { get; }
     #endregion
 
     public IProjectProvider ProjectProvider { get; }
@@ -244,6 +246,7 @@ public partial class MainWindowViewModel : ViewModelBase
         IKeybindService keybindService,
         ISpellcheckService spellCheckService,
         IDictionaryService dictionaryService,
+        IConfiguration configuration,
         GitToolboxViewModel gitToolboxViewModel
     )
     {
@@ -257,6 +260,7 @@ public partial class MainWindowViewModel : ViewModelBase
         KeybindService = keybindService;
         _dictionaryService = dictionaryService;
         _spellcheckService = spellCheckService;
+        _configuration = configuration;
         GitToolboxViewModel = gitToolboxViewModel;
 
         #region Interactions
@@ -333,6 +337,7 @@ public partial class MainWindowViewModel : ViewModelBase
         RemoveDirectoryFromProjectCommand = CreateRemoveDirectoryFromProjectCommand();
         RenameDocumentCommand = CreateRenameDocumentCommand();
         RenameDirectoryCommand = CreateRenameDirectoryCommand();
+        CheckSpellcheckDictionaryCommand = CreateCheckSpellcheckDictionaryCommand();
         #endregion
 
         ScriptMenuItems = [];

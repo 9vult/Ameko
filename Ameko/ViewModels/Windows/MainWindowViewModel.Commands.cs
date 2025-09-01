@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
+using System.Windows.Input;
 using Ameko.Messages;
 using Ameko.Services;
 using Ameko.Utilities;
@@ -208,17 +209,10 @@ public partial class MainWindowViewModel : ViewModelBase
             Logger.Info("Loaded project file");
 
             var culture = prj.SpellcheckCulture;
-            if (culture is not null && !_dictionaryService.TryGetDictionary(culture, out _))
+            if (culture is not null && !_spellcheckService.IsDictionaryInstalled(culture))
             {
-                var lang = SpellcheckLanguage.AvailableLanguages.FirstOrDefault(l =>
-                    l.Locale == culture
-                );
-                if (lang is null)
-                {
-                    Logger.Warn($"Language {culture} not found, ignoring for now...");
-                    return;
-                }
                 Logger.Info($"Prompting user to download dictionary for {culture}");
+                var lang = SpellcheckLanguage.AvailableLanguages.First(l => l.Locale == culture);
                 var vm = new InstallDictionaryDialogViewModel(_dictionaryService, lang, true);
                 await ShowInstallDictionaryDialog.Handle(vm);
                 _spellcheckService.RebuildDictionary();
@@ -777,5 +771,24 @@ public partial class MainWindowViewModel : ViewModelBase
                 }
             }
         );
+    }
+
+    /// <summary>
+    /// Check if the configuration-specified spellcheck dictionary is installed
+    /// </summary>
+    private ICommand CreateCheckSpellcheckDictionaryCommand()
+    {
+        return ReactiveCommand.CreateFromTask(async () =>
+        {
+            var culture = _configuration.SpellcheckCulture;
+            if (!_spellcheckService.IsDictionaryInstalled(culture))
+            {
+                Logger.Info($"Prompting user to download dictionary for {culture}");
+                var lang = SpellcheckLanguage.AvailableLanguages.First(l => l.Locale == culture);
+                var vm = new InstallDictionaryDialogViewModel(_dictionaryService, lang, false);
+                await ShowInstallDictionaryDialog.Handle(vm);
+                _spellcheckService.RebuildDictionary();
+            }
+        });
     }
 }
