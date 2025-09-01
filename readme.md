@@ -25,10 +25,10 @@ feature-rich subtitle editor with several key features to provide a robust found
   Rendering is handled via a plugin-based system, ensuring flexibility and independence from any single backend. The
   initial video provider will be [FFMS2](https://github.com/FFMS/ffms2), and [libass](https://github.com/libass/libass/)
   will be the first subtitle renderer. Video rendering is handled by OpenGL. The first audio renderer is OpenAL Soft.
-- **Tabs and Solutions:** Ameko will feature tabs, allowing users to easily switch between multiple open subtitle files.
-  Alongside this, Ameko is introducing *Solution Files*. Solutions enable logical grouping and organization of
+- **Tabs and Projectss:** Ameko will feature tabs, allowing users to easily switch between multiple open subtitle files.
+  Alongside this, Ameko is introducing *Project Files*. Projects enable logical grouping and organization of
   subtitle files
-  independent of the physical filesystem structure. Furthermore, Solutions provide a centralized place for common
+  independent of the physical filesystem structure. Furthermore, Projects provide a centralized place for common
   project configuration, styles, colors, and more, offering a significant improvement for teams using automated build
   processes and version control-based workflows.
 - **C# Scripting Support:** Recognizing that many existing workflows rely heavily on scripting for automation and
@@ -77,7 +77,7 @@ components working in tandem.
   Managing events and styles, parsing tags, and reading/writing files are just part of what AssCS does. Eventually,
   AssCS will likely be split into its own project so anyone can use it for their C# projects.
 - **Holo:** The middleware layer, primarily linking the GUI to AssCS and Mizuki. It also manages Dependency Control,
-  solutions, configuration, and pretty much everything that's not immediately GUI-related.
+  projects, configuration, and pretty much everything that's not immediately GUI-related.
 - **Mizuki:** A high-performance interop library and Holo's first A/V plugin. Mizuki facilitates communication between
   Holo and A/V libraries like FFMS and libass. By doing most of the work in a low-level language like Zig, Mizuki is
   able to reduce the amount of calls across the managed-unmanaged border.
