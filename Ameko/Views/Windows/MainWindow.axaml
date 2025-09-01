@@ -77,4 +77,16 @@
         </Grid>
     </DockPanel>
 
+    <NativeMenu.Menu>
+        <NativeMenu>
+            <NativeMenuItem Header="{x:Static i18n:Resources.Menu_About}" />
+            <NativeMenuItemSeparator />
+            <NativeMenuItem Header="{x:Static i18n:Resources.Menu_Configuration}" />
+            <NativeMenuItem Header="{x:Static i18n:Resources.Menu_Keybinds}" />
+            <NativeMenuItemSeparator />
+            <NativeMenuItem Header="{x:Static i18n:Resources.Menu_ShowLogs}" />
+            <NativeMenuItemSeparator />
+            <NativeMenuItem Header="{x:Static i18n:Resources.Menu_Quit}" />
+        </NativeMenu>
+    </NativeMenu.Menu>
 </Window>

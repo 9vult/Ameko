@@ -23,5 +23,6 @@ sealed class Program
             .UsePlatformDetect()
             .WithInterFont()
             .LogToTrace()
-            .UseReactiveUI();
+            .UseReactiveUI()
+            .With(new MacOSPlatformOptions { DisableDefaultApplicationMenuItems = true });
 }
