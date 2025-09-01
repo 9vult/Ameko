@@ -424,6 +424,8 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
                 };
             }
 
+            ViewModel?.CheckSpellcheckDictionaryCommand.Execute(null);
+
             Disposable.Create(() => { }).DisposeWith(disposables);
         });
 

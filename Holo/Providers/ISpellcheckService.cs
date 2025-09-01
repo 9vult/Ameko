@@ -22,4 +22,11 @@ public interface ISpellcheckService
     /// Rebuild the spellcheck dictionary using the current culture and custom words
     /// </summary>
     void RebuildDictionary();
+
+    /// <summary>
+    /// Check if a dictionary for the <paramref name="culture"/> is installed
+    /// </summary>
+    /// <param name="culture">Culture code</param>
+    /// <returns><see langword="true"/> if it is installed or invalid</returns>
+    bool IsDictionaryInstalled(string culture);
 }

@@ -101,4 +101,24 @@ public class SpellcheckService(
             _dictionary.Add(word);
         }
     }
+
+    /// <inheritdoc />
+    public bool IsDictionaryInstalled(string culture)
+    {
+        Logger.Debug($"Checking if {culture} dictionary is installed...");
+        if (!dictionaryService.TryGetDictionary(culture, out _))
+        {
+            var lang = SpellcheckLanguage.AvailableLanguages.FirstOrDefault(l =>
+                l.Locale == culture
+            );
+            if (lang is null)
+            {
+                Logger.Warn($"Language {culture} not found, ignoring for now...");
+                return true; // Ignore
+            }
+
+            return false;
+        }
+        return true;
+    }
 }
