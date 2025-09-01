@@ -22,7 +22,7 @@
             <DockPanel>
                 <TextBlock DockPanel.Dock="Top"
                            Text="{x:Static i18n:Resources.ProjectExplorer_Header}" />
-                <TreeView ItemsSource="{Binding IProjectProvider.Current.ReferencedItems}">
+                <TreeView ItemsSource="{Binding ProjectProvider.Current.ReferencedItems}">
                     <TreeView.DataTemplates>
                         <!-- Documents -->
                         <TreeDataTemplate DataType="holo:DocumentItem"

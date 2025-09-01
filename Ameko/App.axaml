@@ -3,10 +3,13 @@
 <Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
-             x:Class="Ameko.App"
              xmlns:local="using:Ameko"
-             xmlns:controls="clr-namespace:Ameko.Views.Controls"
+             
              xmlns:i18n="clr-namespace:Ameko.I18N"
+             xmlns:vm="clr-namespace:Ameko.ViewModels.Windows"
+             
+             x:Class="Ameko.App"
+             x:DataType="vm:MainWindowViewModel"
              Name="Ameko">
     <Application.DataTemplates>
         <local:ViewLocator/>
@@ -27,14 +30,18 @@
     
     <NativeMenu.Menu>
         <NativeMenu>
-            <NativeMenuItem Header="{x:Static i18n:Resources.Menu_About}" />
+            <NativeMenuItem Header="{x:Static i18n:Resources.Menu_About}"
+                            Command="{Binding ShowAboutWindowCommand}" />
             <NativeMenuItemSeparator />
             <NativeMenuItem Header="{x:Static i18n:Resources.Menu_Configuration}" />
-            <NativeMenuItem Header="{x:Static i18n:Resources.Menu_Keybinds}" />
+            <NativeMenuItem Header="{x:Static i18n:Resources.Menu_Keybinds}"
+                            Command="{Binding ShowKeybindsWindowCommand}" />
             <NativeMenuItemSeparator />
-            <NativeMenuItem Header="{x:Static i18n:Resources.Menu_ShowLogs}" />
+            <NativeMenuItem Header="{x:Static i18n:Resources.Menu_ShowLogs}"
+                            Command="{Binding ShowLogWindowCommand}" />
             <NativeMenuItemSeparator />
-            <NativeMenuItem Header="{x:Static i18n:Resources.Menu_Quit}" />
+            <NativeMenuItem Header="{x:Static i18n:Resources.Menu_Quit}"
+                            Command="{Binding QuitCommand}" />
         </NativeMenu>
     </NativeMenu.Menu>
 </Application>

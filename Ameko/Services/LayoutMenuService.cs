@@ -39,6 +39,30 @@ public class LayoutMenuService
         return congregation;
     }
 
+    public static List<NativeMenuItem> GenerateNativeMenuItemSource(
+        IList<Layout> layouts,
+        ICommand selectLayoutCommand
+    )
+    {
+        var congregation = new List<NativeMenuItem>();
+
+        foreach (var layout in layouts)
+        {
+            if (string.IsNullOrWhiteSpace(layout.Name))
+                continue;
+
+            congregation.Add(
+                new NativeMenuItem
+                {
+                    Header = layout.Name,
+                    Command = selectLayoutCommand,
+                    CommandParameter = layout.Name,
+                }
+            );
+        }
+        return congregation;
+    }
+
     public static MenuItem GenerateReloadMenuItem(ICommand reloadCommand)
     {
         return new MenuItem
@@ -46,6 +70,15 @@ public class LayoutMenuService
             Header = I18N.Resources.Menu_ReloadLayouts,
             Command = reloadCommand,
             Icon = new MaterialIcon { Kind = MaterialIconKind.Reload },
+        };
+    }
+
+    public static NativeMenuItem GenerateReloadNativeMenuItem(ICommand reloadCommand)
+    {
+        return new NativeMenuItem
+        {
+            Header = I18N.Resources.Menu_ReloadLayouts,
+            Command = reloadCommand,
         };
     }
 }
