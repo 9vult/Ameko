@@ -97,7 +97,8 @@
         </MenuItem>
         <MenuItem Header="{x:Static i18n:Resources.Menu_Timing}">
             <MenuItem Header="{x:Static i18n:Resources.Menu_ShiftTimes}"
-                      Icon="{icons:MaterialIconExt Kind=SwapHorizontal}" />
+                      Icon="{icons:MaterialIconExt Kind=SwapHorizontal}"
+                      Command="{Binding ShowShiftTimesDialogCommand}" />
         </MenuItem>
         <MenuItem Header="{x:Static i18n:Resources.Menu_Video}">
             <MenuItem Header="{x:Static i18n:Resources.Menu_OpenVideo}"
