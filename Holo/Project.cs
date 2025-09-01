@@ -549,42 +549,42 @@ public class Project : BindableBase
                 ?? throw new InvalidDataException("Project model deserialization failed");
 
             // If the project has no referenced documents, initialize it with one
-            var sln = new Project(fileSystem, model.ReferencedDocuments.Length != 0)
+            var prj = new Project(fileSystem, model.ReferencedDocuments.Length != 0)
             {
                 _savePath = savePath,
             };
 
             // De-relative the file paths in the project
-            sln._referencedItems.AddRange(
-                ConvertFromModels(model.ReferencedDocuments, dir, ref sln._docId)
+            prj._referencedItems.AddRange(
+                ConvertFromModels(model.ReferencedDocuments, dir, ref prj._docId)
             );
-            sln._cps = model.Cps;
-            sln._cpsIncludesWhitespace = model.CpsIncludesWhitespace;
-            sln._cpsIncludesPunctuation = model.CpsIncludesPunctuation;
-            sln._useSoftLinebreaks = model.UseSoftLinebreaks;
-            sln._spellcheckCulture = model.SpellcheckCulture;
-            sln._customWords = model.CustomWords.ToList();
+            prj._cps = model.Cps;
+            prj._cpsIncludesWhitespace = model.CpsIncludesWhitespace;
+            prj._cpsIncludesPunctuation = model.CpsIncludesPunctuation;
+            prj._useSoftLinebreaks = model.UseSoftLinebreaks;
+            prj._spellcheckCulture = model.SpellcheckCulture;
+            prj._customWords = model.CustomWords.ToList();
 
             model
-                .Styles.Select(s => Style.FromAss(sln.StyleManager.NextId, s))
+                .Styles.Select(s => Style.FromAss(prj.StyleManager.NextId, s))
                 .ToList()
-                .ForEach(sln.StyleManager.Add);
+                .ForEach(prj.StyleManager.Add);
 
             // Load first workspace or create a new one
-            var first = sln._referencedItems.FirstOrDefault();
+            var first = prj._referencedItems.FirstOrDefault();
             if (first is null)
             {
-                var wsp = sln.AddWorkspace();
+                var wsp = prj.AddWorkspace();
                 first = new DocumentItem { Id = wsp.Id, Workspace = wsp };
             }
             else
             {
-                sln.OpenDocument(first.Id);
+                prj.OpenDocument(first.Id);
             }
 
-            sln.WorkingSpace = first.Workspace!;
-            sln.IsSaved = true;
-            return sln;
+            prj.WorkingSpace = first.Workspace!;
+            prj.IsSaved = true;
+            return prj;
         }
         catch (Exception ex) when (ex is IOException or JsonException)
         {
@@ -603,7 +603,7 @@ public class Project : BindableBase
     {
         var root = dirPath.LocalPath;
         Logger.Info($"Generating project from directory {root}...");
-        var sln = new Project(fileSystem, isEmpty: true);
+        var prj = new Project(fileSystem, isEmpty: true);
         if (!fileSystem.Directory.Exists(Path.GetDirectoryName(root)))
         {
             return new Project(fileSystem, isEmpty: false);
@@ -612,7 +612,7 @@ public class Project : BindableBase
         var fileCount = 0;
         var dirCount = 0;
         var stack = new Stack<(string, ObservableCollection<ProjectItem>)>();
-        stack.Push((root, sln._referencedItems));
+        stack.Push((root, prj._referencedItems));
 
         while (stack.Count > 0)
         {
@@ -639,7 +639,7 @@ public class Project : BindableBase
                     continue;
                 }
 
-                var dirItem = new DirectoryItem { Id = sln.NextId, Name = dirName };
+                var dirItem = new DirectoryItem { Id = prj.NextId, Name = dirName };
                 currentCollection.Add(dirItem);
 
                 stack.Push((subDirectory, dirItem.Children));
@@ -649,13 +649,13 @@ public class Project : BindableBase
             // Files
             foreach (var file in fileSystem.Directory.EnumerateFiles(currentPath, "*.ass"))
             {
-                var docItem = new DocumentItem { Id = sln.NextId, Uri = new Uri(file) };
+                var docItem = new DocumentItem { Id = prj.NextId, Uri = new Uri(file) };
                 currentCollection.Add(docItem);
                 fileCount++;
             }
         }
         Logger.Info($"Done! Project contains {dirCount} directories and {fileCount} files");
-        return sln.ReferencedItems.Count > 0 ? sln : new Project(fileSystem, isEmpty: false);
+        return prj.ReferencedItems.Count > 0 ? prj : new Project(fileSystem, isEmpty: false);
     }
 
     /// <summary>

@@ -37,13 +37,13 @@ public class AssOptionsBinder
     /// </remarks>
     private void PushUpdate(object? sender, PropertyChangedEventArgs e)
     {
-        var sln = _iProjectProvider.Current;
+        var prj = _iProjectProvider.Current;
 
         AssCS.Options.CpsIncludesPunctuation =
-            sln.CpsIncludesPunctuation ?? _configuration.CpsIncludesPunctuation;
+            prj.CpsIncludesPunctuation ?? _configuration.CpsIncludesPunctuation;
         AssCS.Options.CpsIncludesWhitespace =
-            sln.CpsIncludesWhitespace ?? _configuration.CpsIncludesWhitespace;
-        AssCS.Options.DefaultLayer = sln.DefaultLayer ?? _configuration.DefaultLayer;
+            prj.CpsIncludesWhitespace ?? _configuration.CpsIncludesWhitespace;
+        AssCS.Options.DefaultLayer = prj.DefaultLayer ?? _configuration.DefaultLayer;
 
         // Non-project
         AssCS.Options.LineWidthIncludesPunctuation = _configuration.LineWidthIncludesPunctuation;

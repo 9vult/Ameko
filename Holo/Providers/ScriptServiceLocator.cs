@@ -53,8 +53,8 @@ public sealed class ScriptServiceLocator
     /// <example>
     /// Example usage in a <see cref="HoloScript"/>:
     /// <code>
-    /// var slnProvider = ScriptServiceLocator.Get&lt;IProjectProvider&gt;();
-    /// var workingSpace = slnProvider.Current.WorkingSpace;
+    /// var prjProvider = ScriptServiceLocator.Get&lt;IProjectProvider&gt;();
+    /// var workingSpace = prjProvider.Current.WorkingSpace;
     /// </code>
     /// </example>
     public static T Get<T>([CallerMemberName] string callerName = "")

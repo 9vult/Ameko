@@ -203,11 +203,11 @@ public partial class MainWindowViewModel : ViewModelBase
                 return;
             }
 
-            var sln = Project.Parse(_fileSystem, uri);
-            IProjectProvider.Current = sln;
+            var prj = Project.Parse(_fileSystem, uri);
+            IProjectProvider.Current = prj;
             Logger.Info("Loaded project file");
 
-            var culture = sln.SpellcheckCulture;
+            var culture = prj.SpellcheckCulture;
             if (culture is not null && !_dictionaryService.TryGetDictionary(culture, out _))
             {
                 var lang = SpellcheckLanguage.AvailableLanguages.FirstOrDefault(l =>

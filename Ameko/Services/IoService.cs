@@ -89,11 +89,11 @@ public class IoService(
     )
     {
         Log.Trace($"Closing workspace {wsp.Title}");
-        var sln = iProjectProvider.Current;
+        var prj = iProjectProvider.Current;
 
         if (wsp.IsSaved)
         {
-            sln.CloseDocument(wsp.Id, replaceIfLast);
+            prj.CloseDocument(wsp.Id, replaceIfLast);
             tabFactory.Release(wsp);
             return true;
         }
@@ -118,7 +118,7 @@ public class IoService(
                 }
                 goto case ButtonResult.No; // lol
             case ButtonResult.No:
-                sln.CloseDocument(wsp.Id, replaceIfLast);
+                prj.CloseDocument(wsp.Id, replaceIfLast);
                 tabFactory.Release(wsp);
                 return true;
             default:
@@ -127,10 +127,10 @@ public class IoService(
     }
 
     /// <inheritdoc cref="IIoService.SaveProject"/>
-    public async Task<bool> SaveProject(Interaction<string, Uri?> interaction, Project sln)
+    public async Task<bool> SaveProject(Interaction<string, Uri?> interaction, Project prj)
     {
-        Log.Info($"Preparing to save project file {sln.Title}");
-        var uri = sln.SavePath ?? await interaction.Handle(sln.Title);
+        Log.Info($"Preparing to save project file {prj.Title}");
+        var uri = prj.SavePath ?? await interaction.Handle(prj.Title);
 
         if (uri is null)
         {
@@ -138,10 +138,10 @@ public class IoService(
             return false;
         }
 
-        sln.SavePath = uri;
-        sln.Save();
+        prj.SavePath = uri;
+        prj.Save();
 
-        Log.Info($"Saved project file {sln.Title}");
+        Log.Info($"Saved project file {prj.Title}");
         return true;
     }
 }
