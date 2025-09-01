@@ -45,8 +45,8 @@
     <data name="Menu_ShowLogs" xml:space="preserve">
         <value>Show _Logs...</value>
     </data>
-    <data name="SolutionExplorer_Header" xml:space="preserve">
-        <value>Solution Explorer</value>
+    <data name="ProjectExplorer_Header" xml:space="preserve">
+        <value>Project Explorer</value>
     </data>
     <data name="Toolbox_Header" xml:space="preserve">
         <value>Toolbox</value>
@@ -180,11 +180,11 @@
     <data name="Menu_ExportSubtitles" xml:space="preserve">
         <value>_Export Subtitles...</value>
     </data>
-    <data name="Menu_OpenSolution" xml:space="preserve">
-        <value>Open _Solution...</value>
+    <data name="Menu_OpenProject" xml:space="preserve">
+        <value>Open _Project...</value>
     </data>
-    <data name="Menu_SaveSolution" xml:space="preserve">
-        <value>Save So_lution...</value>
+    <data name="Menu_SaveProject" xml:space="preserve">
+        <value>Save Proj_ect...</value>
     </data>
     <data name="Menu_Quit" xml:space="preserve">
         <value>_Quit</value>
@@ -204,10 +204,10 @@
     <data name="Menu_ScriptProperties" xml:space="preserve">
         <value>Script _Properties...</value>
     </data>
-    <data name="Menu_Solution" xml:space="preserve">
-        <value>So_lution</value>
+    <data name="Menu_Project" xml:space="preserve">
+        <value>Pro_ject</value>
     </data>
-    <data name="Menu_SolutionConfig" xml:space="preserve">
+    <data name="Menu_ProjectConfig" xml:space="preserve">
         <value>_Configuration...</value>
     </data>
     <data name="Menu_ShiftTimes" xml:space="preserve">
@@ -228,22 +228,22 @@
     <data name="Menu_About" xml:space="preserve">
         <value>_About Ameko...</value>
     </data>
-    <data name="SolutionExplorer_ContextMenu_Remove" xml:space="preserve">
+    <data name="ProjectExplorer_ContextMenu_Remove" xml:space="preserve">
         <value>Remove from Workspace</value>
     </data>
-    <data name="SolutionExplorer_ContextMenu_Open" xml:space="preserve">
+    <data name="ProjectExplorer_ContextMenu_Open" xml:space="preserve">
         <value>Open</value>
     </data>
     <data name="Menu_CloseTab" xml:space="preserve">
         <value>_Close Tab</value>
     </data>
-    <data name="Menu_CloseSolution" xml:space="preserve">
-        <value>Close Solutio_n</value>
+    <data name="Menu_CloseProject" xml:space="preserve">
+        <value>Close Projec_t</value>
     </data>
     <data name="Tab_CloseButton_ToolTip" xml:space="preserve">
         <value>Close Tab</value>
     </data>
-    <data name="SolutionExplorer_ContextMenu_Rename" xml:space="preserve">
+    <data name="ProjectExplorer_ContextMenu_Rename" xml:space="preserve">
         <value>Rename...</value>
     </data>
     <data name="Menu_ReloadScripts" xml:space="preserve">
@@ -252,8 +252,8 @@
     <data name="Menu_PackageManager" xml:space="preserve">
         <value>Open _Package Manager...</value>
     </data>
-    <data name="Menu_OpenSolutionFolder" xml:space="preserve">
-        <value>Open _Folder as Solution...</value>
+    <data name="Menu_OpenProjectFolder" xml:space="preserve">
+        <value>Open _Folder as Project...</value>
     </data>
     <data name="Menu_ReloadLayouts" xml:space="preserve">
         <value>_Reload Layouts</value>

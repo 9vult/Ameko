@@ -27,7 +27,7 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
 
     private static readonly string[] ScriptExtensions = [".ass", ".srt", ".txt"];
     private static readonly string[] VideoExtensions = [".mkv", ".mp4"];
-    private const string SolutionExtension = ".asln";
+    private const string ProjectExtension = ".aproj";
 
     private SearchDialog _searchDialog;
     private bool _isSearching = false;
@@ -126,18 +126,18 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         interaction.SetOutput(null);
     }
 
-    private async Task DoShowOpenSolutionDialogAsync(IInteractionContext<Unit, Uri?> interaction)
+    private async Task DoShowOpenProjectDialogAsync(IInteractionContext<Unit, Uri?> interaction)
     {
         var files = await StorageProvider.OpenFilePickerAsync(
             new FilePickerOpenOptions
             {
-                Title = I18N.Other.FileDialog_OpenSolution_Title,
+                Title = I18N.Other.FileDialog_OpenProject_Title,
                 AllowMultiple = false,
                 FileTypeFilter =
                 [
-                    new FilePickerFileType(I18N.Other.FileDialog_FileType_Solution)
+                    new FilePickerFileType(I18N.Other.FileDialog_FileType_Project)
                     {
-                        Patterns = ["*.asln"],
+                        Patterns = ["*.aproj"],
                     },
                 ],
             }
@@ -150,14 +150,14 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         interaction.SetOutput(null);
     }
 
-    private async Task DoShowOpenFolderAsSolutionDialogAsync(
+    private async Task DoShowOpenFolderAsProjectDialogAsync(
         IInteractionContext<Unit, Uri?> interaction
     )
     {
         var dirs = await StorageProvider.OpenFolderPickerAsync(
             new FolderPickerOpenOptions
             {
-                Title = I18N.Other.FileDialog_OpenFolderAsSolution_Title,
+                Title = I18N.Other.FileDialog_OpenFolderAsProject_Title,
                 AllowMultiple = false,
             }
         );
@@ -169,19 +169,17 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         interaction.SetOutput(null);
     }
 
-    private async Task DoShowSaveSolutionAsDialogAsync(
-        IInteractionContext<string, Uri?> interaction
-    )
+    private async Task DoShowSaveProjectAsDialogAsync(IInteractionContext<string, Uri?> interaction)
     {
         var file = await StorageProvider.SaveFilePickerAsync(
             new FilePickerSaveOptions
             {
-                Title = I18N.Other.FileDialog_SaveSolution_Title,
+                Title = I18N.Other.FileDialog_SaveProject_Title,
                 FileTypeChoices =
                 [
-                    new FilePickerFileType(I18N.Other.FileDialog_FileType_Solution)
+                    new FilePickerFileType(I18N.Other.FileDialog_FileType_Project)
                     {
-                        Patterns = ["*.asln"],
+                        Patterns = ["*.aproj"],
                     },
                 ],
                 SuggestedFileName = interaction.Input,
@@ -192,7 +190,7 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         {
             var path = file.Path;
             if (!Path.HasExtension(path.LocalPath))
-                path = new Uri(Path.ChangeExtension(path.LocalPath, ".asln"));
+                path = new Uri(Path.ChangeExtension(path.LocalPath, ".aproj"));
 
             interaction.SetOutput(path);
             return;
@@ -374,17 +372,15 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
                 ViewModel.OpenSubtitle.RegisterHandler(DoShowOpenSubtitleDialogAsync);
                 ViewModel.SaveSubtitleAs.RegisterHandler(DoShowSaveSubtitleAsDialogAsync);
                 ViewModel.ExportSubtitle.RegisterHandler(DoShowExportSubtitleDialogAsync);
-                ViewModel.OpenSolution.RegisterHandler(DoShowOpenSolutionDialogAsync);
-                ViewModel.OpenFolderAsSolution.RegisterHandler(
-                    DoShowOpenFolderAsSolutionDialogAsync
-                );
-                ViewModel.SaveSolutionAs.RegisterHandler(DoShowSaveSolutionAsDialogAsync);
+                ViewModel.OpenProject.RegisterHandler(DoShowOpenProjectDialogAsync);
+                ViewModel.OpenFolderAsProject.RegisterHandler(DoShowOpenFolderAsProjectDialogAsync);
+                ViewModel.SaveProjectAs.RegisterHandler(DoShowSaveProjectAsDialogAsync);
                 // Edit
                 ViewModel.ShowSearchDialog.RegisterHandler(DoShowSearchDialog);
                 // Subtitle
                 ViewModel.ShowStylesManager.RegisterHandler(DoShowStylesManager);
                 ViewModel.AttachReferenceFile.RegisterHandler(DoShowAttachReferenceFileDialogAsync);
-                // Solution
+                // Project
                 // Timing
                 ViewModel.ShowShiftTimesDialog.RegisterHandler(DoShowShiftTimesDialogAsync);
                 // Video
@@ -427,14 +423,14 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         if (vm is null || layout is null)
             return;
 
-        if (layout.Window.IsSolutionExplorerOnLeft)
+        if (layout.Window.IsProjectExplorerOnLeft)
         {
             var columnDefinitions = new ColumnDefinitions("Auto, 2, *");
             columnDefinitions[0].MinWidth = 100;
             columnDefinitions[2].MinWidth = 500;
             MainWindowGrid.ColumnDefinitions = columnDefinitions;
 
-            SolutionExplorer.SetValue(Grid.ColumnProperty, 0);
+            ProjectExplorer.SetValue(Grid.ColumnProperty, 0);
             WorkspaceTabControl.SetValue(Grid.ColumnProperty, 2);
         }
         else
@@ -444,7 +440,7 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
             columnDefinitions[2].MinWidth = 150;
             MainWindowGrid.ColumnDefinitions = columnDefinitions;
 
-            SolutionExplorer.SetValue(Grid.ColumnProperty, 2);
+            ProjectExplorer.SetValue(Grid.ColumnProperty, 2);
             WorkspaceTabControl.SetValue(Grid.ColumnProperty, 0);
         }
     }
@@ -482,9 +478,9 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
                 continue;
             }
 
-            if (ext == SolutionExtension)
+            if (ext == ProjectExtension)
             {
-                ViewModel.OpenSolutionNoGuiCommand.Execute(file.Path);
+                ViewModel.OpenProjectNoGuiCommand.Execute(file.Path);
                 continue;
             }
         }

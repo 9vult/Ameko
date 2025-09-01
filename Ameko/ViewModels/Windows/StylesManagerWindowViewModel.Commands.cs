@@ -21,7 +21,7 @@ public partial class StylesManagerWindowViewModel : ViewModelBase
                 var (style, manager) = input switch
                 {
                     "global" => (SelectedGlobalStyle, Globals.StyleManager),
-                    "solution" => (SelectedSolutionStyle, Solution.StyleManager),
+                    "project" => (SelectedProjectStyle, Project.StyleManager),
                     "document" => (SelectedDocumentStyle, Document.StyleManager),
                     _ => throw new ArgumentOutOfRangeException(nameof(input), input, null),
                 };
@@ -49,7 +49,7 @@ public partial class StylesManagerWindowViewModel : ViewModelBase
                 var (style, manager) = input switch
                 {
                     "global" => (SelectedGlobalStyle, Globals.StyleManager),
-                    "solution" => (SelectedSolutionStyle, Solution.StyleManager),
+                    "project" => (SelectedProjectStyle, Project.StyleManager),
                     "document" => (SelectedDocumentStyle, Document.StyleManager),
                     _ => throw new ArgumentOutOfRangeException(nameof(input), input, null),
                 };
@@ -84,7 +84,7 @@ public partial class StylesManagerWindowViewModel : ViewModelBase
                 var style = origin switch
                 {
                     "global" => SelectedGlobalStyle,
-                    "solution" => SelectedSolutionStyle,
+                    "project" => SelectedProjectStyle,
                     "document" => SelectedDocumentStyle,
                     _ => throw new ArgumentOutOfRangeException(nameof(origin), origin, null),
                 };
@@ -95,7 +95,7 @@ public partial class StylesManagerWindowViewModel : ViewModelBase
                 var manager = dest switch
                 {
                     "global" => Globals.StyleManager,
-                    "solution" => Solution.StyleManager,
+                    "project" => Project.StyleManager,
                     "document" => Document.StyleManager,
                     _ => throw new ArgumentOutOfRangeException(nameof(dest), dest, null),
                 };
@@ -116,7 +116,7 @@ public partial class StylesManagerWindowViewModel : ViewModelBase
                 var (style, manager, document) = input switch
                 {
                     "global" => (SelectedGlobalStyle, Globals.StyleManager, null),
-                    "solution" => (SelectedSolutionStyle, Solution.StyleManager, null),
+                    "project" => (SelectedProjectStyle, Project.StyleManager, null),
                     "document" => (SelectedDocumentStyle, Document.StyleManager, Document),
                     _ => throw new ArgumentOutOfRangeException(nameof(input), input, null),
                 };

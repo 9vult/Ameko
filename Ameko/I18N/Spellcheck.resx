@@ -21,8 +21,8 @@
     <data name="Spellcheck_WindowTitle" xml:space="preserve">
         <value>Spellcheck</value>
     </data>
-    <data name="Spellcheck_Install_SolutionHeader" xml:space="preserve">
-        <value>This solution is configured to use "{0}" for spellchecking, but that dictionary is not installed.</value>
+    <data name="Spellcheck_Install_ProjectHeader" xml:space="preserve">
+        <value>This project is configured to use "{0}" for spellchecking, but that dictionary is not installed.</value>
     </data>
     <data name="Spellcheck_Install_ConfigHeader" xml:space="preserve">
         <value>Ameko is configured to use "{0}" for spellchecking, but that dictionary is not installed.</value>

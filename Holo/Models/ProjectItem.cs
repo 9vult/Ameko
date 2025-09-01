@@ -6,9 +6,9 @@ using AssCS;
 namespace Holo.Models;
 
 /// <summary>
-/// Represents an item in a <see cref="Solution"/>.
+/// Represents an item in a <see cref="Project"/>.
 /// </summary>
-public abstract class SolutionItem : BindableBase
+public abstract class ProjectItem : BindableBase
 {
     private string? _name;
 
@@ -54,12 +54,12 @@ public abstract class SolutionItem : BindableBase
     /// <summary>
     /// Child items (only applicable to directories).
     /// </summary>
-    public RangeObservableCollection<SolutionItem> Children { get; init; } = [];
+    public RangeObservableCollection<ProjectItem> Children { get; init; } = [];
 
     /// <summary>
     /// The type of this item.
     /// </summary>
-    public virtual SolutionItemType Type => SolutionItemType.Unknown;
+    public virtual ProjectItemType Type => ProjectItemType.Unknown;
 
     /// <summary>
     /// Display title for the item.
@@ -67,9 +67,9 @@ public abstract class SolutionItem : BindableBase
     public virtual string Title => "Untitled Item";
 }
 
-public class DocumentItem : SolutionItem
+public class DocumentItem : ProjectItem
 {
-    public override SolutionItemType Type => SolutionItemType.Document;
+    public override ProjectItemType Type => ProjectItemType.Document;
 
     public override string Title =>
         Name
@@ -80,8 +80,8 @@ public class DocumentItem : SolutionItem
         );
 }
 
-public class DirectoryItem : SolutionItem
+public class DirectoryItem : ProjectItem
 {
-    public override SolutionItemType Type => SolutionItemType.Directory;
+    public override ProjectItemType Type => ProjectItemType.Directory;
     public override string Title => Name ?? "Untitled Directory";
 }

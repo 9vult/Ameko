@@ -37,13 +37,13 @@
                 <ColumnDefinition Width="2" />
                 <ColumnDefinition Width="*" MinWidth="500" />
             </Grid.ColumnDefinitions>
-            <c:SolutionExplorer Name="SolutionExplorer"
+            <c:ProjectExplorer Name="ProjectExplorer"
                                 Grid.Column="0" />
             <GridSplitter Grid.Column="1" ResizeDirection="Columns" />
             <TabControl Grid.Column="2"
                         Name="WorkspaceTabControl"
-                        ItemsSource="{Binding SolutionProvider.Current.LoadedWorkspaces}"
-                        SelectedItem="{Binding SolutionProvider.Current.WorkingSpace}"
+                        ItemsSource="{Binding IProjectProvider.Current.LoadedWorkspaces}"
+                        SelectedItem="{Binding IProjectProvider.Current.WorkingSpace}"
                         TabStripPlacement="Bottom">
                 <TabControl.ItemTemplate>
                     <DataTemplate DataType="{x:Type holo:Workspace}">

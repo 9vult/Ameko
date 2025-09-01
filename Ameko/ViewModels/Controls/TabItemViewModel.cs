@@ -134,7 +134,7 @@ public partial class TabItemViewModel : ViewModelBase
     private int _editBoxSelectionEnd;
 
     public Workspace Workspace => _workspace;
-    public ISolutionProvider SolutionProvider { get; }
+    public IProjectProvider IProjectProvider { get; }
     public IConfiguration Configuration { get; }
     public IKeybindService KeybindService { get; }
     public ILayoutProvider LayoutProvider { get; }
@@ -152,7 +152,7 @@ public partial class TabItemViewModel : ViewModelBase
     }
 
     public TabItemViewModel(
-        ISolutionProvider solutionProvider,
+        IProjectProvider iProjectProvider,
         IConfiguration configuration,
         IKeybindService keybindService,
         IScriptService scriptService,
@@ -208,7 +208,7 @@ public partial class TabItemViewModel : ViewModelBase
 
         _workspace = workspace;
         _scriptService = scriptService;
-        SolutionProvider = solutionProvider;
+        IProjectProvider = iProjectProvider;
         Configuration = configuration;
         KeybindService = keybindService;
         LayoutProvider = layoutProvider;

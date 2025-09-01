@@ -8,13 +8,13 @@ using static Holo.Tests.Utilities.TestUtils;
 
 namespace Holo.Tests;
 
-public class SolutionTests
+public class ProjectTests
 {
     [Fact]
     public void Constructor()
     {
         var fs = new MockFileSystem();
-        var sln = new Solution(fs);
+        var sln = new Project(fs);
         sln.LoadedWorkspaces.Count.ShouldBe(1);
         sln.WorkingSpace?.Id.ShouldBe(sln.LoadedWorkspaces[0].Id);
     }
@@ -23,7 +23,7 @@ public class SolutionTests
     public void AddWorkspace_New()
     {
         var fs = new MockFileSystem();
-        var sln = new Solution(fs);
+        var sln = new Project(fs);
         var workspaceId = sln.AddWorkspace().Id;
 
         sln.LoadedWorkspaces.ShouldContain(w => w.Id == workspaceId);
@@ -34,7 +34,7 @@ public class SolutionTests
     public void AddWorkspace_Existing()
     {
         var fs = new MockFileSystem();
-        var sln = new Solution(fs);
+        var sln = new Project(fs);
         var workspace = new Workspace(new Document(true), 123);
         var workspaceId = sln.AddWorkspace(workspace).Id;
 
@@ -46,7 +46,7 @@ public class SolutionTests
     public void AddWorkspace_FromExistingDocument()
     {
         var fs = new MockFileSystem();
-        var sln = new Solution(fs);
+        var sln = new Project(fs);
         var document = new Document(true);
         var workspaceId = sln.AddWorkspace(document, MakeTestableUri(fs, "test.ass")).Id;
 
@@ -58,7 +58,7 @@ public class SolutionTests
     public void RemoveWorkspace_Exists()
     {
         var fs = new MockFileSystem();
-        var sln = new Solution(fs);
+        var sln = new Project(fs);
         var workspaceId = sln.AddWorkspace().Id;
 
         var result = sln.RemoveWorkspace(workspaceId);
@@ -71,7 +71,7 @@ public class SolutionTests
     public void RemoveWorkspace_NotExists()
     {
         var fs = new MockFileSystem();
-        var sln = new Solution(fs);
+        var sln = new Project(fs);
         var result = sln.RemoveWorkspace(999);
 
         result.ShouldBeFalse();
@@ -81,7 +81,7 @@ public class SolutionTests
     public void AddDirectory_Root()
     {
         var fs = new MockFileSystem();
-        var sln = new Solution(fs);
+        var sln = new Project(fs);
         var dir = sln.AddDirectory("Directory1");
 
         sln.ReferencedItems.ShouldContain(dir);
@@ -91,7 +91,7 @@ public class SolutionTests
     public void AddDirectory_Child()
     {
         var fs = new MockFileSystem();
-        var sln = new Solution(fs);
+        var sln = new Project(fs);
         var dir1 = sln.AddDirectory("Directory1");
         var dir2 = sln.AddDirectory("Directory2", dir1.Id);
 
@@ -103,7 +103,7 @@ public class SolutionTests
     public void RemoveDirectory_Root()
     {
         var fs = new MockFileSystem();
-        var sln = new Solution(fs);
+        var sln = new Project(fs);
         var dir1 = sln.AddDirectory("Directory1");
         var dir2 = sln.AddDirectory("Directory2", dir1.Id);
 
@@ -120,7 +120,7 @@ public class SolutionTests
     public void RemoveDirectory_Child()
     {
         var fs = new MockFileSystem();
-        var sln = new Solution(fs);
+        var sln = new Project(fs);
         var dir = sln.AddDirectory("Directory1");
 
         sln.ReferencedItems.ShouldContain(dir);
@@ -133,7 +133,7 @@ public class SolutionTests
     public void AddWorkspace_ToDirectory()
     {
         var fs = new MockFileSystem();
-        var sln = new Solution(fs);
+        var sln = new Project(fs);
         var dir = sln.AddDirectory("Directory1");
 
         var workspaceId = sln.AddWorkspace(dir.Id).Id;
@@ -147,7 +147,7 @@ public class SolutionTests
     public void OpenDocument_NotExists()
     {
         var fs = new MockFileSystem();
-        var sln = new Solution(fs);
+        var sln = new Project(fs);
         var result = sln.OpenDocument(999);
 
         result.ShouldBe(-1);
@@ -157,7 +157,7 @@ public class SolutionTests
     public void CloseDocument_Exists()
     {
         var fs = new MockFileSystem();
-        var sln = new Solution(fs);
+        var sln = new Project(fs);
         var docId = sln.AddWorkspace().Id;
 
         var result = sln.CloseDocument(docId);
@@ -170,7 +170,7 @@ public class SolutionTests
     public void CloseDocument_NotExists()
     {
         var fs = new MockFileSystem();
-        var sln = new Solution(fs);
+        var sln = new Project(fs);
         var result = sln.CloseDocument(999);
 
         result.ShouldBeFalse();
@@ -180,9 +180,9 @@ public class SolutionTests
     public void Save()
     {
         var fs = new MockFileSystem();
-        var path = MakeTestableUri(fs, "test.asln");
+        var path = MakeTestableUri(fs, "test.aproj");
 
-        var sln = new Solution(fs) { SavePath = path };
+        var sln = new Project(fs) { SavePath = path };
 
         var result = sln.Save();
 
@@ -194,10 +194,10 @@ public class SolutionTests
     public void Parse()
     {
         var fs = new MockFileSystem();
-        var path = MakeTestableUri(fs, "test.asln");
-        fs.AddFile(path.LocalPath, new MockFileData(ExampleSolution));
+        var path = MakeTestableUri(fs, "test.aproj");
+        fs.AddFile(path.LocalPath, new MockFileData(ExampleProject));
 
-        var sln = Solution.Parse(fs, path);
+        var sln = Project.Parse(fs, path);
 
         sln.Cps.ShouldBe(21);
         sln.UseSoftLinebreaks.ShouldBeNull();
@@ -217,12 +217,12 @@ public class SolutionTests
         fs.AddFile(MakeTestableUri(fs, "test/01/d.ass").LocalPath, new MockFileData(string.Empty));
         fs.AddFile(MakeTestableUri(fs, "test/03/d.ass").LocalPath, new MockFileData(string.Empty));
 
-        var sln = Solution.LoadDirectory(fs, MakeTestableUri(fs, "test/"));
+        var sln = Project.LoadDirectory(fs, MakeTestableUri(fs, "test/"));
 
         sln.ReferencedItems.Count.ShouldBe(3);
-        sln.ReferencedItems.First(i => i.Type == SolutionItemType.Directory)
+        sln.ReferencedItems.First(i => i.Type == ProjectItemType.Directory)
             .Children.Count.ShouldBe(2);
-        sln.ReferencedItems.Last(i => i.Type == SolutionItemType.Directory)
+        sln.ReferencedItems.Last(i => i.Type == ProjectItemType.Directory)
             .Children.Count.ShouldBe(1);
     }
 
@@ -234,23 +234,23 @@ public class SolutionTests
         fs.AddDirectory(MakeTestableUri(fs, "test/02").LocalPath);
         fs.AddDirectory(MakeTestableUri(fs, "test/03").LocalPath);
 
-        var sln = Solution.LoadDirectory(fs, MakeTestableUri(fs, "test/"));
+        var sln = Project.LoadDirectory(fs, MakeTestableUri(fs, "test/"));
 
         sln.ReferencedItems.Count.ShouldBe(1);
-        sln.ReferencedItems.First().Type.ShouldBe(SolutionItemType.Document); // default document
+        sln.ReferencedItems.First().Type.ShouldBe(ProjectItemType.Document); // default document
     }
 
     [Fact]
     public void LoadDirectory_NotExists()
     {
         var fs = new MockFileSystem();
-        var sln = Solution.LoadDirectory(fs, MakeTestableUri(fs, "test/"));
+        var sln = Project.LoadDirectory(fs, MakeTestableUri(fs, "test/"));
 
         sln.ReferencedItems.Count.ShouldBe(1);
-        sln.ReferencedItems.First().Type.ShouldBe(SolutionItemType.Document); // default document
+        sln.ReferencedItems.First().Type.ShouldBe(ProjectItemType.Document); // default document
     }
 
-    private const string ExampleSolution = """
+    private const string ExampleProject = """
          {
              "Version": 1,
              "ReferencedDocuments": [],

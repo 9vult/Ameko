@@ -26,12 +26,12 @@ public partial class InstallDictionaryDialogViewModel : ViewModelBase
     public InstallDictionaryDialogViewModel(
         IDictionaryService dictionaryService,
         SpellcheckLanguage language,
-        bool isSolutionRequest
+        bool isProjectRequest
     )
     {
         Header = string.Format(
-            isSolutionRequest
-                ? I18N.Spellcheck.Spellcheck_Install_SolutionHeader
+            isProjectRequest
+                ? I18N.Spellcheck.Spellcheck_Install_ProjectHeader
                 : I18N.Spellcheck.Spellcheck_Install_ConfigHeader,
             language.Name
         );

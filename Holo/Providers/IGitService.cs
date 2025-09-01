@@ -14,7 +14,7 @@ public interface IGitService
     /// Set the current working directory
     /// </summary>
     /// <param name="path">Directory path</param>
-    /// <remarks>Probably the <see cref="Solution"/> directory</remarks>
+    /// <remarks>Probably the <see cref="Project"/> directory</remarks>
     void SetWorkingDirectory(Uri? path);
 
     /// <summary>

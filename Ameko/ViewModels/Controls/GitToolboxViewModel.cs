@@ -12,7 +12,7 @@ namespace Ameko.ViewModels.Controls;
 public partial class GitToolboxViewModel : ViewModelBase
 {
     private readonly IGitService _gitService;
-    private readonly ISolutionProvider _solutionProvider;
+    private readonly IProjectProvider _iProjectProvider;
 
     private string _commitMessage = string.Empty;
 
@@ -62,10 +62,10 @@ public partial class GitToolboxViewModel : ViewModelBase
 
     public List<GitCommit> LatestCommits => IsInRepo ? _gitService.GetRecentCommits().ToList() : [];
 
-    public GitToolboxViewModel(IGitService gitService, ISolutionProvider solutionProvider)
+    public GitToolboxViewModel(IGitService gitService, IProjectProvider iProjectProvider)
     {
         _gitService = gitService;
-        _solutionProvider = solutionProvider;
+        _iProjectProvider = iProjectProvider;
 
         RefreshCommand = CreateRefreshCommand();
         StageCommand = CreateStageCommand();

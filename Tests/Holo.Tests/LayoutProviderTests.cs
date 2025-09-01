@@ -48,7 +48,7 @@ public class LayoutProviderTests
         Author = "9volt"
         ColumnDefinitions = "*, 2, *"
         RowDefinitions = "0.5*, 2, *, 2, *"
-        Window = { IsSolutionExplorerOnLeft = true }
+        Window = { IsProjectExplorerOnLeft = true }
         [Video]
         IsVisible = true
         Column = 0

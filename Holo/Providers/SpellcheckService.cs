@@ -13,7 +13,7 @@ public class SpellcheckService(
     IDictionaryService dictionaryService,
     IConfiguration configuration,
     IGlobals globals,
-    ISolutionProvider solutionProvider
+    IProjectProvider iProjectProvider
 ) : ISpellcheckService
 {
     private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
@@ -34,7 +34,7 @@ public class SpellcheckService(
     /// </remarks>
     public IEnumerable<SpellcheckSuggestion> CheckSpelling()
     {
-        var document = solutionProvider.Current.WorkingSpace?.Document;
+        var document = iProjectProvider.Current.WorkingSpace?.Document;
         if (document is null)
             yield break;
 
@@ -69,7 +69,7 @@ public class SpellcheckService(
     /// </summary>
     public void RebuildDictionary()
     {
-        var culture = solutionProvider.Current.SpellcheckCulture ?? configuration.SpellcheckCulture;
+        var culture = iProjectProvider.Current.SpellcheckCulture ?? configuration.SpellcheckCulture;
         if (!dictionaryService.TryGetDictionary(culture, out var spd))
         {
             Logger.Warn($"Spellcheck dictionary could not be found for culture {culture}");
@@ -91,7 +91,7 @@ public class SpellcheckService(
 
         _dictionary = WordList.CreateFromStreams(dic, aff);
 
-        foreach (var word in solutionProvider.Current.CustomWords)
+        foreach (var word in iProjectProvider.Current.CustomWords)
         {
             _dictionary.Add(word);
         }

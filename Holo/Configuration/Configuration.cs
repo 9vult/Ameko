@@ -18,8 +18,8 @@ namespace Holo.Configuration;
 /// <remarks>
 /// <para>
 /// Some, but not all, options are configurable in both the application space
-/// via <see cref="Configuration"/> files and in <see cref="Solution"/>s.
-/// In such cases, the solution's value takes precedence, unless the
+/// via <see cref="Configuration"/> files and in <see cref="Project"/>s.
+/// In such cases, the project's value takes precedence, unless the
 /// solution's value is <see langword="null"/>.
 /// </para>
 /// <para>

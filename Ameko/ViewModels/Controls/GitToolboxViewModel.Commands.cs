@@ -13,7 +13,7 @@ public partial class GitToolboxViewModel : ViewModelBase
     {
         return ReactiveCommand.Create(() =>
         {
-            _gitService.SetWorkingDirectory(_solutionProvider.Current.SavePath);
+            _gitService.SetWorkingDirectory(_iProjectProvider.Current.SavePath);
             RaisePropertyChanges();
         });
     }

@@ -8,9 +8,9 @@ using Holo.Models;
 
 namespace Ameko.Views.Controls;
 
-public partial class SolutionExplorer : ReactiveUserControl<MainWindowViewModel>
+public partial class ProjectExplorer : ReactiveUserControl<MainWindowViewModel>
 {
-    public SolutionExplorer()
+    public ProjectExplorer()
     {
         InitializeComponent();
     }

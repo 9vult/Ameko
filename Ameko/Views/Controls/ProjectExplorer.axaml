@@ -14,15 +14,15 @@
              xmlns:icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              xmlns:vm="clr-namespace:Ameko.ViewModels.Windows"
 
-             x:Class="Ameko.Views.Controls.SolutionExplorer"
+             x:Class="Ameko.Views.Controls.ProjectExplorer"
              x:DataType="vm:MainWindowViewModel">
     <TabControl TabStripPlacement="Bottom">
-        <TabItem Name="SolutionExplorerTabItem"
+        <TabItem Name="ProjectExplorerTabItem"
                  Header="{icons:MaterialIconExt Kind=PlaylistStar}">
             <DockPanel>
                 <TextBlock DockPanel.Dock="Top"
-                           Text="{x:Static i18n:Resources.SolutionExplorer_Header}" />
-                <TreeView ItemsSource="{Binding SolutionProvider.Current.ReferencedItems}">
+                           Text="{x:Static i18n:Resources.ProjectExplorer_Header}" />
+                <TreeView ItemsSource="{Binding IProjectProvider.Current.ReferencedItems}">
                     <TreeView.DataTemplates>
                         <!-- Documents -->
                         <TreeDataTemplate DataType="holo:DocumentItem"
@@ -31,17 +31,17 @@
                                        DoubleTapped="DocumentTreeItem_OnDoubleTapped">
                                 <TextBlock.ContextMenu>
                                     <ContextMenu>
-                                        <MenuItem Header="{x:Static i18n:Resources.SolutionExplorer_ContextMenu_Open}"
+                                        <MenuItem Header="{x:Static i18n:Resources.ProjectExplorer_ContextMenu_Open}"
                                                   Icon="{icons:MaterialIconExt Kind=FolderOpenOutline}" />
                                         <Separator />
-                                        <MenuItem Header="{x:Static i18n:Resources.SolutionExplorer_ContextMenu_Rename}"
+                                        <MenuItem Header="{x:Static i18n:Resources.ProjectExplorer_ContextMenu_Rename}"
                                                   Icon="{icons:MaterialIconExt Kind=RenameOutline}"
                                                   CommandParameter="{Binding Id}"
                                                   Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).RenameDocumentCommand, FallbackValue=.}" />
-                                        <MenuItem Header="{x:Static i18n:Resources.SolutionExplorer_ContextMenu_Remove}"
+                                        <MenuItem Header="{x:Static i18n:Resources.ProjectExplorer_ContextMenu_Remove}"
                                                   Icon="{icons:MaterialIconExt Kind=TrashCanOutline}"
                                                   CommandParameter="{Binding Id}"
-                                                  Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).RemoveDocumentFromSolutionCommand, FallbackValue=.}" />
+                                                  Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).RemoveDocumentFromProjectCommand, FallbackValue=.}" />
                                     </ContextMenu>
                                 </TextBlock.ContextMenu>
                             </TextBlock>
@@ -52,14 +52,14 @@
                             <TextBlock Text="{Binding Title}">
                                 <TextBlock.ContextMenu>
                                     <ContextMenu>
-                                        <MenuItem Header="{x:Static i18n:Resources.SolutionExplorer_ContextMenu_Rename}"
+                                        <MenuItem Header="{x:Static i18n:Resources.ProjectExplorer_ContextMenu_Rename}"
                                                   Icon="{icons:MaterialIconExt Kind=RenameOutline}"
                                                   CommandParameter="{Binding Id}"
                                                   Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).RenameDirectoryCommand, FallbackValue=.}" />
-                                        <MenuItem Header="{x:Static i18n:Resources.SolutionExplorer_ContextMenu_Remove}"
+                                        <MenuItem Header="{x:Static i18n:Resources.ProjectExplorer_ContextMenu_Remove}"
                                                   Icon="{icons:MaterialIconExt Kind=TrashCanOutline}"
                                                   CommandParameter="{Binding Id}"
-                                                  Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).RemoveDirectoryFromSolutionCommand, FallbackValue=.}" />
+                                                  Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).RemoveDirectoryFromProjectCommand, FallbackValue=.}" />
                                     </ContextMenu>
                                 </TextBlock.ContextMenu>
                             </TextBlock>

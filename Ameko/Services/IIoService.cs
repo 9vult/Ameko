@@ -47,10 +47,10 @@ public interface IIoService
     );
 
     /// <summary>
-    /// Save a solution file, displaying a SaveFileDialog if needed
+    /// Save a project file, displaying a SaveFileDialog if needed
     /// </summary>
     /// <param name="interaction">Interaction to use for displaying the dialog</param>
-    /// <param name="sln">Solution to save</param>
+    /// <param name="sln">Project to save</param>
     /// <returns>Workspace containing the document being saved</returns>
-    Task<bool> SaveSolution(Interaction<string, Uri?> interaction, Solution sln);
+    Task<bool> SaveProject(Interaction<string, Uri?> interaction, Project sln);
 }

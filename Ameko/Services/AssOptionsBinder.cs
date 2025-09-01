@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 using System.ComponentModel;
+using Holo;
 using Holo.Configuration;
 using Holo.Providers;
 
@@ -12,17 +13,17 @@ namespace Ameko.Services;
 public class AssOptionsBinder
 {
     private readonly IConfiguration _configuration;
-    private readonly ISolutionProvider _solutionProvider;
+    private readonly IProjectProvider _iProjectProvider;
 
-    public AssOptionsBinder(IConfiguration configuration, ISolutionProvider solutionProvider)
+    public AssOptionsBinder(IConfiguration configuration, IProjectProvider iProjectProvider)
     {
         _configuration = configuration;
-        _solutionProvider = solutionProvider;
+        _iProjectProvider = iProjectProvider;
 
         _configuration.PropertyChanged += PushUpdate;
-        _solutionProvider.PropertyChanged += (_, _) =>
+        _iProjectProvider.PropertyChanged += (_, _) =>
         {
-            _solutionProvider.Current.PropertyChanged += PushUpdate;
+            _iProjectProvider.Current.PropertyChanged += PushUpdate;
         };
     }
 
@@ -30,13 +31,13 @@ public class AssOptionsBinder
     /// Blindly update AssCS' Options
     /// </summary>
     /// <remarks>
-    /// This does include triggers from changes like <see cref="Holo.Solution.WorkingSpace"/>
+    /// This does include triggers from changes like <see cref="Project.WorkingSpace"/>
     /// but it's unlikely there will ever be enough options / fast enough changes
     /// for that to make any measurable impact on anything.
     /// </remarks>
     private void PushUpdate(object? sender, PropertyChangedEventArgs e)
     {
-        var sln = _solutionProvider.Current;
+        var sln = _iProjectProvider.Current;
 
         AssCS.Options.CpsIncludesPunctuation =
             sln.CpsIncludesPunctuation ?? _configuration.CpsIncludesPunctuation;
@@ -44,7 +45,7 @@ public class AssOptionsBinder
             sln.CpsIncludesWhitespace ?? _configuration.CpsIncludesWhitespace;
         AssCS.Options.DefaultLayer = sln.DefaultLayer ?? _configuration.DefaultLayer;
 
-        // Non-solution
+        // Non-project
         AssCS.Options.LineWidthIncludesPunctuation = _configuration.LineWidthIncludesPunctuation;
         AssCS.Options.LineWidthIncludesWhitespace = _configuration.LineWidthIncludesWhitespace;
     }

@@ -22,7 +22,7 @@
         <value>No Git repository detected.</value>
     </data>
     <data name="Git_NotInRepo_Tutorial" xml:space="preserve">
-        <value>To use Git features, open a Solution in a folder containing a repository.</value>
+        <value>To use Git features, open a Project in a folder containing a repository.</value>
     </data>
     <data name="Git_StagedChanges" xml:space="preserve">
         <value>Staged Changes</value>

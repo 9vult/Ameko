@@ -42,9 +42,9 @@ public partial class MainWindowViewModel : ViewModelBase
     public Interaction<Unit, Uri[]> OpenSubtitle { get; }
     public Interaction<string, Uri?> SaveSubtitleAs { get; }
     public Interaction<string, Uri?> ExportSubtitle { get; }
-    public Interaction<Unit, Uri?> OpenSolution { get; }
-    public Interaction<Unit, Uri?> OpenFolderAsSolution { get; }
-    public Interaction<string, Uri?> SaveSolutionAs { get; }
+    public Interaction<Unit, Uri?> OpenProject { get; }
+    public Interaction<Unit, Uri?> OpenFolderAsProject { get; }
+    public Interaction<string, Uri?> SaveProjectAs { get; }
     public Interaction<Unit, Uri?> AttachReferenceFile { get; }
 
     // Edit
@@ -53,7 +53,7 @@ public partial class MainWindowViewModel : ViewModelBase
     // Subtitle
     public Interaction<StylesManagerWindowViewModel, Unit> ShowStylesManager { get; }
 
-    // Solution
+    // Project
     // Timing
     public Interaction<ShiftTimesDialogViewModel, Unit> ShowShiftTimesDialog { get; }
 
@@ -91,15 +91,15 @@ public partial class MainWindowViewModel : ViewModelBase
     [KeybindTarget("ameko.document.export")]
     public ICommand ExportSubtitleCommand { get; }
 
-    [KeybindTarget("ameko.solution.open")]
-    public ICommand OpenSolutionCommand { get; }
-    public ICommand OpenSolutionNoGuiCommand { get; }
+    [KeybindTarget("ameko.project.open")]
+    public ICommand OpenProjectCommand { get; }
+    public ICommand OpenProjectNoGuiCommand { get; }
 
-    [KeybindTarget("ameko.solution.openFolder")]
-    public ICommand OpenFolderAsSolutionCommand { get; }
+    [KeybindTarget("ameko.project.openFolder")]
+    public ICommand OpenFolderAsProjectCommand { get; }
 
-    [KeybindTarget("ameko.solution.save")]
-    public ICommand SaveSolutionCommand { get; }
+    [KeybindTarget("ameko.project.save")]
+    public ICommand SaveProjectCommand { get; }
 
     [KeybindTarget("ameko.workspace.close", "Ctrl+W")]
     public ICommand CloseTabCommand { get; }
@@ -127,7 +127,7 @@ public partial class MainWindowViewModel : ViewModelBase
     [KeybindTarget("ameko.reference.detach", KeybindContext.Global)]
     public ICommand DetachReferenceFileCommand { get; }
 
-    // Solution
+    // Project
     // Timing
     [KeybindTarget("ameko.document.shiftTimes", "Ctrl+I")]
     public ICommand ShowShiftTimesDialogCommand { get; }
@@ -165,14 +165,14 @@ public partial class MainWindowViewModel : ViewModelBase
     public ICommand ShowKeybindsWindowCommand { get; }
 
     // Other
-    // These commands are specific to the solution explorer and don't need keybinds
-    public ICommand RemoveDocumentFromSolutionCommand { get; }
-    public ICommand RemoveDirectoryFromSolutionCommand { get; }
+    // These commands are specific to the project explorer and don't need keybinds
+    public ICommand RemoveDocumentFromProjectCommand { get; }
+    public ICommand RemoveDirectoryFromProjectCommand { get; }
     public ICommand RenameDocumentCommand { get; }
     public ICommand RenameDirectoryCommand { get; }
     #endregion
 
-    public ISolutionProvider SolutionProvider { get; }
+    public IProjectProvider IProjectProvider { get; }
     public IKeybindService KeybindService { get; }
     public GitToolboxViewModel GitToolboxViewModel { get; }
 
@@ -185,21 +185,21 @@ public partial class MainWindowViewModel : ViewModelBase
     public string WindowTitle { get; } = $"Ameko {VersionService.FullLabel}";
 
     /// <summary>
-    /// Set the <see cref="Solution.WorkingSpace"/> to the selected workspace, opening it if needed
+    /// Set the <see cref="Project.WorkingSpace"/> to the selected workspace, opening it if needed
     /// </summary>
     /// <param name="workspaceId">ID to open</param>
     public void TryLoadReferenced(int workspaceId)
     {
-        var wsp = SolutionProvider.Current.LoadedWorkspaces.FirstOrDefault(w =>
+        var wsp = IProjectProvider.Current.LoadedWorkspaces.FirstOrDefault(w =>
             w.Id == workspaceId
         );
         if (wsp is not null)
         {
-            SolutionProvider.Current.WorkingSpace = wsp;
+            IProjectProvider.Current.WorkingSpace = wsp;
             return;
         }
 
-        SolutionProvider.Current.OpenDocument(workspaceId);
+        IProjectProvider.Current.OpenDocument(workspaceId);
     }
 
     private void GenerateScriptsMenu()
@@ -233,7 +233,7 @@ public partial class MainWindowViewModel : ViewModelBase
         IFileSystem fileSystem,
         IIoService ioService,
         ILayoutProvider layoutProvider,
-        ISolutionProvider solutionProvider,
+        IProjectProvider iProjectProvider,
         IStylesManagerFactory stylesManagerFactory,
         IScriptService scriptService,
         IKeybindService keybindService,
@@ -246,7 +246,7 @@ public partial class MainWindowViewModel : ViewModelBase
         _fileSystem = fileSystem;
         _ioService = ioService;
         LayoutProvider = layoutProvider;
-        SolutionProvider = solutionProvider;
+        IProjectProvider = iProjectProvider;
         _stylesManagerFactory = stylesManagerFactory;
         _scriptService = scriptService;
         KeybindService = keybindService;
@@ -259,15 +259,15 @@ public partial class MainWindowViewModel : ViewModelBase
         OpenSubtitle = new Interaction<Unit, Uri[]>();
         SaveSubtitleAs = new Interaction<string, Uri?>();
         ExportSubtitle = new Interaction<string, Uri?>();
-        OpenSolution = new Interaction<Unit, Uri?>();
-        OpenFolderAsSolution = new Interaction<Unit, Uri?>();
-        SaveSolutionAs = new Interaction<string, Uri?>();
+        OpenProject = new Interaction<Unit, Uri?>();
+        OpenFolderAsProject = new Interaction<Unit, Uri?>();
+        SaveProjectAs = new Interaction<string, Uri?>();
         // Edit
         ShowSearchDialog = new Interaction<SearchDialogViewModel, Unit>();
         // Subtitle
         ShowStylesManager = new Interaction<StylesManagerWindowViewModel, Unit>();
         AttachReferenceFile = new Interaction<Unit, Uri?>();
-        // Solution
+        // Project
         // Video
         OpenVideo = new Interaction<Unit, Uri?>();
         ShowJumpDialog = new Interaction<JumpDialogViewModel, JumpDialogClosedMessage?>();
@@ -291,10 +291,10 @@ public partial class MainWindowViewModel : ViewModelBase
         SaveSubtitleCommand = CreateSaveSubtitleCommand();
         SaveSubtitleAsCommand = CreateSaveSubtitleAsCommand();
         ExportSubtitleCommand = CreateExportSubtitleCommand();
-        OpenSolutionCommand = CreateOpenSolutionCommand();
-        OpenSolutionNoGuiCommand = CreateOpenSolutionNoGuiCommand();
-        OpenFolderAsSolutionCommand = CreateOpenFolderAsSolutionCommand();
-        SaveSolutionCommand = CreateSaveSolutionCommand();
+        OpenProjectCommand = CreateOpenProjectCommand();
+        OpenProjectNoGuiCommand = CreateOpenProjectNoGuiCommand();
+        OpenFolderAsProjectCommand = CreateOpenFolderAsProjectCommand();
+        SaveProjectCommand = CreateSaveProjectCommand();
         CloseTabCommand = CreateCloseTabCommand();
         QuitCommand = CreateQuitCommand();
         //Edit
@@ -305,7 +305,7 @@ public partial class MainWindowViewModel : ViewModelBase
         ShowStylesManagerCommand = CreateShowStylesManagerCommand();
         AttachReferenceFileCommand = CreateAttachReferenceFileCommand();
         DetachReferenceFileCommand = CreateDetachReferenceFileCommand();
-        // Solution
+        // Project
         // Timing
         ShowShiftTimesDialogCommand = CreateShowShiftTimesDialogCommand();
         // Video
@@ -324,8 +324,8 @@ public partial class MainWindowViewModel : ViewModelBase
         ShowAboutWindowCommand = CreateShowAboutWindowCommand();
         ShowKeybindsWindowCommand = CreateShowKeybindsWindowCommand();
         // Other
-        RemoveDocumentFromSolutionCommand = CreateRemoveDocumentFromSolutionCommand();
-        RemoveDirectoryFromSolutionCommand = CreateRemoveDirectoryFromSolutionCommand();
+        RemoveDocumentFromProjectCommand = CreateRemoveDocumentFromProjectCommand();
+        RemoveDirectoryFromProjectCommand = CreateRemoveDirectoryFromProjectCommand();
         RenameDocumentCommand = CreateRenameDocumentCommand();
         RenameDirectoryCommand = CreateRenameDirectoryCommand();
         #endregion

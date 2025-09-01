@@ -50,10 +50,10 @@
                         Grid.Row="0"
                         Grid.ColumnSpan="2"
                         Margin="2"
-                        Content="{x:Static i18n:StylesManager.StylesManager_Button_CopyToSolution}"
+                        Content="{x:Static i18n:StylesManager.StylesManager_Button_CopyToProject}"
                         Command="{Binding CopyToCommand}"
-                        CommandParameter="global,solution"
-                        ToolTip.Tip="{x:Static i18n:StylesManager.StylesManager_Button_CopyToSolution_ToolTip}" />
+                        CommandParameter="global,project"
+                        ToolTip.Tip="{x:Static i18n:StylesManager.StylesManager_Button_CopyToProject_ToolTip}" />
                 <Button Grid.Column="2"
                         Grid.Row="0"
                         Grid.ColumnSpan="2"
@@ -91,18 +91,18 @@
             </Grid>
         </Grid>
 
-        <!-- Solution style list -->
+        <!-- Project style list -->
         <TextBlock Grid.Column="1"
                    Grid.Row="0"
                    HorizontalAlignment="Center"
-                   Text="{x:Static i18n:StylesManager.StylesManager_SolutionStyles}" />
+                   Text="{x:Static i18n:StylesManager.StylesManager_ProjectStyles}" />
         <Grid Grid.Column="1"
               Grid.Row="1"
               RowDefinitions="*, Auto">
             <ListBox Grid.Row="0"
                      Margin="2"
-                     SelectedItem="{Binding SelectedSolutionStyle}"
-                     ItemsSource="{Binding Solution.StyleManager.Styles}"
+                     SelectedItem="{Binding SelectedProjectStyle}"
+                     ItemsSource="{Binding Project.StyleManager.Styles}"
                      DoubleTapped="ListBox_DoubleTapped">
                 <ListBox.ItemTemplate>
                     <DataTemplate x:DataType="ass:Style">
@@ -113,14 +113,14 @@
             <Grid Grid.Row="1"
                   ColumnDefinitions="*, *, *, *"
                   RowDefinitions="Auto, Auto"
-                  IsEnabled="{Binding SolutionButtonsEnabled}">
+                  IsEnabled="{Binding ProjectButtonsEnabled}">
                 <Button Grid.Column="0"
                         Grid.Row="0"
                         Grid.ColumnSpan="2"
                         Margin="2"
                         Content="{x:Static i18n:StylesManager.StylesManager_Button_CopyToGlobal}"
                         Command="{Binding CopyToCommand}"
-                        CommandParameter="solution,global"
+                        CommandParameter="project,global"
                         ToolTip.Tip="{x:Static i18n:StylesManager.StylesManager_Button_CopyToGlobal_ToolTip}" />
                 <Button Grid.Column="2"
                         Grid.Row="0"
@@ -128,7 +128,7 @@
                         Margin="2"
                         Content="{x:Static i18n:StylesManager.StylesManager_Button_CopyToDocument}"
                         Command="{Binding CopyToCommand}"
-                        CommandParameter="solution,document"
+                        CommandParameter="project,document"
                         ToolTip.Tip="{x:Static i18n:StylesManager.StylesManager_Button_CopyToDocument_ToolTip}" />
                 <Button Grid.Column="0"
                         Grid.Row="1"
@@ -140,21 +140,21 @@
                         Margin="2"
                         Content="{x:Static i18n:StylesManager.StylesManager_Button_Edit}"
                         Command="{Binding EditStyleCommand}"
-                        CommandParameter="solution"
+                        CommandParameter="project"
                         ToolTip.Tip="{x:Static i18n:StylesManager.StylesManager_Button_Edit_ToolTip}" />
                 <Button Grid.Column="2"
                         Grid.Row="1"
                         Margin="2"
                         Content="{x:Static i18n:StylesManager.StylesManager_Button_Copy}"
                         Command="{Binding DuplicateCommand}"
-                        CommandParameter="solution"
+                        CommandParameter="project"
                         ToolTip.Tip="{x:Static i18n:StylesManager.StylesManager_Button_Copy_ToolTip}" />
                 <Button Grid.Column="3"
                         Grid.Row="1"
                         Margin="2"
                         Content="{x:Static i18n:StylesManager.StylesManager_Button_Delete}"
                         Command="{Binding DeleteCommand}"
-                        CommandParameter="solution"
+                        CommandParameter="project"
                         ToolTip.Tip="{x:Static i18n:StylesManager.StylesManager_Button_Delete_ToolTip}" />
             </Grid>
         </Grid>
@@ -194,10 +194,10 @@
                         Grid.Row="0"
                         Grid.ColumnSpan="2"
                         Margin="2"
-                        Content="{x:Static i18n:StylesManager.StylesManager_Button_CopyToSolution}"
+                        Content="{x:Static i18n:StylesManager.StylesManager_Button_CopyToProject}"
                         Command="{Binding CopyToCommand}"
-                        CommandParameter="document,solution"
-                        ToolTip.Tip="{x:Static i18n:StylesManager.StylesManager_Button_CopyToSolution_ToolTip}" />
+                        CommandParameter="document,project"
+                        ToolTip.Tip="{x:Static i18n:StylesManager.StylesManager_Button_CopyToProject_ToolTip}" />
                 <Button Grid.Column="0"
                         Grid.Row="1"
                         Margin="2"
