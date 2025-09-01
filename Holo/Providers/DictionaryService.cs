@@ -68,6 +68,7 @@ public class DictionaryService : IDictionaryService
                 FileShare.None
             );
             await affStream.CopyToAsync(affFs);
+            PopulateInstalledDictionaries();
             return true;
         }
         catch (Exception e)
