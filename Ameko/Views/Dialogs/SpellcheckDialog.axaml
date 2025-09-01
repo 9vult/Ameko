@@ -34,7 +34,8 @@
                    TextWrapping="Wrap"
                    Text="{x:Static i18n:Spellcheck.Spellcheck_Label_NoIssues}" />
         <StackPanel Grid.Column="0"
-                    Grid.Row="1">
+                    Grid.Row="1"
+                    IsVisible="{Binding HaveSuggestions}">
             <TextBox Name="MisspellingBox"
                      AcceptsReturn="False"
                      AcceptsTab="False"
@@ -43,7 +44,8 @@
         </StackPanel>
         <StackPanel Grid.Column="1"
                     Grid.Row="1"
-                    Spacing="10">
+                    Spacing="10"
+                    IsVisible="{Binding HaveSuggestions}">
             <Button Content="{x:Static i18n:Spellcheck.Spellcheck_Button_Change}"
                     IsDefault="True"
                     IsEnabled="{Binding CanChange}"
@@ -55,10 +57,12 @@
                  Grid.Row="3"
                  ItemsSource="{Binding Suggestions}"
                  SelectedItem="{Binding SelectedSuggestion}"
-                 SelectionMode="AlwaysSelected" />
+                 SelectionMode="AlwaysSelected"
+                 IsVisible="{Binding HaveSuggestions}" />
         <StackPanel Grid.Column="1"
                     Grid.Row="3"
-                    Spacing="10">
+                    Spacing="10"
+                    IsVisible="{Binding HaveSuggestions}">
             <Button Content="{x:Static i18n:Spellcheck.Spellcheck_Button_AddToProject}"
                     ToolTip.Tip="{x:Static i18n:Spellcheck.Spellcheck_Button_AddToProject_ToolTip}"
                     Command="{Binding AddToProjectCommand}" />
