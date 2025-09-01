@@ -143,7 +143,8 @@
             </NativeMenuItem>
             <NativeMenuItem Header="{x:Static i18n:Resources.Menu_Timing}">
                 <NativeMenu>
-                    <NativeMenuItem Header="{x:Static i18n:Resources.Menu_ShiftTimes}" />
+                    <NativeMenuItem Header="{x:Static i18n:Resources.Menu_ShiftTimes}"
+                                    Command="{Binding ShowShiftTimesDialogCommand}" />
                 </NativeMenu>
             </NativeMenuItem>
             <NativeMenuItem Header="{x:Static i18n:Resources.Menu_Video}">
