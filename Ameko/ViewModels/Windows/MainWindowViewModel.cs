@@ -31,6 +31,8 @@ public partial class MainWindowViewModel : ViewModelBase
     private readonly IStylesManagerFactory _stylesManagerFactory;
     private readonly IIoService _ioService;
     private readonly IScriptService _scriptService;
+    private readonly ISpellcheckService _spellcheckService;
+    private readonly IDictionaryService _dictionaryService;
     private readonly IFileSystem _fileSystem;
 
     public ILayoutProvider LayoutProvider { get; }
@@ -66,6 +68,9 @@ public partial class MainWindowViewModel : ViewModelBase
     public Interaction<LogWindowViewModel, Unit> ShowLogWindow { get; }
     public Interaction<AboutWindowViewModel, Unit> ShowAboutWindow { get; }
     public Interaction<KeybindsWindowViewModel, Unit> ShowKeybindsWindow { get; }
+
+    // Other
+    public Interaction<InstallDictionaryDialogViewModel, Unit> ShowInstallDictionaryDialog { get; }
     #endregion
 
     #region Commands
@@ -232,6 +237,8 @@ public partial class MainWindowViewModel : ViewModelBase
         IStylesManagerFactory stylesManagerFactory,
         IScriptService scriptService,
         IKeybindService keybindService,
+        ISpellcheckService spellCheckService,
+        IDictionaryService dictionaryService,
         GitToolboxViewModel gitToolboxViewModel
     )
     {
@@ -243,6 +250,8 @@ public partial class MainWindowViewModel : ViewModelBase
         _stylesManagerFactory = stylesManagerFactory;
         _scriptService = scriptService;
         KeybindService = keybindService;
+        _dictionaryService = dictionaryService;
+        _spellcheckService = spellCheckService;
         GitToolboxViewModel = gitToolboxViewModel;
 
         #region Interactions
@@ -270,6 +279,8 @@ public partial class MainWindowViewModel : ViewModelBase
         ShowLogWindow = new Interaction<LogWindowViewModel, Unit>();
         ShowAboutWindow = new Interaction<AboutWindowViewModel, Unit>();
         ShowKeybindsWindow = new Interaction<KeybindsWindowViewModel, Unit>();
+        // Other
+        ShowInstallDictionaryDialog = new Interaction<InstallDictionaryDialogViewModel, Unit>();
         #endregion
 
         #region Commands

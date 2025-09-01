@@ -13,7 +13,7 @@ public class DictionaryService : IDictionaryService
 {
     private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-    private static readonly Uri DictionariesRoot = new Uri(
+    private static readonly Uri DictionariesRoot = new(
         Path.Combine(Directories.DataHome, "dictionaries")
     );
 
@@ -24,12 +24,7 @@ public class DictionaryService : IDictionaryService
 
     public ReadOnlyObservableCollection<SpellcheckDictionary> InstalledDictionaries;
 
-    /// <summary>
-    /// Try to get a dictionary
-    /// </summary>
-    /// <param name="lang">Language code</param>
-    /// <param name="dictionary">Dictionary, if found</param>
-    /// <returns><see langword="true"/> if found</returns>
+    /// <inheritdoc />
     public bool TryGetDictionary(
         string lang,
         [NotNullWhen(true)] out SpellcheckDictionary? dictionary
@@ -39,15 +34,10 @@ public class DictionaryService : IDictionaryService
         return dictionary is not null;
     }
 
-    /// <summary>
-    /// Download a new dictionary
-    /// </summary>
-    /// <param name="lang"></param>
-    /// <returns></returns>
-    /// <exception cref="ArgumentException"></exception>
-    public async Task<bool> DownloadDicationary(string lang)
+    /// <inheritdoc />
+    public async Task<bool> DownloadDictionary(SpellcheckLanguage lang)
     {
-        if (TryGetDictionary(lang, out _))
+        if (TryGetDictionary(lang.Locale, out _))
             return false;
 
         Logger.Info($"Attempting to download dictionary {lang}");
@@ -56,17 +46,11 @@ public class DictionaryService : IDictionaryService
             if (!_fileSystem.Directory.Exists(DictionariesRoot.LocalPath))
                 _fileSystem.Directory.CreateDirectory(DictionariesRoot.LocalPath);
 
-            var locale = SpellcheckLanguage.AvailableLanguages.FirstOrDefault(l =>
-                l.Locale == lang
-            );
-            if (locale is null)
-                throw new ArgumentException($"Language {lang} is not supported");
-
-            var dicPath = Path.Combine(DictionariesRoot.LocalPath, $"{locale.Locale}.dic");
-            var affPath = Path.Combine(DictionariesRoot.LocalPath, $"{locale.Locale}.aff");
+            var dicPath = Path.Combine(DictionariesRoot.LocalPath, $"{lang.Locale}.dic");
+            var affPath = Path.Combine(DictionariesRoot.LocalPath, $"{lang.Locale}.aff");
 
             // Download dictionary
-            await using var dicStream = await _httpClient.GetStreamAsync(GetDicUri(locale));
+            await using var dicStream = await _httpClient.GetStreamAsync(GetDicUri(lang));
             await using var dicFs = _fileSystem.FileStream.New(
                 dicPath,
                 FileMode.Create,
@@ -76,7 +60,7 @@ public class DictionaryService : IDictionaryService
             await dicStream.CopyToAsync(dicFs);
 
             // Download affixes
-            await using var affStream = await _httpClient.GetStreamAsync(GetAffUri(locale));
+            await using var affStream = await _httpClient.GetStreamAsync(GetAffUri(lang));
             await using var affFs = _fileSystem.FileStream.New(
                 affPath,
                 FileMode.Create,

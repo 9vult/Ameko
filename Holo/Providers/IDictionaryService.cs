@@ -18,8 +18,8 @@ public interface IDictionaryService
     /// <summary>
     /// Download a new dictionary
     /// </summary>
-    /// <param name="lang"></param>
+    /// <param name="lang">Language</param>
     /// <returns></returns>
     /// <exception cref="ArgumentException"></exception>
-    Task<bool> DownloadDicationary(string lang);
+    Task<bool> DownloadDictionary(SpellcheckLanguage lang);
 }
