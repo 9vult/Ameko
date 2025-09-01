@@ -116,6 +116,8 @@
                     <NativeMenuItemSeparator />
                     <NativeMenuItem Header="{x:Static i18n:Resources.Menu_Search}"
                                     Command="{Binding ShowSearchDialogCommand} "/>
+                    <NativeMenuItem Header="{x:Static i18n:Resources.Menu_Spellcheck}"
+                                    Command="{Binding ShowSpellcheckDialogCommand}" />
                 </NativeMenu>
             </NativeMenuItem>
             <NativeMenuItem Header="{x:Static i18n:Resources.Menu_Subtitle}">

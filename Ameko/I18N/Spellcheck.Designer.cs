@@ -86,5 +86,71 @@ namespace Ameko.I18N {
                 return ResourceManager.GetString("Spellcheck_Install_Button_Ignore", resourceCulture);
             }
         }
+        
+        public static string Spellcheck_Button_Change {
+            get {
+                return ResourceManager.GetString("Spellcheck_Button_Change", resourceCulture);
+            }
+        }
+        
+        public static string Spellcheck_Button_FindNext {
+            get {
+                return ResourceManager.GetString("Spellcheck_Button_FindNext", resourceCulture);
+            }
+        }
+        
+        public static string Spellcheck_Label_NotFound {
+            get {
+                return ResourceManager.GetString("Spellcheck_Label_NotFound", resourceCulture);
+            }
+        }
+        
+        public static string Spellcheck_Button_AddToProject {
+            get {
+                return ResourceManager.GetString("Spellcheck_Button_AddToProject", resourceCulture);
+            }
+        }
+        
+        public static string Spellcheck_Button_AddToGlobals {
+            get {
+                return ResourceManager.GetString("Spellcheck_Button_AddToGlobals", resourceCulture);
+            }
+        }
+        
+        public static string Spellcheck_Button_AddToBoth {
+            get {
+                return ResourceManager.GetString("Spellcheck_Button_AddToBoth", resourceCulture);
+            }
+        }
+        
+        public static string Spellcheck_Label_Dictionary {
+            get {
+                return ResourceManager.GetString("Spellcheck_Label_Dictionary", resourceCulture);
+            }
+        }
+        
+        public static string Spellcheck_Button_AddToProject_ToolTip {
+            get {
+                return ResourceManager.GetString("Spellcheck_Button_AddToProject_ToolTip", resourceCulture);
+            }
+        }
+        
+        public static string Spellcheck_Button_AddToGlobals_ToolTip {
+            get {
+                return ResourceManager.GetString("Spellcheck_Button_AddToGlobals_ToolTip", resourceCulture);
+            }
+        }
+        
+        public static string Spellcheck_Button_AddToBoth_ToolTip {
+            get {
+                return ResourceManager.GetString("Spellcheck_Button_AddToBoth_ToolTip", resourceCulture);
+            }
+        }
+        
+        public static string Spellcheck_Label_NoIssues {
+            get {
+                return ResourceManager.GetString("Spellcheck_Label_NoIssues", resourceCulture);
+            }
+        }
     }
 }

@@ -69,6 +69,9 @@
             <MenuItem Header="{x:Static i18n:Resources.Menu_Search}"
                       Icon="{icons:MaterialIconExt Kind=TextSearch}"
                       Command="{Binding ShowSearchDialogCommand}" />
+            <MenuItem Header="{x:Static i18n:Resources.Menu_Spellcheck}"
+                      Icon="{icons:MaterialIconExt Kind=BookAlphabet}"
+                      Command="{Binding ShowSpellcheckDialogCommand}" />
         </MenuItem>
         <MenuItem Header="{x:Static i18n:Resources.Menu_Subtitle}">
             <MenuItem Header="{x:Static i18n:Resources.Menu_StylesManager}"

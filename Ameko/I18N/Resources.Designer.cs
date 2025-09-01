@@ -584,5 +584,11 @@ namespace Ameko.I18N {
                 return ResourceManager.GetString("Menu_ReferenceFile_Detatch", resourceCulture);
             }
         }
+        
+        public static string Menu_Spellcheck {
+            get {
+                return ResourceManager.GetString("Menu_Spellcheck", resourceCulture);
+            }
+        }
     }
 }
