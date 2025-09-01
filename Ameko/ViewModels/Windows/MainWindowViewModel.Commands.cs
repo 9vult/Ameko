@@ -203,8 +203,25 @@ public partial class MainWindowViewModel : ViewModelBase
                 return;
             }
 
-            SolutionProvider.Current = Solution.Parse(_fileSystem, uri);
+            var sln = Solution.Parse(_fileSystem, uri);
+            SolutionProvider.Current = sln;
             Logger.Info("Loaded solution file");
+
+            var culture = sln.SpellcheckCulture;
+            if (culture is not null && !_dictionaryService.TryGetDictionary(culture, out _))
+            {
+                var lang = SpellcheckLanguage.AvailableLanguages.FirstOrDefault(l =>
+                    l.Locale == culture
+                );
+                if (lang is null)
+                {
+                    Logger.Warn($"Language {culture} not found, ignoring for now...");
+                    return;
+                }
+                Logger.Info($"Prompting user to download dictionary for {culture}");
+                var vm = new InstallDictionaryDialogViewModel(_dictionaryService, lang, false);
+                await ShowInstallDictionaryDialog.Handle(vm);
+            }
         });
     }
 

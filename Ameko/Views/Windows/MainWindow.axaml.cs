@@ -338,6 +338,16 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         interaction.SetOutput(Unit.Default);
     }
 
+    private async Task DoShowinstallDictionaryDialogAsync(
+        IInteractionContext<InstallDictionaryDialogViewModel, Unit> interaction
+    )
+    {
+        Log.Debug("Displaying install dictionary dialog");
+        var dialog = new InstallDictionaryDialog { DataContext = interaction.Input };
+        await dialog.ShowDialog<EmptyMessage>(this);
+        interaction.SetOutput(Unit.Default);
+    }
+
     public MainWindow()
     {
         Log.Info("Initializing Main Window...");
@@ -386,6 +396,10 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
                 ViewModel.ShowLogWindow.RegisterHandler(DoShowLogWindow);
                 ViewModel.ShowAboutWindow.RegisterHandler(DoShowAboutWindowAsync);
                 ViewModel.ShowKeybindsWindow.RegisterHandler(DoShowKeybindsWindow);
+                // Other
+                ViewModel.ShowInstallDictionaryDialog.RegisterHandler(
+                    DoShowinstallDictionaryDialogAsync
+                );
 
                 // Register keybinds
                 AttachKeybinds();
