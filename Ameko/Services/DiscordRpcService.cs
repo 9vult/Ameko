@@ -28,7 +28,7 @@ public class DiscordRpcService
 
     public void Update(WorkingSpaceChangedMessage _)
     {
-        var slnName = _iProjectProvider.Current.Title;
+        var prjName = _iProjectProvider.Current.Title;
         var wspName = _iProjectProvider.Current.WorkingSpace?.SavePath is not null
             ? Path.GetFileNameWithoutExtension(
                 _iProjectProvider.Current.WorkingSpace.SavePath.LocalPath
@@ -37,13 +37,13 @@ public class DiscordRpcService
 
         if (_configuration.DiscordRpcEnabled)
         {
-            Logger.Debug($"Setting rich presence to {slnName}/{wspName}");
+            Logger.Debug($"Setting rich presence to {prjName}/{wspName}");
 
             _client.SetPresence(
                 new RichPresence
                 {
                     Details = $"Editing {wspName}.ass",
-                    State = $"in {slnName}.aproj",
+                    State = $"in {prjName}.aproj",
                     Timestamps = _timestamps,
                 }
             );

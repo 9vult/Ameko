@@ -91,7 +91,7 @@ public class LayoutProvider : BindableBase, ILayoutProvider
             var defaultLayout in new[]
             {
                 (DefaultLayout, "default"),
-                (DefaultRightSlnExplorer, "default-right"),
+                (DefaultRightPrjExplorer, "default-right"),
                 (SubsOnlyLayout, "subs-only"),
                 (PetzkuLayout, "petzku"),
             }
@@ -200,7 +200,7 @@ public class LayoutProvider : BindableBase, ILayoutProvider
                 },
             ],
         };
-    private static Layout DefaultRightSlnExplorer =>
+    private static Layout DefaultRightPrjExplorer =>
         new()
         {
             Name = "Default (Project Explorer on Right)",
