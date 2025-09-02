@@ -1,0 +1,23 @@
+// Welcome to the Ameko Scripting Playground!
+// Here, you can write a "freeform" script to automate tasks,
+// test functionality, or have fun!
+
+using System.Linq;
+using AssCS.History;
+using Holo.Providers;
+
+// Here's a demo to get you started!
+
+var project = ScriptServiceLocator.Get<IProjectProvider>().Current;
+var wsp = project.WorkingSpace;
+
+if (wsp is null || wsp.Document.EventManager.Count == 0)
+    return;
+
+var oddEvents = wsp.Document.EventManager.Events.Where(e => e.Index % 2 != 0).ToList();
+wsp.Document.HistoryManager.BeginTransaction(oddEvents);
+
+foreach (var e in oddEvents)
+    e.Text = "You just got Coconut Mall-ed!";
+
+wsp.Commit(oddEvents, ChangeType.Modify);

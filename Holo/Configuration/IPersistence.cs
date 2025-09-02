@@ -18,6 +18,16 @@ public interface IPersistence
     bool UseColorRing { get; set; }
 
     /// <summary>
+    /// C# Playground
+    /// </summary>
+    string PlaygroundCs { get; set; }
+
+    /// <summary>
+    /// JavaScript Playground
+    /// </summary>
+    string PlaygroundJs { get; set; }
+
+    /// <summary>
     /// Write the persistence data to file
     /// </summary>
     /// <returns></returns>

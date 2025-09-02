@@ -77,7 +77,9 @@ public class PersistenceTests
         {
             "Version": 1,
             "LayoutName": "Upside Down",
-            "UseColorRing": true
+            "UseColorRing": true,
+            "PlaygroundCs": "",
+            "PlaygroundJs": ""
         }
         """;
 }

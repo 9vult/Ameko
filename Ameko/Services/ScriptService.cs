@@ -127,6 +127,23 @@ public class ScriptService : IScriptService
     }
 
     /// <inheritdoc />
+    public async Task<string> ExecutePlaygroundScriptAsync(string content, bool csharp)
+    {
+        if (!csharp)
+            throw new NotImplementedException();
+
+        try
+        {
+            _ = CSScript.Evaluator.Eval(content);
+            return I18N.Playground.Playground_Status_Success;
+        }
+        catch (Exception ex)
+        {
+            return string.Format(I18N.Playground.Playground_Status_Failure, ex);
+        }
+    }
+
+    /// <inheritdoc />
     public async Task Reload(bool isManual)
     {
         Logger.Info("Reloading scripts...");

@@ -321,6 +321,16 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         interaction.SetOutput(Unit.Default);
     }
 
+    private void DoShowPlaygroundWindow(
+        IInteractionContext<PlaygroundWindowViewModel, Unit> interaction
+    )
+    {
+        Logger.Debug("Displaying Script Playground");
+        var window = new PlaygroundWindow { DataContext = interaction.Input };
+        window.Show();
+        interaction.SetOutput(Unit.Default);
+    }
+
     private static void DoShowLogWindow(IInteractionContext<LogWindowViewModel, Unit> interaction)
     {
         Logger.Debug("Displaying Log Window");
@@ -402,6 +412,7 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
                 ViewModel.ShowJumpDialog.RegisterHandler(DoShowJumpDialogAsync);
                 // Scripts
                 ViewModel.ShowPackageManager.RegisterHandler(DoShowPkgManWindowAsync);
+                ViewModel.ShowPlaygroundWindow.RegisterHandler(DoShowPlaygroundWindow);
                 // Help
                 ViewModel.ShowLogWindow.RegisterHandler(DoShowLogWindow);
                 ViewModel.ShowAboutWindow.RegisterHandler(DoShowAboutWindowAsync);
@@ -517,6 +528,9 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         var pkgManItem = ScriptMenuService.GeneratePkgManNativeMenuItem(
             ViewModel.ShowPackageManagerCommand
         );
+        var playgroundItem = ScriptMenuService.GeneratePlaygroundNativeMenuItem(
+            ViewModel.ShowPlaygroundWindowCommand
+        );
 
         var menu = NativeMenu
             .GetMenu(this)
@@ -531,6 +545,8 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         menu.Items.AddRange(menuItems);
         if (menuItems.Count > 0)
             menu.Items.Add(new NativeMenuItemSeparator());
+        menu.Items.Add(playgroundItem);
+        menu.Items.Add(new NativeMenuItemSeparator());
         menu.Items.Add(reloadItem);
         menu.Items.Add(pkgManItem);
         Logger.Debug("Done...");

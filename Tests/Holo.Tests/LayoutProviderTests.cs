@@ -87,6 +87,12 @@ file class MockPersistence : IPersistence
     public string LayoutName { get; set; } = "ThunderClan Camp";
     public bool UseColorRing { get; set; } = true;
 
+    /// <inheritdoc />
+    public string PlaygroundCs { get; set; }
+
+    /// <inheritdoc />
+    public string PlaygroundJs { get; set; }
+
     public bool Save()
     {
         return true;

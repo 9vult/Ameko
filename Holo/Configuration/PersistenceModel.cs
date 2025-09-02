@@ -12,4 +12,6 @@ public class PersistenceModel
     public required double Version;
     public required string LayoutName;
     public required bool UseColorRing;
+    public required string PlaygroundCs;
+    public required string PlaygroundJs;
 }
