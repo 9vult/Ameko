@@ -80,16 +80,18 @@ public sealed class ScriptServiceLocator
     public ScriptServiceLocator(
         IConfiguration configuration,
         IGlobals globals,
-        IProjectProvider iProjectProvider,
-        IScriptConfigurationService scriptConfigurationService
+        IProjectProvider projectProvider,
+        IScriptConfigurationService scriptConfigurationService,
+        IMessageService messageService
     )
     {
         Services = new Dictionary<Type, object>
         {
             [typeof(IConfiguration)] = configuration,
             [typeof(IGlobals)] = globals,
-            [typeof(IProjectProvider)] = iProjectProvider,
+            [typeof(IProjectProvider)] = projectProvider,
             [typeof(IScriptConfigurationService)] = scriptConfigurationService,
+            [typeof(IMessageService)] = messageService,
         };
     }
 }
