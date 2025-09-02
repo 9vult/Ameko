@@ -291,4 +291,7 @@
     <data name="Menu_Spellcheck" xml:space="preserve">
         <value>Spell_check...</value>
     </data>
+    <data name="Menu_Playground" xml:space="preserve">
+        <value>Open Play_ground...</value>
+    </data>
 </root>

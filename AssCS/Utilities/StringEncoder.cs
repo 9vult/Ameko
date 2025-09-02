@@ -4,7 +4,7 @@ using System.Text;
 
 namespace AssCS.Utilities;
 
-internal static class StringEncoder
+public static class StringEncoder
 {
     /// <summary>
     /// Encode a string using Aegisub Inline Encoding

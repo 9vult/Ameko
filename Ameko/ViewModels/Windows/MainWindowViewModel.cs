@@ -68,6 +68,7 @@ public partial class MainWindowViewModel : ViewModelBase
 
     // Scripts
     public Interaction<PkgManWindowViewModel, Unit> ShowPackageManager { get; }
+    public Interaction<PlaygroundWindowViewModel, Unit> ShowPlaygroundWindow { get; }
 
     // Help
     public Interaction<LogWindowViewModel, Unit> ShowLogWindow { get; }
@@ -158,6 +159,9 @@ public partial class MainWindowViewModel : ViewModelBase
     [KeybindTarget("ameko.pkgMan.show")]
     public ICommand ShowPackageManagerCommand { get; }
 
+    [KeybindTarget("ameko.playground.show")]
+    public ICommand ShowPlaygroundWindowCommand { get; }
+
     // Layouts
     public ICommand SelectLayoutCommand { get; }
     public ICommand RefreshLayoutsCommand { get; }
@@ -219,6 +223,10 @@ public partial class MainWindowViewModel : ViewModelBase
         ScriptMenuItems.AddRange(menuItems);
         if (menuItems.Count > 0)
             ScriptMenuItems.Add(new Separator());
+        ScriptMenuItems.Add(
+            ScriptMenuService.GeneratePlaygroundMenuItem(ShowPlaygroundWindowCommand)
+        );
+        ScriptMenuItems.Add(new Separator());
         ScriptMenuItems.Add(ScriptMenuService.GenerateReloadMenuItem(ReloadScriptsCommand));
         ScriptMenuItems.Add(ScriptMenuService.GeneratePkgManMenuItem(ShowPackageManagerCommand));
         Logger.Debug("Done!");
@@ -289,6 +297,7 @@ public partial class MainWindowViewModel : ViewModelBase
         ShowShiftTimesDialog = new Interaction<ShiftTimesDialogViewModel, Unit>();
         // Scripts
         ShowPackageManager = new Interaction<PkgManWindowViewModel, Unit>();
+        ShowPlaygroundWindow = new Interaction<PlaygroundWindowViewModel, Unit>();
         // Help
         ShowLogWindow = new Interaction<LogWindowViewModel, Unit>();
         ShowAboutWindow = new Interaction<AboutWindowViewModel, Unit>();
@@ -331,6 +340,7 @@ public partial class MainWindowViewModel : ViewModelBase
         ExecuteScriptCommand = CreateExecuteScriptCommand();
         ReloadScriptsCommand = CreateReloadScriptsCommand();
         ShowPackageManagerCommand = CreateShowPackageManagerCommand();
+        ShowPlaygroundWindowCommand = CreateShowPlaygroundCommand();
         // Layouts
         SelectLayoutCommand = CreateSelectLayoutCommand();
         RefreshLayoutsCommand = CreateRefreshLayoutsCommand();

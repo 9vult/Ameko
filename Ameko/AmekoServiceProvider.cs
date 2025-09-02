@@ -71,6 +71,7 @@ public static class AmekoServiceProvider
         services.AddTransient<LogWindowViewModel>();
         services.AddTransient<PkgManWindowViewModel>();
         services.AddTransient<KeybindsWindowViewModel>();
+        services.AddTransient<PlaygroundWindowViewModel>();
 
         // --- Scripting ---
         services.AddSingleton<IScriptService, ScriptService>();

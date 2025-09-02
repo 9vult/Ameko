@@ -196,4 +196,23 @@ public static class ScriptMenuService
             Command = pkgManCommand,
         };
     }
+
+    public static MenuItem GeneratePlaygroundMenuItem(ICommand playgroundCommand)
+    {
+        return new MenuItem
+        {
+            Header = I18N.Resources.Menu_Playground,
+            Command = playgroundCommand,
+            Icon = new MaterialIcon { Kind = MaterialIconKind.PinwheelOutline },
+        };
+    }
+
+    public static NativeMenuItem GeneratePlaygroundNativeMenuItem(ICommand playgroundCommand)
+    {
+        return new NativeMenuItem
+        {
+            Header = I18N.Resources.Menu_Playground,
+            Command = playgroundCommand,
+        };
+    }
 }

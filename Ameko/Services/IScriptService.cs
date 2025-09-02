@@ -42,6 +42,14 @@ public interface IScriptService
     Task<ExecutionResult> ExecuteScriptAsync(string qualifiedName);
 
     /// <summary>
+    /// Execute a playground script
+    /// </summary>
+    /// <param name="content">Content of the script</param>
+    /// <param name="csharp">If this is a C# script</param>
+    /// <returns>Status result</returns>
+    Task<string> ExecutePlaygroundScriptAsync(string content, bool csharp);
+
+    /// <summary>
     /// Reload scripts
     /// </summary>
     /// <param name="isManual">Whether to show the message box</param>

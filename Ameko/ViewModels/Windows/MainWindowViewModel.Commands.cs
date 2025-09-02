@@ -596,6 +596,18 @@ public partial class MainWindowViewModel : ViewModelBase
         });
     }
 
+    /// <summary>
+    /// Display the <see cref="PlaygroundWindow"/>
+    /// </summary>
+    private ReactiveCommand<Unit, Unit> CreateShowPlaygroundCommand()
+    {
+        return ReactiveCommand.CreateFromTask(async () =>
+        {
+            var vm = _serviceProvider.GetRequiredService<PlaygroundWindowViewModel>();
+            await ShowPlaygroundWindow.Handle(vm);
+        });
+    }
+
     public ReactiveCommand<string, Unit> CreateSelectLayoutCommand()
     {
         return ReactiveCommand.Create(

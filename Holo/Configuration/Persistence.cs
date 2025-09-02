@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using AssCS;
+using AssCS.Utilities;
 using Holo.IO;
 using NLog;
 
@@ -30,6 +31,8 @@ public class Persistence : BindableBase, IPersistence
 
     private string _layoutName;
     private bool _useColorRing;
+    private string _playgroundCs;
+    private string _playgroundJs;
 
     /// <inheritdoc />
     public string LayoutName
@@ -45,6 +48,21 @@ public class Persistence : BindableBase, IPersistence
         set => SetProperty(ref _useColorRing, value);
     }
 
+    /// <inheritdoc />
+    public string PlaygroundCs
+    {
+        get => _playgroundCs;
+        set => SetProperty(ref _playgroundCs, value);
+    }
+
+    /// <inheritdoc />
+    public string PlaygroundJs
+    {
+        get => _playgroundJs;
+        set => SetProperty(ref _playgroundJs, value);
+    }
+
+    /// <inheritdoc />
     public bool Save()
     {
         var path = Paths.Persistence.LocalPath;
@@ -67,6 +85,8 @@ public class Persistence : BindableBase, IPersistence
                 Version = PersistenceModel.CurrentApiVersion,
                 LayoutName = _layoutName,
                 UseColorRing = _useColorRing,
+                PlaygroundCs = StringEncoder.Base64Encode(_playgroundCs),
+                PlaygroundJs = StringEncoder.Base64Encode(_playgroundJs),
             };
 
             var content = JsonSerializer.Serialize(model, JsonOptions);
@@ -112,6 +132,8 @@ public class Persistence : BindableBase, IPersistence
             {
                 _layoutName = model.LayoutName,
                 _useColorRing = model.UseColorRing,
+                _playgroundCs = StringEncoder.Base64Decode(model.PlaygroundCs),
+                _playgroundJs = StringEncoder.Base64Decode(model.PlaygroundJs),
             };
             Logger.Info("Done!");
             return result;
@@ -133,6 +155,8 @@ public class Persistence : BindableBase, IPersistence
         _fileSystem = fileSystem;
         _layoutName = "Default";
         _useColorRing = false;
+        _playgroundCs = string.Empty;
+        _playgroundJs = string.Empty;
     }
 
     /// <inheritdoc />
