@@ -31,10 +31,13 @@ public partial class MainWindowViewModel : ViewModelBase
     private readonly IServiceProvider _serviceProvider;
     private readonly IStylesManagerFactory _stylesManagerFactory;
     private readonly IIoService _ioService;
+    private readonly IMessageService _messageService;
     private readonly ISpellcheckService _spellcheckService;
     private readonly IDictionaryService _dictionaryService;
     private readonly IConfiguration _configuration;
     private readonly IFileSystem _fileSystem;
+
+    private string _currentMessage = I18N.Resources.Message_Welcome;
 
     public IScriptService ScriptService { get; }
     public ILayoutProvider LayoutProvider { get; }
@@ -191,6 +194,12 @@ public partial class MainWindowViewModel : ViewModelBase
     public ObservableCollection<TemplatedControl> ScriptMenuItems { get; }
     public ObservableCollection<TemplatedControl> LayoutMenuItems { get; }
 
+    public string CurrentMessage
+    {
+        get => _currentMessage;
+        set => this.RaiseAndSetIfChanged(ref _currentMessage, value);
+    }
+
     /// <summary>
     /// WindowSection title
     /// </summary>
@@ -256,6 +265,7 @@ public partial class MainWindowViewModel : ViewModelBase
         IStylesManagerFactory stylesManagerFactory,
         IScriptService scriptService,
         IKeybindService keybindService,
+        IMessageService messageService,
         ISpellcheckService spellCheckService,
         IDictionaryService dictionaryService,
         IConfiguration configuration,
@@ -270,8 +280,9 @@ public partial class MainWindowViewModel : ViewModelBase
         _stylesManagerFactory = stylesManagerFactory;
         ScriptService = scriptService;
         KeybindService = keybindService;
-        _dictionaryService = dictionaryService;
+        _messageService = messageService;
         _spellcheckService = spellCheckService;
+        _dictionaryService = dictionaryService;
         _configuration = configuration;
         GitToolboxViewModel = gitToolboxViewModel;
 
@@ -362,5 +373,8 @@ public partial class MainWindowViewModel : ViewModelBase
         LayoutMenuItems = [];
         LayoutProvider.OnLayoutChanged += (_, _) => GenerateLayoutsMenu();
         GenerateLayoutsMenu();
+
+        _messageService.MessageReady += (_, msg) => CurrentMessage = msg.Content;
+        _messageService.QueueDrained += (_, _) => CurrentMessage = string.Empty;
     }
 }

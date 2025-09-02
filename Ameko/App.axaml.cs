@@ -38,6 +38,9 @@ public partial class App : Application
         // May have to move this if it gets too resource-intensive
         provider.GetRequiredService<ILayoutProvider>().Reload();
 
+        var msgService = provider.GetRequiredService<IMessageService>();
+        msgService.Enqueue(I18N.Resources.Message_Welcome, TimeSpan.FromSeconds(10));
+
         // Set up the tab item template
         Resources["WorkspaceTabTemplate"] = new WorkspaceTabTemplate(provider);
 
