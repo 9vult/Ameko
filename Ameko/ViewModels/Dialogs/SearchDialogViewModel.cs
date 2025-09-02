@@ -16,7 +16,7 @@ namespace Ameko.ViewModels.Dialogs;
 
 public partial class SearchDialogViewModel : ViewModelBase
 {
-    private readonly IProjectProvider _iProjectProvider;
+    private readonly IProjectProvider _projectProvider;
 
     public string Query { get; set; } = string.Empty;
     public SearchFilter Filter { get; set; } = SearchFilter.Text;
@@ -29,13 +29,13 @@ public partial class SearchDialogViewModel : ViewModelBase
     private int _resultIndex = 0;
     private Workspace? _lastWorkspace;
 
-    public SearchDialogViewModel(IProjectProvider iProjectProvider, ITabFactory tabFactory)
+    public SearchDialogViewModel(IProjectProvider projectProvider, ITabFactory tabFactory)
     {
-        _iProjectProvider = iProjectProvider;
+        _projectProvider = projectProvider;
 
         FindNextCommand = ReactiveCommand.CreateFromTask(async () =>
         {
-            var wsp = _iProjectProvider.Current.WorkingSpace;
+            var wsp = _projectProvider.Current.WorkingSpace;
             if (wsp is null)
                 return;
 
@@ -65,7 +65,7 @@ public partial class SearchDialogViewModel : ViewModelBase
     {
         _resultIndex = 0;
         _results =
-            _iProjectProvider
+            _projectProvider
                 .Current.WorkingSpace?.Document.EventManager.Events.Where(e =>
                     Filter switch
                     {

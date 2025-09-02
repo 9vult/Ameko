@@ -152,7 +152,7 @@ public partial class TabItemViewModel : ViewModelBase
     }
 
     public TabItemViewModel(
-        IProjectProvider iProjectProvider,
+        IProjectProvider projectProvider,
         IConfiguration configuration,
         IKeybindService keybindService,
         IScriptService scriptService,
@@ -208,7 +208,7 @@ public partial class TabItemViewModel : ViewModelBase
 
         _workspace = workspace;
         _scriptService = scriptService;
-        IProjectProvider = iProjectProvider;
+        IProjectProvider = projectProvider;
         Configuration = configuration;
         KeybindService = keybindService;
         LayoutProvider = layoutProvider;

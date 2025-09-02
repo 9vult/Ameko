@@ -33,7 +33,7 @@ public class ScriptService : IScriptService
     private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
     private readonly IFileSystem _fileSystem;
-    private readonly IProjectProvider _iProjectProvider;
+    private readonly IProjectProvider _projectProvider;
     private readonly IKeybindRegistrar _keybindRegistrar;
     private readonly ObservableCollection<IHoloExecutable> _scripts;
     private readonly Dictionary<string, HoloScript?> _scriptMap;
@@ -108,7 +108,7 @@ public class ScriptService : IScriptService
 
             var success = engine
                 .Execute(scriptlet.CompiledScript)
-                .Invoke("execute", _iProjectProvider.Current);
+                .Invoke("execute", _projectProvider.Current);
 
             return success is JsBoolean jsBool
                 ? jsBool.AsBoolean()
@@ -276,12 +276,12 @@ public class ScriptService : IScriptService
 
     public ScriptService(
         IFileSystem fileSystem,
-        IProjectProvider iProjectProvider,
+        IProjectProvider projectProvider,
         IKeybindRegistrar keybindRegistrar
     )
     {
         _fileSystem = fileSystem;
-        _iProjectProvider = iProjectProvider;
+        _projectProvider = projectProvider;
         _keybindRegistrar = keybindRegistrar;
 
         _scripts = [];

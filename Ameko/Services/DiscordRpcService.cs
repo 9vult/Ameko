@@ -21,19 +21,19 @@ public class DiscordRpcService
 {
     private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-    private readonly IProjectProvider _iProjectProvider;
+    private readonly IProjectProvider _projectProvider;
     private readonly IConfiguration _configuration;
     private readonly DiscordRpcClient _client;
     private readonly Timestamps _timestamps;
 
     public void Update(WorkingSpaceChangedMessage _)
     {
-        var prjName = _iProjectProvider.Current.Title;
-        var wspName = _iProjectProvider.Current.WorkingSpace?.SavePath is not null
+        var prjName = _projectProvider.Current.Title;
+        var wspName = _projectProvider.Current.WorkingSpace?.SavePath is not null
             ? Path.GetFileNameWithoutExtension(
-                _iProjectProvider.Current.WorkingSpace.SavePath.LocalPath
+                _projectProvider.Current.WorkingSpace.SavePath.LocalPath
             )
-            : _iProjectProvider.Current.WorkingSpace?.Title;
+            : _projectProvider.Current.WorkingSpace?.Title;
 
         if (_configuration.DiscordRpcEnabled)
         {
@@ -54,9 +54,9 @@ public class DiscordRpcService
         }
     }
 
-    public DiscordRpcService(IProjectProvider iProjectProvider, IConfiguration config)
+    public DiscordRpcService(IProjectProvider projectProvider, IConfiguration config)
     {
-        _iProjectProvider = iProjectProvider;
+        _projectProvider = projectProvider;
         _configuration = config;
 
         _client = new DiscordRpcClient("1209896771719921704");
