@@ -33,6 +33,10 @@
         <c:MenuStrip DockPanel.Dock="Top"
                      IsVisible="{Binding DisplayInWindowMenu}"
                      IsEnabled="{Binding DisplayInWindowMenu}" />
+        <TextBlock DockPanel.Dock="Bottom"
+                   FontSize="10"
+                   Margin="5 0 0 0"
+                   Text="{Binding CurrentMessage}" />
         <Grid Name="MainWindowGrid">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" MinWidth="100" />

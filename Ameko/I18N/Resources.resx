@@ -294,4 +294,7 @@
     <data name="Menu_Playground" xml:space="preserve">
         <value>Open Play_ground...</value>
     </data>
+    <data name="Message_Welcome" xml:space="preserve">
+        <value>Welcome to Ameko!</value>
+    </data>
 </root>
