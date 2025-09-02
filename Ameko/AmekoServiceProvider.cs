@@ -54,6 +54,7 @@ public static class AmekoServiceProvider
         services.AddSingleton<IProjectProvider, ProjectProvider>();
         services.AddSingleton<IDictionaryService, DictionaryService>();
         services.AddSingleton<ISpellcheckService, SpellcheckService>();
+        services.AddSingleton<IMessageService, MessageService>();
 
         // --- Presentation ---
         services.AddSingleton<CultureService>();
