@@ -16,7 +16,7 @@ using ReactiveUI;
 namespace Ameko.Services;
 
 public class IoService(
-    IProjectProvider iProjectProvider,
+    IProjectProvider projectProvider,
     ITabFactory tabFactory,
     IFileSystem fileSystem
 ) : IIoService
@@ -89,7 +89,7 @@ public class IoService(
     )
     {
         Log.Trace($"Closing workspace {wsp.Title}");
-        var prj = iProjectProvider.Current;
+        var prj = projectProvider.Current;
 
         if (wsp.IsSaved)
         {

@@ -13,17 +13,17 @@ namespace Ameko.Services;
 public class AssOptionsBinder
 {
     private readonly IConfiguration _configuration;
-    private readonly IProjectProvider _iProjectProvider;
+    private readonly IProjectProvider _projectProvider;
 
-    public AssOptionsBinder(IConfiguration configuration, IProjectProvider iProjectProvider)
+    public AssOptionsBinder(IConfiguration configuration, IProjectProvider projectProvider)
     {
         _configuration = configuration;
-        _iProjectProvider = iProjectProvider;
+        _projectProvider = projectProvider;
 
         _configuration.PropertyChanged += PushUpdate;
-        _iProjectProvider.PropertyChanged += (_, _) =>
+        _projectProvider.PropertyChanged += (_, _) =>
         {
-            _iProjectProvider.Current.PropertyChanged += PushUpdate;
+            _projectProvider.Current.PropertyChanged += PushUpdate;
         };
     }
 
@@ -37,7 +37,7 @@ public class AssOptionsBinder
     /// </remarks>
     private void PushUpdate(object? sender, PropertyChangedEventArgs e)
     {
-        var prj = _iProjectProvider.Current;
+        var prj = _projectProvider.Current;
 
         AssCS.Options.CpsIncludesPunctuation =
             prj.CpsIncludesPunctuation ?? _configuration.CpsIncludesPunctuation;
