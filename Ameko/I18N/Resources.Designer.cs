@@ -834,7 +834,7 @@ namespace Ameko.I18N {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Disable auto seek to event start.
+        ///   Looks up a localized string similar to Disable auto seek to selected event&apos;s start time.
         /// </summary>
         public static string Video_Button_DisableAutoSeek_ToolTip {
             get {
@@ -843,7 +843,7 @@ namespace Ameko.I18N {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Enable auto seek to event start.
+        ///   Looks up a localized string similar to Enable auto seek to selected event&apos;s start time.
         /// </summary>
         public static string Video_Button_EnableAutoSeek_ToolTip {
             get {
