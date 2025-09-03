@@ -76,6 +76,9 @@
 			    <MenuItem Header="{x:Static i18n:Resources.EventsGrid_Menu_SplitLine}"
 			              Icon="{icons:MaterialIconExt Kind=CallSplit}"
 			              Command="{Binding SplitEventsCommand}" />
+			    <MenuItem Header="{x:Static i18n:Resources.EventsGrid_Menu_SplitLineKeepTimes}"
+			              Icon="{icons:MaterialIconExt Kind=CallSplit}"
+			              Command="{Binding SplitEventsKeepTimesCommand}" />
 			    <Separator />
 			    <MenuItem Header="{x:Static i18n:Resources.EventsGrid_Menu_InsertBefore}"
 			              Icon="{icons:MaterialIconExt Kind=ArrowCollapseUp}"

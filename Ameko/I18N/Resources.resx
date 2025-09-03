@@ -79,7 +79,7 @@
         <value>Merge Lines</value>
     </data>
     <data name="EventsGrid_Menu_SplitLine" xml:space="preserve">
-        <value>Split Lines</value>
+        <value>Split Lines on Linebreaks</value>
     </data>
     <data name="EventsGrid_Menu_InsertBefore" xml:space="preserve">
         <value>Insert Before</value>
@@ -296,5 +296,8 @@
     </data>
     <data name="Message_Welcome" xml:space="preserve">
         <value>Welcome to Ameko!</value>
+    </data>
+    <data name="EventsGrid_Menu_SplitLineKeepTimes" xml:space="preserve">
+        <value>Split Lines on Linebreaks (Keep Times)</value>
     </data>
 </root>

@@ -65,6 +65,9 @@ public partial class TabItemViewModel : ViewModelBase
     [KeybindTarget("ameko.event.split")]
     public ICommand SplitEventsCommand { get; }
 
+    [KeybindTarget("ameko.event.split.keepTimes")]
+    public ICommand SplitEventsKeepTimesCommand { get; }
+
     [KeybindTarget("ameko.event.delete", "Shift+Delete")]
     public ICommand DeleteEventsCommand { get; }
 
@@ -181,6 +184,7 @@ public partial class TabItemViewModel : ViewModelBase
         InsertEventAfterCommand = CreateInsertEventAfterCommand();
         MergeEventsCommand = CreateMergeEventsCommand();
         SplitEventsCommand = CreateSplitEventsCommand();
+        SplitEventsKeepTimesCommand = CreateSplitEventsKeepTimesCommand();
         DeleteEventsCommand = CreateDeleteEventsCommand();
         GetOrCreateAfterCommand = CreateGetOrCreateAfterCommand();
         ToggleTagCommand = CreateToggleTagCommand();
