@@ -365,6 +365,71 @@ public class EventManagerTests
     }
 
     [Fact]
+    public void Split_AtCursor()
+    {
+        var em = new EventManager();
+        var testEvent = new Event(em.NextId)
+        {
+            Text = "Short Longer segment",
+            Start = Time.FromMillis(0),
+            End = Time.FromMillis(3000),
+        };
+        em.AddFirst(testEvent);
+
+        var result = em.Split(testEvent.Id, 6).ToList();
+
+        em.TryGet(testEvent.Id, out _).ShouldBeFalse();
+        result.Count.ShouldBe(2);
+        result[0].End.TotalMilliseconds.ShouldBeLessThan(result[1].End.TotalMilliseconds);
+        result[1].Start.ShouldBe(result[0].End);
+        result.Last().End.TotalMilliseconds.ShouldBe(testEvent.End.TotalMilliseconds);
+
+        foreach (var e in result)
+        {
+            em.TryGet(e.Id, out var addedEvent).ShouldBeTrue();
+            addedEvent.ShouldBeEquivalentTo(e);
+        }
+
+        result[0].Text.ShouldBe("Short ");
+        result[1].Text.ShouldBe("Longer segment");
+    }
+
+    [Fact]
+    public void Split_AtCursor_WithTime()
+    {
+        var em = new EventManager();
+        var testEvent = new Event(em.NextId)
+        {
+            Text = "Short Longer segment",
+            Start = Time.FromMillis(0),
+            End = Time.FromMillis(3000),
+        };
+        em.AddFirst(testEvent);
+
+        var splitTime = Time.FromMillis(1500);
+
+        var result = em.Split(testEvent.Id, 6, splitTime).ToList();
+
+        em.TryGet(testEvent.Id, out _).ShouldBeFalse();
+        result.Count.ShouldBe(2);
+        result[0].End.TotalMilliseconds.ShouldBeLessThan(result[1].End.TotalMilliseconds);
+        result[1].Start.ShouldBe(result[0].End);
+        result.Last().End.TotalMilliseconds.ShouldBe(testEvent.End.TotalMilliseconds);
+
+        result[0].End.ShouldBe(splitTime);
+        result[1].Start.ShouldBe(splitTime);
+
+        foreach (var e in result)
+        {
+            em.TryGet(e.Id, out var addedEvent).ShouldBeTrue();
+            addedEvent.ShouldBeEquivalentTo(e);
+        }
+
+        result[0].Text.ShouldBe("Short ");
+        result[1].Text.ShouldBe("Longer segment");
+    }
+
+    [Fact]
     public void Merge_AreAdjacent_Forward()
     {
         var em = new EventManager();

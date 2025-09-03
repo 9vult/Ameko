@@ -809,6 +809,81 @@ public class EventManager : BindableBase
             rollingTime = newEvent.End;
         }
 
+        result.Last().End = goalTime;
+
+        Remove(@event.Id);
+        return result;
+    }
+
+    /// <summary>
+    /// Split an event into two parts about an index
+    /// </summary>
+    /// <param name="id">ID of the event to split</param>
+    /// <param name="index">Character index to split at</param>
+    /// <param name="time">Optionally specify a time to use</param>
+    /// <returns>List of events created by the split</returns>
+    public IEnumerable<Event> Split(int id, int index, Time? time = null)
+    {
+        if (!TryGet(id, out var @event) || string.IsNullOrEmpty(@event.Text))
+            return [];
+
+        List<string> segments = [@event.Text[..index], @event.Text[index..]];
+
+        List<Event> result = [];
+
+        // If a time has been specified, just use that
+        if (time is not null)
+        {
+            if (time > @event.End)
+                time = @event.End;
+            if (time < @event.Start)
+                time = @event.Start;
+
+            var eventA = Event.FromEvent(NextId, @event);
+            var eventB = Event.FromEvent(NextId, @event);
+
+            eventA.Text = segments[0];
+            eventB.Text = segments[1];
+            eventA.End = time;
+            eventB.Start = time;
+            result.Add(eventA);
+            result.Add(eventB);
+
+            AddAfter(id, eventA);
+            AddAfter(eventA.Id, eventB);
+            Remove(id);
+            return result;
+        }
+
+        // Calculate start/end times using CPS
+        var rollingTime = @event.Start;
+        var goalTime = @event.End;
+
+        var previous = @event;
+        foreach (var segment in segments)
+        {
+            var newEvent = Event.FromEvent(NextId, @event);
+            var ratio = segment.Length / (double)@event.Text.Length;
+
+            newEvent.Text = segment;
+            newEvent.Start = Time.FromTime(rollingTime);
+            newEvent.End =
+                rollingTime
+                + Time.FromMillis(
+                    Math.Min(
+                        Convert.ToInt64((goalTime - @event.Start).TotalMilliseconds * ratio),
+                        goalTime.TotalMilliseconds
+                    )
+                );
+
+            AddAfter(previous.Id, newEvent);
+            result.Add(newEvent);
+            previous = newEvent;
+            rollingTime = newEvent.End;
+        }
+
+        result.Last().End = goalTime;
+
         Remove(@event.Id);
         return result;
     }
