@@ -265,10 +265,10 @@
         <value>Play Selection</value>
     </data>
     <data name="Video_Button_EnableAutoSeek_ToolTip" xml:space="preserve">
-        <value>Enable auto seek to event start</value>
+        <value>Enable auto seek to selected event's start time</value>
     </data>
     <data name="Video_Button_DisableAutoSeek_ToolTip" xml:space="preserve">
-        <value>Disable auto seek to event start</value>
+        <value>Disable auto seek to selected event's start time</value>
     </data>
     <data name="Video_Time_ToolTip" xml:space="preserve">
         <value>Current Time</value>
