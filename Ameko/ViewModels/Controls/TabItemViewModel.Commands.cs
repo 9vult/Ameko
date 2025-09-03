@@ -273,6 +273,35 @@ public partial class TabItemViewModel : ViewModelBase
     }
 
     /// <summary>
+    /// Split events, keeping times
+    /// </summary>
+    private ReactiveCommand<Unit, Unit> CreateSplitEventsKeepTimesCommand()
+    {
+        return ReactiveCommand.Create(() =>
+        {
+            var selectionManager = Workspace.SelectionManager;
+
+            if (selectionManager.SelectedEventCollection.Count == 0)
+                return;
+
+            var newEvents = new List<Event>();
+            foreach (var @event in selectionManager.SelectedEventCollection)
+            {
+                newEvents.AddRange(
+                    Workspace.Document.EventManager.Split(@event.Id, keepTimes: true)
+                );
+            }
+
+            if (newEvents.Count == 0)
+                return;
+
+            Workspace.Commit(selectionManager.SelectedEventCollection, ChangeType.Remove);
+            Workspace.Commit(newEvents, ChangeType.Add, amend: true);
+            selectionManager.Select(newEvents.Last());
+        });
+    }
+
+    /// <summary>
     /// Get or Create the next event in the document
     /// </summary>
     private ReactiveCommand<Unit, Unit> CreateGetOrCreateAfterCommand()

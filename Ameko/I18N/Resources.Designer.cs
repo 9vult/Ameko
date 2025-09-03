@@ -393,11 +393,20 @@ namespace Ameko.I18N {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Split Lines.
+        ///   Looks up a localized string similar to Split Lines on Linebreaks.
         /// </summary>
         public static string EventsGrid_Menu_SplitLine {
             get {
                 return ResourceManager.GetString("EventsGrid_Menu_SplitLine", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Split Lines on Linebreaks (Keep Times).
+        /// </summary>
+        public static string EventsGrid_Menu_SplitLineKeepTimes {
+            get {
+                return ResourceManager.GetString("EventsGrid_Menu_SplitLineKeepTimes", resourceCulture);
             }
         }
         
