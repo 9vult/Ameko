@@ -769,8 +769,9 @@ public class EventManager : BindableBase
     /// Timing is adjusted proportionally based on characters per second.
     /// </remarks>
     /// <param name="id">ID of the event to split</param>
+    /// <param name="keepTimes">All resulting events have the same start and end times?</param>
     /// <returns>List of events created by the split</returns>
-    public IEnumerable<Event> Split(int id)
+    public IEnumerable<Event> Split(int id, bool keepTimes = false)
     {
         if (!TryGet(id, out var @event) || string.IsNullOrEmpty(@event.Text))
             return [];
@@ -793,20 +794,23 @@ public class EventManager : BindableBase
                 segment.Length / (double)@event.Text.ReplaceMany(delimiters, string.Empty).Length;
 
             newEvent.Text = segment;
-            newEvent.Start = Time.FromTime(rollingTime);
-            newEvent.End =
-                rollingTime
-                + Time.FromMillis(
-                    Math.Min(
-                        Convert.ToInt64((goalTime - @event.Start).TotalMilliseconds * ratio),
-                        goalTime.TotalMilliseconds
-                    )
-                );
+            if (!keepTimes) // Calculate start/end times using CPS
+            {
+                newEvent.Start = Time.FromTime(rollingTime);
+                newEvent.End =
+                    rollingTime
+                    + Time.FromMillis(
+                        Math.Min(
+                            Convert.ToInt64((goalTime - @event.Start).TotalMilliseconds * ratio),
+                            goalTime.TotalMilliseconds
+                        )
+                    );
+                rollingTime = newEvent.End;
+            }
 
             AddAfter(previous.Id, newEvent);
             result.Add(newEvent);
             previous = newEvent;
-            rollingTime = newEvent.End;
         }
 
         result.Last().End = goalTime;
@@ -820,32 +824,41 @@ public class EventManager : BindableBase
     /// </summary>
     /// <param name="id">ID of the event to split</param>
     /// <param name="index">Character index to split at</param>
-    /// <param name="time">Optionally specify a time to use</param>
+    /// <param name="keepTimes">All resulting events have the same start and end times?</param>
+    /// <param name="splitTime">Optionally specify a time to use</param>
     /// <returns>List of events created by the split</returns>
-    public IEnumerable<Event> Split(int id, int index, Time? time = null)
+    public IEnumerable<Event> Split(
+        int id,
+        int index,
+        bool keepTimes = false,
+        Time? splitTime = null
+    )
     {
         if (!TryGet(id, out var @event) || string.IsNullOrEmpty(@event.Text))
             return [];
+
+        if (keepTimes && splitTime is not null)
+            throw new ArgumentException("Can't keep times with a specified split time!");
 
         List<string> segments = [@event.Text[..index], @event.Text[index..]];
 
         List<Event> result = [];
 
-        // If a time has been specified, just use that
-        if (time is not null)
+        // If a split time has been specified, just use that
+        if (splitTime is not null)
         {
-            if (time > @event.End)
-                time = @event.End;
-            if (time < @event.Start)
-                time = @event.Start;
+            if (splitTime > @event.End)
+                splitTime = @event.End;
+            if (splitTime < @event.Start)
+                splitTime = @event.Start;
 
             var eventA = Event.FromEvent(NextId, @event);
             var eventB = Event.FromEvent(NextId, @event);
 
             eventA.Text = segments[0];
             eventB.Text = segments[1];
-            eventA.End = time;
-            eventB.Start = time;
+            eventA.End = splitTime;
+            eventB.Start = splitTime;
             result.Add(eventA);
             result.Add(eventB);
 
@@ -855,7 +868,6 @@ public class EventManager : BindableBase
             return result;
         }
 
-        // Calculate start/end times using CPS
         var rollingTime = @event.Start;
         var goalTime = @event.End;
 
@@ -866,20 +878,23 @@ public class EventManager : BindableBase
             var ratio = segment.Length / (double)@event.Text.Length;
 
             newEvent.Text = segment;
-            newEvent.Start = Time.FromTime(rollingTime);
-            newEvent.End =
-                rollingTime
-                + Time.FromMillis(
-                    Math.Min(
-                        Convert.ToInt64((goalTime - @event.Start).TotalMilliseconds * ratio),
-                        goalTime.TotalMilliseconds
-                    )
-                );
+            if (!keepTimes) // Calculate start/end times using CPS
+            {
+                newEvent.Start = Time.FromTime(rollingTime);
+                newEvent.End =
+                    rollingTime
+                    + Time.FromMillis(
+                        Math.Min(
+                            Convert.ToInt64((goalTime - @event.Start).TotalMilliseconds * ratio),
+                            goalTime.TotalMilliseconds
+                        )
+                    );
+                rollingTime = newEvent.End;
+            }
 
             AddAfter(previous.Id, newEvent);
             result.Add(newEvent);
             previous = newEvent;
-            rollingTime = newEvent.End;
         }
 
         result.Last().End = goalTime;
