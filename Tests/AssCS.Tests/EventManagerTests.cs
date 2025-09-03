@@ -365,6 +365,35 @@ public class EventManagerTests
     }
 
     [Fact]
+    public void Split_KeepTimes()
+    {
+        var em = new EventManager();
+        var testEvent = new Event(em.NextId)
+        {
+            Text = "Short\\NLonger segment",
+            Start = Time.FromMillis(0),
+            End = Time.FromMillis(3000),
+        };
+        em.AddFirst(testEvent);
+
+        var result = em.Split(testEvent.Id, keepTimes: true).ToList();
+
+        em.TryGet(testEvent.Id, out _).ShouldBeFalse();
+        result.Count.ShouldBe(2);
+
+        result[0].Start.ShouldBe(testEvent.Start);
+        result[0].End.ShouldBe(testEvent.End);
+        result[1].Start.ShouldBe(testEvent.Start);
+        result[1].End.ShouldBe(testEvent.End);
+
+        foreach (var e in result)
+        {
+            em.TryGet(e.Id, out var addedEvent).ShouldBeTrue();
+            addedEvent.ShouldBeEquivalentTo(e);
+        }
+    }
+
+    [Fact]
     public void Split_AtCursor()
     {
         var em = new EventManager();
@@ -395,7 +424,7 @@ public class EventManagerTests
     }
 
     [Fact]
-    public void Split_AtCursor_WithTime()
+    public void Split_AtCursor_WithSplitTime()
     {
         var em = new EventManager();
         var testEvent = new Event(em.NextId)
@@ -408,7 +437,7 @@ public class EventManagerTests
 
         var splitTime = Time.FromMillis(1500);
 
-        var result = em.Split(testEvent.Id, 6, splitTime).ToList();
+        var result = em.Split(testEvent.Id, 6, false, splitTime).ToList();
 
         em.TryGet(testEvent.Id, out _).ShouldBeFalse();
         result.Count.ShouldBe(2);
@@ -427,6 +456,59 @@ public class EventManagerTests
 
         result[0].Text.ShouldBe("Short ");
         result[1].Text.ShouldBe("Longer segment");
+    }
+
+    [Fact]
+    public void Split_AtCursor_KeepTimes()
+    {
+        var em = new EventManager();
+        var testEvent = new Event(em.NextId)
+        {
+            Text = "Short Longer segment",
+            Start = Time.FromMillis(0),
+            End = Time.FromMillis(3000),
+        };
+        em.AddFirst(testEvent);
+
+        var result = em.Split(testEvent.Id, 6, keepTimes: true).ToList();
+
+        em.TryGet(testEvent.Id, out _).ShouldBeFalse();
+        result.Count.ShouldBe(2);
+
+        result[0].Start.ShouldBe(testEvent.Start);
+        result[0].End.ShouldBe(testEvent.End);
+        result[1].Start.ShouldBe(testEvent.Start);
+        result[1].End.ShouldBe(testEvent.End);
+
+        foreach (var e in result)
+        {
+            em.TryGet(e.Id, out var addedEvent).ShouldBeTrue();
+            addedEvent.ShouldBeEquivalentTo(e);
+        }
+
+        result[0].Text.ShouldBe("Short ");
+        result[1].Text.ShouldBe("Longer segment");
+    }
+
+    [Fact]
+    public void Split_AtCursor_KeepTimes_And_SplitTime()
+    {
+        var em = new EventManager();
+        var testEvent = new Event(em.NextId)
+        {
+            Text = "Short Longer segment",
+            Start = Time.FromMillis(0),
+            End = Time.FromMillis(3000),
+        };
+        em.AddFirst(testEvent);
+
+        var splitTime = Time.FromMillis(1500);
+
+        Action action = () => em.Split(testEvent.Id, 6, true, splitTime);
+
+        action
+            .ShouldThrow<ArgumentException>()
+            .Message.ShouldBe("Can't keep times with a specified split time!");
     }
 
     [Fact]
