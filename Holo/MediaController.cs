@@ -232,7 +232,7 @@ public class MediaController : BindableBase
     /// <param name="frameNumber">Frame number to seek to</param>
     public void SeekTo(int frameNumber)
     {
-        if (_videoInfo is null)
+        if (_videoInfo is not null)
             throw new InvalidOperationException("Video is not loaded");
         CurrentFrame = Math.Clamp(frameNumber, 0, _videoInfo.FrameCount - 1);
     }

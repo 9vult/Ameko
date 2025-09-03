@@ -9,6 +9,7 @@ using Ameko.ViewModels.Controls;
 using AssCS;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.ReactiveUI;
 using Avalonia.Threading;
@@ -45,6 +46,12 @@ public partial class TabItemEventsArea : ReactiveUserControl<TabItemViewModel>
                         DataGrid_OnSelectionChanged,
                         RoutingStrategies.Bubble
                     );
+
+                    EventsGrid.AddHandler(
+                        DataGrid.DoubleTappedEvent,
+                        DataGrid_OnDoubleTapped,
+                        RoutingStrategies.Bubble
+                    );
                 })
                 .DisposeWith(disposables);
         });
@@ -75,5 +82,17 @@ public partial class TabItemEventsArea : ReactiveUserControl<TabItemViewModel>
             },
             DispatcherPriority.Background
         );
+    }
+
+    private void DataGrid_OnDoubleTapped(object? sender, TappedEventArgs e)
+    {
+        if (!ViewModel?.Workspace.MediaController.IsVideoLoaded == true)
+            return;
+
+        var active = (Event)EventsGrid.SelectedItem;
+        if (active is null)
+            return;
+
+        ViewModel?.Workspace.MediaController.SeekTo(active);
     }
 }
