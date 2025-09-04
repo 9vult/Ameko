@@ -48,7 +48,7 @@ public class Project : BindableBase
     private int _docId = 1;
     private Workspace? _workingSpace;
 
-    private int? _cps;
+    private uint? _cps;
     private bool? _cpsIncludesWhitespace;
     private bool? _cpsIncludesPunctuation;
     private bool? _useSoftLinebreaks;
@@ -124,7 +124,7 @@ public class Project : BindableBase
     /// <summary>
     /// Project-scoped characters-per-second threshold
     /// </summary>
-    public int? Cps
+    public uint? Cps
     {
         get => _cps;
         set

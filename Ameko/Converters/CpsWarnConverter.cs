@@ -4,17 +4,20 @@ using System;
 using System.Globalization;
 using Avalonia.Data.Converters;
 using Avalonia.Media;
+using Holo.Configuration;
+using Holo.Providers;
 
 namespace Ameko.Converters;
 
 /// <summary>
 /// Converter for warning if CPS goes above the threshold
 /// </summary>
-public class CpsWarnConverter : IValueConverter
+public class CpsWarnConverter(IProjectProvider projectProvider, IConfiguration configuration)
+    : IValueConverter
 {
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        const int threshold = 18; // TODO: get this from the config/project
+        var threshold = projectProvider.Current.Cps ?? configuration.Cps;
         if (value is not double cps)
             return null;
 

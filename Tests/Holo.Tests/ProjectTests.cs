@@ -199,7 +199,7 @@ public class ProjectTests
 
         var prj = Project.Parse(fs, path);
 
-        prj.Cps.ShouldBe(21);
+        prj.Cps.ShouldBe<uint?>(21);
         prj.UseSoftLinebreaks.ShouldBeNull();
         prj.ReferencedItems.Count.ShouldBe(1);
         prj.StyleManager.Styles.Count.ShouldBe(0);
