@@ -89,6 +89,7 @@ public class SelectionManager : BindableBase
 
         ActiveEvent = active;
         _selectedEventCollection.ReplaceRange(selection);
+        SelectionChanged?.Invoke(this, EventArgs.Empty);
     }
 
     public SelectionManager(Event initialSelection)
@@ -97,4 +98,6 @@ public class SelectionManager : BindableBase
         _selectedEventCollection = [initialSelection];
         SelectedEventCollection = new ReadOnlyObservableCollection<Event>(_selectedEventCollection);
     }
+
+    public event EventHandler<EventArgs>? SelectionChanged;
 }
