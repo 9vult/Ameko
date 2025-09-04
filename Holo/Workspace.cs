@@ -106,7 +106,6 @@ public class Workspace : BindableBase
             ? $"{(!IsSaved ? '*' : string.Empty)}{Path.GetFileNameWithoutExtension(SavePath.LocalPath)}"
             : $"{(!IsSaved ? '*' : string.Empty)}New {Id}";
 
-    // TODO: May need to raise property changed here - Or move to EventManager under a different name
     /// <summary>
     /// Whether the Actors column in the events grid should be displayed
     /// </summary>
@@ -299,6 +298,12 @@ public class Workspace : BindableBase
 
         SelectionManager = new SelectionManager(Document.EventManager.Head);
         ReferenceFileManager = new ReferenceFileManager(SelectionManager);
+
+        SelectionManager.SelectionChanged += (_, _) =>
+        {
+            RaisePropertyChanged(nameof(DisplayActorsColumn));
+            RaisePropertyChanged(nameof(DisplayEffectsColumn));
+        };
 
         Document.HistoryManager.BeginTransaction([Document.EventManager.Head]);
 
