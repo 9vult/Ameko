@@ -60,4 +60,7 @@
     <data name="ShiftTimes_Button_Ok" xml:space="preserve">
         <value>OK</value>
     </data>
+    <data name="ShiftTimes_RB_Milliseconds" xml:space="preserve">
+        <value>Milliseconds</value>
+    </data>
 </root>

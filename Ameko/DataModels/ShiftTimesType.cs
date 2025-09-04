@@ -16,4 +16,9 @@ public enum ShiftTimesType
     /// Shift times by frame count
     /// </summary>
     Frames,
+
+    /// <summary>
+    /// Shift times by milliseconds
+    /// </summary>
+    Milliseconds,
 }

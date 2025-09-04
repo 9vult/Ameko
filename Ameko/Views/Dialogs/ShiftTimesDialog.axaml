@@ -5,8 +5,8 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        d:DesignWidth="300"
-        d:DesignHeight="250"
+        d:DesignWidth="325"
+        d:DesignHeight="300"
 
         xmlns:converters="clr-namespace:Ameko.Converters"
         xmlns:dm="clr-namespace:Ameko.DataModels"
@@ -16,10 +16,10 @@
         x:Class="Ameko.Views.Dialogs.ShiftTimesDialog"
         x:DataType="vm:ShiftTimesDialogViewModel"
 
-        Width="300"
-        Height="250"
+        Width="325"
         Topmost="True"
         CanResize="False"
+        SizeToContent="Height"
         WindowStartupLocation="CenterOwner"
         Icon="/Assets/Ameko-Simplified-BG-64.ico"
         Title="{x:Static i18n:ShiftTimes.ShiftTimes_WindowTitle}">
@@ -47,7 +47,14 @@
                              IsChecked="{Binding ShiftType,
                                                  Converter={StaticResource EnumConverter},
                                                  ConverterParameter={x:Static dm:ShiftTimesType.Frames}}"
-                             IsEnabled="False" />
+                             IsEnabled="{Binding CanShiftFrames}" />
+                <RadioButton Grid.Column="0"
+                             Grid.Row="2"
+                             GroupName="ShiftBy"
+                             Content="{x:Static i18n:ShiftTimes.ShiftTimes_RB_Milliseconds}"
+                             IsChecked="{Binding ShiftType,
+                                                 Converter={StaticResource EnumConverter},
+                                                 ConverterParameter={x:Static dm:ShiftTimesType.Milliseconds}}" />
                 <TextBox Name="TimeBox"
                          Grid.Column="1"
                          Grid.Row="0"
@@ -65,7 +72,17 @@
                          Text="{Binding ShiftFrames}"
                          IsEnabled="{Binding ShiftType,
                                              Converter={StaticResource EnumConverter},
-                                             ConverterParameter={x:Static dm:ShiftTimesType.Time}}" />
+                                             ConverterParameter={x:Static dm:ShiftTimesType.Frames}}" />
+                <NumericUpDown Name="MillisBox"
+                               Grid.Column="1"
+                               Grid.Row="2"
+                               Minimum="0"
+                               ShowButtonSpinner="False"
+                               Padding="0"
+                               Value="{Binding ShiftMillis}"
+                               IsEnabled="{Binding ShiftType,
+                                                   Converter={StaticResource EnumConverter},
+                                                   ConverterParameter={x:Static dm:ShiftTimesType.Milliseconds}}" />
                 <RadioButton Grid.Column="2"
                              Grid.Row="0"
                              GroupName="ShiftDirection"

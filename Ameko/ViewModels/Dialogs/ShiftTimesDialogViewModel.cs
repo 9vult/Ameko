@@ -17,6 +17,7 @@ public partial class ShiftTimesDialogViewModel : ViewModelBase
     private readonly Workspace _workspace;
     private readonly Time _shiftTime;
     private int _shiftFrames;
+    private int _shiftMillis;
 
     private ShiftTimesType _shiftType;
     private ShiftTimesDirection _shiftDirection;
@@ -25,12 +26,20 @@ public partial class ShiftTimesDialogViewModel : ViewModelBase
 
     public ReactiveCommand<Unit, object?> ConfirmCommand { get; }
 
+    public bool CanShiftFrames { get; set; }
+
     public Time ShiftTime => _shiftTime;
 
     public int ShiftFrames
     {
         get => _shiftFrames;
         set => this.RaiseAndSetIfChanged(ref _shiftFrames, value);
+    }
+
+    public int ShiftMillis
+    {
+        get => _shiftMillis;
+        set => this.RaiseAndSetIfChanged(ref _shiftMillis, value);
     }
 
     public ShiftTimesType ShiftType
@@ -88,10 +97,67 @@ public partial class ShiftTimesDialogViewModel : ViewModelBase
                     }
                 }
                 break;
-            // TODO: Implement frames
             case ShiftTimesType.Frames:
+                var vi = _workspace.MediaController.VideoInfo;
+                if (vi is null)
+                    break;
+                foreach (var @event in events)
+                {
+                    if (ShiftTarget is ShiftTimesTarget.Start or ShiftTimesTarget.Both)
+                    {
+                        if (ShiftDirection is ShiftTimesDirection.Forward)
+                            @event.Start = vi.TimeFromFrame(
+                                vi.FrameFromTime(@event.Start) + ShiftFrames
+                            );
+                        else
+                            @event.Start = vi.TimeFromFrame(
+                                vi.FrameFromTime(@event.Start) - ShiftFrames
+                            );
+                    }
+                    if (ShiftTarget is ShiftTimesTarget.End or ShiftTimesTarget.Both)
+                    {
+                        if (ShiftDirection is ShiftTimesDirection.Forward)
+                            @event.End = vi.TimeFromFrame(
+                                vi.FrameFromTime(@event.End) + ShiftFrames
+                            );
+                        else
+                            @event.End = vi.TimeFromFrame(
+                                vi.FrameFromTime(@event.End) - ShiftFrames
+                            );
+                    }
+                }
+                break;
+            case ShiftTimesType.Milliseconds:
+                var msTime = Time.FromMillis(ShiftMillis);
+                foreach (var @event in events)
+                {
+                    if (ShiftTarget is ShiftTimesTarget.Start or ShiftTimesTarget.Both)
+                    {
+                        if (ShiftDirection is ShiftTimesDirection.Forward)
+                            @event.Start += msTime;
+                        else
+                            @event.Start -= msTime;
+                    }
+                    if (ShiftTarget is ShiftTimesTarget.End or ShiftTimesTarget.Both)
+                    {
+                        if (ShiftDirection is ShiftTimesDirection.Forward)
+                            @event.End += msTime;
+                        else
+                            @event.End -= msTime;
+                    }
+                }
+                break;
             default:
                 break;
+        }
+
+        // Sanity check
+        foreach (var @event in events)
+        {
+            if (ShiftDirection is ShiftTimesDirection.Forward && @event.Start > @event.End)
+                @event.End = @event.Start;
+            if (ShiftDirection is ShiftTimesDirection.Backward && @event.End < @event.Start)
+                @event.Start = @event.End;
         }
 
         _workspace.Commit(events, ChangeType.Modify);
@@ -107,6 +173,8 @@ public partial class ShiftTimesDialogViewModel : ViewModelBase
         ShiftDirection = ShiftTimesDirection.Forward;
         ShiftFilter = ShiftTimesFilter.SelectedEvents;
         ShiftTarget = ShiftTimesTarget.Both;
+
+        CanShiftFrames = workspace.MediaController.IsVideoLoaded;
 
         ConfirmCommand = ReactiveCommand.Create(ShiftTimes);
     }
