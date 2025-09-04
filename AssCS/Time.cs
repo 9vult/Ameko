@@ -186,6 +186,8 @@ public class Time : BindableBase, IComparable<Time>
     /// <param name="t">TimeSpan</param>
     public Time(TimeSpan t)
     {
+        if (t < TimeSpan.Zero)
+            t = TimeSpan.Zero;
         _local = t;
     }
 
