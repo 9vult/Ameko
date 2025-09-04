@@ -5,18 +5,19 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        d:DesignWidth="325"
+        d:DesignWidth="350"
         d:DesignHeight="300"
 
         xmlns:converters="clr-namespace:Ameko.Converters"
         xmlns:dm="clr-namespace:Ameko.DataModels"
         xmlns:i18n="clr-namespace:Ameko.I18N"
+        xmlns:icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
         xmlns:vm="clr-namespace:Ameko.ViewModels.Dialogs"
 
         x:Class="Ameko.Views.Dialogs.ShiftTimesDialog"
         x:DataType="vm:ShiftTimesDialogViewModel"
 
-        Width="325"
+        Width="350"
         Topmost="True"
         CanResize="False"
         SizeToContent="Height"
@@ -25,11 +26,12 @@
         Title="{x:Static i18n:ShiftTimes.ShiftTimes_WindowTitle}">
     <Window.Resources>
         <converters:EnumConverter x:Key="EnumConverter" />
+        <converters:HccBorderConverter x:Key="BorderConverter" />
     </Window.Resources>
     
     <StackPanel Margin="5 0 5 5">
         <HeaderedContentControl Header="{x:Static i18n:ShiftTimes.ShiftTimes_Header_ShiftBy}">
-            <Grid ColumnDefinitions="Auto, *, Auto"
+            <Grid ColumnDefinitions="Auto, *, Auto, Auto"
                   RowDefinitions="Auto, Auto, Auto"
                   RowSpacing="2"
                   ColumnSpacing="5">
@@ -86,17 +88,23 @@
                 <RadioButton Grid.Column="2"
                              Grid.Row="0"
                              GroupName="ShiftDirection"
-                             Content="{x:Static i18n:ShiftTimes.ShiftTimes_RB_Forward}"
+                             Content="{x:Static i18n:ShiftTimes.ShiftTimes_RB_TowardEnd}"
                              IsChecked="{Binding ShiftDirection,
                                                  Converter={StaticResource EnumConverter},
                                                  ConverterParameter={x:Static dm:ShiftTimesDirection.Forward}}" />
                 <RadioButton Grid.Column="2"
                              Grid.Row="1"
                              GroupName="ShiftDirection"
-                             Content="{x:Static i18n:ShiftTimes.ShiftTimes_RB_Backward}"
+                             Content="{x:Static i18n:ShiftTimes.ShiftTimes_RB_TowardStart}"
                              IsChecked="{Binding ShiftDirection,
                                                  Converter={StaticResource EnumConverter},
                                                  ConverterParameter={x:Static dm:ShiftTimesDirection.Backward}}" />
+                <icons:MaterialIcon Grid.Column="3"
+                                    Grid.Row="0"
+                                    Kind="ArrowExpandRight" />
+                <icons:MaterialIcon Grid.Column="3"
+                                    Grid.Row="1"
+                                    Kind="ArrowExpandLeft" />
             </Grid>
         </HeaderedContentControl>
         <HeaderedContentControl Header="{x:Static i18n:ShiftTimes.ShiftTimes_Header_Affect}">
@@ -151,7 +159,7 @@
                                 <ContentPresenter FontWeight="Bold"
                                                   Margin="0 10 0 2"
                                                   Content="{TemplateBinding Header}" />
-                                <Border BorderBrush="{TemplateBinding Foreground}"
+                                <Border BorderBrush="{TemplateBinding Foreground, Converter={StaticResource BorderConverter}}"
                                         BorderThickness="2"
                                         CornerRadius="5">
                                     <ContentPresenter Content="{TemplateBinding Content}"

@@ -69,15 +69,15 @@ namespace Ameko.I18N {
             }
         }
         
-        public static string ShiftTimes_RB_Forward {
+        public static string ShiftTimes_RB_TowardEnd {
             get {
-                return ResourceManager.GetString("ShiftTimes_RB_Forward", resourceCulture);
+                return ResourceManager.GetString("ShiftTimes_RB_TowardEnd", resourceCulture);
             }
         }
         
-        public static string ShiftTimes_RB_Backward {
+        public static string ShiftTimes_RB_TowardStart {
             get {
-                return ResourceManager.GetString("ShiftTimes_RB_Backward", resourceCulture);
+                return ResourceManager.GetString("ShiftTimes_RB_TowardStart", resourceCulture);
             }
         }
         
