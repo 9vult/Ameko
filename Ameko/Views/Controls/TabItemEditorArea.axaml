@@ -87,10 +87,9 @@
                            Text="{Binding Workspace.SelectionManager.ActiveEvent.MaxLineWidth}"
                            ToolTip.Tip="{x:Static i18n:Resources.Editor_MaxLineWidth_ToolTip}" />
             </Grid>
-            <Grid Grid.Row="1"
-                  ColumnDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, Auto, *">
+            <WrapPanel Grid.Row="1"
+                  Orientation="Horizontal">
                 <NumericUpDown Name="LayerUpDown"
-                               Grid.Column="0"
                                Margin="2"
                                Padding="0"
                                Minimum="0"
@@ -101,7 +100,6 @@
                                FontFamily="{StaticResource MartianMono}"
                                ValueChanged="AnyControl_EventMetaChanged" />
                 <TextBox Name="StartBox"
-                         Grid.Column="1"
                          Margin="2"
                          AcceptsReturn="False"
                          AcceptsTab="False"
@@ -110,7 +108,6 @@
                          ToolTip.Tip="{x:Static i18n:Resources.Editor_StartBox_ToolTip}"
                          TextChanged="AnyControl_EventTimeChanged" />
                 <TextBox Name="EndBox"
-                         Grid.Column="2"
                          Margin="2"
                          AcceptsReturn="False"
                          AcceptsTab="False"
@@ -119,7 +116,6 @@
                          ToolTip.Tip="{x:Static i18n:Resources.Editor_EndBox_ToolTip}"
                          TextChanged="AnyControl_EventTimeChanged" />
                 <NumericUpDown Name="MarginLeftUpDown"
-                               Grid.Column="3"
                                Margin="2"
                                Padding="0"
                                Increment="1"
@@ -130,7 +126,6 @@
                                FontFamily="{StaticResource MartianMono}"
                                ValueChanged="AnyControl_EventMetaChanged" />
                 <NumericUpDown Name="MarginRightUpDown"
-                               Grid.Column="4"
                                Margin="2"
                                Padding="0"
                                Increment="1"
@@ -141,7 +136,6 @@
                                FontFamily="{StaticResource MartianMono}"
                                ValueChanged="AnyControl_EventMetaChanged" />
                 <NumericUpDown Name="MarginVerticalUpDown"
-                               Grid.Column="5"
                                Margin="2"
                                Padding="0"
                                Increment="1"
@@ -151,48 +145,45 @@
                                Value="{Binding Workspace.SelectionManager.ActiveEvent.Margins.Vertical}"
                                FontFamily="{StaticResource MartianMono}"
                                ValueChanged="AnyControl_EventMetaChanged" />
-                <StackPanel Grid.Column="7"
-                            Orientation="Horizontal">
-                    <Button Name="ToggleBoldBtn"
+                <Button Name="ToggleBoldBtn"
                             Margin="2"
                             Padding="2 0"
                             ToolTip.Tip="{x:Static i18n:Resources.Editor_ToggleBold_ToolTip}"
                             Command="{Binding ToggleTagCommand}"
                             CommandParameter="\b"
                             Content="{icons:MaterialIconExt Kind=FormatBold}" />
-                    <Button Name="ToggleItalicsBtn"
-                            Margin="2"
-                            Padding="2 0"
-                            ToolTip.Tip="{x:Static i18n:Resources.Editor_ToggleItalics_ToolTip}"
-                            Command="{Binding ToggleTagCommand}"
-                            CommandParameter="\i"
-                            Content="{icons:MaterialIconExt Kind=FormatItalic}" />
-                    <Button Name="ToggleUnderlineBtn"
-                            Margin="2"
-                            Padding="2 0"
-                            ToolTip.Tip="{x:Static i18n:Resources.Editor_ToggleUnderline_ToolTip}"
-                            Command="{Binding ToggleTagCommand}"
-                            CommandParameter="\u"
-                            Content="{icons:MaterialIconExt Kind=FormatUnderline}" />
-                    <Button Name="ToggleStrikethroughBtn"
-                            Margin="2"
-                            Padding="2 0"
-                            ToolTip.Tip="{x:Static i18n:Resources.Editor_ToggleStrikethrough_ToolTip}"
-                            Command="{Binding ToggleTagCommand}"
-                            CommandParameter="\s"
-                            Content="{icons:MaterialIconExt Kind=FormatStrikethrough}" />
-                    <Button Name="SetFontBtn"
-                            Margin="2"
-                            Padding="2 0"
-                            ToolTip.Tip="{x:Static i18n:Resources.Editor_SetFont_ToolTip}"
-                            Content="{icons:MaterialIconExt Kind=FormatFont}" />
-                    <Button Name="NextOrCreateBtn"
-                            Margin="2"
-                            Padding="2 0"
-                            ToolTip.Tip="{x:Static i18n:Resources.Editor_NextOrCreate_ToolTip}"
-                            Content="{icons:MaterialIconExt Kind=CheckOutline}" />
-                </StackPanel>
-            </Grid>
+                <Button Name="ToggleItalicsBtn"
+                        Margin="2"
+                        Padding="2 0"
+                        ToolTip.Tip="{x:Static i18n:Resources.Editor_ToggleItalics_ToolTip}"
+                        Command="{Binding ToggleTagCommand}"
+                        CommandParameter="\i"
+                        Content="{icons:MaterialIconExt Kind=FormatItalic}" />
+                <Button Name="ToggleUnderlineBtn"
+                        Margin="2"
+                        Padding="2 0"
+                        ToolTip.Tip="{x:Static i18n:Resources.Editor_ToggleUnderline_ToolTip}"
+                        Command="{Binding ToggleTagCommand}"
+                        CommandParameter="\u"
+                        Content="{icons:MaterialIconExt Kind=FormatUnderline}" />
+                <Button Name="ToggleStrikethroughBtn"
+                        Margin="2"
+                        Padding="2 0"
+                        ToolTip.Tip="{x:Static i18n:Resources.Editor_ToggleStrikethrough_ToolTip}"
+                        Command="{Binding ToggleTagCommand}"
+                        CommandParameter="\s"
+                        Content="{icons:MaterialIconExt Kind=FormatStrikethrough}" />
+                <Button Name="SetFontBtn"
+                        Margin="2"
+                        Padding="2 0"
+                        ToolTip.Tip="{x:Static i18n:Resources.Editor_SetFont_ToolTip}"
+                        Content="{icons:MaterialIconExt Kind=FormatFont}" />
+                <Button Name="NextOrCreateBtn"
+                        Margin="2"
+                        Padding="2 0"
+                        ToolTip.Tip="{x:Static i18n:Resources.Editor_NextOrCreate_ToolTip}"
+                        Content="{icons:MaterialIconExt Kind=CheckOutline}" />
+            </WrapPanel>
             <TextBox Name="EditBox"
                      Grid.Row="2"
                      Text="{Binding Workspace.SelectionManager.ActiveEvent.Text}"
