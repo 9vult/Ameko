@@ -473,7 +473,7 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         {
             var columnDefinitions = new ColumnDefinitions("*, 2, Auto");
             columnDefinitions[0].MinWidth = 500;
-            columnDefinitions[2].MinWidth = 150;
+            columnDefinitions[2].MinWidth = 100;
             MainWindowGrid.ColumnDefinitions = columnDefinitions;
 
             ProjectExplorer.SetValue(Grid.ColumnProperty, 2);
