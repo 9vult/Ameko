@@ -418,6 +418,16 @@ public partial class Event(int id) : BindableBase, IEntry
         };
     }
 
+    /// <summary>
+    /// Validate if a given string is a valid Event
+    /// </summary>
+    /// <param name="data">Data to validate</param>
+    /// <returns><see langword="true"/> if the <paramref name="data"/> is valid</returns>
+    public static bool ValidateAssString(string data)
+    {
+        return EventRegex().Match(data).Success;
+    }
+
     #region Tags n stuff
 
     /// <summary>
