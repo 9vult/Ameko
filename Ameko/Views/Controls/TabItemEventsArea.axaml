@@ -20,6 +20,7 @@
 		<converters:GridPaddingConverter x:Key="PaddingConverter" />
 		<converters:EventTextLengthConverter x:Key="TextLengthConverter" />
 		<converters:CommentConverter x:Key="CommentConverter" />
+		<converters:CpsWarnConverter x:Key="CpsWarnConverter" />
 	</UserControl.Resources>
     <DataGrid Name="EventsGrid"
               IsReadOnly="True"
@@ -44,11 +45,16 @@
             <DataGridTextColumn Header="{x:Static i18n:Resources.EventsGrid_Header_End}"
                                 Binding="{Binding End.UpdatableText}"
                                 CanUserResize="False" />
-            <DataGridTextColumn Header="{x:Static i18n:Resources.EventsGrid_Header_Cps}"
-                                Binding="{Binding Cps}"
+            <DataGridTemplateColumn Header="{x:Static i18n:Resources.EventsGrid_Header_Cps}"
                                 CanUserResize="False">
-                
-            </DataGridTextColumn>
+	            <DataGridTemplateColumn.CellTemplate>
+		            <DataTemplate>
+			            <TextBlock Text="{Binding Cps}"
+			                       Background="{Binding Cps, 
+														Converter={StaticResource CpsWarnConverter}}" />
+		            </DataTemplate>
+	            </DataGridTemplateColumn.CellTemplate>
+            </DataGridTemplateColumn>
             <DataGridTextColumn Header="{x:Static i18n:Resources.EventsGrid_Header_Style}"
                                 FontFamily="{StaticResource ZenKakuGothicNew}"
                                 Binding="{Binding Style}" />
@@ -109,7 +115,10 @@
 	    </DataGrid.ContextMenu>
 	    <DataGrid.Styles>
 		    <Style Selector="DataGridRow">
-			    <Setter Property="Background" x:DataType="ass:Event" Value="{Binding IsComment, Converter={StaticResource CommentConverter}}" />
+			    <Setter Property="Background"
+			            x:DataType="ass:Event"
+			            Value="{Binding IsComment,
+										Converter={StaticResource CommentConverter}}" />
 			    <Setter Property="Padding" Value="0" />
 		    </Style>
 		    <Style Selector="TextBlock">
