@@ -30,11 +30,11 @@
     <data name="ShiftTimes_RB_Frames" xml:space="preserve">
         <value>Frames</value>
     </data>
-    <data name="ShiftTimes_RB_Forward" xml:space="preserve">
-        <value>Forward</value>
+    <data name="ShiftTimes_RB_TowardEnd" xml:space="preserve">
+        <value>Toward End</value>
     </data>
-    <data name="ShiftTimes_RB_Backward" xml:space="preserve">
-        <value>Backward</value>
+    <data name="ShiftTimes_RB_TowardStart" xml:space="preserve">
+        <value>Toward Start</value>
     </data>
     <data name="ShiftTimes_Header_Affect" xml:space="preserve">
         <value>Affect</value>
