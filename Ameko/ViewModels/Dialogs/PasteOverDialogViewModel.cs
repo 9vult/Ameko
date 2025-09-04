@@ -1,5 +1,6 @@
 ﻿// SPDX-License-Identifier: GPL-3.0-only
 
+using System.Linq;
 using System.Reactive;
 using System.Windows.Input;
 using Ameko.Messages;
@@ -17,6 +18,8 @@ public partial class PasteOverDialogViewModel : ViewModelBase
     public ICommand SelectTimesCommand { get; }
     public ICommand SelectTextCommand { get; }
     public ReactiveCommand<Unit, PasteOverDialogClosedMessage> ConfirmCommand { get; }
+
+    public bool IsAssContent { get; set; }
 
     public EventField Fields
     {
@@ -116,9 +119,11 @@ public partial class PasteOverDialogViewModel : ViewModelBase
         this.RaisePropertyChanged(nameof(Text));
     }
 
-    public PasteOverDialogViewModel()
+    public PasteOverDialogViewModel(string[] pastedContent)
     {
         _fields = EventField.Text;
+
+        IsAssContent = pastedContent.All(Event.ValidateAssString);
 
         SelectAllCommand = ReactiveCommand.Create(() =>
             Fields =

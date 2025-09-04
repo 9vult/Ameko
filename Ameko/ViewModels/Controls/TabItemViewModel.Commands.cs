@@ -55,7 +55,7 @@ public partial class TabItemViewModel : ViewModelBase
                     continue;
 
                 Event @event;
-                if (line.StartsWith("Dialogue:") || line.StartsWith("Comment:"))
+                if (Event.ValidateAssString(line))
                 {
                     @event = Event.FromAss(Workspace.Document.EventManager.NextId, line.Trim());
                 }
@@ -85,14 +85,14 @@ public partial class TabItemViewModel : ViewModelBase
     {
         return ReactiveCommand.CreateFromTask(async () =>
         {
-            var vm = new PasteOverDialogViewModel();
+            var lines = await PasteEvents.Handle(this);
+            if (lines is null || lines.Length == 0)
+                return;
+
+            var vm = new PasteOverDialogViewModel(lines);
             var fields = (await ShowPasteOverDialog.Handle(vm)).Fields;
 
             if (fields == EventField.None)
-                return;
-
-            var lines = await PasteEvents.Handle(this);
-            if (lines is null || lines.Length == 0)
                 return;
 
             var newEvents = new List<Event>();
@@ -107,18 +107,33 @@ public partial class TabItemViewModel : ViewModelBase
                 if (string.IsNullOrWhiteSpace(line))
                     continue;
 
-                if (!line.StartsWith("Dialogue:") && !line.StartsWith("Comment:"))
-                    continue;
-
                 if (target is not null)
                 {
-                    var @event = Event.FromAss(-1, line.Trim());
-                    target.SetFields(fields, @event);
+                    if (Event.ValidateAssString(line))
+                    {
+                        var @event = Event.FromAss(-1, line.Trim());
+                        target.SetFields(fields, @event);
+                    }
+                    else
+                    {
+                        target.Text = line.Trim();
+                    }
+
                     editedEvents.Add(target);
                 }
                 else
                 {
-                    target = Event.FromAss(Workspace.Document.EventManager.NextId, line.Trim());
+                    if (Event.ValidateAssString(line))
+                    {
+                        target = Event.FromAss(Workspace.Document.EventManager.NextId, line.Trim());
+                    }
+                    else
+                    {
+                        target = new Event(Workspace.Document.EventManager.NextId)
+                        {
+                            Text = line.Trim(),
+                        };
+                    }
                     Workspace.Document.EventManager.AddLast(target);
                     newEvents.Add(target);
                 }
@@ -128,7 +143,7 @@ public partial class TabItemViewModel : ViewModelBase
             if (editedEvents.Count != 0)
                 Workspace.Commit(editedEvents, ChangeType.Modify);
             if (newEvents.Count != 0)
-                Workspace.Commit(newEvents, ChangeType.Add);
+                Workspace.Commit(newEvents, ChangeType.Add, true);
             if (newEvents.Count != 0 && editedEvents.Count != 0)
                 Workspace.SelectionManager.Select(
                     newEvents.Concat(editedEvents).OrderBy(e => e.Id).Last()
