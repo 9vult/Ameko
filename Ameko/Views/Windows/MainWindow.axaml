@@ -21,6 +21,8 @@
 
         Width="1120"
         Height="650"
+        MinWidth="650"
+        MinHeight="500"
         Icon="/Assets/Ameko-Simplified-BG-64.ico"
         Title="{Binding WindowTitle}">
     <!-- <Design.DataContext> -->
