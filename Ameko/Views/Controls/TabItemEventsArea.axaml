@@ -20,7 +20,6 @@
 		<converters:GridPaddingConverter x:Key="PaddingConverter" />
 		<converters:EventTextLengthConverter x:Key="TextLengthConverter" />
 		<converters:CommentConverter x:Key="CommentConverter" />
-		<converters:CpsWarnConverter x:Key="CpsWarnConverter" />
 	</UserControl.Resources>
     <DataGrid Name="EventsGrid"
               IsReadOnly="True"

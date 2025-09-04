@@ -16,7 +16,7 @@ internal record ProjectModel
     public required double Version;
     public required ProjectItemModel[] ReferencedDocuments;
     public required string[] Styles;
-    public required int? Cps;
+    public required uint? Cps;
     public required bool? CpsIncludesWhitespace;
     public required bool? CpsIncludesPunctuation;
     public required bool? UseSoftLinebreaks;

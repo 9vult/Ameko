@@ -19,7 +19,7 @@ namespace Ameko.Views.Controls;
 public partial class TabItemEditorArea : ReactiveUserControl<TabItemViewModel>
 {
     private bool UseSoftLinebreaks =>
-        ViewModel?.IProjectProvider.Current.UseSoftLinebreaks
+        ViewModel?.ProjectProvider.Current.UseSoftLinebreaks
         ?? ViewModel?.Configuration.UseSoftLinebreaks
         ?? false;
 

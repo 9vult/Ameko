@@ -3,6 +3,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Ameko.Converters;
 using Ameko.Services;
 using Ameko.Utilities;
 using Ameko.ViewModels.Windows;
@@ -45,6 +46,12 @@ public partial class App : Application
 
         // Set up the tab item template
         Resources["WorkspaceTabTemplate"] = new WorkspaceTabTemplate(provider);
+
+        // Set up the CPS warn converter
+        Resources["CpsWarnConverter"] = new CpsWarnConverter(
+            provider.GetRequiredService<IProjectProvider>(),
+            provider.GetRequiredService<IConfiguration>()
+        );
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
