@@ -207,12 +207,26 @@ public partial class TabItemViewModel : ViewModelBase
                 );
             }
             // Get or create the next event to select
+            var toRemove = selectionManager.ActiveEvent;
             var nextEvent =
-                eventManager.GetBefore(selectionManager.ActiveEvent.Id)
-                ?? eventManager.GetOrCreateAfter(selectionManager.ActiveEvent.Id);
+                eventManager.GetBefore(toRemove.Id) ?? eventManager.GetAfter(toRemove.Id);
 
-            eventManager.Remove(selectionManager.ActiveEvent.Id);
-            Workspace.Commit(nextEvent, ChangeType.Remove);
+            if (nextEvent is null) // We're deleting the only event, need a new "default event"
+            {
+                nextEvent = eventManager.GetOrCreateAfter(toRemove.Id);
+                nextEvent.Start = Time.FromSeconds(0);
+                nextEvent.End = Time.FromSeconds(5);
+
+                eventManager.Remove(toRemove.Id);
+                Workspace.Commit(nextEvent, ChangeType.Add);
+                Workspace.Commit(toRemove, ChangeType.Remove, true);
+            }
+            else
+            {
+                eventManager.Remove(toRemove.Id);
+                Workspace.Commit(toRemove, ChangeType.Remove);
+            }
+
             selectionManager.Select(nextEvent);
         });
     }
