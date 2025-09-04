@@ -2,21 +2,23 @@
 
 using System;
 using System.Globalization;
-using Avalonia;
+using AssCS;
 using Avalonia.Data.Converters;
+using Avalonia.Media;
 
 namespace Ameko.Converters;
 
 /// <summary>
-/// Converter limiting text length in the grid
+/// Converter for identifying comments in the grid
 /// </summary>
-public class EventTextLengthConverter : IValueConverter
+public class CommentConverter : IValueConverter
 {
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        if (value is not string text)
-            return null;
-        return text.Length <= 256 ? text : text[..256];
+        if (value is not true)
+            return Brushes.Transparent;
+
+        return new SolidColorBrush(Colors.LightGray, 0.3);
     }
 
     public object? ConvertBack(
