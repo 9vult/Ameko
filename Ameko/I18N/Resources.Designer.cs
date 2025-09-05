@@ -825,6 +825,15 @@ namespace Ameko.I18N {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Open an existing subtitle file or create a new one to begin..
+        /// </summary>
+        public static string Tab_NothingLoaded {
+            get {
+                return ResourceManager.GetString("Tab_NothingLoaded", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Toolbox.
         /// </summary>
         public static string Toolbox_Header {

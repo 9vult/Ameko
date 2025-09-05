@@ -9,6 +9,7 @@
         d:DesignHeight="450"
 
         xmlns:c="using:Ameko.Views.Controls"
+        xmlns:converters="clr-namespace:Ameko.Converters"
         xmlns:holo="clr-namespace:Holo;assembly=Holo"
         xmlns:i18n="clr-namespace:Ameko.I18N"
         xmlns:icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
@@ -30,6 +31,9 @@
     <!--          to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
     <!--     <vm:MainWindowViewModel/> -->
     <!-- </Design.DataContext> -->
+    <Window.Resources>
+        <converters:NullToBoolConverter x:Key="NullToBoolConverter" />
+    </Window.Resources>
     
     <DockPanel>
         <c:MenuStrip DockPanel.Dock="Top"
@@ -49,40 +53,50 @@
             <c:ProjectExplorer Name="ProjectExplorer"
                                 Grid.Column="0" />
             <GridSplitter Grid.Column="1" ResizeDirection="Columns" />
-            <TabControl Grid.Column="2"
+            <Grid Grid.Column="2">
+                <TextBlock Text="{x:Static i18n:Resources.Tab_NothingLoaded}"
+                           IsVisible="{Binding ProjectProvider.Current.WorkingSpace,
+                                               Converter={StaticResource NullToBoolConverter}}"
+                           VerticalAlignment="Center"
+                           HorizontalAlignment="Center" />
+                <TabControl 
                         Name="WorkspaceTabControl"
+                        IsVisible="{Binding ProjectProvider.Current.WorkingSpace,
+                                            Converter={StaticResource NullToBoolConverter},
+                                            ConverterParameter=.}"
                         ItemsSource="{Binding ProjectProvider.Current.LoadedWorkspaces}"
                         SelectedItem="{Binding ProjectProvider.Current.WorkingSpace}"
                         TabStripPlacement="Bottom">
-                <TabControl.ItemTemplate>
-                    <DataTemplate DataType="{x:Type holo:Workspace}">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="{Binding DisplayTitle, Mode=OneWay}" />
-                            <Button Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).CloseTabCommand, FallbackValue=.}"
-                                    CommandParameter="{Binding Id}"
-                                    ToolTip.Tip="{x:Static i18n:Resources.Tab_CloseButton_ToolTip}">
-                                <icons:MaterialIconExt Kind="CloseBox" />
-                                <Button.Styles>
-                                    <Style Selector="Button">
-                                        <Setter Property="Background" Value="Transparent" />
-                                        <Setter Property="Padding" Value="2 0 0 0" />
-                                        <Setter Property="BorderThickness" Value="0" />
-                                    </Style>
-                                </Button.Styles>
-                            </Button>
-                        </StackPanel>
-                    </DataTemplate>
-                </TabControl.ItemTemplate>
-                <TabControl.ContentTemplate>
-                    <DynamicResource ResourceKey="WorkspaceTabTemplate" />
-                </TabControl.ContentTemplate>
-                <TabControl.Styles>
-                    <Style Selector="TabItem">
-                        <Setter Property="Padding" Value="3 2 3 2" />
-                        <Setter Property="Margin" Value="0" />
-                    </Style>
-                </TabControl.Styles>
-            </TabControl>
+                    <TabControl.ItemTemplate>
+                        <DataTemplate DataType="{x:Type holo:Workspace}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{Binding DisplayTitle, Mode=OneWay}" />
+                                <Button Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).CloseTabCommand, FallbackValue=.}"
+                                        CommandParameter="{Binding Id}"
+                                        ToolTip.Tip="{x:Static i18n:Resources.Tab_CloseButton_ToolTip}">
+                                    <icons:MaterialIconExt Kind="CloseBox" />
+                                    <Button.Styles>
+                                        <Style Selector="Button">
+                                            <Setter Property="Background" Value="Transparent" />
+                                            <Setter Property="Padding" Value="2 0 0 0" />
+                                            <Setter Property="BorderThickness" Value="0" />
+                                        </Style>
+                                    </Button.Styles>
+                                </Button>
+                            </StackPanel>
+                        </DataTemplate>
+                    </TabControl.ItemTemplate>
+                    <TabControl.ContentTemplate>
+                        <DynamicResource ResourceKey="WorkspaceTabTemplate" />
+                    </TabControl.ContentTemplate>
+                    <TabControl.Styles>
+                        <Style Selector="TabItem">
+                            <Setter Property="Padding" Value="3 2 3 2" />
+                            <Setter Property="Margin" Value="0" />
+                        </Style>
+                    </TabControl.Styles>
+                </TabControl>
+            </Grid>
         </Grid>
     </DockPanel>
 
