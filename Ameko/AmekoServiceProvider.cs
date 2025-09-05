@@ -87,6 +87,7 @@ public static class AmekoServiceProvider
         Logger.Info($"Starting Ameko {VersionService.FullLabel}");
 
         // Load in other key services
+        _ = Provider.GetRequiredService<Directories>();
         _ = Provider.GetRequiredService<ScriptServiceLocator>();
         _ = Provider.GetRequiredService<AssOptionsBinder>();
 
