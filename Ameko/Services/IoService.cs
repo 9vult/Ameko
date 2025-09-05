@@ -36,9 +36,9 @@ public class IoService(
         }
 
         var writer = new AssWriter(wsp.Document, ConsumerService.AmekoInfo);
-        writer.Write(fileSystem, uri);
         wsp.SavePath = uri;
         wsp.IsSaved = true;
+        writer.Write(fileSystem, uri);
         Log.Info($"Saved subtitle file {wsp.Title}");
         return true;
     }
@@ -56,9 +56,9 @@ public class IoService(
         }
 
         var writer = new AssWriter(wsp.Document, ConsumerService.AmekoInfo);
-        writer.Write(fileSystem, uri);
         wsp.SavePath = uri;
         wsp.IsSaved = true;
+        writer.Write(fileSystem, uri);
         Log.Info($"Saved subtitle file {wsp.Title}");
         return true;
     }
