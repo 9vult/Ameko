@@ -46,7 +46,10 @@ public partial class TabItemViewModel : ViewModelBase
         {
             var lines = await PasteEvents.Handle(this);
             if (lines is null || lines.Length == 0)
+            {
+                _messageService.Enqueue(I18N.Other.Message_ClipboardEmpty, TimeSpan.FromSeconds(5));
                 return;
+            }
 
             var events = new List<Event>();
             foreach (var line in lines)
@@ -87,7 +90,10 @@ public partial class TabItemViewModel : ViewModelBase
         {
             var lines = await PasteEvents.Handle(this);
             if (lines is null || lines.Length == 0)
+            {
+                _messageService.Enqueue(I18N.Other.Message_ClipboardEmpty, TimeSpan.FromSeconds(5));
                 return;
+            }
 
             var vm = new PasteOverDialogViewModel(lines);
             var fields = (await ShowPasteOverDialog.Handle(vm))?.Fields ?? EventField.None;

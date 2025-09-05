@@ -87,6 +87,12 @@ public partial class TabItem : ReactiveUserControl<TabItemViewModel>
             return;
         }
 
+        if (string.IsNullOrWhiteSpace(output))
+        {
+            interaction.SetOutput([]);
+            return;
+        }
+
         interaction.SetOutput(output.Split(Environment.NewLine));
     }
 

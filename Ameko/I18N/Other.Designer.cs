@@ -213,6 +213,15 @@ namespace Ameko.I18N {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Clipboard was empty!.
+        /// </summary>
+        public static string Message_ClipboardEmpty {
+            get {
+                return ResourceManager.GetString("Message_ClipboardEmpty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Please choose a name for the directory:.
         /// </summary>
         public static string MsgBox_NameDirectory_Body {

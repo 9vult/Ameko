@@ -111,4 +111,7 @@
     <data name="CrashReporter_Info" xml:space="preserve">
         <value>The details of the error are as follows:</value>
     </data>
+    <data name="Message_ClipboardEmpty" xml:space="preserve">
+        <value>Clipboard was empty!</value>
+    </data>
 </root>
