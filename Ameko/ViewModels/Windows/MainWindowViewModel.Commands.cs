@@ -297,14 +297,16 @@ public partial class MainWindowViewModel : ViewModelBase
     /// <summary>
     /// Close the currently active tab
     /// </summary>
-    private ReactiveCommand<int, Unit> CreateCloseTabCommand()
+    private ReactiveCommand<int?, Unit> CreateCloseTabCommand()
     {
         return ReactiveCommand.CreateFromTask(
-            async (int id) =>
+            async (int? id) =>
             {
                 if (ProjectProvider.Current.IsWorkspaceLoaded)
                 {
-                    var wsp = ProjectProvider.Current.GetWorkspace(id);
+                    var wsp = id.HasValue
+                        ? ProjectProvider.Current.GetWorkspace(id.Value)
+                        : ProjectProvider.Current.WorkingSpace;
                     if (wsp is null)
                         return;
 
