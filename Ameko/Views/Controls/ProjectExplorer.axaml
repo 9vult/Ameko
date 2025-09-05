@@ -52,7 +52,10 @@
                         <!-- Directories -->
                         <TreeDataTemplate DataType="holo:DirectoryItem"
                                           ItemsSource="{Binding Children}">
-                            <TextBlock Text="{Binding Title}">
+                            <TextBlock HorizontalAlignment="Stretch"
+                                       VerticalAlignment="Stretch"
+                                       Background="Transparent"
+                                       Text="{Binding Title}">
                                 <TextBlock.ContextMenu>
                                     <ContextMenu>
                                         <MenuItem Header="{x:Static i18n:Resources.ProjectExplorer_ContextMenu_Rename}"
