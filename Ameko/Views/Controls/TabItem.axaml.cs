@@ -113,17 +113,21 @@ public partial class TabItem : ReactiveUserControl<TabItemViewModel>
         > interaction
     )
     {
-        var window = TopLevel.GetTopLevel(this);
-        if (window is null)
+        await Dispatcher.UIThread.InvokeAsync(async () =>
         {
-            interaction.SetOutput(
-                new FileModifiedDialogClosedMessage(FileModifiedDialogClosedResult.Ignore)
-            );
-            return;
-        }
-        var dialog = new FileModifiedDialog { DataContext = interaction.Input };
-        var result = await dialog.ShowDialog<FileModifiedDialogClosedMessage>((Window)window);
-        interaction.SetOutput(result);
+            var window = TopLevel.GetTopLevel(this);
+            if (window is null)
+            {
+                interaction.SetOutput(
+                    new FileModifiedDialogClosedMessage(FileModifiedDialogClosedResult.Ignore)
+                );
+                return;
+            }
+
+            var dialog = new FileModifiedDialog { DataContext = interaction.Input };
+            var result = await dialog.ShowDialog<FileModifiedDialogClosedMessage>((Window)window);
+            interaction.SetOutput(result);
+        });
     }
 
     public TabItem()
