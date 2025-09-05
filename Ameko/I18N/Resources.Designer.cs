@@ -789,7 +789,7 @@ namespace Ameko.I18N {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Remove from Workspace.
+        ///   Looks up a localized string similar to Remove from Project.
         /// </summary>
         public static string ProjectExplorer_ContextMenu_Remove {
             get {

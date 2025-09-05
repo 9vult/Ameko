@@ -229,7 +229,7 @@
         <value>_About Ameko...</value>
     </data>
     <data name="ProjectExplorer_ContextMenu_Remove" xml:space="preserve">
-        <value>Remove from Workspace</value>
+        <value>Remove from Project</value>
     </data>
     <data name="ProjectExplorer_ContextMenu_Open" xml:space="preserve">
         <value>Open</value>
