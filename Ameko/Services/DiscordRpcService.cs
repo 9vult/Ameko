@@ -26,7 +26,7 @@ public class DiscordRpcService
     private readonly DiscordRpcClient _client;
     private readonly Timestamps _timestamps;
 
-    public void Update(WorkingSpaceChangedMessage _)
+    public void Update(WorkingSpaceChangedMessage? _)
     {
         var prjName = _projectProvider.Current.Title;
         var wspName = _projectProvider.Current.WorkingSpace?.SavePath is not null
@@ -64,7 +64,9 @@ public class DiscordRpcService
         _client.Initialize();
         _timestamps = Timestamps.Now;
 
+        Logger.Info("Discord RPC Initialized");
         MessageBus.Current.Listen<WorkingSpaceChangedMessage>().Subscribe(Update);
+        Update(null);
     }
 
     ~DiscordRpcService()

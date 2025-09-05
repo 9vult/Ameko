@@ -71,6 +71,7 @@ public partial class App : Application
             InitializeKeybindService(provider);
             InitializeScriptService(provider);
             InitializePackageManager(provider);
+            InitializeDiscordRpcService(provider);
         });
     }
 
@@ -96,6 +97,15 @@ public partial class App : Application
     {
         // Commence keybind registration
         _ = provider.GetRequiredService<IKeybindService>();
+    }
+
+    /// <summary>
+    /// Initialize the Discord rich presence service
+    /// </summary>
+    /// <param name="provider"></param>
+    private static void InitializeDiscordRpcService(IServiceProvider provider)
+    {
+        _ = provider.GetRequiredService<DiscordRpcService>();
     }
 
     /// <summary>
