@@ -53,7 +53,7 @@
             <c:ProjectExplorer Name="ProjectExplorer"
                                 Grid.Column="0" />
             <GridSplitter Grid.Column="1" ResizeDirection="Columns" />
-            <Grid Grid.Column="2">
+            <Grid Name="TabControlHost" Grid.Column="2">
                 <TextBlock Text="{x:Static i18n:Resources.Tab_NothingLoaded}"
                            IsVisible="{Binding ProjectProvider.Current.WorkingSpace,
                                                Converter={StaticResource NullToBoolConverter}}"
