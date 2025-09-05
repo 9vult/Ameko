@@ -40,6 +40,23 @@ public partial class TabItem : ReactiveUserControl<TabItemViewModel>
         interaction.SetOutput(output);
     }
 
+    private async Task DoCopyStrippedEventsAsync(
+        IInteractionContext<TabItemViewModel, string?> interaction
+    )
+    {
+        var window = TopLevel.GetTopLevel(this);
+        var selection = interaction.Input.Workspace.SelectionManager.SelectedEventCollection;
+        if (window is null || selection.Count == 0)
+        {
+            interaction.SetOutput(string.Empty);
+            return;
+        }
+
+        var output = string.Join(Environment.NewLine, selection.Select(e => e.GetStrippedText()));
+        await window.Clipboard!.SetTextAsync(output);
+        interaction.SetOutput(output);
+    }
+
     private async Task DoCutEventsAsync(IInteractionContext<TabItemViewModel, string?> interaction)
     {
         await DoCopyEventsAsync(interaction);
@@ -162,6 +179,7 @@ public partial class TabItem : ReactiveUserControl<TabItemViewModel>
                     );
 
                     vm.CopyEvents.RegisterHandler(DoCopyEventsAsync);
+                    vm.CopyStrippedEvents.RegisterHandler(DoCopyStrippedEventsAsync);
                     vm.CutEvents.RegisterHandler(DoCutEventsAsync);
                     vm.PasteEvents.RegisterHandler(DoPasteEventsAsync);
                     vm.ShowPasteOverDialog.RegisterHandler(DoShowPasteOverDialogAsync);

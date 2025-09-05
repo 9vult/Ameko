@@ -97,6 +97,9 @@
 			    <MenuItem Header="{x:Static i18n:Resources.EventsGrid_Menu_Copy}"
 			              Icon="{icons:MaterialIconExt Kind=ContentCopy}"
 			              Command="{Binding CopyEventsCommand}" />
+			    <MenuItem Header="{x:Static i18n:Resources.EventsGrid_Menu_CopyStripped}"
+			              Icon="{icons:MaterialIconExt Kind=InvoiceExportOutline}"
+			              Command="{Binding CopyStrippedEventsCommand}" />
 			    <MenuItem Header="{x:Static i18n:Resources.EventsGrid_Menu_Cut}"
 			              Icon="{icons:MaterialIconExt Kind=ContentCut}"
 			              Command="{Binding CutEventsCommand}" />

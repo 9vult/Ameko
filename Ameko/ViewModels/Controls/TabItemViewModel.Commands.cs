@@ -158,6 +158,17 @@ public partial class TabItemViewModel : ViewModelBase
     }
 
     /// <summary>
+    /// Command for copying stripped (plaintext) events to the clipboard
+    /// </summary>
+    private ReactiveCommand<Unit, Unit> CreateCopyStrippedEventsCommand()
+    {
+        return ReactiveCommand.CreateFromTask(async () =>
+        {
+            await CopyStrippedEvents.Handle(this);
+        });
+    }
+
+    /// <summary>
     /// Duplicate selected events
     /// </summary>
     private ReactiveCommand<Unit, Unit> CreateDuplicateEventsCommand()
