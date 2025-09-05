@@ -456,7 +456,7 @@ namespace Ameko.I18N {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to _Export Subtitles....
+        ///   Looks up a localized string similar to _Export Subtitle as Text....
         /// </summary>
         public static string Menu_ExportSubtitles {
             get {
