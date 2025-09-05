@@ -483,7 +483,7 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
 
     private void GenerateLayoutsMenu()
     {
-        if (ViewModel is null)
+        if (ViewModel is null || ViewModel.DisplayInWindowMenu)
             return;
 
         Logger.Debug("Regenerating layouts native menu...");
@@ -514,7 +514,7 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
 
     private void GenerateScriptsMenu()
     {
-        if (ViewModel is null)
+        if (ViewModel is null || ViewModel.DisplayInWindowMenu)
             return;
 
         Logger.Debug("Regenerating scripts native menu...");

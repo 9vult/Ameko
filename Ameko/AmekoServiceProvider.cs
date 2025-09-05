@@ -82,13 +82,13 @@ public static class AmekoServiceProvider
 
         Provider = services.BuildServiceProvider();
 
-        // Load the logger and locator services immediately
+        // Load the logger immediately
         _ = Provider.GetRequiredService<ILogProvider>();
-        _ = Provider.GetRequiredService<ScriptServiceLocator>();
-        _ = Provider.GetRequiredService<DiscordRpcService>();
-        _ = Provider.GetRequiredService<AssOptionsBinder>();
+        Logger.Info($"Starting Ameko {VersionService.FullLabel}");
 
-        Logger.Info("Ameko and Holo are ready to go!");
+        // Load in other key services
+        _ = Provider.GetRequiredService<ScriptServiceLocator>();
+        _ = Provider.GetRequiredService<AssOptionsBinder>();
 
         return Provider;
     }
