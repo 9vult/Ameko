@@ -300,4 +300,7 @@
     <data name="EventsGrid_Menu_SplitLineKeepTimes" xml:space="preserve">
         <value>Split Lines on Linebreaks (Keep Times)</value>
     </data>
+    <data name="Tab_NothingLoaded" xml:space="preserve">
+        <value>Open an existing subtitle file or create a new one to begin.</value>
+    </data>
 </root>

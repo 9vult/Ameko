@@ -570,19 +570,6 @@ public class Project : BindableBase
                 .ToList()
                 .ForEach(prj.StyleManager.Add);
 
-            // Load first workspace or create a new one
-            var first = prj._referencedItems.FirstOrDefault();
-            if (first is null)
-            {
-                var wsp = prj.AddWorkspace();
-                first = new DocumentItem { Id = wsp.Id, Workspace = wsp };
-            }
-            else
-            {
-                prj.OpenDocument(first.Id);
-            }
-
-            prj.WorkingSpace = first.Workspace!;
             prj.IsSaved = true;
             return prj;
         }
