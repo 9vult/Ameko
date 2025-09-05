@@ -22,6 +22,7 @@ public partial class TabItemViewModel : ViewModelBase
     #region Interactions
 
     public Interaction<TabItemViewModel, string?> CopyEvents { get; }
+    public Interaction<TabItemViewModel, string?> CopyStrippedEvents { get; }
     public Interaction<TabItemViewModel, string?> CutEvents { get; }
     public Interaction<TabItemViewModel, string[]?> PasteEvents { get; }
     public Interaction<
@@ -49,6 +50,9 @@ public partial class TabItemViewModel : ViewModelBase
 
     [KeybindTarget("ameko.event.pasteOver", "Ctrl+Shift+V")]
     public ICommand PasteOverEventsCommand { get; }
+
+    [KeybindTarget("ameko.event.copyStripped", "Ctrl+C")]
+    public ICommand CopyStrippedEventsCommand { get; }
 
     [KeybindTarget("ameko.event.duplicate", "Ctrl+D")]
     public ICommand DuplicateEventsCommand { get; }
@@ -167,6 +171,7 @@ public partial class TabItemViewModel : ViewModelBase
     {
         #region Interactions
         CopyEvents = new Interaction<TabItemViewModel, string?>();
+        CopyStrippedEvents = new Interaction<TabItemViewModel, string?>();
         CutEvents = new Interaction<TabItemViewModel, string?>();
         PasteEvents = new Interaction<TabItemViewModel, string[]?>();
         ShowPasteOverDialog =
@@ -181,6 +186,7 @@ public partial class TabItemViewModel : ViewModelBase
         CutEventsCommand = CreateCutEventsCommand();
         PasteEventsCommand = CreatePasteEventsCommand();
         PasteOverEventsCommand = CreatePasteOverEventsCommand();
+        CopyStrippedEventsCommand = CreateCopyStrippedEventsCommand();
         DuplicateEventsCommand = CreateDuplicateEventsCommand();
         InsertEventBeforeCommand = CreateInsertEventBeforeCommand();
         InsertEventAfterCommand = CreateInsertEventAfterCommand();

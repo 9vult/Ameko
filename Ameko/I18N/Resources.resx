@@ -303,4 +303,7 @@
     <data name="Tab_NothingLoaded" xml:space="preserve">
         <value>Open an existing subtitle file or create a new one to begin.</value>
     </data>
+    <data name="EventsGrid_Menu_CopyStripped" xml:space="preserve">
+        <value>Copy (Stripped)</value>
+    </data>
 </root>
