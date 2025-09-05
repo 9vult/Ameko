@@ -30,7 +30,6 @@ public partial class MainWindowViewModel : ViewModelBase
 
     private readonly IServiceProvider _serviceProvider;
     private readonly IStylesManagerFactory _stylesManagerFactory;
-    private readonly IIoService _ioService;
     private readonly IMessageService _messageService;
     private readonly ISpellcheckService _spellcheckService;
     private readonly IDictionaryService _dictionaryService;
@@ -192,6 +191,7 @@ public partial class MainWindowViewModel : ViewModelBase
 
     public IProjectProvider ProjectProvider { get; }
     public IKeybindService KeybindService { get; }
+    public IIoService IoService { get; }
     public GitToolboxViewModel GitToolboxViewModel { get; }
 
     public ObservableCollection<TemplatedControl> ScriptMenuItems { get; }
@@ -277,7 +277,7 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         _serviceProvider = serviceProvider;
         _fileSystem = fileSystem;
-        _ioService = ioService;
+        IoService = ioService;
         LayoutProvider = layoutProvider;
         ProjectProvider = projectProvider;
         _stylesManagerFactory = stylesManagerFactory;

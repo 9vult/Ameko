@@ -133,7 +133,7 @@ public partial class MainWindowViewModel : ViewModelBase
         {
             if (ProjectProvider.Current.IsWorkspaceLoaded)
             {
-                _ = await _ioService.SaveSubtitle(
+                _ = await IoService.SaveSubtitle(
                     SaveSubtitleAs,
                     ProjectProvider.Current.WorkingSpace
                 );
@@ -150,7 +150,7 @@ public partial class MainWindowViewModel : ViewModelBase
         {
             if (ProjectProvider.Current.IsWorkspaceLoaded)
             {
-                _ = await _ioService.SaveSubtitleAs(
+                _ = await IoService.SaveSubtitleAs(
                     SaveSubtitleAs,
                     ProjectProvider.Current.WorkingSpace
                 );
@@ -167,7 +167,7 @@ public partial class MainWindowViewModel : ViewModelBase
         {
             if (ProjectProvider.Current.IsWorkspaceLoaded)
             {
-                _ = await _ioService.ExportSubtitle(
+                _ = await IoService.ExportSubtitle(
                     ExportSubtitle,
                     ProjectProvider.Current.WorkingSpace
                 );
@@ -193,7 +193,7 @@ public partial class MainWindowViewModel : ViewModelBase
 
             foreach (var wsp in ProjectProvider.Current.LoadedWorkspaces.ToArray())
             {
-                await _ioService.SafeCloseWorkspace(wsp, SaveSubtitleAs, false);
+                await IoService.SafeCloseWorkspace(wsp, SaveSubtitleAs, false);
             }
 
             if (ProjectProvider.Current.LoadedWorkspaces.Count > 0)
@@ -232,7 +232,7 @@ public partial class MainWindowViewModel : ViewModelBase
 
                 foreach (var wsp in ProjectProvider.Current.LoadedWorkspaces.ToArray())
                 {
-                    await _ioService.SafeCloseWorkspace(wsp, SaveSubtitleAs, false);
+                    await IoService.SafeCloseWorkspace(wsp, SaveSubtitleAs, false);
                 }
 
                 if (ProjectProvider.Current.LoadedWorkspaces.Count > 0)
@@ -267,7 +267,7 @@ public partial class MainWindowViewModel : ViewModelBase
 
             foreach (var wsp in ProjectProvider.Current.LoadedWorkspaces.ToArray())
             {
-                await _ioService.SafeCloseWorkspace(wsp, SaveSubtitleAs, false);
+                await IoService.SafeCloseWorkspace(wsp, SaveSubtitleAs, false);
             }
 
             if (ProjectProvider.Current.LoadedWorkspaces.Count > 0)
@@ -290,7 +290,7 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         return ReactiveCommand.CreateFromTask(async () =>
         {
-            _ = await _ioService.SaveProject(SaveProjectAs, ProjectProvider.Current);
+            _ = await IoService.SaveProject(SaveProjectAs, ProjectProvider.Current);
         });
     }
 
@@ -311,7 +311,7 @@ public partial class MainWindowViewModel : ViewModelBase
                         return;
 
                     Logger.Debug($"Closing tab {wsp.Title}");
-                    await _ioService.SafeCloseWorkspace(wsp, SaveSubtitleAs);
+                    await IoService.SafeCloseWorkspace(wsp, SaveSubtitleAs);
                 }
             }
         );
@@ -328,7 +328,7 @@ public partial class MainWindowViewModel : ViewModelBase
 
             foreach (var wsp in ProjectProvider.Current.LoadedWorkspaces.ToArray())
             {
-                await _ioService.SafeCloseWorkspace(wsp, SaveSubtitleAs, false);
+                await IoService.SafeCloseWorkspace(wsp, SaveSubtitleAs, false);
             }
 
             if (ProjectProvider.Current.LoadedWorkspaces.Count > 0)
@@ -348,17 +348,31 @@ public partial class MainWindowViewModel : ViewModelBase
     /// <summary>
     /// Quit the application
     /// </summary>
-    private static ReactiveCommand<Unit, Unit> CreateQuitCommand()
+    private ReactiveCommand<Unit, Unit> CreateQuitCommand()
     {
-        return ReactiveCommand.Create(() =>
+        return ReactiveCommand.CreateFromTask(async () =>
         {
+            Logger.Debug("Preparing to quit");
+
+            foreach (var wsp in ProjectProvider.Current.LoadedWorkspaces.ToArray())
+            {
+                await IoService.SafeCloseWorkspace(wsp, SaveSubtitleAs, false);
+            }
+
+            if (ProjectProvider.Current.LoadedWorkspaces.Count > 0)
+            {
+                Logger.Info(
+                    $"Quit aborted - {ProjectProvider.Current.LoadedWorkspaces.Count} workspaces remain open"
+                );
+                return;
+            }
+
             if (
                 Application.Current?.ApplicationLifetime
                 is not IClassicDesktopStyleApplicationLifetime desktop
             )
                 return;
 
-            Logger.Info("Shutting down...");
             desktop.Shutdown();
         });
     }
