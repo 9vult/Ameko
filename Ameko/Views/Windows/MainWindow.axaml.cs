@@ -470,7 +470,7 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
             MainWindowGrid.ColumnDefinitions = columnDefinitions;
 
             ProjectExplorer.SetValue(Grid.ColumnProperty, 0);
-            WorkspaceTabControl.SetValue(Grid.ColumnProperty, 2);
+            TabControlHost.SetValue(Grid.ColumnProperty, 2);
         }
         else
         {
@@ -480,7 +480,7 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
             MainWindowGrid.ColumnDefinitions = columnDefinitions;
 
             ProjectExplorer.SetValue(Grid.ColumnProperty, 2);
-            WorkspaceTabControl.SetValue(Grid.ColumnProperty, 0);
+            TabControlHost.SetValue(Grid.ColumnProperty, 0);
         }
     }
 
