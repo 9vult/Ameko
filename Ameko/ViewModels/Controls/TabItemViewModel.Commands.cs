@@ -90,7 +90,7 @@ public partial class TabItemViewModel : ViewModelBase
                 return;
 
             var vm = new PasteOverDialogViewModel(lines);
-            var fields = (await ShowPasteOverDialog.Handle(vm)).Fields;
+            var fields = (await ShowPasteOverDialog.Handle(vm))?.Fields ?? EventField.None;
 
             if (fields == EventField.None)
                 return;

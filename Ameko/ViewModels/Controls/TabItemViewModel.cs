@@ -26,11 +26,11 @@ public partial class TabItemViewModel : ViewModelBase
     public Interaction<TabItemViewModel, string[]?> PasteEvents { get; }
     public Interaction<
         PasteOverDialogViewModel,
-        PasteOverDialogClosedMessage
+        PasteOverDialogClosedMessage?
     > ShowPasteOverDialog { get; }
     public Interaction<
         FileModifiedDialogViewModel,
-        FileModifiedDialogClosedMessage
+        FileModifiedDialogClosedMessage?
     > ShowFileModifiedDialog { get; }
     public Interaction<Event, Unit> ScrollToAndSelectEvent { get; }
 
@@ -168,9 +168,9 @@ public partial class TabItemViewModel : ViewModelBase
         CutEvents = new Interaction<TabItemViewModel, string?>();
         PasteEvents = new Interaction<TabItemViewModel, string[]?>();
         ShowPasteOverDialog =
-            new Interaction<PasteOverDialogViewModel, PasteOverDialogClosedMessage>();
+            new Interaction<PasteOverDialogViewModel, PasteOverDialogClosedMessage?>();
         ShowFileModifiedDialog =
-            new Interaction<FileModifiedDialogViewModel, FileModifiedDialogClosedMessage>();
+            new Interaction<FileModifiedDialogViewModel, FileModifiedDialogClosedMessage?>();
         ScrollToAndSelectEvent = new Interaction<Event, Unit>();
         #endregion
 
@@ -223,7 +223,7 @@ public partial class TabItemViewModel : ViewModelBase
                 new FileModifiedDialogViewModel(Workspace.Title)
             );
 
-            if (result.Result == FileModifiedDialogClosedResult.Ignore)
+            if (result?.Result == FileModifiedDialogClosedResult.Ignore)
                 return;
 
             throw new NotImplementedException("FileModifiedDialogClosedResult.SaveAs");
