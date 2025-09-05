@@ -28,6 +28,9 @@
                         <TreeDataTemplate DataType="holo:DocumentItem"
                                           ItemsSource="{Binding Children}">
                             <TextBlock Text="{Binding Title}"
+                                       HorizontalAlignment="Stretch"
+                                       VerticalAlignment="Stretch"
+                                       Background="Transparent"
                                        DoubleTapped="DocumentTreeItem_OnDoubleTapped">
                                 <TextBlock.ContextMenu>
                                     <ContextMenu>
