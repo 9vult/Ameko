@@ -113,6 +113,9 @@ public partial class MainWindowViewModel : ViewModelBase
     [KeybindTarget("ameko.workspace.close", "Ctrl+W")]
     public ICommand CloseTabCommand { get; }
 
+    [KeybindTarget("ameko.project.close")]
+    public ICommand CloseProjectCommand { get; }
+
     [KeybindTarget("ameko.application.quit", "Ctrl+Q")]
     public ICommand QuitCommand { get; }
 
@@ -330,8 +333,9 @@ public partial class MainWindowViewModel : ViewModelBase
         OpenFolderAsProjectCommand = CreateOpenFolderAsProjectCommand();
         SaveProjectCommand = CreateSaveProjectCommand();
         CloseTabCommand = CreateCloseTabCommand();
+        CloseProjectCommand = CreateCloseProjectCommand();
         QuitCommand = CreateQuitCommand();
-        //Edit
+        // Edit
         UndoCommand = CreateUndoCommand();
         RedoCommand = CreateRedoCommand();
         ShowSearchDialogCommand = CreateShowSearchDialogCommand();

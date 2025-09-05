@@ -318,6 +318,34 @@ public partial class MainWindowViewModel : ViewModelBase
     }
 
     /// <summary>
+    /// Close the currently active tab
+    /// </summary>
+    private ReactiveCommand<Unit, Unit> CreateCloseProjectCommand()
+    {
+        return ReactiveCommand.CreateFromTask(async () =>
+        {
+            Logger.Debug("Preparing to close project");
+
+            foreach (var wsp in ProjectProvider.Current.LoadedWorkspaces.ToArray())
+            {
+                await _ioService.SafeCloseWorkspace(wsp, SaveSubtitleAs, false);
+            }
+
+            if (ProjectProvider.Current.LoadedWorkspaces.Count > 0)
+            {
+                Logger.Info(
+                    $"Closing project aborted - {ProjectProvider.Current.LoadedWorkspaces.Count} workspaces remain open"
+                );
+                return;
+            }
+
+            var prj = new Project(_fileSystem);
+            ProjectProvider.Current = prj;
+            Logger.Debug("Successfully closed project and opened a new one");
+        });
+    }
+
+    /// <summary>
     /// Quit the application
     /// </summary>
     private static ReactiveCommand<Unit, Unit> CreateQuitCommand()
