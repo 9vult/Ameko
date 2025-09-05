@@ -102,4 +102,13 @@
     <data name="FileDialog_AttachReferenceFile_Title" xml:space="preserve">
         <value>Attach Reference File</value>
     </data>
+    <data name="CrashReporter_WindowTitle" xml:space="preserve">
+        <value>Ameko Crash Reporter</value>
+    </data>
+    <data name="CrashReporter_Header" xml:space="preserve">
+        <value>Ameko has crashed :(</value>
+    </data>
+    <data name="CrashReporter_Info" xml:space="preserve">
+        <value>The details of the error are as follows:</value>
+    </data>
 </root>
