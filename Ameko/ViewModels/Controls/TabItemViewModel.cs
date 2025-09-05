@@ -131,6 +131,7 @@ public partial class TabItemViewModel : ViewModelBase
     #endregion
 
     private readonly IScriptService _scriptService;
+    private readonly IMessageService _messageService;
 
     private readonly Workspace _workspace;
     private int _editBoxSelectionStart;
@@ -160,6 +161,7 @@ public partial class TabItemViewModel : ViewModelBase
         IKeybindService keybindService,
         IScriptService scriptService,
         ILayoutProvider layoutProvider,
+        IMessageService messageService,
         Workspace workspace
     )
     {
@@ -212,6 +214,7 @@ public partial class TabItemViewModel : ViewModelBase
 
         _workspace = workspace;
         _scriptService = scriptService;
+        _messageService = messageService;
         ProjectProvider = projectProvider;
         Configuration = configuration;
         KeybindService = keybindService;
