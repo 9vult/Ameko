@@ -125,7 +125,8 @@
                     <NativeMenuItemSeparator />
                     <NativeMenuItem Header="{x:Static i18n:Resources.Menu_CloseTab}"
                                     Command="{Binding CloseTabCommand} "/>
-                    <NativeMenuItem Header="{x:Static i18n:Resources.Menu_CloseProject}" />
+                    <NativeMenuItem Header="{x:Static i18n:Resources.Menu_CloseProject}"
+                                    Command="{Binding CloseProjectCommand}" />
                 </NativeMenu>
             </NativeMenuItem>
             <NativeMenuItem Header="{x:Static i18n:Resources.Menu_Edit}">

@@ -48,7 +48,8 @@
                       Icon="{icons:MaterialIconExt Kind=TabRemove}"
                       Command="{Binding CloseTabCommand}" />
             <MenuItem Header="{x:Static i18n:Resources.Menu_CloseProject}"
-                      Icon="{icons:MaterialIconExt Kind=ArchiveRemoveOutline}" />
+                      Icon="{icons:MaterialIconExt Kind=ArchiveRemoveOutline}"
+                      Command="{Binding CloseProjectCommand}" />
             <Separator />
             <MenuItem Header="{x:Static i18n:Resources.Menu_Quit}"
                       Icon="{icons:MaterialIconExt Kind=ExitRun}"
