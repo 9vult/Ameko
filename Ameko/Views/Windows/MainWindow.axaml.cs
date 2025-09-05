@@ -464,7 +464,7 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
 
         if (layout.Window.IsProjectExplorerOnLeft)
         {
-            var columnDefinitions = new ColumnDefinitions("Auto, 2, *");
+            var columnDefinitions = new ColumnDefinitions("115, 2, *");
             columnDefinitions[0].MinWidth = 100;
             columnDefinitions[2].MinWidth = 500;
             MainWindowGrid.ColumnDefinitions = columnDefinitions;
@@ -474,7 +474,7 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         }
         else
         {
-            var columnDefinitions = new ColumnDefinitions("*, 2, Auto");
+            var columnDefinitions = new ColumnDefinitions("*, 2, 115");
             columnDefinitions[0].MinWidth = 500;
             columnDefinitions[2].MinWidth = 100;
             MainWindowGrid.ColumnDefinitions = columnDefinitions;
