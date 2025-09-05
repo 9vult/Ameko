@@ -46,7 +46,7 @@
                    Text="{Binding CurrentMessage}" />
         <Grid Name="MainWindowGrid">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" MinWidth="100" />
+                <ColumnDefinition Width="115" MinWidth="100" />
                 <ColumnDefinition Width="2" />
                 <ColumnDefinition Width="*" MinWidth="500" />
             </Grid.ColumnDefinitions>
