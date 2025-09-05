@@ -34,6 +34,7 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
 
     private SearchDialog _searchDialog;
     private bool _isSearching = false;
+    private bool _canClose = false;
 
     private async Task DoShowOpenSubtitleDialogAsync(IInteractionContext<Unit, Uri[]> interaction)
     {
@@ -387,6 +388,8 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
             _isSearching = false;
         };
 
+        Closing += async (sender, args) => await OnWindowClosing(sender, args);
+
         this.WhenActivated(disposables =>
         {
             if (ViewModel is not null)
@@ -590,6 +593,34 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
                 ViewModel.OpenProjectNoGuiCommand.Execute(file.Path);
                 continue;
             }
+        }
+    }
+
+    private async Task OnWindowClosing(object? _, WindowClosingEventArgs e)
+    {
+        if (ViewModel is null || _canClose)
+        {
+            Logger.Info("Shutting down...");
+            return;
+        }
+
+        e.Cancel = true;
+
+        foreach (var wsp in ViewModel.ProjectProvider.Current.LoadedWorkspaces.ToArray())
+        {
+            await ViewModel.IoService.SafeCloseWorkspace(wsp, ViewModel.SaveSubtitleAs, false);
+        }
+
+        if (ViewModel.ProjectProvider.Current.LoadedWorkspaces.Count == 0)
+        {
+            _canClose = true;
+            Close();
+        }
+        else
+        {
+            Logger.Info(
+                $"Quit aborted - {ViewModel.ProjectProvider.Current.LoadedWorkspaces.Count} workspaces remain open"
+            );
         }
     }
 }
