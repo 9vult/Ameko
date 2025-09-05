@@ -416,8 +416,12 @@ public class MediaController : BindableBase
 
         // TODO: preferably not create a new writer on each change
         var writer = new AssWriter(document, new ConsumerInfo("", "", ""));
-        _provider.SetSubtitles(writer.Write(false), null);
-        _subtitlesChanged = true;
+        lock (_frameLock)
+        {
+            _provider.SetSubtitles(writer.Write(false), null);
+            _subtitlesChanged = true;
+        }
+
         RequestFrame(CurrentFrame);
     }
 
