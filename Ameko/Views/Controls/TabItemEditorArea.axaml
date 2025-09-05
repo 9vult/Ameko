@@ -182,6 +182,7 @@
                         Margin="2"
                         Padding="2 0"
                         ToolTip.Tip="{x:Static i18n:Resources.Editor_NextOrCreate_ToolTip}"
+                        Command="{Binding GetOrCreateAfterCommand}"
                         Content="{icons:MaterialIconExt Kind=CheckOutline}" />
             </WrapPanel>
             <TextBox Name="EditBox"
