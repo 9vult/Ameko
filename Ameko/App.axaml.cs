@@ -7,6 +7,8 @@ using Ameko.Converters;
 using Ameko.Services;
 using Ameko.Utilities;
 using Ameko.ViewModels.Windows;
+using Ameko.Views.Windows;
+using AssCS.Utilities;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core.Plugins;
@@ -58,9 +60,20 @@ public partial class App : Application
             // Avoid duplicate validations from both Avalonia and the CommunityToolkit.
             // More info: https://docs.avaloniaui.net/docs/guides/development-guides/data-validation#manage-validationplugins
             DisableAvaloniaDataAnnotationValidation();
-            var vm = provider.GetRequiredService<MainWindowViewModel>();
-            DataContext = vm;
-            desktop.MainWindow = new MainWindow { DataContext = vm };
+
+            if (Program.Args.Length == 2 && Program.Args[0] == "--display-crash-report")
+            {
+                var vm = new CrashReporterWindowViewModel(
+                    StringEncoder.Base64Decode(Program.Args[1])
+                );
+                desktop.MainWindow = new CrashReporterWindow { DataContext = vm };
+            }
+            else // Normal operation
+            {
+                var vm = provider.GetRequiredService<MainWindowViewModel>();
+                DataContext = vm;
+                desktop.MainWindow = new MainWindow { DataContext = vm };
+            }
         }
 
         base.OnFrameworkInitializationCompleted();
