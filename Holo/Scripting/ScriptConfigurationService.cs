@@ -32,7 +32,7 @@ public class ScriptConfigurationService(IFileSystem fileSystem) : IScriptConfigu
         {
             try
             {
-                value = element.Deserialize<T>();
+                value = element.Deserialize<T>(JsonOptions);
                 return value is not null;
             }
             catch
