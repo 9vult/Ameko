@@ -134,7 +134,10 @@ pub fn LoadVideo(g_ctx: *context.GlobalContext, file_name: [*c]u8, cache_file_na
 
         // Write the index to the cache
         // We can ignore the status of this because it doesn't really affect anything
-        _ = c.FFMS_WriteIndex(cache_file_name, index, &err_info);
+        const write_result = c.FFMS_WriteIndex(cache_file_name, index, &err_info);
+        if (write_result != 0) {
+            logger.Error(err_info.Buffer[0..err_buffer.len]);
+        }
     } else {
         c.FFMS_CancelIndexing(indexer);
     }
@@ -263,7 +266,7 @@ pub fn LoadVideo(g_ctx: *context.GlobalContext, file_name: [*c]u8, cache_file_na
         const rs_options = c.FFMS_CreateResampleOptions(ctx.audio_source);
         defer c.FFMS_DestroyResampleOptions(rs_options);
 
-        rs_options.*.SampleFormat = c.FFMS_FMT_S16;  // Use i16
+        rs_options.*.SampleFormat = c.FFMS_FMT_S16; // Use i16
         if (ctx.channel_count > 2) { // Downmix to stereo
             rs_options.*.ChannelLayout = c.FFMS_CH_FRONT_LEFT | c.FFMS_CH_FRONT_RIGHT;
             ctx.channel_count = 2;
