@@ -38,12 +38,13 @@
                           IsChecked="{Binding Workspace.SelectionManager.ActiveEvent.IsComment}"
                           Content="{x:Static i18n:Resources.Editor_IsComment_Label}"
                           ToolTip.Tip="{x:Static i18n:Resources.Editor_IsComment_ToolTip}"
-                          IsCheckedChanged="AnyControl_EventMetaChanged"/>
+                          Click="AnyControl_EventMetaChanged" />
                 <ComboBox Name="StyleList" 
                           Grid.Column="1"
                           Margin="2"
                           ItemsSource="{Binding Workspace.Document.StyleManager.Styles}"
-                          SelectedItem="{Binding Workspace.SelectionManager.ActiveEvent.Style, Converter={StaticResource StyleNameConverter}}"
+                          SelectedItem="{Binding Workspace.SelectionManager.ActiveEvent.Style,
+                                                 Converter={StaticResource StyleNameConverter}}"
                           ToolTip.Tip="{x:Static i18n:Resources.Editor_StyleBox_ToolTip}"
                           SelectionChanged="AnyControl_EventMetaChanged">
                     <ComboBox.ItemTemplate>
