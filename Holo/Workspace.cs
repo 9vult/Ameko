@@ -21,6 +21,7 @@ public class Workspace : BindableBase
     private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
     private FileSystemWatcher? _fileSystemWatcher;
     private DateTimeOffset? _lastWriteTime;
+    private DateTimeOffset? _lastExternalModificationAlertTime;
 
     private Uri? _savePath;
     private bool _isSaved;
@@ -314,7 +315,13 @@ public class Workspace : BindableBase
             && DateTimeOffset.Now - _lastWriteTime <= TimeSpan.FromSeconds(5)
         )
             return;
+        if (
+            _lastExternalModificationAlertTime is not null
+            && DateTimeOffset.Now - _lastExternalModificationAlertTime <= TimeSpan.FromSeconds(15)
+        )
+            return;
         // Also alert if last write time is null
+        _lastExternalModificationAlertTime = DateTimeOffset.Now;
         OnFileModifiedExternally?.Invoke(this, EventArgs.Empty);
     }
 
