@@ -1,0 +1,5 @@
+<Project>
+    <PropertyGroup Condition="'$(Configuration)'=='Release'">
+        <PathMap>$(SolutionDir)=Ameko</PathMap>
+    </PropertyGroup>
+</Project>
