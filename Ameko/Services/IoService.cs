@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Ameko.Utilities;
 using AssCS.IO;
 using Holo;
+using Holo.Models;
 using Holo.Providers;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Enums;
@@ -23,10 +24,11 @@ public class IoService(
 {
     private static readonly Logger Log = LogManager.GetCurrentClassLogger();
 
-    /// <inheritdoc cref="IIoService.SaveSubtitle"/>
+    /// <inheritdoc />
     public async Task<bool> SaveSubtitle(Interaction<string, Uri?> interaction, Workspace wsp)
     {
         Log.Info($"Preparing to save subtitle file {wsp.Title}");
+        var uriChanged = wsp.SavePath is null;
         var uri = wsp.SavePath ?? await interaction.Handle(wsp.Title);
 
         if (uri is null)
@@ -40,13 +42,21 @@ public class IoService(
         wsp.IsSaved = true;
         writer.Write(fileSystem, uri);
         Log.Info($"Saved subtitle file {wsp.Title}");
+
+        if (uriChanged)
+        {
+            var projItem = projectProvider.Current.FindItemById(wsp.Id);
+            if (projItem is not null)
+                projectProvider.Current.SetNameAndUri(projItem, wsp.Title, uri);
+        }
         return true;
     }
 
-    /// <inheritdoc cref="IIoService.SaveSubtitleAs"/>
+    /// <inheritdoc />
     public async Task<bool> SaveSubtitleAs(Interaction<string, Uri?> interaction, Workspace wsp)
     {
         Log.Info($"Preparing to save subtitle file {wsp.Title}");
+        var isForking = wsp.SavePath is not null;
         var uri = await interaction.Handle(wsp.Title);
 
         if (uri is null)
@@ -60,10 +70,25 @@ public class IoService(
         wsp.IsSaved = true;
         writer.Write(fileSystem, uri);
         Log.Info($"Saved subtitle file {wsp.Title}");
+
+        var projItem = projectProvider.Current.FindItemById(wsp.Id);
+        // The user is forking the file into a second file
+        if (isForking)
+        {
+            if (projItem is DocumentItem current)
+            {
+                var original = projectProvider.Current.Copy(current);
+                original.Workspace = null;
+            }
+        }
+
+        if (projItem is not null)
+            projectProvider.Current.SetNameAndUri(projItem, wsp.Title, uri);
+
         return true;
     }
 
-    /// <inheritdoc cref="IIoService.ExportSubtitle"/>
+    /// <inheritdoc />
     public async Task<bool> ExportSubtitle(Interaction<string, Uri?> interaction, Workspace wsp)
     {
         Log.Info($"Preparing to export subtitle file {wsp.Title}");
@@ -81,7 +106,7 @@ public class IoService(
         return true;
     }
 
-    /// <inheritdoc cref="IIoService.SafeCloseWorkspace"/>
+    /// <inheritdoc />
     public async Task<bool> SafeCloseWorkspace(
         Workspace wsp,
         Interaction<string, Uri?> saveAs,
@@ -126,7 +151,7 @@ public class IoService(
         }
     }
 
-    /// <inheritdoc cref="IIoService.SaveProject"/>
+    /// <inheritdoc />
     public async Task<bool> SaveProject(Interaction<string, Uri?> interaction, Project prj)
     {
         Log.Info($"Preparing to save project file {prj.Title}");
