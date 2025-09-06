@@ -35,7 +35,9 @@
                                 <TextBlock.ContextMenu>
                                     <ContextMenu>
                                         <MenuItem Header="{x:Static i18n:Resources.ProjectExplorer_ContextMenu_Open}"
-                                                  Icon="{icons:MaterialIconExt Kind=FolderOpenOutline}" />
+                                                  Icon="{icons:MaterialIconExt Kind=FolderOpenOutline}"
+                                                  CommandParameter="{Binding Id}"
+                                                  Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).OpenDocumentCommand, FallbackValue=.}"/>
                                         <Separator />
                                         <MenuItem Header="{x:Static i18n:Resources.ProjectExplorer_ContextMenu_Rename}"
                                                   Icon="{icons:MaterialIconExt Kind=RenameOutline}"
