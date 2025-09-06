@@ -198,6 +198,9 @@ public partial class TabItemViewModel : ViewModelBase
         ToggleTagCommand = CreateToggleTagCommand();
         ToggleCommentCommand = CreateToggleCommentCommand();
 
+        ShiftReferenceForwardCommand = CreateShiftReferenceForwardCommand();
+        ShiftReferenceBackwardCommand = CreateShiftReferenceBackwardCommand();
+
         ExecuteScriptCommand = CreateExecuteScriptCommand();
 
         // Video

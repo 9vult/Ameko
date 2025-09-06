@@ -49,11 +49,11 @@ public partial class PlaygroundWindowViewModel : ViewModelBase
 
         ResetCommand = ReactiveCommand.Create(Reset);
 
-        ExecuteCommand = ReactiveCommand.CreateFromTask(async () =>
+        ExecuteCommand = ReactiveCommand.Create(() =>
         {
             IsExecuting = true;
             persistence.PlaygroundCs = Document.Text;
-            Status = await scriptService.ExecutePlaygroundScriptAsync(Document.Text, true);
+            Status = scriptService.ExecutePlaygroundScript(Document.Text, true);
             IsExecuting = false;
         });
     }

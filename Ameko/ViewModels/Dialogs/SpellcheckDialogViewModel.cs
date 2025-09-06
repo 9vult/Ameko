@@ -95,14 +95,12 @@ public partial class SpellcheckDialogViewModel : ViewModelBase
         _spellcheckSuggestions = spellcheckService.CheckSpelling().GetEnumerator();
 
         _workspace = _projectProvider.Current.WorkingSpace;
-        if (_workspace is null)
-            return;
-        if (!tabFactory.TryGetViewModel(_workspace, out _tabVm))
-            return;
+        if (_workspace is not null)
+            tabFactory.TryGetViewModel(_workspace, out _tabVm);
 
         ChangeCommand = ReactiveCommand.CreateFromTask(async () =>
         {
-            if (!CanChange)
+            if (!CanChange || _workspace is null)
                 return;
 
             var replacement =

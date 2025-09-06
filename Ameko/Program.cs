@@ -43,14 +43,18 @@ sealed class Program
             BuildAvaloniaApp()
                 .StartWithClassicDesktopLifetime(args, ShutdownMode.OnMainWindowClose);
         }
+#if !DEBUG
         catch (Exception ex)
         {
-#if !DEBUG
             HandleUnhandledException("Application", ex);
-#else
             throw;
-#endif
         }
+#else
+        catch
+        {
+            throw;
+        }
+#endif
     }
 
     // Avalonia configuration, don't remove; also used by visual designer.
