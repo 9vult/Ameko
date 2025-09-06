@@ -88,10 +88,10 @@ file class MockPersistence : IPersistence
     public bool UseColorRing { get; set; } = true;
 
     /// <inheritdoc />
-    public string PlaygroundCs { get; set; }
+    public string PlaygroundCs { get; set; } = string.Empty;
 
     /// <inheritdoc />
-    public string PlaygroundJs { get; set; }
+    public string PlaygroundJs { get; set; } = string.Empty;
 
     public bool Save()
     {
