@@ -672,6 +672,38 @@ public class Project : BindableBase
     }
 
     /// <summary>
+    /// Copy a <see cref="DocumentItem"/>
+    /// </summary>
+    /// <param name="source">Source item</param>
+    /// <returns>Item with same content but different ID</returns>
+    public DocumentItem Copy(DocumentItem source)
+    {
+        var newItem = new DocumentItem
+        {
+            Id = NextId,
+            Uri = source.Uri,
+            Name = source.Name,
+            Workspace = source.Workspace,
+        };
+        _referencedItems.Add(newItem);
+        IsSaved = false;
+        return newItem;
+    }
+
+    /// <summary>
+    /// Set the name and URI of an item in the project
+    /// </summary>
+    /// <param name="item">Item to modify</param>
+    /// <param name="name">Name to set</param>
+    /// <param name="uri">URI to set</param>
+    public void SetNameAndUri(ProjectItem item, string name, Uri? uri)
+    {
+        item.Name = name;
+        item.Uri = uri;
+        IsSaved = false;
+    }
+
+    /// <summary>
     /// Remove a referenced <see cref="ProjectItem"/> by ID
     /// </summary>
     /// <param name="id">ID of the item to remove</param>
