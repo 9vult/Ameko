@@ -51,7 +51,7 @@
                                                   CommandParameter="{Binding Uri}"
                                                   Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).AttachReferenceFileNoGuiCommand, FallbackValue=.}" />
                                         <Separator />
-                                        <MenuItem Header="{x:Static i18n:Resources.ProjectExplorer_ContextMenu_Rename}"
+                                        <MenuItem Header="{x:Static i18n:Resources.ProjectExplorer_ContextMenu_ChangeDisplayName}"
                                                   Icon="{icons:MaterialIconExt Kind=RenameOutline}"
                                                   CommandParameter="{Binding Id}"
                                                   Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).RenameDocumentCommand, FallbackValue=.}" />
@@ -72,7 +72,7 @@
                                        Text="{Binding Title}">
                                 <TextBlock.ContextMenu>
                                     <ContextMenu>
-                                        <MenuItem Header="{x:Static i18n:Resources.ProjectExplorer_ContextMenu_Rename}"
+                                        <MenuItem Header="{x:Static i18n:Resources.ProjectExplorer_ContextMenu_ChangeDisplayName}"
                                                   Icon="{icons:MaterialIconExt Kind=RenameOutline}"
                                                   CommandParameter="{Binding Id}"
                                                   Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).RenameDirectoryCommand, FallbackValue=.}" />

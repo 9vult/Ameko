@@ -798,6 +798,15 @@ namespace Ameko.I18N {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Change Display Name....
+        /// </summary>
+        public static string ProjectExplorer_ContextMenu_ChangeDisplayName {
+            get {
+                return ResourceManager.GetString("ProjectExplorer_ContextMenu_ChangeDisplayName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Open.
         /// </summary>
         public static string ProjectExplorer_ContextMenu_Open {
@@ -812,15 +821,6 @@ namespace Ameko.I18N {
         public static string ProjectExplorer_ContextMenu_Remove {
             get {
                 return ResourceManager.GetString("ProjectExplorer_ContextMenu_Remove", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Rename....
-        /// </summary>
-        public static string ProjectExplorer_ContextMenu_Rename {
-            get {
-                return ResourceManager.GetString("ProjectExplorer_ContextMenu_Rename", resourceCulture);
             }
         }
         
