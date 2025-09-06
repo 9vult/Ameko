@@ -45,10 +45,13 @@
                                 Binding="{Binding End.UpdatableText}"
                                 CanUserResize="False" />
             <DataGridTemplateColumn Header="{x:Static i18n:Resources.EventsGrid_Header_Cps}"
-                                CanUserResize="False">
+                                CanUserResize="False"
+                                SortMemberPath="Cps">
 	            <DataGridTemplateColumn.CellTemplate>
 		            <DataTemplate>
 			            <TextBlock Text="{Binding Cps}"
+			                       HorizontalAlignment="Center"
+			                       VerticalAlignment="Center"
 			                       Background="{Binding Cps, 
 														Converter={StaticResource CpsWarnConverter}}" />
 		            </DataTemplate>
