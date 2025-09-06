@@ -147,9 +147,10 @@ public unsafe class MizukiSourceProvider : ISourceProvider
 
     private static string GetCachePath(string filePath)
     {
-        return Convert
+        var hash = Convert
             .ToBase64String(MD5.HashData(Encoding.UTF8.GetBytes(filePath)))
             .Replace('/', '_');
+        return Path.Combine(Directories.CacheHome, $"{hash}.ffindex");
     }
 }
 

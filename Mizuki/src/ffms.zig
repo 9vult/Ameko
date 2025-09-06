@@ -133,7 +133,6 @@ pub fn LoadVideo(g_ctx: *context.GlobalContext, file_name: [*c]u8, cache_file_na
         index = c.FFMS_DoIndexing2(indexer, c.FFMS_IEH_ABORT, &err_info);
 
         // Write the index to the cache
-        // We can ignore the status of this because it doesn't really affect anything
         const write_result = c.FFMS_WriteIndex(cache_file_name, index, &err_info);
         if (write_result != 0) {
             logger.Error(err_info.Buffer[0..err_buffer.len]);
