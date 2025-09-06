@@ -766,7 +766,8 @@ public class EventManager : BindableBase
     /// </summary>
     /// <remarks>
     /// Segments are computed based on `\N` or `\n` line breaks.
-    /// Timing is adjusted proportionally based on characters per second.
+    /// Timing is adjusted proportionally based on characters per second,
+    /// unless <paramref name="keepTimes"/> is <see langword="true"/>.
     /// </remarks>
     /// <param name="id">ID of the event to split</param>
     /// <param name="keepTimes">All resulting events have the same start and end times?</param>

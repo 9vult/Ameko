@@ -25,5 +25,6 @@ internal record ConfigurationModel
     public required string SpellcheckCulture;
     public required Theme Theme;
     public required uint GridPadding;
+    public required PropagateFields PropagateFields;
     public required string[] RepositoryUrls;
 }
