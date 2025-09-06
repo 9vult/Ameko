@@ -2,6 +2,7 @@
 
 using AssCS;
 using AssCS.History;
+using Holo.Configuration;
 using Holo.Media.Providers;
 using NLog;
 
@@ -249,6 +250,54 @@ public class Workspace : BindableBase
                         break;
                 }
             }
+        }
+    }
+
+    /// <summary>
+    /// Propagate changes made to the active event to the other selected events
+    /// </summary>
+    /// <param name="selection">Selected events</param>
+    /// <param name="progenitor">Initial state of the active event</param>
+    /// <param name="child">Current state of the active event</param>
+    /// <param name="fields">Which fields should be propagated</param>
+    private static void PropagateChanges(
+        IEnumerable<Event> selection,
+        Event progenitor,
+        Event child,
+        PropagateFields fields
+    )
+    {
+        if (fields == PropagateFields.None)
+            return;
+
+        foreach (var e in selection)
+        {
+            if (progenitor.IsComment != child.IsComment)
+                e.IsComment = child.IsComment;
+            if (progenitor.Layer != child.Layer)
+                e.Layer = child.Layer;
+            if (progenitor.Start != child.Start)
+                e.Start = child.Start;
+            if (progenitor.End != child.End)
+                e.End = child.End;
+            if (progenitor.Style != child.Style)
+                e.Style = child.Style;
+            if (progenitor.Actor != child.Actor)
+                e.Actor = child.Actor;
+            if (progenitor.Effect != child.Effect)
+                e.Effect = child.Effect;
+            if (progenitor.Margins.Left != child.Margins.Left)
+                e.Margins.Left = child.Margins.Left;
+            if (progenitor.Margins.Right != child.Margins.Right)
+                e.Margins.Right = child.Margins.Right;
+            if (progenitor.Margins.Vertical != child.Margins.Vertical)
+                e.Margins.Vertical = child.Margins.Vertical;
+
+            if (fields == PropagateFields.NonText)
+                continue;
+
+            if (progenitor.Text != child.Text)
+                e.Text = child.Text;
         }
     }
 

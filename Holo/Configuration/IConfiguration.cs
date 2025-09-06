@@ -87,6 +87,11 @@ public interface IConfiguration
     uint GridPadding { get; set; }
 
     /// <summary>
+    /// Which fields should propagate changes from the active event to other selected events
+    /// </summary>
+    PropagateFields PropagateFields { get; set; }
+
+    /// <summary>
     /// List of user-added repository URLs
     /// </summary>
     ReadOnlyObservableCollection<string> RepositoryUrls { get; }

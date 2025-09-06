@@ -54,6 +54,7 @@ public partial class Configuration : BindableBase, IConfiguration
     private string _spellcheckCulture;
     private Theme _theme;
     private uint _gridPadding;
+    private PropagateFields _propagateFields;
     private RangeObservableCollection<string> _repositoryUrls;
 
     /// <inheritdoc />
@@ -155,6 +156,13 @@ public partial class Configuration : BindableBase, IConfiguration
     }
 
     /// <inheritdoc />
+    public PropagateFields PropagateFields
+    {
+        get => _propagateFields;
+        set => SetProperty(ref _propagateFields, value);
+    }
+
+    /// <inheritdoc />
     public ReadOnlyObservableCollection<string> RepositoryUrls { get; }
 
     /// <inheritdoc />
@@ -209,6 +217,7 @@ public partial class Configuration : BindableBase, IConfiguration
                 SpellcheckCulture = _spellcheckCulture,
                 Theme = _theme,
                 GridPadding = _gridPadding,
+                PropagateFields = _propagateFields,
                 RepositoryUrls = RepositoryUrls.ToArray(),
             };
 
@@ -272,6 +281,7 @@ public partial class Configuration : BindableBase, IConfiguration
                 _spellcheckCulture = model.SpellcheckCulture,
                 _theme = model.Theme,
                 _gridPadding = model.GridPadding,
+                _propagateFields = model.PropagateFields,
                 _repositoryUrls = new RangeObservableCollection<string>(model.RepositoryUrls),
             };
             Logger.Info("Done!");
@@ -302,6 +312,7 @@ public partial class Configuration : BindableBase, IConfiguration
         _spellcheckCulture = "en_US";
         _theme = Theme.Default;
         _gridPadding = 2;
+        _propagateFields = PropagateFields.NonText;
 
         RepositoryUrls = new ReadOnlyObservableCollection<string>(_repositoryUrls);
     }

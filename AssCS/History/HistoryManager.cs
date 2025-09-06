@@ -1,6 +1,7 @@
 ﻿// SPDX-License-Identifier: MPL-2.0
 
 using System.Collections.Concurrent;
+using System.Collections.ObjectModel;
 
 namespace AssCS.History;
 
@@ -66,6 +67,11 @@ public class HistoryManager : BindableBase
     {
         _initialStyleState = style;
     }
+
+    /// <summary>
+    /// Get the initial event state, useful for performing diff checks
+    /// </summary>
+    public ReadOnlyCollection<Event> InitialState => _initialState.AsReadOnly();
 
     /// <summary>
     /// Commit an event change to history
