@@ -184,6 +184,7 @@ public partial class MainWindowViewModel : ViewModelBase
     // Other
     public ICommand RemoveDocumentFromProjectCommand { get; }
     public ICommand RemoveDirectoryFromProjectCommand { get; }
+    public ICommand OpenDocumentCommand { get; }
     public ICommand RenameDocumentCommand { get; }
     public ICommand RenameDirectoryCommand { get; }
     public ICommand CheckSpellcheckDictionaryCommand { get; }
@@ -366,6 +367,7 @@ public partial class MainWindowViewModel : ViewModelBase
         // Other
         RemoveDocumentFromProjectCommand = CreateRemoveDocumentFromProjectCommand();
         RemoveDirectoryFromProjectCommand = CreateRemoveDirectoryFromProjectCommand();
+        OpenDocumentCommand = CreateOpenDocumentCommand();
         RenameDocumentCommand = CreateRenameDocumentCommand();
         RenameDirectoryCommand = CreateRenameDirectoryCommand();
         CheckSpellcheckDictionaryCommand = CreateCheckSpellcheckDictionaryCommand();

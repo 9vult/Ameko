@@ -843,6 +843,22 @@ public partial class MainWindowViewModel : ViewModelBase
     }
 
     /// <summary>
+    /// Open project document
+    /// </summary>
+    private ReactiveCommand<int, Unit> CreateOpenDocumentCommand()
+    {
+        return ReactiveCommand.Create(
+            (int id) =>
+            {
+                if (ProjectProvider.Current.FindItemById(id) is not DocumentItem docItem)
+                    return;
+
+                TryLoadReferenced(docItem.Id);
+            }
+        );
+    }
+
+    /// <summary>
     /// Check if the configuration-specified spellcheck dictionary is installed
     /// </summary>
     private ICommand CreateCheckSpellcheckDictionaryCommand()
