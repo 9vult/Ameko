@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 
+using System.Buffers.Text;
+using System.Globalization;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
@@ -145,12 +147,22 @@ public unsafe class MizukiSourceProvider : ISourceProvider
         }
     }
 
-    private static string GetCachePath(string filePath)
+    /// <summary>
+    /// Construct the cache path
+    /// </summary>
+    /// <param name="filePath">File being loaded</param>
+    /// <returns>Filepath</returns>
+    private string GetCachePath(string filePath)
     {
-        var hash = Convert
-            .ToBase64String(MD5.HashData(Encoding.UTF8.GetBytes(filePath)))
-            .Replace('/', '_');
-        return Path.Combine(Directories.CacheHome, $"{hash}.ffindex");
+        // Try to get the last-modified time
+        var modified = File.Exists(filePath)
+            ? new FileInfo(filePath).LastWriteTimeUtc.ToString(CultureInfo.InvariantCulture)
+            : string.Empty;
+
+        var bytes = MD5.HashData(Encoding.UTF8.GetBytes($"{filePath}-{modified}"));
+        var encoded = Base64Url.EncodeToString(bytes);
+
+        return Path.Combine(Directories.CacheHome, $"{encoded}.ffindex");
     }
 }
 
