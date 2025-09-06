@@ -3,7 +3,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        d:DesignWidth="500"
+        d:DesignWidth="525"
         d:DesignHeight="175"
 
         xmlns:converters="clr-namespace:Ameko.Converters"
@@ -14,7 +14,7 @@
         x:Class="Ameko.Views.Dialogs.FileModifiedDialog"
         x:DataType="vm:FileModifiedDialogViewModel"
 
-        Width="500"
+        Width="525"
         Topmost="True"
         CanResize="False"
         SizeToContent="Height"
@@ -44,8 +44,10 @@
                         Margin="5"
                         Spacing="5">
                 <TextBlock Text="{x:Static i18n:FileModified.FileModified_CallToAction}"
+                           TextWrapping="Wrap"
                            FontSize="14" />
-                <TextBlock Text="{x:Static i18n:FileModified.FileModified_Recommendation}" />
+                <TextBlock Text="{x:Static i18n:FileModified.FileModified_Recommendation}"
+                           TextWrapping="Wrap" />
                 <StackPanel Orientation="Horizontal"
                             HorizontalAlignment="Right"
                             Spacing="10"
