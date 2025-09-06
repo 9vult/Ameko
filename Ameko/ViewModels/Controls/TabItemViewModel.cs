@@ -235,7 +235,7 @@ public partial class TabItemViewModel : ViewModelBase
                 new FileModifiedDialogViewModel(Workspace.Title)
             );
 
-            if (result?.Result == FileModifiedDialogClosedResult.Ignore)
+            if (result is null || result.Result == FileModifiedDialogClosedResult.Ignore)
                 return;
 
             throw new NotImplementedException("FileModifiedDialogClosedResult.SaveAs");
