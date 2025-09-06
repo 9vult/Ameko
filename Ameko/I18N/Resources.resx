@@ -306,4 +306,7 @@
     <data name="EventsGrid_Menu_CopyStripped" xml:space="preserve">
         <value>Copy (Stripped)</value>
     </data>
+    <data name="ProjectExplorer_ContextMenu_AttachAsReference" xml:space="preserve">
+        <value>Attach as Reference</value>
+    </data>
 </root>
