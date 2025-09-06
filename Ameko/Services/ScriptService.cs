@@ -127,7 +127,7 @@ public class ScriptService : IScriptService
     }
 
     /// <inheritdoc />
-    public async Task<string> ExecutePlaygroundScriptAsync(string content, bool csharp)
+    public string ExecutePlaygroundScript(string content, bool csharp)
     {
         if (!csharp)
             throw new NotImplementedException();

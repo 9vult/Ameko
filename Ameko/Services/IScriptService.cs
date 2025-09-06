@@ -47,7 +47,7 @@ public interface IScriptService
     /// <param name="content">Content of the script</param>
     /// <param name="csharp">If this is a C# script</param>
     /// <returns>Status result</returns>
-    Task<string> ExecutePlaygroundScriptAsync(string content, bool csharp);
+    string ExecutePlaygroundScript(string content, bool csharp);
 
     /// <summary>
     /// Reload scripts
