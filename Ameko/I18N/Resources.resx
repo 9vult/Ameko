@@ -243,8 +243,8 @@
     <data name="Tab_CloseButton_ToolTip" xml:space="preserve">
         <value>Close Tab</value>
     </data>
-    <data name="ProjectExplorer_ContextMenu_Rename" xml:space="preserve">
-        <value>Rename...</value>
+    <data name="ProjectExplorer_ContextMenu_ChangeDisplayName" xml:space="preserve">
+        <value>Change Display Name...</value>
     </data>
     <data name="Menu_ReloadScripts" xml:space="preserve">
         <value>_Reload Scripts</value>
