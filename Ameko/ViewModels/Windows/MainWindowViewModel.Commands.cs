@@ -499,6 +499,31 @@ public partial class MainWindowViewModel : ViewModelBase
     }
 
     /// <summary>
+    ///Attach a reference file without a open file dialog
+    /// </summary>
+    private ReactiveCommand<Uri, Unit> CreateAttachReferenceFileNoGuiCommand()
+    {
+        return ReactiveCommand.Create(
+            (Uri uri) =>
+            {
+                Logger.Debug("Preparing to attach a reference file");
+
+                var wsp = ProjectProvider.Current.WorkingSpace;
+                if (wsp is null)
+                    return;
+
+                var ext = Path.GetExtension(uri.LocalPath);
+                wsp.ReferenceFileManager.Reference = ext switch
+                {
+                    ".ass" => new AssParser().Parse(_fileSystem, uri),
+                    ".srt" => new SrtParser().Parse(_fileSystem, uri),
+                    _ => throw new ArgumentOutOfRangeException(),
+                };
+            }
+        );
+    }
+
+    /// <summary>
     /// Display the <see cref="ShiftTimesDialog"/>
     /// </summary>
     private ReactiveCommand<Unit, Unit> CreateShowShiftTimesDialogCommand()

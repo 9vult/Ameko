@@ -789,6 +789,15 @@ namespace Ameko.I18N {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Attach as Reference.
+        /// </summary>
+        public static string ProjectExplorer_ContextMenu_AttachAsReference {
+            get {
+                return ResourceManager.GetString("ProjectExplorer_ContextMenu_AttachAsReference", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Open.
         /// </summary>
         public static string ProjectExplorer_ContextMenu_Open {

@@ -187,6 +187,7 @@ public partial class MainWindowViewModel : ViewModelBase
     public ICommand OpenDocumentCommand { get; }
     public ICommand RenameDocumentCommand { get; }
     public ICommand RenameDirectoryCommand { get; }
+    public ICommand AttachReferenceFileNoGuiCommand { get; }
     public ICommand CheckSpellcheckDictionaryCommand { get; }
     #endregion
 
@@ -368,6 +369,7 @@ public partial class MainWindowViewModel : ViewModelBase
         RemoveDocumentFromProjectCommand = CreateRemoveDocumentFromProjectCommand();
         RemoveDirectoryFromProjectCommand = CreateRemoveDirectoryFromProjectCommand();
         OpenDocumentCommand = CreateOpenDocumentCommand();
+        AttachReferenceFileNoGuiCommand = CreateAttachReferenceFileNoGuiCommand();
         RenameDocumentCommand = CreateRenameDocumentCommand();
         RenameDirectoryCommand = CreateRenameDirectoryCommand();
         CheckSpellcheckDictionaryCommand = CreateCheckSpellcheckDictionaryCommand();
