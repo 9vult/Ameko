@@ -14,6 +14,7 @@
     </PackageReference>
     <PackageReference Include="Jint" Version="4.2.2" />
     <PackageReference Include="LibGit2Sharp" Version="0.31.0" />
+    <PackageReference Include="Material.Icons" Version="2.4.1" />
     <PackageReference Include="NLog" Version="5.3.4" />
     <PackageReference Include="Samboy063.Tomlet" Version="6.1.0" />
     <PackageReference Include="TestableIO.System.IO.Abstractions" Version="22.0.14" />
