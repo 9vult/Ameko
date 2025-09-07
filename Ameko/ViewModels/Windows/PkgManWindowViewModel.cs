@@ -2,16 +2,11 @@
 
 using System;
 using System.Collections.ObjectModel;
-using System.Net.Http;
-using System.Reactive;
 using System.Windows.Input;
 using Ameko.Services;
-using Holo;
 using Holo.Configuration;
 using Holo.Scripting;
 using Holo.Scripting.Models;
-using MsBox.Avalonia.Base;
-using MsBox.Avalonia.Enums;
 using NLog;
 using ReactiveUI;
 

@@ -7,8 +7,6 @@ using System.Reactive;
 using System.Reactive.Linq;
 using System.Windows.Input;
 using Ameko.DataModels.Sdk;
-using Ameko.Messages;
-using Ameko.Services;
 using Ameko.Utilities;
 using Ameko.ViewModels.Dialogs;
 using Ameko.Views.Dialogs;
@@ -16,17 +14,12 @@ using Ameko.Views.Windows;
 using AssCS;
 using AssCS.IO;
 using Avalonia;
-using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Threading;
 using Holo;
-using Holo.Configuration.Keybinds;
 using Holo.Models;
 using Material.Icons;
 using Microsoft.Extensions.DependencyInjection;
-using MsBox.Avalonia;
-using MsBox.Avalonia.Dto;
-using MsBox.Avalonia.Enums;
 using ReactiveUI;
 
 namespace Ameko.ViewModels.Windows;
@@ -805,26 +798,22 @@ public partial class MainWindowViewModel : ViewModelBase
                     $"Displaying input box for rename of directory {id} ({dirItem.Title})"
                 );
 
-                var box = MessageBoxManager.GetMessageBoxStandard(
-                    new MessageBoxStandardParams
-                    {
-                        ContentTitle = I18N.Other.MsgBox_NameDirectory_Title,
-                        ContentMessage = I18N.Other.MsgBox_NameDirectory_Body,
-                        ButtonDefinitions = ButtonEnum.OkCancel,
-                        Icon = Icon.None,
-                        WindowStartupLocation = WindowStartupLocation.CenterScreen,
-                        InputParams = new InputParams
-                        {
-                            DefaultValue = dirItem.Name ?? string.Empty,
-                            Label = I18N.Other.MsgBox_NameItem_Label,
-                        },
-                    }
+                var result = await _messageBoxService.ShowInputAsync(
+                    I18N.Other.MsgBox_NameDirectory_Title,
+                    I18N.Other.MsgBox_NameDirectory_Body,
+                    dirItem.Title,
+                    MessageBoxButtons.OkCancel,
+                    MaterialIconKind.Rename
                 );
-                var boxResult = await box.ShowAsync();
 
-                if (boxResult == ButtonResult.Ok && !string.IsNullOrWhiteSpace(box.InputValue))
+                if (result is null)
+                    return;
+
+                var (boxResult, userInput) = result.Value;
+
+                if (boxResult == MessageBoxResult.Ok && !string.IsNullOrWhiteSpace(userInput))
                 {
-                    dirItem.Name = box.InputValue;
+                    dirItem.Name = userInput;
                 }
             }
         );
@@ -843,26 +832,22 @@ public partial class MainWindowViewModel : ViewModelBase
 
                 Logger.Debug($"Displaying input box for rename of document {id} ({docItem.Title})");
 
-                var box = MessageBoxManager.GetMessageBoxStandard(
-                    new MessageBoxStandardParams
-                    {
-                        ContentTitle = I18N.Other.MsgBox_NameDocument_Title,
-                        ContentMessage = I18N.Other.MsgBox_NameDocument_Body,
-                        ButtonDefinitions = ButtonEnum.OkCancel,
-                        Icon = Icon.None,
-                        WindowStartupLocation = WindowStartupLocation.CenterScreen,
-                        InputParams = new InputParams
-                        {
-                            DefaultValue = docItem.Name ?? string.Empty,
-                            Label = I18N.Other.MsgBox_NameItem_Label,
-                        },
-                    }
+                var result = await _messageBoxService.ShowInputAsync(
+                    I18N.Other.MsgBox_NameDocument_Title,
+                    I18N.Other.MsgBox_NameDocument_Body,
+                    docItem.Title,
+                    MessageBoxButtons.OkCancel,
+                    MaterialIconKind.Rename
                 );
-                var boxResult = await box.ShowAsync();
 
-                if (boxResult == ButtonResult.Ok && !string.IsNullOrWhiteSpace(box.InputValue))
+                if (result is null)
+                    return;
+
+                var (boxResult, userInput) = result.Value;
+
+                if (boxResult == MessageBoxResult.Ok && !string.IsNullOrWhiteSpace(userInput))
                 {
-                    docItem.Name = box.InputValue;
+                    docItem.Name = userInput;
                 }
             }
         );

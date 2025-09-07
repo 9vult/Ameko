@@ -28,6 +28,23 @@ public interface IMessageBoxService
     );
 
     /// <summary>
+    /// Display an input box
+    /// </summary>
+    /// <param name="title">Title of the box</param>
+    /// <param name="text">Body of the box</param>
+    /// <param name="initialText">Initial text to have in the input</param>
+    /// <param name="buttonSet">Which buttons to put on the box</param>
+    /// <param name="iconKind">Icon to use</param>
+    /// <returns>Which button was clicked and the user input</returns>
+    Task<(MessageBoxResult, string)?> ShowInputAsync(
+        string title,
+        string text,
+        string initialText,
+        MessageBoxButtons buttonSet,
+        MaterialIconKind iconKind = MaterialIconKind.Info
+    );
+
+    /// <summary>
     /// Show boxes for <see cref="InstallationResult"/>s
     /// </summary>
     /// <param name="result">iunstallation result</param>
@@ -35,6 +52,10 @@ public interface IMessageBoxService
     Task<MessageBoxResult?> ShowAsync(InstallationResult result);
 }
 
+/// <summary>
+/// Service for displaying message boxes
+/// </summary>
+/// <param name="mainWindow">Application main window</param>
 public class MessageBoxService(MainWindow mainWindow) : IMessageBoxService
 {
     public async Task<MessageBoxResult?> ShowAsync(
@@ -48,6 +69,21 @@ public class MessageBoxService(MainWindow mainWindow) : IMessageBoxService
         return await box.ShowDialog<MessageBoxResult>(mainWindow);
     }
 
+    /// <inheritdoc />
+    public async Task<(MessageBoxResult, string)?> ShowInputAsync(
+        string title,
+        string text,
+        string initialText,
+        MessageBoxButtons buttonSet,
+        MaterialIconKind iconKind = MaterialIconKind.Information
+    )
+    {
+        var box = new InputBox(title, text, initialText, buttonSet, iconKind);
+        var result = await box.ShowDialog<MessageBoxResult>(mainWindow);
+        return (result, box.InputText);
+    }
+
+    /// <inheritdoc />
     public async Task<MessageBoxResult?> ShowAsync(InstallationResult result)
     {
         var box = new MessageBox(
