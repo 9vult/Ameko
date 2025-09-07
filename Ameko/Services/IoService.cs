@@ -4,11 +4,13 @@ using System;
 using System.IO.Abstractions;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
+using Ameko.DataModels.Sdk;
 using Ameko.Utilities;
 using AssCS.IO;
 using Holo;
 using Holo.Models;
 using Holo.Providers;
+using Material.Icons;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Enums;
 using NLog;
@@ -19,7 +21,8 @@ namespace Ameko.Services;
 public class IoService(
     IProjectProvider projectProvider,
     ITabFactory tabFactory,
-    IFileSystem fileSystem
+    IFileSystem fileSystem,
+    IMessageBoxService messageBoxService
 ) : IIoService
 {
     private static readonly Logger Log = LogManager.GetCurrentClassLogger();
@@ -125,24 +128,25 @@ public class IoService(
 
         Log.Trace($"Displaying message box because workspace {wsp.Title} is not saved");
 
-        var box = MessageBoxManager.GetMessageBoxStandard(
-            title: I18N.Other.MsgBox_Save_Title,
-            text: string.Format(I18N.Other.MsgBox_Save_Body, wsp.Title),
-            ButtonEnum.YesNoCancel
+        var boxResult = await messageBoxService.ShowAsync(
+            I18N.Other.MsgBox_Save_Title,
+            string.Format(I18N.Other.MsgBox_Save_Body, wsp.Title),
+            string.Empty,
+            MessageBoxButtons.YesNoCancel,
+            MaterialIconKind.HelpCircleOutline
         );
-        var boxResult = await box.ShowAsync();
 
         switch (boxResult)
         {
-            case ButtonResult.Yes:
+            case MessageBoxResult.Yes:
                 var saved = await SaveSubtitle(saveAs, wsp);
                 if (!saved)
                 {
                     Log.Info("Tab close operation aborted");
                     return false;
                 }
-                goto case ButtonResult.No; // lol
-            case ButtonResult.No:
+                goto case MessageBoxResult.No; // lol
+            case MessageBoxResult.No:
                 prj.CloseDocument(wsp.Id, replaceIfLast);
                 tabFactory.Release(wsp);
                 return true;

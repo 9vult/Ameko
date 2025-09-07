@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Windows.Input;
+using Ameko.DataModels.Sdk;
 using Ameko.Messages;
 using Ameko.Services;
 using Ameko.Utilities;
@@ -21,6 +22,7 @@ using Avalonia.Threading;
 using Holo;
 using Holo.Configuration.Keybinds;
 using Holo.Models;
+using Material.Icons;
 using Microsoft.Extensions.DependencyInjection;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Dto;
@@ -747,14 +749,15 @@ public partial class MainWindowViewModel : ViewModelBase
                     $"Displaying message to confirm removal of document {id} from project"
                 );
 
-                var box = MessageBoxManager.GetMessageBoxStandard(
-                    title: I18N.Other.MsgBox_RemoveDocument_Title,
-                    text: I18N.Other.MsgBox_RemoveDocument_Body,
-                    ButtonEnum.YesNo
+                var boxResult = await _messageBoxService.ShowAsync(
+                    I18N.Other.MsgBox_RemoveDocument_Title,
+                    I18N.Other.MsgBox_RemoveDocument_Body,
+                    string.Empty,
+                    MessageBoxButtons.YesNo,
+                    MaterialIconKind.HelpCircleOutline
                 );
-                var boxResult = await box.ShowAsync();
 
-                if (boxResult == ButtonResult.Yes)
+                if (boxResult == MessageBoxResult.Yes)
                 {
                     ProjectProvider.Current.RemoveWorkspace(id);
                 }
@@ -774,14 +777,14 @@ public partial class MainWindowViewModel : ViewModelBase
                     $"Displaying message to confirm removal of directory {id} from project"
                 );
 
-                var box = MessageBoxManager.GetMessageBoxStandard(
-                    title: I18N.Other.MsgBox_RemoveDirectory_Title,
-                    text: I18N.Other.MsgBox_RemoveDirectory_Body,
-                    ButtonEnum.YesNo
+                var boxResult = await _messageBoxService.ShowAsync(
+                    I18N.Other.MsgBox_RemoveDirectory_Title,
+                    I18N.Other.MsgBox_RemoveDirectory_Body,
+                    string.Empty,
+                    MessageBoxButtons.YesNo
                 );
-                var boxResult = await box.ShowAsync();
 
-                if (boxResult == ButtonResult.Yes)
+                if (boxResult == MessageBoxResult.Yes)
                 {
                     ProjectProvider.Current.RemoveDirectory(id);
                 }

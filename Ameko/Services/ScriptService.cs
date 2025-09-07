@@ -9,7 +9,10 @@ using System.IO.Abstractions;
 using System.Linq;
 using System.Threading.Tasks;
 using Ameko.Converters;
+using Ameko.DataModels.Sdk;
+using Ameko.Views.Sdk;
 using AssCS.History;
+using Avalonia.Controls;
 using Avalonia.Threading;
 using CSScriptLib;
 using Holo.Configuration.Keybinds;
@@ -35,6 +38,7 @@ public class ScriptService : IScriptService
     private readonly IFileSystem _fileSystem;
     private readonly IProjectProvider _projectProvider;
     private readonly IKeybindRegistrar _keybindRegistrar;
+    private readonly IMessageBoxService _messageBoxService;
     private readonly ObservableCollection<IHoloExecutable> _scripts;
     private readonly Dictionary<string, HoloScript?> _scriptMap;
     private readonly Dictionary<string, HoloScriptlet?> _scriptletMap;
@@ -259,30 +263,30 @@ public class ScriptService : IScriptService
 
         // Display message box (if manually invoked)
         if (isManual)
-            await DisplayMessageBoxAsync(I18N.Other.MsgBox_ScriptService_Reload_Body);
+        {
+            await _messageBoxService.ShowAsync(
+                I18N.Other.MsgBox_ScriptService_Title,
+                I18N.Other.MsgBox_ScriptService_Reload_Body,
+                string.Empty,
+                MessageBoxButtons.Ok
+            );
+        }
     }
 
     /// <inheritdoc />
     public event EventHandler<EventArgs>? OnReload;
 
-    private static async Task DisplayMessageBoxAsync(string message)
-    {
-        var box = MessageBoxManager.GetMessageBoxStandard(
-            I18N.Other.MsgBox_ScriptService_Title,
-            message
-        );
-        await box.ShowAsync();
-    }
-
     public ScriptService(
         IFileSystem fileSystem,
         IProjectProvider projectProvider,
-        IKeybindRegistrar keybindRegistrar
+        IKeybindRegistrar keybindRegistrar,
+        IMessageBoxService messageBoxService
     )
     {
         _fileSystem = fileSystem;
         _projectProvider = projectProvider;
         _keybindRegistrar = keybindRegistrar;
+        _messageBoxService = messageBoxService;
 
         _scripts = [];
         _scriptMap = [];

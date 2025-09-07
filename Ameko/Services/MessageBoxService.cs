@@ -1,7 +1,12 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 using System;
+using System.Threading.Tasks;
+using Ameko.DataModels.Sdk;
+using Ameko.Views.Sdk;
+using Ameko.Views.Windows;
 using Holo.Scripting.Models;
+using Material.Icons;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Base;
 using MsBox.Avalonia.Enums;
@@ -10,6 +15,13 @@ namespace Ameko.Services;
 
 public interface IMessageBoxService
 {
+    Task<MessageBoxResult> ShowAsync(
+        string title,
+        string header,
+        string message,
+        MessageBoxButtons buttonSet,
+        MaterialIconKind iconKind = MaterialIconKind.Info
+    );
     IMsBox<ButtonResult> GetSuccessBox(string title, string content);
     IMsBox<ButtonResult> GetErrorBox(string title, string content);
     IMsBox<ButtonResult> GetQuestionBox(string title, string content);
@@ -17,8 +29,20 @@ public interface IMessageBoxService
     IMsBox<ButtonResult> GetBox(InstallationResult result);
 }
 
-public class MessageBoxService : IMessageBoxService
+public class MessageBoxService(MainWindow mainWindow) : IMessageBoxService
 {
+    public async Task<MessageBoxResult> ShowAsync(
+        string title,
+        string header,
+        string message,
+        MessageBoxButtons buttonSet,
+        MaterialIconKind iconKind = MaterialIconKind.Info
+    )
+    {
+        var box = new MessageBox(title, header, message, buttonSet, iconKind);
+        return await box.ShowDialog<MessageBoxResult>(mainWindow);
+    }
+
     public IMsBox<ButtonResult> GetSuccessBox(string title, string content)
     {
         return MessageBoxManager.GetMessageBoxStandard(title, content, ButtonEnum.Ok, Icon.Success);

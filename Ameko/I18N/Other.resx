@@ -114,4 +114,16 @@
     <data name="Message_ClipboardEmpty" xml:space="preserve">
         <value>Clipboard was empty!</value>
     </data>
+    <data name="MsgBox_Btn_OK" xml:space="preserve">
+        <value>OK</value>
+    </data>
+    <data name="MsgBox_Btn_Cancel" xml:space="preserve">
+        <value>Cancel</value>
+    </data>
+    <data name="MsgBox_Btn_Yes" xml:space="preserve">
+        <value>Yes</value>
+    </data>
+    <data name="MsgBox_Btn_No" xml:space="preserve">
+        <value>No</value>
+    </data>
 </root>

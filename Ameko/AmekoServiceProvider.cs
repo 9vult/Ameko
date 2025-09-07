@@ -6,6 +6,7 @@ using Ameko.Services;
 using Ameko.Utilities;
 using Ameko.ViewModels.Controls;
 using Ameko.ViewModels.Windows;
+using Ameko.Views.Windows;
 using Holo.Configuration;
 using Holo.Configuration.Keybinds;
 using Holo.IO;
@@ -79,6 +80,9 @@ public static class AmekoServiceProvider
         services.AddSingleton<IPackageManager, PackageManager>();
         services.AddSingleton<IScriptConfigurationService, ScriptConfigurationService>();
         services.AddSingleton<ScriptServiceLocator>();
+
+        // --- Main Window ---
+        services.AddSingleton<MainWindow>();
 
         Provider = services.BuildServiceProvider();
 
