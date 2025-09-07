@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Threading;
+using System.Threading.Tasks;
 using Ameko.Utilities;
 using Ameko.ViewModels.Controls;
 using AssCS.History;
@@ -120,8 +121,31 @@ public partial class TabItemEditorArea : ReactiveUserControl<TabItemViewModel>
                         EditBox_OnKeyDown,
                         RoutingStrategies.Bubble
                     );
+                    EditBox.AddHandler(
+                        TextBox.PastingFromClipboardEvent,
+                        EditBoxOnPastingFromClipboard,
+                        RoutingStrategies.Bubble
+                    );
                 })
                 .DisposeWith(disposables);
         });
+    }
+
+    private async Task EditBoxOnPastingFromClipboard(object? sender, RoutedEventArgs e)
+    {
+        var clipboard = TopLevel.GetTopLevel(this)?.Clipboard;
+        if (clipboard is not null)
+            e.Handled = true;
+        else
+            return;
+
+        var text = await clipboard.GetTextAsync();
+        text = text?.Replace(Environment.NewLine, UseSoftLinebreaks ? @"\n" : @"\N");
+
+        if (text is not null)
+        {
+            EditBox.Text = EditBox.Text?.Insert(EditBox.CaretIndex, text);
+            EditBox.CaretIndex += text.Length;
+        }
     }
 }
