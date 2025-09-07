@@ -42,9 +42,15 @@
                         Grid.Row="1"
                         Orientation="Horizontal"
                         Spacing="2">
-                <Button Content="{icons:MaterialIconExt Kind=PlayPause}"
-                        ToolTip.Tip="{x:Static i18n:Resources.Video_Button_PlayPause_ToolTip}"
-                        Command="{Binding PlayPauseCommand}" />
+                <Button ToolTip.Tip="{x:Static i18n:Resources.Video_Button_PlayPause_ToolTip}"
+                        Command="{Binding PlayPauseCommand}">
+                    <StackPanel>
+                        <icons:MaterialIcon Kind="Play"
+                                            IsVisible="{Binding !Workspace.MediaController.IsPlaying}" />
+                        <icons:MaterialIcon Kind="Pause"
+                                            IsVisible="{Binding Workspace.MediaController.IsPlaying}" />
+                    </StackPanel>
+                </Button>
                 <Button Content="{icons:MaterialIconExt Kind=SkipNext}"
                         ToolTip.Tip="{x:Static i18n:Resources.Video_Button_PlaySelection_ToolTip}"
                         Command="{Binding PlaySelectionCommand}" />
