@@ -12,7 +12,7 @@ const context = @import("context.zig");
 pub fn Init(g_ctx: *context.GlobalContext, num_buffers: usize, max_cache_mb: c_int, width: usize, height: usize, pitch: usize) ffms.FfmsError!void {
     var ctx = &g_ctx.*.buffers;
     ctx.buffers = std.ArrayList(*frames.FrameGroup).init(common.allocator);
-    ctx.max_size = max_cache_mb * (1024 ^ 2);
+    ctx.max_size = @as(i64, max_cache_mb) * std.math.pow(i64, 1024, 2);
 
     // Pre-allocate buffers
     var i: usize = 0;
@@ -53,6 +53,7 @@ pub fn GetAudio(g_ctx: *context.GlobalContext) ffms.FfmsError!*frames.AudioFrame
         try ffms.GetAudio(g_ctx, @ptrCast(ctx.audio_buffer.?.ptr), 0, ffms_ctx.sample_count);
         ctx.audio_frame.?.*.valid = 1;
     }
+
     return ctx.audio_frame.?;
 }
 
