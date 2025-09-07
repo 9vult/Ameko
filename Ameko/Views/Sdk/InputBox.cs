@@ -11,13 +11,16 @@ using Material.Icons.Avalonia;
 namespace Ameko.Views.Sdk;
 
 /// <summary>
-/// A simple message box API
+/// A simple input box API
 /// </summary>
-public partial class MessageBox : Window
+public partial class InputBox : Window
 {
-    public MessageBox(
+    public string InputText { get; private set; }
+
+    public InputBox(
         string title,
         string text,
+        string initialText,
         MessageBoxButtons buttonSet,
         MaterialIconKind iconKind = MaterialIconKind.Info
     )
@@ -28,6 +31,8 @@ public partial class MessageBox : Window
         CanResize = false;
         Topmost = true;
         MaxWidth = 500;
+
+        InputText = initialText;
 
         var grid = new Grid
         {
@@ -42,6 +47,7 @@ public partial class MessageBox : Window
             RowDefinitions =
             [
                 new RowDefinition { Height = GridLength.Auto }, // Text
+                new RowDefinition { Height = GridLength.Auto }, // Input
                 new RowDefinition { Height = GridLength.Auto }, // Buttons
             ],
         };
@@ -68,6 +74,17 @@ public partial class MessageBox : Window
         headerLabel.SetValue(Grid.RowProperty, 0);
         grid.Children.Add(headerLabel);
 
+        var inputBox = new TextBox
+        {
+            Text = InputText,
+            AcceptsReturn = false,
+            AcceptsTab = false,
+            TextWrapping = TextWrapping.Wrap,
+        };
+        inputBox.SetValue(Grid.ColumnProperty, 1);
+        inputBox.SetValue(Grid.RowProperty, 1);
+        grid.Children.Add(inputBox);
+
         var okButton = new Button
         {
             Content = new TextBlock { Text = I18N.Other.MsgBox_Btn_OK },
@@ -89,10 +106,26 @@ public partial class MessageBox : Window
             Width = 75,
         };
 
-        okButton.Click += (_, _) => Close(MessageBoxResult.Ok);
-        yesButton.Click += (_, _) => Close(MessageBoxResult.Yes);
-        noButton.Click += (_, _) => Close(MessageBoxResult.No);
-        cancelButton.Click += (_, _) => Close(MessageBoxResult.Cancel);
+        okButton.Click += (_, _) =>
+        {
+            InputText = inputBox.Text;
+            Close(MessageBoxResult.Ok);
+        };
+        yesButton.Click += (_, _) =>
+        {
+            InputText = inputBox.Text;
+            Close(MessageBoxResult.Yes);
+        };
+        noButton.Click += (_, _) =>
+        {
+            InputText = inputBox.Text;
+            Close(MessageBoxResult.No);
+        };
+        cancelButton.Click += (_, _) =>
+        {
+            InputText = inputBox.Text;
+            Close(MessageBoxResult.Cancel);
+        };
 
         var buttons = new StackPanel
         {
@@ -101,7 +134,7 @@ public partial class MessageBox : Window
             HorizontalAlignment = HorizontalAlignment.Right,
         };
         buttons.SetValue(Grid.ColumnProperty, 1);
-        buttons.SetValue(Grid.RowProperty, 1);
+        buttons.SetValue(Grid.RowProperty, 2);
 
         switch (buttonSet)
         {

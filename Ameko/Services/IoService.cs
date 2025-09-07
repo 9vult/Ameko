@@ -11,8 +11,6 @@ using Holo;
 using Holo.Models;
 using Holo.Providers;
 using Material.Icons;
-using MsBox.Avalonia;
-using MsBox.Avalonia.Enums;
 using NLog;
 using ReactiveUI;
 

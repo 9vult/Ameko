@@ -22,7 +22,6 @@ using Holo.Scripting;
 using Holo.Scripting.Models;
 using Jint;
 using Jint.Native;
-using MsBox.Avalonia;
 using NLog;
 
 namespace Ameko.Services;
