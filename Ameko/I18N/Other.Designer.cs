@@ -222,6 +222,42 @@ namespace Ameko.I18N {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cancel.
+        /// </summary>
+        public static string MsgBox_Btn_Cancel {
+            get {
+                return ResourceManager.GetString("MsgBox_Btn_Cancel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No.
+        /// </summary>
+        public static string MsgBox_Btn_No {
+            get {
+                return ResourceManager.GetString("MsgBox_Btn_No", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to OK.
+        /// </summary>
+        public static string MsgBox_Btn_OK {
+            get {
+                return ResourceManager.GetString("MsgBox_Btn_OK", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Yes.
+        /// </summary>
+        public static string MsgBox_Btn_Yes {
+            get {
+                return ResourceManager.GetString("MsgBox_Btn_Yes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Please choose a name for the directory:.
         /// </summary>
         public static string MsgBox_NameDirectory_Body {

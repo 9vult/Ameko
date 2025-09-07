@@ -31,6 +31,7 @@ public partial class MainWindowViewModel : ViewModelBase
     private readonly IServiceProvider _serviceProvider;
     private readonly IStylesManagerFactory _stylesManagerFactory;
     private readonly IMessageService _messageService;
+    private readonly IMessageBoxService _messageBoxService;
     private readonly ISpellcheckService _spellcheckService;
     private readonly IDictionaryService _dictionaryService;
     private readonly IConfiguration _configuration;
@@ -271,6 +272,7 @@ public partial class MainWindowViewModel : ViewModelBase
         IScriptService scriptService,
         IKeybindService keybindService,
         IMessageService messageService,
+        IMessageBoxService messageBoxService,
         ISpellcheckService spellCheckService,
         IDictionaryService dictionaryService,
         IConfiguration configuration,
@@ -286,6 +288,7 @@ public partial class MainWindowViewModel : ViewModelBase
         ScriptService = scriptService;
         KeybindService = keybindService;
         _messageService = messageService;
+        _messageBoxService = messageBoxService;
         _spellcheckService = spellCheckService;
         _dictionaryService = dictionaryService;
         _configuration = configuration;

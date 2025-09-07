@@ -20,7 +20,6 @@ using Holo.Providers;
 using Holo.Scripting;
 using Microsoft.Extensions.DependencyInjection;
 using NLog;
-using MainWindow = Ameko.Views.Windows.MainWindow;
 
 namespace Ameko;
 
@@ -71,8 +70,9 @@ public partial class App : Application
             else // Normal operation
             {
                 var vm = provider.GetRequiredService<MainWindowViewModel>();
+                desktop.MainWindow = provider.GetRequiredService<MainWindow>();
                 DataContext = vm;
-                desktop.MainWindow = new MainWindow { DataContext = vm };
+                desktop.MainWindow.DataContext = vm;
             }
         }
 
