@@ -303,8 +303,8 @@
     <data name="Tab_NothingLoaded" xml:space="preserve">
         <value>Open an existing subtitle file or create a new one to begin.</value>
     </data>
-    <data name="EventsGrid_Menu_CopyStripped" xml:space="preserve">
-        <value>Copy (Stripped)</value>
+    <data name="EventsGrid_Menu_CopyPlaintext" xml:space="preserve">
+        <value>Copy (Plain Text)</value>
     </data>
     <data name="ProjectExplorer_ContextMenu_AttachAsReference" xml:space="preserve">
         <value>Attach as Reference</value>

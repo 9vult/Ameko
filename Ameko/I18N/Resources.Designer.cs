@@ -321,11 +321,11 @@ namespace Ameko.I18N {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Copy (Stripped).
+        ///   Looks up a localized string similar to Copy (Plain Text).
         /// </summary>
-        public static string EventsGrid_Menu_CopyStripped {
+        public static string EventsGrid_Menu_CopyPlaintext {
             get {
-                return ResourceManager.GetString("EventsGrid_Menu_CopyStripped", resourceCulture);
+                return ResourceManager.GetString("EventsGrid_Menu_CopyPlaintext", resourceCulture);
             }
         }
         
