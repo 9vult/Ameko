@@ -272,6 +272,7 @@ pub fn LoadVideo(g_ctx: *context.GlobalContext, file_name: [*c]u8, cache_file_na
         }
         _ = c.FFMS_SetOutputFormatA(ctx.audio_source, rs_options, &err_info);
     }
+    c.FFMS_DestroyIndex(index);
     logger.Debug("[FFMS2] Successfully loaded video file");
 }
 
