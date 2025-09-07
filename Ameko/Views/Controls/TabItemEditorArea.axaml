@@ -24,6 +24,7 @@
                  Margin="2"
                  IsReadOnly="True"
                  FontSize="12"
+                 MaxLines="4"
                  FontFamily="{StaticResource ZenKakuGothicNew}"
                  TextWrapping="Wrap"
                  IsVisible="{Binding Workspace.ReferenceFileManager.IsReferenceLoaded}"
@@ -194,6 +195,7 @@
                      SelectionEnd="{Binding EditBoxSelectionEnd, Mode=TwoWay}"
                      Margin="2 1"
                      FontSize="14"
+                     MinLines="1"
                      FontFamily="{StaticResource ZenKakuGothicNew}"
                      TextWrapping="Wrap"
                      IsUndoEnabled="False" />
