@@ -6,7 +6,6 @@ using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Windows.Input;
-using Ameko.DataModels.Sdk;
 using Ameko.Utilities;
 using Ameko.ViewModels.Dialogs;
 using Ameko.Views.Dialogs;

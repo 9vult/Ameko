@@ -82,7 +82,8 @@ public sealed class ScriptServiceLocator
         IGlobals globals,
         IProjectProvider projectProvider,
         IScriptConfigurationService scriptConfigurationService,
-        IMessageService messageService
+        IMessageService messageService,
+        IMessageBoxService messageBoxService
     )
     {
         Services = new Dictionary<Type, object>
@@ -92,6 +93,7 @@ public sealed class ScriptServiceLocator
             [typeof(IProjectProvider)] = projectProvider,
             [typeof(IScriptConfigurationService)] = scriptConfigurationService,
             [typeof(IMessageService)] = messageService,
+            [typeof(IMessageBoxService)] = messageBoxService,
         };
     }
 }

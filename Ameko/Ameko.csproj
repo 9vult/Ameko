@@ -228,6 +228,9 @@
       <LastGenOutput>Playground.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="DataModels\Sdk\" />
+  </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <ItemGroup>
       <MIZUKI Include="$(SolutionDir)Mizuki\zig-out\bin\*.*" />

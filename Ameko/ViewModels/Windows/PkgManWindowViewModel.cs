@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.Windows.Input;
 using Ameko.Services;
 using Holo.Configuration;
+using Holo.Providers;
 using Holo.Scripting;
 using Holo.Scripting.Models;
 using NLog;

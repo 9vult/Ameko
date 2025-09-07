@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-using Ameko.DataModels.Sdk;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Layout;
 using Avalonia.Media;
+using Holo.Models;
 using Material.Icons;
 using Material.Icons.Avalonia;
 
