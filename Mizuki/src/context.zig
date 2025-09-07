@@ -71,8 +71,8 @@ pub const LibassContext = struct {
 };
 
 pub const BuffersContext = struct {
-    max_size: c_int,
-    total_size: c_int,
+    max_size: i64,
+    total_size: i64,
     buffers: std.ArrayList(*frames.FrameGroup),
     audio_buffer: ?[]i16,
     audio_frame: ?*frames.AudioFrame,
