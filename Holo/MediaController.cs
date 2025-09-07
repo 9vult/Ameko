@@ -447,12 +447,10 @@ public class MediaController : BindableBase
     private unsafe void FetchFrame()
     {
         int frameToFetch;
-        bool subtitlesChanged;
         lock (_frameLock)
         {
             frameToFetch = _pendingFrame;
             _pendingFrame = -1;
-            subtitlesChanged = _subtitlesChanged;
             _subtitlesChanged = false;
         }
 
@@ -461,8 +459,8 @@ public class MediaController : BindableBase
         var frame = _provider.GetFrame(frameToFetch, time, false);
         lock (_frameLock)
         {
-            if (frameToFetch == _currentFrame || subtitlesChanged) // TODO: Do we want this gate?
-                _nextFrame = frame;
+            // if (frameToFetch == _currentFrame || subtitlesChanged) // Do we want this gate?
+            _nextFrame = frame;
 
             if (_pendingFrame != -1 || _subtitlesChanged)
                 _fetchTask = Task.Run(FetchFrame);
