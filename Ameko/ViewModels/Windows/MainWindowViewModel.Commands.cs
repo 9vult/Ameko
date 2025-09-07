@@ -752,7 +752,6 @@ public partial class MainWindowViewModel : ViewModelBase
                 var boxResult = await _messageBoxService.ShowAsync(
                     I18N.Other.MsgBox_RemoveDocument_Title,
                     I18N.Other.MsgBox_RemoveDocument_Body,
-                    string.Empty,
                     MessageBoxButtons.YesNo,
                     MaterialIconKind.HelpCircleOutline
                 );
@@ -780,7 +779,6 @@ public partial class MainWindowViewModel : ViewModelBase
                 var boxResult = await _messageBoxService.ShowAsync(
                     I18N.Other.MsgBox_RemoveDirectory_Title,
                     I18N.Other.MsgBox_RemoveDirectory_Body,
-                    string.Empty,
                     MessageBoxButtons.YesNo
                 );
 

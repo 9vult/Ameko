@@ -7,70 +7,50 @@ using Ameko.Views.Sdk;
 using Ameko.Views.Windows;
 using Holo.Scripting.Models;
 using Material.Icons;
-using MsBox.Avalonia;
-using MsBox.Avalonia.Base;
-using MsBox.Avalonia.Enums;
 
 namespace Ameko.Services;
 
 public interface IMessageBoxService
 {
-    Task<MessageBoxResult> ShowAsync(
+    /// <summary>
+    /// Display a message box
+    /// </summary>
+    /// <param name="title">Title of the box</param>
+    /// <param name="text">Body of the box</param>
+    /// <param name="buttonSet">Which buttons to put on the box</param>
+    /// <param name="iconKind">Icon to use</param>
+    /// <returns>Which button was clicked</returns>
+    Task<MessageBoxResult?> ShowAsync(
         string title,
-        string header,
-        string message,
+        string text,
         MessageBoxButtons buttonSet,
         MaterialIconKind iconKind = MaterialIconKind.Info
     );
-    IMsBox<ButtonResult> GetSuccessBox(string title, string content);
-    IMsBox<ButtonResult> GetErrorBox(string title, string content);
-    IMsBox<ButtonResult> GetQuestionBox(string title, string content);
-    IMsBox<ButtonResult> GetInfoBox(string title, string content);
-    IMsBox<ButtonResult> GetBox(InstallationResult result);
+
+    /// <summary>
+    /// Show boxes for <see cref="InstallationResult"/>s
+    /// </summary>
+    /// <param name="result">iunstallation result</param>
+    /// <returns>Button that was clicked</returns>
+    Task<MessageBoxResult?> ShowAsync(InstallationResult result);
 }
 
 public class MessageBoxService(MainWindow mainWindow) : IMessageBoxService
 {
-    public async Task<MessageBoxResult> ShowAsync(
+    public async Task<MessageBoxResult?> ShowAsync(
         string title,
-        string header,
-        string message,
+        string text,
         MessageBoxButtons buttonSet,
         MaterialIconKind iconKind = MaterialIconKind.Info
     )
     {
-        var box = new MessageBox(title, header, message, buttonSet, iconKind);
+        var box = new MessageBox(title, text, buttonSet, iconKind);
         return await box.ShowDialog<MessageBoxResult>(mainWindow);
     }
 
-    public IMsBox<ButtonResult> GetSuccessBox(string title, string content)
+    public async Task<MessageBoxResult?> ShowAsync(InstallationResult result)
     {
-        return MessageBoxManager.GetMessageBoxStandard(title, content, ButtonEnum.Ok, Icon.Success);
-    }
-
-    public IMsBox<ButtonResult> GetErrorBox(string title, string content)
-    {
-        return MessageBoxManager.GetMessageBoxStandard(title, content, ButtonEnum.Ok, Icon.Error);
-    }
-
-    public IMsBox<ButtonResult> GetQuestionBox(string title, string content)
-    {
-        return MessageBoxManager.GetMessageBoxStandard(
-            title,
-            content,
-            ButtonEnum.Ok,
-            Icon.Question
-        );
-    }
-
-    public IMsBox<ButtonResult> GetInfoBox(string title, string content)
-    {
-        return MessageBoxManager.GetMessageBoxStandard(title, content, ButtonEnum.Ok, Icon.Info);
-    }
-
-    public IMsBox<ButtonResult> GetBox(InstallationResult result)
-    {
-        return MessageBoxManager.GetMessageBoxStandard(
+        var box = new MessageBox(
             I18N.PkgMan.PkgManWindow_Title,
             result switch
             {
@@ -84,12 +64,13 @@ public class MessageBoxService(MainWindow mainWindow) : IMessageBoxService
                 InstallationResult.IsRequiredDependency => I18N.PkgMan.PkgMan_Result_IsRequiredDep,
                 _ => throw new ArgumentOutOfRangeException(nameof(result)),
             },
-            ButtonEnum.Ok,
+            MessageBoxButtons.Ok,
             result switch
             {
-                InstallationResult.Success => Icon.Success,
-                _ => Icon.Error,
+                InstallationResult.Success => MaterialIconKind.CheckBold,
+                _ => MaterialIconKind.ExclamationThick,
             }
         );
+        return await box.ShowDialog<MessageBoxResult>(mainWindow);
     }
 }

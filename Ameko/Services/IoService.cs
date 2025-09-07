@@ -131,7 +131,6 @@ public class IoService(
         var boxResult = await messageBoxService.ShowAsync(
             I18N.Other.MsgBox_Save_Title,
             string.Format(I18N.Other.MsgBox_Save_Body, wsp.Title),
-            string.Empty,
             MessageBoxButtons.YesNoCancel,
             MaterialIconKind.HelpCircleOutline
         );

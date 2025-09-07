@@ -17,8 +17,7 @@ public partial class MessageBox : Window
 {
     public MessageBox(
         string title,
-        string header,
-        string message,
+        string text,
         MessageBoxButtons buttonSet,
         MaterialIconKind iconKind = MaterialIconKind.Info
     )
@@ -42,8 +41,7 @@ public partial class MessageBox : Window
             ],
             RowDefinitions =
             [
-                new RowDefinition { Height = GridLength.Auto }, // Header
-                new RowDefinition { Height = GridLength.Auto }, // Body
+                new RowDefinition { Height = GridLength.Auto }, // Text
                 new RowDefinition { Height = GridLength.Auto }, // Buttons
             ],
         };
@@ -61,7 +59,7 @@ public partial class MessageBox : Window
 
         var headerLabel = new TextBlock
         {
-            Text = header,
+            Text = text,
             FontSize = 14,
             TextWrapping = TextWrapping.Wrap,
             VerticalAlignment = VerticalAlignment.Center,
@@ -69,17 +67,6 @@ public partial class MessageBox : Window
         headerLabel.SetValue(Grid.ColumnProperty, 1);
         headerLabel.SetValue(Grid.RowProperty, 0);
         grid.Children.Add(headerLabel);
-
-        var body = new TextBlock
-        {
-            Text = message,
-            FontSize = 12,
-            TextWrapping = TextWrapping.Wrap,
-            VerticalAlignment = VerticalAlignment.Center,
-        };
-        body.SetValue(Grid.ColumnProperty, 1);
-        body.SetValue(Grid.RowProperty, 2);
-        grid.Children.Add(body);
 
         var okButton = new Button
         {
@@ -114,7 +101,7 @@ public partial class MessageBox : Window
             HorizontalAlignment = HorizontalAlignment.Right,
         };
         buttons.SetValue(Grid.ColumnProperty, 1);
-        buttons.SetValue(Grid.RowProperty, 3);
+        buttons.SetValue(Grid.RowProperty, 2);
 
         switch (buttonSet)
         {
