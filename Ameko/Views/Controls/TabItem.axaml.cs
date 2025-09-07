@@ -40,7 +40,7 @@ public partial class TabItem : ReactiveUserControl<TabItemViewModel>
         interaction.SetOutput(output);
     }
 
-    private async Task DoCopyStrippedEventsAsync(
+    private async Task DoCopyPlaintextEventsAsync(
         IInteractionContext<TabItemViewModel, string?> interaction
     )
     {
@@ -179,7 +179,7 @@ public partial class TabItem : ReactiveUserControl<TabItemViewModel>
                     );
 
                     vm.CopyEvents.RegisterHandler(DoCopyEventsAsync);
-                    vm.CopyStrippedEvents.RegisterHandler(DoCopyStrippedEventsAsync);
+                    vm.CopyPlaintextEvents.RegisterHandler(DoCopyPlaintextEventsAsync);
                     vm.CutEvents.RegisterHandler(DoCutEventsAsync);
                     vm.PasteEvents.RegisterHandler(DoPasteEventsAsync);
                     vm.ShowPasteOverDialog.RegisterHandler(DoShowPasteOverDialogAsync);
