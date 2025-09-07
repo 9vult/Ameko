@@ -84,7 +84,6 @@ public class PkgManWindowViewModelTests
 
         var vm = fixture.Create<PkgManWindowViewModel>();
         vm.SelectedStoreModule = module;
-        vm.ShowMessageBox.RegisterHandler(ctx => ctx.SetOutput(Unit.Default));
 
         // Act
         await ((ReactiveCommand<Unit, Unit>)vm.InstallCommand).Execute();
@@ -119,8 +118,6 @@ public class PkgManWindowViewModelTests
         {
             SelectedInstalledModule = module,
         };
-
-        vm.ShowMessageBox.RegisterHandler(ctx => ctx.SetOutput(Unit.Default));
 
         // Act
         await ((ReactiveCommand<Unit, Unit>)vm.UninstallCommand).Execute();
@@ -158,8 +155,6 @@ public class PkgManWindowViewModelTests
             SelectedInstalledModule = module,
         };
 
-        vm.ShowMessageBox.RegisterHandler(ctx => ctx.SetOutput(Unit.Default));
-
         // Act
         await ((ReactiveCommand<Unit, Unit>)vm.UpdateCommand).Execute();
 
@@ -196,8 +191,6 @@ public class PkgManWindowViewModelTests
             SelectedInstalledModule = module1,
         };
 
-        vm.ShowMessageBox.RegisterHandler(ctx => ctx.SetOutput(Unit.Default));
-
         // Act
         await ((ReactiveCommand<Unit, Unit>)vm.UpdateAllCommand).Execute();
 
@@ -226,8 +219,6 @@ public class PkgManWindowViewModelTests
             configuration,
             messageBoxService
         );
-
-        vm.ShowMessageBox.RegisterHandler(ctx => ctx.SetOutput(Unit.Default));
 
         // Act
         await ((ReactiveCommand<Unit, Unit>)vm.RefreshCommand).Execute();

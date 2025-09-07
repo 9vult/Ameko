@@ -267,7 +267,6 @@ public class ScriptService : IScriptService
             await _messageBoxService.ShowAsync(
                 I18N.Other.MsgBox_ScriptService_Title,
                 I18N.Other.MsgBox_ScriptService_Reload_Body,
-                string.Empty,
                 MessageBoxButtons.Ok
             );
         }

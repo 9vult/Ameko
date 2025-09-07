@@ -3,8 +3,10 @@
 using System;
 using System.Reactive;
 using System.Reactive.Linq;
+using Ameko.DataModels.Sdk;
 using DynamicData;
 using Holo.Scripting.Models;
+using Material.Icons;
 using ReactiveUI;
 
 namespace Ameko.ViewModels.Windows;
@@ -23,7 +25,7 @@ public partial class PkgManWindowViewModel
 
             var result = await PackageManager.InstallModule(SelectedStoreModule);
 
-            await ShowMessageBox.Handle(_messageBoxService.GetBox(result));
+            await _messageBoxService.ShowAsync(result);
 
             if (result == InstallationResult.Success)
             {
@@ -47,7 +49,7 @@ public partial class PkgManWindowViewModel
 
             var result = PackageManager.UninstallModule(SelectedInstalledModule);
 
-            await ShowMessageBox.Handle(_messageBoxService.GetBox(result));
+            await _messageBoxService.ShowAsync(result);
 
             if (result == InstallationResult.Success)
             {
@@ -74,7 +76,7 @@ public partial class PkgManWindowViewModel
             _updateCandidates.Clear();
             _updateCandidates.AddRange(PackageManager.GetUpdateCandidates());
 
-            await ShowMessageBox.Handle(_messageBoxService.GetBox(result));
+            await _messageBoxService.ShowAsync(result);
 
             if (result == InstallationResult.Success)
             {
@@ -123,7 +125,7 @@ public partial class PkgManWindowViewModel
             this.RaisePropertyChanged(nameof(UpdateButtonEnabled));
             this.RaisePropertyChanged(nameof(UpdateAllButtonEnabled));
 
-            await ShowMessageBox.Handle(_messageBoxService.GetBox(finalResult));
+            await _messageBoxService.ShowAsync(finalResult);
 
             await _scriptService.Reload(false);
         });
@@ -152,11 +154,10 @@ public partial class PkgManWindowViewModel
             this.RaisePropertyChanged(nameof(UpdateButtonEnabled));
             this.RaisePropertyChanged(nameof(UpdateAllButtonEnabled));
 
-            await ShowMessageBox.Handle(
-                _messageBoxService.GetInfoBox(
-                    I18N.PkgMan.PkgManWindow_Title,
-                    I18N.PkgMan.PkgMan_MsgBox_Refreshed
-                )
+            await _messageBoxService.ShowAsync(
+                I18N.PkgMan.PkgManWindow_Title,
+                I18N.PkgMan.PkgMan_MsgBox_Refreshed,
+                MessageBoxButtons.Ok
             );
         });
     }
@@ -180,20 +181,19 @@ public partial class PkgManWindowViewModel
             {
                 case InstallationResult.Success:
                     _configuration.AddRepositoryUrl(input);
-                    await ShowMessageBox.Handle(_messageBoxService.GetBox(result));
+                    await _messageBoxService.ShowAsync(result);
                     break;
                 case InstallationResult.AlreadyInstalled:
                     Logger.Error($"Could not add repository because it was already installed.");
-                    await ShowMessageBox.Handle(
-                        _messageBoxService.GetInfoBox(
-                            I18N.PkgMan.PkgManWindow_Title,
-                            I18N.PkgMan.PkgMan_Result_Repository_AlreadyInstalled
-                        )
+                    await _messageBoxService.ShowAsync(
+                        I18N.PkgMan.PkgManWindow_Title,
+                        I18N.PkgMan.PkgMan_Result_Repository_AlreadyInstalled,
+                        MessageBoxButtons.Ok
                     );
                     break;
                 case InstallationResult.Failure:
                     Logger.Error("Failed to add repository");
-                    await ShowMessageBox.Handle(_messageBoxService.GetBox(result));
+                    await _messageBoxService.ShowAsync(result);
                     break;
                 default:
                     Logger.Error("Invalid repository add response");
@@ -222,17 +222,14 @@ public partial class PkgManWindowViewModel
             {
                 case InstallationResult.Success:
                     _configuration.RemoveRepositoryUrl(SelectedRepository.Url);
-                    await ShowMessageBox.Handle(
-                        _messageBoxService.GetBox(InstallationResult.Success)
-                    );
+                    await _messageBoxService.ShowAsync(result);
                     break;
                 case InstallationResult.NotInstalled:
                     Logger.Error($"Could not remove repository because it was not installed");
-                    await ShowMessageBox.Handle(
-                        _messageBoxService.GetInfoBox(
-                            I18N.PkgMan.PkgManWindow_Title,
-                            I18N.PkgMan.PkgMan_Result_Repository_NotInstalled
-                        )
+                    await _messageBoxService.ShowAsync(
+                        I18N.PkgMan.PkgManWindow_Title,
+                        I18N.PkgMan.PkgMan_Result_Repository_NotInstalled,
+                        MessageBoxButtons.Ok
                     );
                     break;
                 default:
@@ -245,13 +242,16 @@ public partial class PkgManWindowViewModel
                 _configuration.RemoveRepositoryUrl(SelectedRepository.Url);
                 await PackageManager.SetUpBaseRepository();
                 await PackageManager.AddAdditionalRepositories(_configuration.RepositoryUrls);
-                await ShowMessageBox.Handle(_messageBoxService.GetBox(InstallationResult.Success));
+                await _messageBoxService.ShowAsync(InstallationResult.Success);
             }
             catch (Exception ex)
             {
                 Logger.Error(ex, "Removing repository failed");
-                await ShowMessageBox.Handle(
-                    _messageBoxService.GetInfoBox(I18N.PkgMan.PkgManWindow_Title, ex.Message)
+                await _messageBoxService.ShowAsync(
+                    I18N.PkgMan.PkgManWindow_Title,
+                    ex.Message,
+                    MessageBoxButtons.Ok,
+                    MaterialIconKind.Error
                 );
             }
             // Clean up

@@ -31,8 +31,6 @@ public partial class PkgManWindowViewModel : ViewModelBase
     private readonly ObservableCollection<Module> _updateCandidates;
     private string _repoUrlInput;
 
-    public Interaction<IMsBox<ButtonResult>, Unit> ShowMessageBox { get; }
-
     public ICommand InstallCommand { get; }
     public ICommand UninstallCommand { get; }
     public ICommand UpdateCommand { get; }
@@ -119,8 +117,6 @@ public partial class PkgManWindowViewModel : ViewModelBase
         _repoUrlInput = string.Empty;
 
         _updateCandidates = new ObservableCollection<Module>(PackageManager.GetUpdateCandidates());
-
-        ShowMessageBox = new Interaction<IMsBox<ButtonResult>, Unit>();
 
         InstallCommand = CreateInstallCommand();
         UninstallCommand = CreateUninstallCommand();
