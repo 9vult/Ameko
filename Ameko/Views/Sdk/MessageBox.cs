@@ -1,9 +1,11 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
+using System;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Layout;
 using Avalonia.Media;
+using Avalonia.Platform;
 using Holo.Models;
 using Material.Icons;
 using Material.Icons.Avalonia;
@@ -23,8 +25,12 @@ public partial class MessageBox : Window
     )
     {
         Title = title;
+        Icon = new WindowIcon(
+            AssetLoader.Open(new Uri("avares://Ameko/Assets/Ameko-Simplified-BG-64.ico"))
+        );
         SizeToContent = SizeToContent.WidthAndHeight;
         WindowStartupLocation = WindowStartupLocation.CenterOwner;
+        ShowInTaskbar = false;
         CanResize = false;
         Topmost = true;
         MaxWidth = 500;
