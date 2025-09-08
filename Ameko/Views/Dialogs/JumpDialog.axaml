@@ -16,6 +16,7 @@
         Topmost="True"
         CanResize="False"
         SizeToContent="Height"
+        ShowInTaskbar="False"
         WindowStartupLocation="CenterOwner"
         Icon="/Assets/Ameko-Simplified-BG-64.ico"
         Title="{x:Static i18n:Jump.JumpDialog_Title}">
