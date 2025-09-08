@@ -51,28 +51,42 @@ public partial class MainWindowViewModel : ViewModelBase
 
             foreach (var uri in uris)
             {
-                var ext = Path.GetExtension(uri.LocalPath);
-                var doc = ext switch
+                try
                 {
-                    ".ass" => new AssParser().Parse(_fileSystem, uri),
-                    ".srt" => new SrtParser().Parse(_fileSystem, uri),
-                    ".txt" => new TxtParser().Parse(_fileSystem, uri),
-                    _ => throw new ArgumentOutOfRangeException(),
-                };
+                    var ext = Path.GetExtension(uri.LocalPath);
+                    var doc = ext switch
+                    {
+                        ".ass" => new AssParser().Parse(_fileSystem, uri),
+                        ".srt" => new SrtParser().Parse(_fileSystem, uri),
+                        ".txt" => new TxtParser().Parse(_fileSystem, uri),
+                        _ => throw new ArgumentOutOfRangeException(),
+                    };
 
-                if (ext == ".ass")
-                {
-                    latest = ProjectProvider.Current.AddWorkspace(doc, uri);
-                    latest.IsSaved = true;
-                }
-                else
-                {
-                    // Non-ass sourced documents need to be re-saved as an ass file
-                    latest = ProjectProvider.Current.AddWorkspace(doc);
-                    latest.IsSaved = false;
-                }
+                    if (ext == ".ass")
+                    {
+                        latest = ProjectProvider.Current.AddWorkspace(doc, uri);
+                        latest.IsSaved = true;
+                    }
+                    else
+                    {
+                        // Non-ass sourced documents need to be re-saved as an ass file
+                        latest = ProjectProvider.Current.AddWorkspace(doc);
+                        latest.IsSaved = false;
+                    }
 
-                Logger.Info($"Opened subtitle file {latest.Title}");
+                    Logger.Info($"Opened subtitle file {latest.Title}");
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error($"Failed to parse file {uri.LocalPath}");
+                    Logger.Error(ex);
+                    await _messageBoxService.ShowAsync(
+                        I18N.Resources.Error,
+                        ex.Message,
+                        MessageBoxButtons.Ok,
+                        MaterialIconKind.Error
+                    );
+                }
             }
 
             if (latest is not null)
@@ -86,34 +100,49 @@ public partial class MainWindowViewModel : ViewModelBase
     /// <returns></returns>
     private ReactiveCommand<Uri, Unit> CreateOpenSubtitleNoGuiCommand()
     {
-        return ReactiveCommand.Create(
-            (Uri uri) =>
+        return ReactiveCommand.CreateFromTask(
+            async (Uri uri) =>
             {
                 Logger.Debug("Opening subtitle (no-gui)");
 
-                var ext = Path.GetExtension(uri.LocalPath);
-                var doc = ext switch
+                try
                 {
-                    ".ass" => new AssParser().Parse(_fileSystem, uri),
-                    ".txt" => new TxtParser().Parse(_fileSystem, uri),
-                    _ => throw new ArgumentOutOfRangeException(),
-                };
+                    var ext = Path.GetExtension(uri.LocalPath);
+                    var doc = ext switch
+                    {
+                        ".ass" => new AssParser().Parse(_fileSystem, uri),
+                        ".txt" => new TxtParser().Parse(_fileSystem, uri),
+                        _ => throw new ArgumentOutOfRangeException(),
+                    };
 
-                Workspace latest;
+                    Workspace latest;
 
-                if (ext == ".ass")
-                {
-                    latest = ProjectProvider.Current.AddWorkspace(doc, uri);
-                    latest.IsSaved = true;
+                    if (ext == ".ass")
+                    {
+                        latest = ProjectProvider.Current.AddWorkspace(doc, uri);
+                        latest.IsSaved = true;
+                    }
+                    else
+                    {
+                        // Non-ass sourced documents need to be re-saved as an ass file
+                        latest = ProjectProvider.Current.AddWorkspace(doc);
+                        latest.IsSaved = false;
+                    }
+
+                    Logger.Info($"Opened subtitle file {latest.Title}");
+                    ProjectProvider.Current.WorkingSpace = latest;
                 }
-                else
+                catch (Exception ex)
                 {
-                    // Non-ass sourced documents need to be re-saved as an ass file
-                    latest = ProjectProvider.Current.AddWorkspace(doc);
-                    latest.IsSaved = false;
+                    Logger.Error($"Failed to parse file {uri.LocalPath}");
+                    Logger.Error(ex);
+                    await _messageBoxService.ShowAsync(
+                        I18N.Resources.Error,
+                        ex.Message,
+                        MessageBoxButtons.Ok,
+                        MaterialIconKind.Error
+                    );
                 }
-                Logger.Info($"Opened subtitle file {latest.Title}");
-                ProjectProvider.Current.WorkingSpace = latest;
             }
         );
     }
@@ -468,12 +497,26 @@ public partial class MainWindowViewModel : ViewModelBase
                 return;
 
             var ext = Path.GetExtension(uri.LocalPath);
-            wsp.ReferenceFileManager.Reference = ext switch
+            try
             {
-                ".ass" => new AssParser().Parse(_fileSystem, uri),
-                ".srt" => new SrtParser().Parse(_fileSystem, uri),
-                _ => throw new ArgumentOutOfRangeException(),
-            };
+                wsp.ReferenceFileManager.Reference = ext switch
+                {
+                    ".ass" => new AssParser().Parse(_fileSystem, uri),
+                    ".srt" => new SrtParser().Parse(_fileSystem, uri),
+                    _ => throw new ArgumentOutOfRangeException(),
+                };
+            }
+            catch (Exception ex)
+            {
+                Logger.Error($"Failed to parse file {uri.LocalPath}");
+                Logger.Error(ex);
+                await _messageBoxService.ShowAsync(
+                    I18N.Resources.Error,
+                    ex.Message,
+                    MessageBoxButtons.Ok,
+                    MaterialIconKind.Error
+                );
+            }
         });
     }
 
@@ -497,8 +540,8 @@ public partial class MainWindowViewModel : ViewModelBase
     /// </summary>
     private ReactiveCommand<Uri, Unit> CreateAttachReferenceFileNoGuiCommand()
     {
-        return ReactiveCommand.Create(
-            (Uri uri) =>
+        return ReactiveCommand.CreateFromTask(
+            async (Uri uri) =>
             {
                 Logger.Debug("Preparing to attach a reference file");
 
@@ -507,12 +550,26 @@ public partial class MainWindowViewModel : ViewModelBase
                     return;
 
                 var ext = Path.GetExtension(uri.LocalPath);
-                wsp.ReferenceFileManager.Reference = ext switch
+                try
                 {
-                    ".ass" => new AssParser().Parse(_fileSystem, uri),
-                    ".srt" => new SrtParser().Parse(_fileSystem, uri),
-                    _ => throw new ArgumentOutOfRangeException(),
-                };
+                    wsp.ReferenceFileManager.Reference = ext switch
+                    {
+                        ".ass" => new AssParser().Parse(_fileSystem, uri),
+                        ".srt" => new SrtParser().Parse(_fileSystem, uri),
+                        _ => throw new ArgumentOutOfRangeException(),
+                    };
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error($"Failed to parse file {uri.LocalPath}");
+                    Logger.Error(ex);
+                    await _messageBoxService.ShowAsync(
+                        I18N.Resources.Error,
+                        ex.Message,
+                        MessageBoxButtons.Ok,
+                        MaterialIconKind.Error
+                    );
+                }
             }
         );
     }
