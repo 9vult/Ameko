@@ -315,4 +315,7 @@
     <data name="Error" xml:space="preserve">
         <value>Error</value>
     </data>
+    <data name="Error_FailedToParse" xml:space="preserve">
+        <value>Failed to parse file:</value>
+    </data>
 </root>

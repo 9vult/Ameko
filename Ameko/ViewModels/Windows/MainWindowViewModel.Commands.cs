@@ -82,7 +82,7 @@ public partial class MainWindowViewModel : ViewModelBase
                     Logger.Error(ex);
                     await _messageBoxService.ShowAsync(
                         I18N.Resources.Error,
-                        ex.Message,
+                        $"{I18N.Resources.Error_FailedToParse}\n\n{ex.Message}",
                         MessageBoxButtons.Ok,
                         MaterialIconKind.Error
                     );
@@ -138,7 +138,7 @@ public partial class MainWindowViewModel : ViewModelBase
                     Logger.Error(ex);
                     await _messageBoxService.ShowAsync(
                         I18N.Resources.Error,
-                        ex.Message,
+                        $"{I18N.Resources.Error_FailedToParse}\n\n{ex.Message}",
                         MessageBoxButtons.Ok,
                         MaterialIconKind.Error
                     );
@@ -512,7 +512,7 @@ public partial class MainWindowViewModel : ViewModelBase
                 Logger.Error(ex);
                 await _messageBoxService.ShowAsync(
                     I18N.Resources.Error,
-                    ex.Message,
+                    $"{I18N.Resources.Error_FailedToParse}\n\n{ex.Message}",
                     MessageBoxButtons.Ok,
                     MaterialIconKind.Error
                 );
@@ -565,7 +565,7 @@ public partial class MainWindowViewModel : ViewModelBase
                     Logger.Error(ex);
                     await _messageBoxService.ShowAsync(
                         I18N.Resources.Error,
-                        ex.Message,
+                        $"{I18N.Resources.Error_FailedToParse}\n\n{ex.Message}",
                         MessageBoxButtons.Ok,
                         MaterialIconKind.Error
                     );

@@ -258,6 +258,15 @@ namespace Ameko.I18N {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Failed to parse file:.
+        /// </summary>
+        public static string Error_FailedToParse {
+            get {
+                return ResourceManager.GetString("Error_FailedToParse", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Actor.
         /// </summary>
         public static string EventsGrid_Header_Actor {
