@@ -13,14 +13,15 @@
         x:DataType="vm:JumpDialogViewModel"
 
         Width="200"
-        Height="122"
         Topmost="True"
         CanResize="False"
+        SizeToContent="Height"
         WindowStartupLocation="CenterOwner"
         Icon="/Assets/Ameko-Simplified-BG-64.ico"
         Title="{x:Static i18n:Jump.JumpDialog_Title}">
     <Grid ColumnDefinitions="Auto, *"
-          RowDefinitions="Auto, Auto, Auto, Auto">
+          RowDefinitions="Auto, Auto, Auto, Auto"
+          Margin="5">
         <Label Grid.Column="0"
                Grid.Row="0"
                Content="{x:Static i18n:Jump.Jump_Frame}" />

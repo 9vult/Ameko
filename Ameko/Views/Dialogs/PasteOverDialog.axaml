@@ -15,9 +15,9 @@
         x:DataType="vm:PasteOverDialogViewModel"
 
         Width="300"
-        Height="300"
         Topmost="True"
         CanResize="False"
+        SizeToContent="Height"
         WindowStartupLocation="CenterOwner"
         Icon="/Assets/Ameko-Simplified-BG-64.ico"
         Title="{x:Static i18n:PasteOver.PasteOver_WindowTitle}">
