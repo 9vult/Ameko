@@ -4,6 +4,7 @@ using System;
 using System.Threading.Tasks;
 using Ameko.Views.Windows;
 using Avalonia.Controls;
+using Avalonia.Platform;
 using Holo.Providers;
 
 namespace Ameko.Services;
@@ -21,6 +22,9 @@ public class WindowService(MainWindow mainWindow) : IWindowService
         if (window is not Window win)
             throw new ArgumentException("Alleged window is not a window!");
 
+        win.Icon = new WindowIcon(
+            AssetLoader.Open(new Uri("avares://Ameko/Assets/Ameko-Simplified-BG-64.ico"))
+        );
         win.WindowStartupLocation = WindowStartupLocation.CenterScreen;
         win.CanResize = canResize;
         CalculateSize(win, width, height);
@@ -38,7 +42,11 @@ public class WindowService(MainWindow mainWindow) : IWindowService
         if (window is not Window win)
             throw new ArgumentException("Alleged window is not a window!");
 
+        win.Icon = new WindowIcon(
+            AssetLoader.Open(new Uri("avares://Ameko/Assets/Ameko-Simplified-BG-64.ico"))
+        );
         win.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+        win.ShowInTaskbar = false;
         win.CanResize = canResize;
         CalculateSize(win, width, height);
         await win.ShowDialog(mainWindow);
@@ -56,7 +64,11 @@ public class WindowService(MainWindow mainWindow) : IWindowService
         if (window is not Window win)
             throw new ArgumentException("Alleged window is not a window!");
 
+        win.Icon = new WindowIcon(
+            AssetLoader.Open(new Uri("avares://Ameko/Assets/Ameko-Simplified-BG-64.ico"))
+        );
         win.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+        win.ShowInTaskbar = false;
         win.CanResize = canResize;
         CalculateSize(win, width, height);
         return await win.ShowDialog<T>(mainWindow);
