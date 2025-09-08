@@ -77,6 +77,15 @@
                         Grid.Row="1"
                         Spacing="2"
                         Orientation="Horizontal">
+                <TextBlock Text="{x:Static i18n:Resources.Video_Angle}" />
+                <NumericUpDown Increment="1"
+                               Maximum="360"
+                               Minimum="0"
+                               FormatString="0"
+                               Padding="0"
+                               AllowSpin="True"
+                               ShowButtonSpinner="False"
+                               Value="{Binding Workspace.MediaController.DisplayAngle, FallbackValue=0}" />
                 <CheckBox Content="{x:Static i18n:Resources.Video_LockAR}"
                           ToolTip.Tip="{x:Static i18n:Resources.Video_LockAR_ToolTip}" />
                 <ComboBox ItemsSource="{x:Static holo:ScaleFactor.Scales}"
@@ -100,6 +109,9 @@
                    Background="Gray"
                    PointerWheelChanged="VideoTarget_OnPointerWheelChanged">
                 <c:SilkRenderer MediaController="{Binding Workspace.MediaController}" />
+                <Panel.RenderTransform>
+                    <RotateTransform Angle="{Binding Workspace.MediaController.DisplayAngle, FallbackValue=0, Mode=OneWay}" />
+                </Panel.RenderTransform>
             </Panel>
         </ScrollViewer>
     </DockPanel>

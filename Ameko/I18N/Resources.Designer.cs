@@ -861,6 +861,15 @@ namespace Ameko.I18N {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Angle:.
+        /// </summary>
+        public static string Video_Angle {
+            get {
+                return ResourceManager.GetString("Video_Angle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Disable auto seek to selected event&apos;s start time.
         /// </summary>
         public static string Video_Button_DisableAutoSeek_ToolTip {

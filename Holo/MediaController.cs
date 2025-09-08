@@ -20,7 +20,7 @@ public class MediaController : BindableBase
     private unsafe FrameGroup* _nextFrame;
     private unsafe AudioFrame* _audioFrame;
     private int _currentFrame;
-    private readonly object _frameLock = new();
+    private readonly Lock _frameLock = new();
     private Task? _fetchTask;
     private int _pendingFrame = -1;
     private bool _subtitlesChanged = false;
@@ -28,6 +28,7 @@ public class MediaController : BindableBase
     private ScaleFactor _scaleFactor = ScaleFactor.Default;
     private double _displayWidth;
     private double _displayHeight;
+    private int _displayAngle;
 
     private bool _isAutoSeekEnabled = true;
     private bool _isPlaying;
@@ -74,6 +75,16 @@ public class MediaController : BindableBase
     {
         get => _displayHeight;
         private set => SetProperty(ref _displayHeight, value);
+    }
+
+    public int DisplayAngle
+    {
+        get => _displayAngle;
+        set
+        {
+            value = (value % 360 + 360) % 360; // Normalize to [0-359]
+            SetProperty(ref _displayAngle, value);
+        }
     }
 
     /// <summary>
