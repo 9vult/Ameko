@@ -11,8 +11,10 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Platform;
 using Avalonia.ReactiveUI;
+using Holo.IO;
 using NLog;
 #if !DEBUG
+using System.Threading.Tasks;
 using System.Reactive;
 using ReactiveUI;
 #endif
@@ -82,12 +84,15 @@ sealed class Program
     {
         try
         {
+            Logger.Error(ex);
+
             var wittyComments = new StreamReader(
                 AssetLoader.Open(new Uri("avares://Ameko/Assets/Text/WittyComments.txt"))
             )
                 .ReadToEnd()
                 .Split(Environment.NewLine);
             var wittyComment = wittyComments[new Random().Next(wittyComments.Length)];
+            var time = DateTime.UtcNow.ToString("o");
 
             var report = new StringBuilder();
             report.AppendLine("----- Ameko Crash Report -----");
@@ -97,13 +102,33 @@ sealed class Program
             report.AppendLine($"OS: {RuntimeInformation.OSDescription}");
             report.AppendLine($"Architecture: {RuntimeInformation.OSArchitecture}");
             report.AppendLine($"Framework: {RuntimeInformation.FrameworkDescription}");
+            report.AppendLine($"Time: {time}");
             report.AppendLine($"Category: {category}");
             report.AppendLine(string.Empty);
             report.AppendLine(ex.ToString());
 
+            // Try to write the report to disk
+            try
+            {
+                var dir = Path.Combine(Directories.DataHome, "crash-reports");
+                if (!Directory.Exists(dir))
+                    Directory.CreateDirectory(dir);
+                using var fs = new FileStream(
+                    Path.Combine(dir, $"crash-{time.Replace(":", ".")}.log"),
+                    FileMode.Create,
+                    FileAccess.Write,
+                    FileShare.None
+                );
+                using var writer = new StreamWriter(fs);
+                writer.Write(report.ToString());
+                writer.Flush();
+            }
+            catch (IOException) { } // Ignore, what are we going to do, throw up another error box? XD
+
             var crashArgs =
                 $"--display-crash-report \"{StringEncoder.Base64Encode(report.ToString())}\"";
 
+            // Restart, passing the report as an arg
             if (File.Exists(Environment.ProcessPath))
             {
                 Process.Start(
@@ -116,7 +141,6 @@ sealed class Program
         }
         finally
         {
-            Logger.Error(ex);
             Environment.Exit(-1);
         }
     }
