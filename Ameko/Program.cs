@@ -98,11 +98,11 @@ sealed class Program
             report.AppendLine("----- Ameko Crash Report -----");
             report.AppendLine($"// {wittyComment}");
             report.AppendLine(string.Empty);
+            report.AppendLine($"Time: {time}");
             report.AppendLine($"Version: Ameko {VersionService.FullLabel}");
             report.AppendLine($"OS: {RuntimeInformation.OSDescription}");
             report.AppendLine($"Architecture: {RuntimeInformation.OSArchitecture}");
             report.AppendLine($"Framework: {RuntimeInformation.FrameworkDescription}");
-            report.AppendLine($"Time: {time}");
             report.AppendLine($"Category: {category}");
             report.AppendLine(string.Empty);
             report.AppendLine(ex.ToString());
