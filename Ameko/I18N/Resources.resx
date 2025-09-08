@@ -312,4 +312,7 @@
     <data name="Video_Angle" xml:space="preserve">
         <value>Angle:</value>
     </data>
+    <data name="Error" xml:space="preserve">
+        <value>Error</value>
+    </data>
 </root>
