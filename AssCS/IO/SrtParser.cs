@@ -14,6 +14,7 @@ public partial class SrtParser : FileParser
     {
         Document doc = new(false);
         doc.StyleManager.LoadDefault();
+        doc.ScriptInfoManager.LoadDefault();
 
         const string newline = @"\N";
 
