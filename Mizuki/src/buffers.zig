@@ -11,14 +11,14 @@ const context = @import("context.zig");
 /// Pre-initialize video buffers
 pub fn Init(g_ctx: *context.GlobalContext, num_buffers: usize, max_cache_mb: c_int, width: usize, height: usize, pitch: usize) ffms.FfmsError!void {
     var ctx = &g_ctx.*.buffers;
-    ctx.buffers = std.ArrayList(*frames.FrameGroup).init(common.allocator);
+    ctx.buffers = .empty;
     ctx.max_size = @as(i64, max_cache_mb) * std.math.pow(i64, 1024, 2);
 
     // Pre-allocate buffers
     var i: usize = 0;
     while (i < num_buffers) : (i += 1) {
         const frame = try AllocateFrame(width, height, pitch);
-        try ctx.buffers.append(frame);
+        try ctx.buffers.append(common.allocator, frame);
     }
 }
 
@@ -65,7 +65,7 @@ pub fn Deinit(g_ctx: *context.GlobalContext) void {
         common.allocator.destroy(buffer.*.subtitle_frame);
         common.allocator.destroy(buffer);
     }
-    ctx.buffers.deinit();
+    ctx.buffers.deinit(common.allocator);
     common.allocator.destroy(ctx.audio_frame.?);
 }
 
@@ -85,7 +85,7 @@ pub fn ProcFrame(g_ctx: *context.GlobalContext, frame_number: c_int, timestamp: 
             // Move buffer to the front of the list
             if (idx != 0) {
                 _ = buffers.swapRemove(idx);
-                try buffers.insert(0, buffer);
+                try buffers.insert(common.allocator, 0, buffer);
             }
 
             // Check if we need to (re)render the subtitles
@@ -104,7 +104,7 @@ pub fn ProcFrame(g_ctx: *context.GlobalContext, frame_number: c_int, timestamp: 
     if (ctx.total_size >= ctx.max_size) {
         const last = buffers.swapRemove(buffers.items.len - 1);
         _ = ReleaseFrame(last);
-        try buffers.insert(0, last);
+        try buffers.insert(common.allocator, 0, last);
     }
 
     // Find an invalidated buffer
@@ -124,7 +124,7 @@ pub fn ProcFrame(g_ctx: *context.GlobalContext, frame_number: c_int, timestamp: 
             @intCast(reference.*.video_frame.*.height),
             @intCast(reference.*.video_frame.*.pitch),
         );
-        try buffers.insert(0, result.?);
+        try buffers.insert(common.allocator, 0, result.?);
         ctx.total_size += (result.?.*.video_frame.*.height * result.?.*.video_frame.*.pitch) * 2; // add size
     }
 

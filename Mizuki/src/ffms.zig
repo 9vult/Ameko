@@ -208,13 +208,13 @@ pub fn LoadVideo(g_ctx: *context.GlobalContext, file_name: [*c]u8, cache_file_na
     ctx.frame_count = video_info.*.NumFrames;
 
     // Allocate ArrayLists
-    var keyframes_list = std.ArrayList(c_int).init(common.allocator);
-    var timecodes_list = std.ArrayList(c_longlong).init(common.allocator);
-    var intervals_list = std.ArrayList(c_longlong).init(common.allocator);
+    var keyframes_list: std.ArrayList(c_int) = .empty;
+    var timecodes_list: std.ArrayList(c_longlong) = .empty;
+    var intervals_list: std.ArrayList(c_longlong) = .empty;
 
-    errdefer timecodes_list.deinit();
-    errdefer keyframes_list.deinit();
-    errdefer intervals_list.deinit();
+    errdefer timecodes_list.deinit(common.allocator);
+    errdefer keyframes_list.deinit(common.allocator);
+    errdefer intervals_list.deinit(common.allocator);
 
     var frame_number: c_int = 0;
     while (frame_number < ctx.frame_count) : (frame_number += 1) {
@@ -224,29 +224,29 @@ pub fn LoadVideo(g_ctx: *context.GlobalContext, file_name: [*c]u8, cache_file_na
         }
 
         if (frame_info.*.KeyFrame != 0) {
-            try keyframes_list.append(frame_number);
+            try keyframes_list.append(common.allocator, frame_number);
         }
 
         const wc_num = @as(f64, @floatFromInt(frame_info.*.PTS)) * @as(f64, @floatFromInt(time_base.*.Num));
         const wc_den = @as(f64, @floatFromInt(time_base.*.Den));
         const wallclock_ms = @as(c_longlong, @intFromFloat(wc_num / wc_den));
-        try timecodes_list.append(wallclock_ms);
+        try timecodes_list.append(common.allocator, wallclock_ms);
     }
 
     // Get the slices (de-inits the ArrayLists)
-    ctx.keyframes = keyframes_list.toOwnedSlice() catch unreachable;
-    ctx.timecodes = timecodes_list.toOwnedSlice() catch unreachable;
+    ctx.keyframes = keyframes_list.toOwnedSlice(common.allocator) catch unreachable;
+    ctx.timecodes = timecodes_list.toOwnedSlice(common.allocator) catch unreachable;
 
     // Calculate frame intervals
     var i: usize = 0;
     while (i + 1 < ctx.frame_count) : (i += 1) {
-        try intervals_list.append(ctx.timecodes[i + 1] - ctx.timecodes[i]);
+        try intervals_list.append(common.allocator, ctx.timecodes[i + 1] - ctx.timecodes[i]);
     }
 
     // Last interval is 0
-    try intervals_list.append(0);
+    try intervals_list.append(common.allocator, 0);
 
-    ctx.frame_intervals = intervals_list.toOwnedSlice() catch unreachable;
+    ctx.frame_intervals = intervals_list.toOwnedSlice(common.allocator) catch unreachable;
 
     if (has_audio) {
         ctx.audio_source = c.FFMS_CreateAudioSource(file_name, audio_track_number, index, c.FFMS_DELAY_FIRST_VIDEO_TRACK, &err_info);
