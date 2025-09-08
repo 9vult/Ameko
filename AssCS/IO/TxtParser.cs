@@ -13,8 +13,9 @@ public class TxtParser(char commentDelim = '#', char actorDelim = ':') : FilePar
 {
     protected override Document Parse(TextReader reader)
     {
-        var doc = new Document(true);
-        doc.EventManager.Remove(doc.EventManager.Head.Id);
+        var doc = new Document(false);
+        doc.StyleManager.LoadDefault();
+        doc.ScriptInfoManager.LoadDefault();
 
         while (reader.ReadLine() is { } line)
         {

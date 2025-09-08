@@ -102,6 +102,7 @@ public class ConfigurationTests
             "Culture": "en-US",
             "SpellcheckCulture": "en_US",
             "Theme": "light",
+            "PropagateFields": "NonText",
             "GridPadding": 2,
             "RepositoryUrls": []
         }

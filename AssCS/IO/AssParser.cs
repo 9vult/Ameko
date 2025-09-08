@@ -14,6 +14,7 @@ public partial class AssParser : FileParser
     protected override Document Parse(TextReader reader)
     {
         Document doc = new(false);
+        doc.ScriptInfoManager.LoadDefault();
 
         ParseFunc parseState = ParseUnknown;
 
@@ -44,6 +45,11 @@ public partial class AssParser : FileParser
             }
             parseState(line, doc);
         }
+
+        if (doc.StyleManager.Count == 0)
+            doc.StyleManager.LoadDefault();
+        if (doc.EventManager.Count == 0)
+            doc.EventManager.LoadDefault();
 
         return doc;
     }
