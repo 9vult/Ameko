@@ -26,9 +26,10 @@ public class MediaController : BindableBase
     private bool _subtitlesChanged = false;
 
     private ScaleFactor _scaleFactor = ScaleFactor.Default;
+    private RotationalFactor _rotationalFactor = RotationalFactor.Default;
     private double _displayWidth;
     private double _displayHeight;
-    private int _displayAngle;
+    private double _displayAngle;
 
     private bool _isAutoSeekEnabled = true;
     private bool _isPlaying;
@@ -65,6 +66,16 @@ public class MediaController : BindableBase
         }
     }
 
+    public RotationalFactor RotationalFactor
+    {
+        get => _rotationalFactor;
+        set
+        {
+            SetProperty(ref _rotationalFactor, value);
+            DisplayAngle = value.Angle;
+        }
+    }
+
     public double DisplayWidth
     {
         get => _displayWidth;
@@ -77,14 +88,10 @@ public class MediaController : BindableBase
         private set => SetProperty(ref _displayHeight, value);
     }
 
-    public int DisplayAngle
+    public double DisplayAngle
     {
         get => _displayAngle;
-        set
-        {
-            value = (value % 360 + 360) % 360; // Normalize to [0-359]
-            SetProperty(ref _displayAngle, value);
-        }
+        private set => SetProperty(ref _displayAngle, value);
     }
 
     /// <summary>
