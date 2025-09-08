@@ -18,7 +18,8 @@
              x:DataType="vm:TabItemViewModel">
 	<UserControl.Resources>
 		<converters:GridPaddingConverter x:Key="PaddingConverter" />
-		<converters:EventTextLengthConverter x:Key="TextLengthConverter" />
+		<converters:EventTextLengthConverter x:Key="EventTextLengthConverter" />
+		<converters:TextLengthConverter x:Key="TextLengthConverter" />
 		<converters:CommentConverter x:Key="CommentConverter" />
 	</UserControl.Resources>
     <DataGrid Name="EventsGrid"
@@ -59,21 +60,28 @@
             </DataGridTemplateColumn>
             <DataGridTextColumn Header="{x:Static i18n:Resources.EventsGrid_Header_Style}"
                                 FontFamily="{StaticResource ZenKakuGothicNew}"
-                                Binding="{Binding Style}" />
+                                CanUserResize="False"
+                                Binding="{Binding Style,
+												  Mode=OneWay,
+												  Converter={StaticResource TextLengthConverter}}" />
 			<DataGridTextColumn Header="{x:Static i18n:Resources.EventsGrid_Header_Actor}"
 			                    FontFamily="{StaticResource ZenKakuGothicNew}"
-			                    Binding="{Binding Actor}"
+			                    Binding="{Binding Actor,
+												  Mode=OneWay,
+												  Converter={StaticResource TextLengthConverter}}"
 			                    IsVisible="{Binding Workspace.DisplayActorsColumn}" />
 			<DataGridTextColumn Header="{x:Static i18n:Resources.EventsGrid_Header_Effect}"
 			                    FontFamily="{StaticResource ZenKakuGothicNew}"
-			                    Binding="{Binding Effect}"
+			                    Binding="{Binding Effect,
+												  Mode=OneWay,
+												  Converter={StaticResource TextLengthConverter}}"
 			                    IsVisible="{Binding Workspace.DisplayEffectsColumn}" />
 			<DataGridTextColumn Header="{x:Static i18n:Resources.EventsGrid_Header_Content}"
 			                    FontFamily="{StaticResource ZenKakuGothicNew}"
 			                    Width="*"
 			                    Binding="{Binding Text,
 												  Mode=OneWay,
-												  Converter={StaticResource TextLengthConverter}}" />
+												  Converter={StaticResource EventTextLengthConverter}}" />
         </DataGrid.Columns>
 	    <DataGrid.ContextMenu>
 		    <ContextMenu>
