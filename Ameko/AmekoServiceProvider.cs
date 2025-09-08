@@ -62,6 +62,7 @@ public static class AmekoServiceProvider
         services.AddSingleton<ThemeService>();
         services.AddSingleton<IIoService, IoService>();
         services.AddSingleton<IMessageBoxService, MessageBoxService>();
+        services.AddSingleton<IWindowService, WindowService>();
 
         // --- Factories ---
         services.AddSingleton<ITabFactory, TabFactory>();

@@ -83,7 +83,8 @@ public sealed class ScriptServiceLocator
         IProjectProvider projectProvider,
         IScriptConfigurationService scriptConfigurationService,
         IMessageService messageService,
-        IMessageBoxService messageBoxService
+        IMessageBoxService messageBoxService,
+        IWindowService windowService
     )
     {
         Services = new Dictionary<Type, object>
@@ -94,6 +95,7 @@ public sealed class ScriptServiceLocator
             [typeof(IScriptConfigurationService)] = scriptConfigurationService,
             [typeof(IMessageService)] = messageService,
             [typeof(IMessageBoxService)] = messageBoxService,
+            [typeof(IWindowService)] = windowService,
         };
     }
 }
