@@ -3,7 +3,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        d:DesignWidth="500"
+        d:DesignWidth="550"
         d:DesignHeight="400"
         
         xmlns:vm="clr-namespace:Ameko.ViewModels.Windows"
@@ -15,13 +15,13 @@
         
         CanResize="False"
         Icon="/Assets/Ameko-Simplified-BG-64.ico"
-        Width="500"
+        Width="550"
         Height="400"
         Title="{x:Static i18n:Keybinds.KeybindsWindow_Title}"
         WindowStartupLocation="CenterScreen">
     <Grid RowDefinitions="*, Auto">
         <DataGrid Grid.Row="0"
-                  Margin="2"
+                  Margin="4"
                   IsReadOnly="False"
                   CanUserReorderColumns="False"
                   CanUserResizeColumns="False"
