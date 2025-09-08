@@ -81,7 +81,7 @@
                            VerticalAlignment="Center"/>
                 <ComboBox ItemsSource="{x:Static holo:RotationalFactor.Angles}"
                           SelectedItem="{Binding Workspace.MediaController.RotationalFactor}"
-                          Width="50"
+                          Width="75"
                           MaxDropDownHeight="425">
                     <ComboBox.ItemTemplate>
                         <DataTemplate>
