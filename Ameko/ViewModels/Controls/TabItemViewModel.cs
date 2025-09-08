@@ -126,6 +126,12 @@ public partial class TabItemViewModel : ViewModelBase
     [KeybindTarget("ameko.video.zoom.out", "Ctrl+OemMinus", KeybindContext.Video)]
     public ICommand ZoomOutCommand { get; }
 
+    [KeybindTarget("ameko.video.rotate.clockwise", KeybindContext.Video)]
+    public ICommand RotateClockwiseCommand { get; }
+
+    [KeybindTarget("ameko.video.rotate.counterclockwise", KeybindContext.Video)]
+    public ICommand RotateCounterclockwiseCommand { get; }
+
     [KeybindTarget("ameko.reference.shift.forward", KeybindContext.Editor)]
     public ICommand ShiftReferenceForwardCommand { get; }
 
@@ -218,6 +224,8 @@ public partial class TabItemViewModel : ViewModelBase
         ActiveEndCommand = CreateActiveEndCommand();
         ZoomInCommand = CreateZoomInCommand();
         ZoomOutCommand = CreateZoomOutCommand();
+        RotateClockwiseCommand = CreateRotateClockwiseCommand();
+        RotateCounterclockwiseCommand = CreateRotateCounterclockwiseCommand();
 
         #endregion
 

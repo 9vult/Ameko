@@ -636,6 +636,40 @@ public partial class TabItemViewModel : ViewModelBase
     }
 
     /// <summary>
+    /// Rotate Clockwise
+    /// </summary>
+    private ReactiveCommand<Unit, Unit> CreateRotateClockwiseCommand()
+    {
+        return ReactiveCommand.Create(() =>
+        {
+            if (!Workspace.MediaController.IsVideoLoaded)
+                return;
+            var angles = RotationalFactor.Angles;
+            var index = angles.IndexOf(Workspace.MediaController.RotationalFactor);
+
+            if (index < angles.Count - 1)
+                Workspace.MediaController.RotationalFactor = angles[index + 1];
+        });
+    }
+
+    /// <summary>
+    /// Rotate Counterclockwise
+    /// </summary>
+    private ReactiveCommand<Unit, Unit> CreateRotateCounterclockwiseCommand()
+    {
+        return ReactiveCommand.Create(() =>
+        {
+            if (!Workspace.MediaController.IsVideoLoaded)
+                return;
+            var angles = RotationalFactor.Angles;
+            var index = angles.IndexOf(Workspace.MediaController.RotationalFactor);
+
+            if (index > 0)
+                Workspace.MediaController.RotationalFactor = angles[index - 1];
+        });
+    }
+
+    /// <summary>
     /// Shift reference file forwards
     /// </summary>
     private ReactiveCommand<Unit, Unit> CreateShiftReferenceForwardCommand()
