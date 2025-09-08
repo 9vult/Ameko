@@ -15,10 +15,9 @@
         x:Class="Ameko.Views.Dialogs.ColorDialog"
         x:DataType="vm:ColorDialogViewModel"
         
-        Width="375"
-        Height="500"
         Topmost="True"
         CanResize="False"
+        SizeToContent="WidthAndHeight"
         WindowStartupLocation="CenterOwner"
         Icon="/Assets/Ameko-Simplified-BG-64.ico"
         Title="{x:Static i18n:StyleEditor.StyleEditor_WindowTitle}">
