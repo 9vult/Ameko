@@ -111,6 +111,7 @@ public partial class MainWindowViewModel : ViewModelBase
                     var doc = ext switch
                     {
                         ".ass" => new AssParser().Parse(_fileSystem, uri),
+                        ".srt" => new SrtParser().Parse(_fileSystem, uri),
                         ".txt" => new TxtParser().Parse(_fileSystem, uri),
                         _ => throw new ArgumentOutOfRangeException(),
                     };
