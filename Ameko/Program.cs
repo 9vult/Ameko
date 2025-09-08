@@ -5,7 +5,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading.Tasks;
 using Ameko.Services;
 using AssCS.Utilities;
 using Avalonia;
@@ -13,6 +12,10 @@ using Avalonia.Controls;
 using Avalonia.Platform;
 using Avalonia.ReactiveUI;
 using NLog;
+#if !DEBUG
+using System.Reactive;
+using ReactiveUI;
+#endif
 
 namespace Ameko;
 
@@ -36,8 +39,16 @@ sealed class Program
             HandleUnhandledException("Non-UI", (Exception)ex.ExceptionObject);
         TaskScheduler.UnobservedTaskException += (_, ex) =>
             HandleUnhandledException("Task", ex.Exception);
-#endif
 
+        // Avoid everything being wrapped with ReactiveUI.UnhandledErrorException
+        RxApp.DefaultExceptionHandler = Observer.Create<Exception>(ex =>
+        {
+            HandleUnhandledException(
+                "UI",
+                ex is UnhandledErrorException { InnerException: { } inner } ? inner : ex
+            );
+        });
+#endif
         try
         {
             BuildAvaloniaApp()
