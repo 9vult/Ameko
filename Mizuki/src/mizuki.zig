@@ -149,7 +149,7 @@ fn FreeLongArray(array: common.LongArray) void {
 }
 
 /// Get audio tracks description
-pub export fn listAudioTracks(file_path: [*:0]const u8, audio_tracks: *common.AudioTrackArray) errors.listAudioTrackErrors {
+pub export fn ListAudioTracks(file_path: [*:0]const u8, audio_tracks: *common.AudioTrackArray) errors.listAudioTrackErrors {
     var fmt_ctx: ?*c.AVFormatContext = null;
     if (c.avformat_open_input(&fmt_ctx, file_path, null, null) < 0) {
         return .OpenFailed;
@@ -195,7 +195,7 @@ pub export fn listAudioTracks(file_path: [*:0]const u8, audio_tracks: *common.Au
     return .Ok;
 }
 
-pub export fn freeAudioTracks(audio_tracks: *common.AudioTrackArray) void {
+pub export fn FreeAudioTracks(audio_tracks: *common.AudioTrackArray) void {
     for (0..audio_tracks.len) |i| {
         const track = audio_tracks.ptr[i];
         common.allocator.free(std.mem.span(track.language));
@@ -208,7 +208,7 @@ pub fn main() !void {
     const ver = c.avcodec_version();
     std.debug.print("Avcodec version: {}.{}.{}\n", .{ (ver >> 16) & 0xFF, (ver >> 8) & 0xFF, ver & 0xFF });
     var tracks: common.AudioTrackArray = undefined;
-    const res = listAudioTracks("input.mkv", &tracks);
+    const res = ListAudioTracks("input.mkv", &tracks);
     if (res != .Ok) {
         std.debug.print("Failed to list audio tracks, error: {t}\n", .{res});
         return;
@@ -218,7 +218,7 @@ pub fn main() !void {
         std.debug.print("Track {any}: lang: {s}, name: {s}\n", .{ track.index, track.language, track.title });
     }
 
-    freeAudioTracks(&tracks);
+    FreeAudioTracks(&tracks);
 
     // const ffms_version = ffms.GetVersion();
     // std.debug.print("FFMS2 Version: {x}.{x}.{x}\n", .{

@@ -119,6 +119,40 @@ public unsafe class MizukiSourceProvider : ISourceProvider
         return ptr.ToLongArray();
     }
 
+    public AudioTrack[] GetAudioTracks(string filePath)
+    {
+        var resultCode = External.ListAudioTracks(filePath, out var nativeArray);
+
+        if (resultCode != 0)
+        {
+            throw new Exception("Failed to list audio tracks");
+        }
+
+        try
+        {
+            var tracks = new AudioTrack[nativeArray.Length];
+            var trackSize = Marshal.SizeOf<AudioTrackC>();
+
+            for (var i = 0; i < (int)nativeArray.Length; i++)
+            {
+                var trackPtr = nativeArray.Pointer + (i * trackSize);
+                var trackC = Marshal.PtrToStructure<AudioTrackC>(trackPtr);
+
+                tracks[i] = new AudioTrack
+                {
+                    Index = (int)trackC.Index,
+                    Language = trackC.Language,
+                    Title = trackC.title,
+                };
+            }
+            return tracks;
+        }
+        finally
+        {
+            External.FreeAudioTracks(ref nativeArray);
+        }
+    }
+
     /// <summary>
     /// Callback for handling logs emitted by Mizuki
     /// </summary>
@@ -238,6 +272,12 @@ internal static unsafe partial class External
     [LibraryImport("mizuki")]
     internal static partial void SetLoggerCallback(LogCallback callback);
 
+    [LibraryImport("mizuki", StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial int ListAudioTracks(string filename, out UnmanagedArray audiotracks);
+
+    [LibraryImport("mizuki")]
+    public static partial void FreeAudioTracks(ref UnmanagedArray audioTracks);
+
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     public delegate void LogCallback(int level, nint message);
 }
@@ -255,6 +295,14 @@ internal struct UnmanagedArray
 {
     public nint Pointer;
     public nuint Length;
+}
+
+[StructLayout(LayoutKind.Sequential)]
+public struct AudioTrackC
+{
+    public nuint Index;
+    public string Language;
+    public string title;
 }
 
 internal static class UnmanagedArrayExtensions
