@@ -6,7 +6,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         d:DesignWidth="375"
-        d:DesignHeight="625"
+        d:DesignHeight="700"
 
         xmlns:converters="clr-namespace:Ameko.Converters"
         xmlns:i18n="clr-namespace:Ameko.I18N"
@@ -16,9 +16,9 @@
         x:DataType="vm:StyleEditorWindowViewModel"
         
         Width="400"
-        Height="625"
         Topmost="True"
         CanResize="False"
+        SizeToContent="Height"
         WindowStartupLocation="CenterOwner"
         Icon="/Assets/Ameko-Simplified-BG-64.ico"
         Title="{x:Static i18n:StyleEditor.StyleEditor_WindowTitle}">
@@ -84,6 +84,8 @@
                         Padding="0"
                         Margin="1"
                         HorizontalContentAlignment="Stretch"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch"
                         Command="{Binding EditColorCommand}"
                         CommandParameter="{Binding Style.PrimaryColor}">
                     <Grid RowDefinitions="*, *"
@@ -111,6 +113,8 @@
                         Padding="0"
                         Margin="1"
                         HorizontalContentAlignment="Stretch"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch"
                         Command="{Binding EditColorCommand}"
                         CommandParameter="{Binding Style.SecondaryColor}">
                     <Grid RowDefinitions="*, *"
@@ -138,6 +142,8 @@
                         Padding="0"
                         Margin="1"
                         HorizontalContentAlignment="Stretch"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch"
                         Command="{Binding EditColorCommand}"
                         CommandParameter="{Binding Style.OutlineColor}">
                     <Grid RowDefinitions="*, *"
@@ -165,6 +171,8 @@
                         Padding="0"
                         Margin="1"
                         HorizontalContentAlignment="Stretch"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch"
                         Command="{Binding EditColorCommand}"
                         CommandParameter="{Binding Style.ShadowColor}">
                     <Grid RowDefinitions="*, *"

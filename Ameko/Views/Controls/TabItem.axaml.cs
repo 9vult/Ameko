@@ -246,7 +246,7 @@ public partial class TabItem : ReactiveUserControl<TabItemViewModel>
                 ResizeDirection = split.IsVertical
                     ? GridResizeDirection.Columns
                     : GridResizeDirection.Rows,
-                Background = Brushes.Black,
+                // Background = Brushes.Black,
             };
             splitter.SetValue(Grid.ColumnProperty, split.Column);
             splitter.SetValue(Grid.RowProperty, split.Row);

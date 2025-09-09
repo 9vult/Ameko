@@ -24,6 +24,8 @@
              FontFamily="{StaticResource MartianMono}"
              SelectedItem="{Binding SelectedLog}"
              SelectionMode="Multiple"
-             AutoScrollToSelectedItem="True" />
+             AutoScrollToSelectedItem="True"
+             FontSize="12"
+             Classes="Small"/>
 
 </Window>

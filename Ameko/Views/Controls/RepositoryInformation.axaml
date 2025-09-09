@@ -62,17 +62,20 @@
             <TextBlock Grid.Column="0"
                        Grid.Row="5"
                        Margin="0 0 5 0"
+                       VerticalAlignment="Center"
                        Text="{x:Static i18n:PkgMan.PkgMan_Info_Url}" />
             <TextBox Grid.Column="1"
                        Grid.Row="5"
                        Padding="0"
                        IsReadOnly="True"
                        TextWrapping="NoWrap"
+                       Classes="Small"
                        Text="{Binding Url,
                                       FallbackValue={x:Static i18n:PkgMan.PkgMan_Info_NoSelection}}" />
             <TextBlock Grid.Column="0"
                        Grid.Row="6"
                        Margin="0 0 5 0"
+                       VerticalAlignment="Center"
                        Text="{x:Static i18n:PkgMan.PkgMan_Info_Description}" />
             <TextBox Grid.Column="1"
                      Grid.Row="6"
@@ -80,6 +83,7 @@
                      Margin="0 1"
                      IsReadOnly="True"
                      TextWrapping="Wrap"
+                     Classes="Small"
                      Text="{Binding Description,
                                     FallbackValue={x:Static i18n:PkgMan.PkgMan_Info_NoSelection}}" />
         </Grid>
