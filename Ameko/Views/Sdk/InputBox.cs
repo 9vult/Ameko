@@ -19,11 +19,21 @@ public partial class InputBox : Window
 {
     public string InputText { get; private set; }
 
+    /// <summary>
+    /// A box for getting user input
+    /// </summary>
+    /// <param name="title">Window title</param>
+    /// <param name="text">Body</param>
+    /// <param name="initialText">Initial text in the input</param>
+    /// <param name="buttonSet">Which buttons to use</param>
+    /// <param name="primary">Which button is default</param>
+    /// <param name="iconKind">Which icon to use</param>
     public InputBox(
         string title,
         string text,
         string initialText,
-        MessageBoxButtons buttonSet,
+        MsgBoxButtonSet buttonSet = MsgBoxButtonSet.Ok,
+        MsgBoxButton primary = MsgBoxButton.Ok,
         MaterialIconKind iconKind = MaterialIconKind.Info
     )
     {
@@ -95,66 +105,83 @@ public partial class InputBox : Window
         {
             Content = new TextBlock { Text = I18N.Other.MsgBox_Btn_OK },
             Width = 75,
+            IsDefault = primary == MsgBoxButton.Ok,
         };
         var yesButton = new Button
         {
             Content = new TextBlock { Text = I18N.Other.MsgBox_Btn_Yes },
             Width = 75,
+            IsDefault = primary == MsgBoxButton.Yes,
         };
         var noButton = new Button
         {
             Content = new TextBlock { Text = I18N.Other.MsgBox_Btn_No },
             Width = 75,
+            IsDefault = primary == MsgBoxButton.No,
         };
         var cancelButton = new Button
         {
             Content = new TextBlock { Text = I18N.Other.MsgBox_Btn_Cancel },
             Width = 75,
+            IsDefault = primary == MsgBoxButton.Cancel,
         };
+
+        okButton.Classes.Add(primary == MsgBoxButton.Ok ? "Primary" : "Tertiary");
+        yesButton.Classes.Add(primary == MsgBoxButton.Yes ? "Primary" : "Tertiary");
+        noButton.Classes.Add(primary == MsgBoxButton.No ? "Primary" : "Tertiary");
+        cancelButton.Classes.Add(primary == MsgBoxButton.Cancel ? "Primary" : "Tertiary");
 
         okButton.Click += (_, _) =>
         {
             InputText = inputBox.Text;
-            Close(MessageBoxResult.Ok);
+            Close(MsgBoxButton.Ok);
         };
         yesButton.Click += (_, _) =>
         {
             InputText = inputBox.Text;
-            Close(MessageBoxResult.Yes);
+            Close(MsgBoxButton.Yes);
         };
         noButton.Click += (_, _) =>
         {
             InputText = inputBox.Text;
-            Close(MessageBoxResult.No);
+            Close(MsgBoxButton.No);
         };
         cancelButton.Click += (_, _) =>
         {
             InputText = inputBox.Text;
-            Close(MessageBoxResult.Cancel);
+            Close(MsgBoxButton.Cancel);
         };
+
+        var isMacOs = OperatingSystem.IsMacOS();
 
         var buttons = new StackPanel
         {
             Orientation = Orientation.Horizontal,
             Spacing = 10,
-            HorizontalAlignment = HorizontalAlignment.Right,
+            HorizontalAlignment = isMacOs ? HorizontalAlignment.Right : HorizontalAlignment.Left,
         };
         buttons.SetValue(Grid.ColumnProperty, 1);
         buttons.SetValue(Grid.RowProperty, 2);
 
         switch (buttonSet)
         {
-            case MessageBoxButtons.Ok:
+            case MsgBoxButtonSet.Ok:
                 buttons.Children.Add(okButton);
                 break;
-            case MessageBoxButtons.YesNo:
-                buttons.Children.AddRange([noButton, yesButton]);
+            case MsgBoxButtonSet.YesNo:
+                buttons.Children.AddRange(isMacOs ? [noButton, yesButton] : [yesButton, noButton]);
                 break;
-            case MessageBoxButtons.OkCancel:
-                buttons.Children.AddRange([cancelButton, okButton]);
+            case MsgBoxButtonSet.OkCancel:
+                buttons.Children.AddRange(
+                    isMacOs ? [cancelButton, okButton] : [okButton, cancelButton]
+                );
                 break;
-            case MessageBoxButtons.YesNoCancel:
-                buttons.Children.AddRange([cancelButton, noButton, yesButton]);
+            case MsgBoxButtonSet.YesNoCancel:
+                buttons.Children.AddRange(
+                    isMacOs
+                        ? [cancelButton, noButton, yesButton]
+                        : [yesButton, noButton, cancelButton]
+                );
                 break;
         }
         grid.Children.Add(buttons);

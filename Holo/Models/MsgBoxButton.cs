@@ -2,10 +2,10 @@
 
 namespace Holo.Models;
 
-public enum MessageBoxButtons
+public enum MsgBoxButton
 {
     Ok,
-    OkCancel,
-    YesNo,
-    YesNoCancel,
+    Cancel,
+    Yes,
+    No,
 }
