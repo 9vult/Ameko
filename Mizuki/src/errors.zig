@@ -21,3 +21,10 @@ pub fn IntFromFfmsError(err: FfmsError) c_int {
         FfmsError.DecodingAudioFailed => 15,
     };
 }
+
+pub const listAudioTrackErrors = enum(i32) {
+    Ok = 0,
+    OpenFailed = -1,
+    StreamInfoFailed = -2,
+    AllocationFailed = -3,
+};

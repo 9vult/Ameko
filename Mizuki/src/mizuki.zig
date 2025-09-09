@@ -148,9 +148,78 @@ fn FreeLongArray(array: common.LongArray) void {
     common.allocator.free(slice);
 }
 
+/// Get audio tracks description
+pub export fn listAudioTracks(file_path: [*:0]const u8, audio_tracks: *common.AudioTrackArray) errors.listAudioTrackErrors {
+    var fmt_ctx: ?*c.AVFormatContext = null;
+    if (c.avformat_open_input(&fmt_ctx, file_path, null, null) < 0) {
+        return .OpenFailed;
+    }
+    defer c.avformat_close_input(&fmt_ctx);
+
+    if (c.avformat_find_stream_info(fmt_ctx, null) < 0) {
+        return .StreamInfoFailed;
+    }
+
+    const nb_streams = fmt_ctx.?.nb_streams;
+    var tracks = common.allocator.alloc(common.AudioTrack, nb_streams) catch return .AllocationFailed;
+    var count: usize = 0;
+
+    for (0..@intCast(nb_streams)) |i| {
+        const stream = fmt_ctx.?.streams[i];
+        if (stream.*.codecpar.*.codec_type == c.AVMEDIA_TYPE_AUDIO) {
+            const lang_dict = c.av_dict_get(stream.*.metadata, "language", null, 0);
+            const title_dict = c.av_dict_get(stream.*.metadata, "title", null, 0);
+
+            const lang_src = if (lang_dict != null) std.mem.span(lang_dict.*.value) else "unknown";
+            const title_src = if (title_dict != null) std.mem.span(title_dict.*.value) else "unknown";
+
+            const lang_copy = common.allocator.dupeZ(u8, lang_src) catch return .AllocationFailed;
+            const title_copy = common.allocator.dupeZ(u8, title_src) catch return .AllocationFailed;
+
+            tracks[count] = common.AudioTrack{
+                .index = i,
+                .language = lang_copy.ptr,
+                .title = title_copy.ptr,
+            };
+            count += 1;
+        }
+    }
+
+    // Resize to to avoid the free mismatch
+    tracks = common.allocator.realloc(tracks, count) catch return .AllocationFailed;
+
+    audio_tracks.* = common.AudioTrackArray{
+        .ptr = tracks.ptr,
+        .len = count,
+    };
+    return .Ok;
+}
+
+pub export fn freeAudioTracks(audio_tracks: *common.AudioTrackArray) void {
+    for (0..audio_tracks.len) |i| {
+        const track = audio_tracks.ptr[i];
+        common.allocator.free(std.mem.span(track.language));
+        common.allocator.free(std.mem.span(track.title));
+    }
+    common.allocator.free(audio_tracks.ptr[0..audio_tracks.len]);
+}
+
 pub fn main() !void {
     const ver = c.avcodec_version();
     std.debug.print("Avcodec version: {}.{}.{}\n", .{ (ver >> 16) & 0xFF, (ver >> 8) & 0xFF, ver & 0xFF });
+    var tracks: common.AudioTrackArray = undefined;
+    const res = listAudioTracks("input.mkv", &tracks);
+    if (res != .Ok) {
+        std.debug.print("Failed to list audio tracks, error: {t}\n", .{res});
+        return;
+    }
+    for (0..tracks.len) |i| {
+        const track = tracks.ptr[i];
+        std.debug.print("Track {any}: lang: {s}, name: {s}\n", .{ track.index, track.language, track.title });
+    }
+
+    freeAudioTracks(&tracks);
+
     // const ffms_version = ffms.GetVersion();
     // std.debug.print("FFMS2 Version: {x}.{x}.{x}\n", .{
     //     ffms_version.major,
@@ -168,28 +237,4 @@ pub fn main() !void {
     //
     //
 
-    var fmt_ctx: ?*c.AVFormatContext = null;
-
-    if (c.avformat_open_input(&fmt_ctx, "input.mkv", null, null) < 0) {
-        return error.OpenFailed;
-    }
-    defer c.avformat_close_input(&fmt_ctx);
-
-    if (c.avformat_find_stream_info(fmt_ctx, null) < 0) {
-        return error.StreamInfoFailed;
-    }
-
-    const nb_streams = fmt_ctx.?.nb_streams;
-    for (0..@intCast(nb_streams)) |i| {
-        const stream = fmt_ctx.?.streams[i];
-        if (stream.*.codecpar.*.codec_type == c.AVMEDIA_TYPE_AUDIO) {
-            const lang = c.av_dict_get(stream.*.metadata, "language", null, 0);
-            const title = c.av_dict_get(stream.*.metadata, "title", null, 0);
-
-            const lang_str = if (lang != null) std.mem.span(lang.*.value) else "unknown";
-            const title_str = if (title != null) std.mem.span(title.*.value) else "unknown";
-
-            std.debug.print("Audio stream {d}: language={s} title={s}\n", .{ i, lang_str, title_str });
-        }
-    }
 }
