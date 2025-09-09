@@ -18,6 +18,8 @@ using Avalonia.Platform.Storage;
 using Avalonia.ReactiveUI;
 using DynamicData;
 using Holo.Configuration.Keybinds;
+using Holo.Media;
+using Holo.Media.Providers;
 using Holo.Models;
 using NLog;
 using ReactiveUI;
@@ -303,19 +305,30 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
     }
 
     private async Task DoShowSelectAudioNameDialogAsync(
-        IInteractionContext<string, string?> interaction
+        IInteractionContext<AudioTrack[], int?> interaction
     )
     {
-        var videoPath = interaction.Input;
-        var audioNames = new[] { "jpn", "eng", };
+        var tracks = interaction.Input;
 
-        var dialog = new SelectAudioDialog
+        // Convert AudioTrack[] to display strings
+        var options = tracks.Select(t => $"{t.Index}: {t.Language} ({t.Title})").ToList();
+
+        // Use the generic SelectAudioDialog with string options
+        var dialog = new SelectAudioDialog { ViewModel = new SelectAudioDialogViewModel(options) };
+
+        var selectedOption = await dialog.ShowDialog<string?>(this);
+
+        if (string.IsNullOrEmpty(selectedOption))
         {
-            ViewModel = new SelectAudioDialogViewModel(audioNames),
-        };
+            interaction.SetOutput(null); // canceled
+            return;
+        }
 
-        var selected = await dialog.ShowDialog<string?>(this);
-        interaction.SetOutput(selected);
+        var firstPart = selectedOption.Split(':')[0];
+        if (int.TryParse(firstPart, out int index))
+            interaction.SetOutput(index);
+        else
+            interaction.SetOutput(null);
     }
 
     private async Task DoShowJumpDialogAsync(

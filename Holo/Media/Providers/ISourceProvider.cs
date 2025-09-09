@@ -104,4 +104,11 @@ public interface ISourceProvider
     /// </summary>
     /// <returns></returns>
     long[] GetFrameIntervals();
+
+    /// <summary>
+    /// Get audio tracks informations
+    /// </summary>
+    /// <param name="filepath">Path to the video</param>
+    /// <returns></returns>
+    AudioTrack[] GetAudioTracks(string filepath);
 }

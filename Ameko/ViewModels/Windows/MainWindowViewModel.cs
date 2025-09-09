@@ -68,7 +68,7 @@ public partial class MainWindowViewModel : ViewModelBase
 
     // Video
     public Interaction<Unit, Uri?> OpenVideo { get; }
-    public Interaction<string, string?> SelectAudioName { get; }
+    public Interaction<AudioTrack[], int?> SelectAudioName { get; }
     public Interaction<JumpDialogViewModel, JumpDialogClosedMessage?> ShowJumpDialog { get; }
 
     // Scripts
@@ -313,7 +313,7 @@ public partial class MainWindowViewModel : ViewModelBase
         // Project
         // Video
         OpenVideo = new Interaction<Unit, Uri?>();
-        SelectAudioName = new Interaction<string, string?>();
+        SelectAudioName = new Interaction<AudioTrack[], int?>();
         ShowJumpDialog = new Interaction<JumpDialogViewModel, JumpDialogClosedMessage?>();
         // Timing
         ShowShiftTimesDialog = new Interaction<ShiftTimesDialogViewModel, Unit>();

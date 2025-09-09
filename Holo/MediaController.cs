@@ -477,6 +477,14 @@ public class MediaController : BindableBase
         RequestFrame(CurrentFrame);
     }
 
+    public AudioTrack[] GetAudioTracks(string filepath)
+    {
+        if (!_provider.IsInitialized)
+            throw new InvalidOperationException("Provider is not initialized");
+
+        return _provider.GetAudioTracks(filepath);
+    }
+
     /// <summary>
     /// Queue a request for a frame
     /// </summary>
