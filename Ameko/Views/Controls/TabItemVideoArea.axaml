@@ -43,35 +43,41 @@
                         Orientation="Horizontal"
                         Spacing="2">
                 <Button ToolTip.Tip="{x:Static i18n:Resources.Video_Button_PlayPause_ToolTip}"
-                        Command="{Binding PlayPauseCommand}">
+                        Command="{Binding PlayPauseCommand}"
+                        Classes="Small">
                     <StackPanel>
                         <icons:MaterialIcon Kind="Play"
                                             IsVisible="{Binding !Workspace.MediaController.IsPlaying}" />
                         <icons:MaterialIcon Kind="Pause"
-                                            IsVisible="{Binding Workspace.MediaController.IsPlaying}" />
+                                            IsVisible="{Binding Workspace.MediaController.IsPlaying, FallbackValue=False}" />
                     </StackPanel>
                 </Button>
                 <Button Content="{icons:MaterialIconExt Kind=SkipNext}"
                         ToolTip.Tip="{x:Static i18n:Resources.Video_Button_PlaySelection_ToolTip}"
-                        Command="{Binding PlaySelectionCommand}" />
+                        Command="{Binding PlaySelectionCommand}"
+                        Classes="Small" />
                 <Button Content="{icons:MaterialIconExt Kind=MotionPlayOutline}"
                         IsVisible="{Binding !Workspace.MediaController.IsAutoSeekEnabled}"
                         ToolTip.Tip="{x:Static i18n:Resources.Video_Button_EnableAutoSeek_ToolTip}"
-                        Command="{Binding ToggleAutoSeekCommand}" />
+                        Command="{Binding ToggleAutoSeekCommand}"
+                        Classes="Small" />
                 <Button Content="{icons:MaterialIconExt Kind=MotionPlay}"
                         IsVisible="{Binding Workspace.MediaController.IsAutoSeekEnabled}"
                         ToolTip.Tip="{x:Static i18n:Resources.Video_Button_DisableAutoSeek_ToolTip}"
-                        Command="{Binding ToggleAutoSeekCommand}" />
+                        Command="{Binding ToggleAutoSeekCommand}"
+                        Classes="Small" />
                 <TextBox IsReadOnly="true"
                          FontFamily="{StaticResource MartianMono}"
                          Text="{Binding Workspace.MediaController.CurrentTime.MillisecondText,
                                         FallbackValue='0:00:00.000'}"
-                         ToolTip.Tip="{x:Static i18n:Resources.Video_Time_ToolTip}" />
+                         ToolTip.Tip="{x:Static i18n:Resources.Video_Time_ToolTip}"
+                         Classes="Small" />
                 <TextBox IsReadOnly="true"
                          FontFamily="{StaticResource MartianMono}"
                          Text="{Binding Workspace.MediaController.CurrentFrame,
                                         FallbackValue='0'}"
-                         ToolTip.Tip="{x:Static i18n:Resources.Video_Frame_ToolTip}" />
+                         ToolTip.Tip="{x:Static i18n:Resources.Video_Frame_ToolTip}"
+                         Classes="Small" />
             </StackPanel>
             <StackPanel Grid.Column="2"
                         Grid.Row="1"
@@ -82,7 +88,8 @@
                 <ComboBox ItemsSource="{x:Static holo:RotationalFactor.Angles}"
                           SelectedItem="{Binding Workspace.MediaController.RotationalFactor}"
                           Width="75"
-                          MaxDropDownHeight="425">
+                          MaxDropDownHeight="425"
+                          Classes="Small">
                     <ComboBox.ItemTemplate>
                         <DataTemplate>
                             <TextBlock Text="{Binding Text}" />
@@ -90,11 +97,13 @@
                     </ComboBox.ItemTemplate>
                 </ComboBox>
                 <CheckBox Content="{x:Static i18n:Resources.Video_LockAR}"
-                          ToolTip.Tip="{x:Static i18n:Resources.Video_LockAR_ToolTip}" />
+                          ToolTip.Tip="{x:Static i18n:Resources.Video_LockAR_ToolTip}"
+                          VerticalAlignment="Center" />
                 <ComboBox ItemsSource="{x:Static holo:ScaleFactor.Scales}"
                           SelectedItem="{Binding Workspace.MediaController.ScaleFactor}"
-                          Width="75"
-                          MaxDropDownHeight="425">
+                          Width="100"
+                          MaxDropDownHeight="425"
+                          Classes="Small">
                     <ComboBox.ItemTemplate>
                         <DataTemplate>
                             <TextBlock Text="{Binding Text}" />
@@ -105,7 +114,9 @@
         </Grid>
         <ScrollViewer HorizontalScrollBarVisibility="Auto"
                       VerticalScrollBarVisibility="Auto"
-                      IsScrollChainingEnabled="False">
+                      IsScrollChainingEnabled="False"
+                      AllowAutoHide="False"
+                      Classes="InsetContent">
             <Panel Name="VideoTarget"
                    Width="{Binding Workspace.MediaController.DisplayWidth, FallbackValue=0, Mode=OneWay}"
                    Height="{Binding Workspace.MediaController.DisplayHeight, FallbackValue=0, Mode=OneWay}"
