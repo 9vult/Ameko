@@ -152,16 +152,17 @@ public partial class InputBox : Window
             Close(MsgBoxButton.Cancel);
         };
 
-        var isMacOs = OperatingSystem.IsMacOS();
-
-        var buttons = new StackPanel
+        var buttons = new ReversibleStackPanel()
         {
             Orientation = Orientation.Horizontal,
             Spacing = 10,
-            HorizontalAlignment = isMacOs ? HorizontalAlignment.Right : HorizontalAlignment.Left,
+            HorizontalAlignment = OperatingSystem.IsMacOS()
+                ? HorizontalAlignment.Right
+                : HorizontalAlignment.Left,
         };
         buttons.SetValue(Grid.ColumnProperty, 1);
         buttons.SetValue(Grid.RowProperty, 2);
+        buttons.ReverseOrder = OperatingSystem.IsMacOS();
 
         switch (buttonSet)
         {
@@ -169,19 +170,13 @@ public partial class InputBox : Window
                 buttons.Children.Add(okButton);
                 break;
             case MsgBoxButtonSet.YesNo:
-                buttons.Children.AddRange(isMacOs ? [noButton, yesButton] : [yesButton, noButton]);
+                buttons.Children.AddRange([yesButton, noButton]);
                 break;
             case MsgBoxButtonSet.OkCancel:
-                buttons.Children.AddRange(
-                    isMacOs ? [cancelButton, okButton] : [okButton, cancelButton]
-                );
+                buttons.Children.AddRange([okButton, cancelButton]);
                 break;
             case MsgBoxButtonSet.YesNoCancel:
-                buttons.Children.AddRange(
-                    isMacOs
-                        ? [cancelButton, noButton, yesButton]
-                        : [yesButton, noButton, cancelButton]
-                );
+                buttons.Children.AddRange([yesButton, noButton, cancelButton]);
                 break;
         }
         grid.Children.Add(buttons);
