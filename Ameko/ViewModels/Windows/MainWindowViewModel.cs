@@ -17,6 +17,7 @@ using DynamicData;
 using Holo;
 using Holo.Configuration;
 using Holo.Configuration.Keybinds;
+using Holo.Media.Providers;
 using Holo.Providers;
 using NLog;
 using ReactiveUI;
@@ -67,6 +68,7 @@ public partial class MainWindowViewModel : ViewModelBase
 
     // Video
     public Interaction<Unit, Uri?> OpenVideo { get; }
+    public Interaction<string, string?> SelectAudioName { get; }
     public Interaction<JumpDialogViewModel, JumpDialogClosedMessage?> ShowJumpDialog { get; }
 
     // Scripts
@@ -311,6 +313,7 @@ public partial class MainWindowViewModel : ViewModelBase
         // Project
         // Video
         OpenVideo = new Interaction<Unit, Uri?>();
+        SelectAudioName = new Interaction<string, string?>();
         ShowJumpDialog = new Interaction<JumpDialogViewModel, JumpDialogClosedMessage?>();
         // Timing
         ShowShiftTimesDialog = new Interaction<ShiftTimesDialogViewModel, Unit>();

@@ -633,11 +633,17 @@ public partial class MainWindowViewModel : ViewModelBase
         return ReactiveCommand.CreateFromTask(async () =>
         {
             Logger.Debug("Preparing to open video");
-            var uri = await OpenVideo.Handle(Unit.Default);
 
+            var uri = await OpenVideo.Handle(Unit.Default);
             if (uri is null)
                 return;
 
+            // Step 2: Ask user to choose audio
+            var audioName = await SelectAudioName.Handle(uri.LocalPath);
+            if (string.IsNullOrEmpty(audioName))
+                return; // canceled
+
+            // Ensure workspace exists
             var wsp = ProjectProvider.Current.WorkingSpace;
             if (wsp is null)
             {
@@ -645,6 +651,7 @@ public partial class MainWindowViewModel : ViewModelBase
             }
 
             wsp.MediaController.OpenVideo(uri.LocalPath);
+            // wsp.MediaController.SetAudioTrack(audioName); // TODO: add this method
             wsp.MediaController.SetSubtitles(wsp.Document);
         });
     }

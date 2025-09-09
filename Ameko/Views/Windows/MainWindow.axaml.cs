@@ -302,6 +302,22 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         interaction.SetOutput(null);
     }
 
+    private async Task DoShowSelectAudioNameDialogAsync(
+        IInteractionContext<string, string?> interaction
+    )
+    {
+        var videoPath = interaction.Input;
+        var audioNames = new[] { "jpn", "eng", };
+
+        var dialog = new SelectAudioDialog
+        {
+            ViewModel = new SelectAudioDialogViewModel(audioNames),
+        };
+
+        var selected = await dialog.ShowDialog<string?>(this);
+        interaction.SetOutput(selected);
+    }
+
     private async Task DoShowJumpDialogAsync(
         IInteractionContext<JumpDialogViewModel, JumpDialogClosedMessage?> interaction
     )
@@ -412,6 +428,7 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
                 ViewModel.ShowShiftTimesDialog.RegisterHandler(DoShowShiftTimesDialogAsync);
                 // Video
                 ViewModel.OpenVideo.RegisterHandler(DoShowOpenVideoDialogAsync);
+                ViewModel.SelectAudioName.RegisterHandler(DoShowSelectAudioNameDialogAsync);
                 ViewModel.ShowJumpDialog.RegisterHandler(DoShowJumpDialogAsync);
                 // Scripts
                 ViewModel.ShowPackageManager.RegisterHandler(DoShowPkgManWindowAsync);

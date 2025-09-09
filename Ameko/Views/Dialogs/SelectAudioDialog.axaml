@@ -1,0 +1,46 @@
+<Window
+    x:Class="Ameko.Views.Dialogs.SelectAudioDialog"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converters="clr-namespace:Ameko.Converters"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:i18n="clr-namespace:Ameko.I18N"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="clr-namespace:Ameko.ViewModels.Dialogs"
+    Title="SelectAudioDialog"
+    Width="400"
+    Height="300"
+    d:DesignHeight="300"
+    d:DesignWidth="400"
+    x:DataType="vm:SelectAudioDialogViewModel"
+    CanResize="False"
+    Icon="/Assets/Ameko-Simplified-BG-64.ico"
+    Topmost="True"
+    WindowStartupLocation="CenterOwner"
+    mc:Ignorable="d">
+
+    <StackPanel Margin="10">
+        <TextBlock
+            Margin="0,0,0,10"
+            FontWeight="Bold"
+            Text="Choose an audio track:" />
+        <ListBox
+            Height="200"
+            ItemsSource="{Binding Options}"
+            SelectedItem="{Binding SelectedOption, Mode=TwoWay}" />
+        <StackPanel
+            Margin="0,10,0,0"
+            HorizontalAlignment="Right"
+            Orientation="Horizontal">
+            <Button
+                Margin="0,0,5,0"
+                Command="{Binding OkCommand}"
+                Content="OK"
+                IsDefault="True" />
+            <Button
+                Command="{Binding CancelCommand}"
+                Content="Cancel"
+                IsCancel="True" />
+        </StackPanel>
+    </StackPanel>
+</Window>
