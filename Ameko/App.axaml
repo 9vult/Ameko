@@ -16,6 +16,7 @@
     </Application.DataTemplates>
   
     <Application.Styles>
+        <SimpleTheme />
         <semi:SemiTheme Locale="en-US" />
         <semi:ColorPickerSemiTheme />
         <semi:DataGridSemiTheme />
@@ -27,6 +28,17 @@
         <Style Selector="MenuItem:selected:open /template/ Border">
             <Setter Property="MaxHeight" Value="800"/> <!-- Max height of menu -->
         </Style>
+        
+        <!-- Dummy styles to stop the "style not found" warnings -->
+        <Style Selector="Button.Small" />
+        <Style Selector="Button.Large" />
+        <Style Selector="Button.Primary" />
+        <Style Selector="Button.Danger" />
+        <Style Selector="Button.Warning" />
+        <Style Selector="TextBox.Small" />
+        <Style Selector="ComboBox.Small" />
+        <Style Selector="NumericUpDown.Small" />
+        <Style Selector="ScrollViewer.InsetContent" />
     </Application.Styles>
              
     <Application.Resources>
