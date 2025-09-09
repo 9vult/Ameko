@@ -37,7 +37,8 @@
                       Content="{x:Static i18n:StyleEditor.ColorDialog_CheckBox_UseRing}" />
             <Label Grid.Column="0"
                    Grid.Row="1"
-                   Content="{x:Static i18n:StyleEditor.ColorDialog_Label_AssColor}" />
+                   Content="{x:Static i18n:StyleEditor.ColorDialog_Label_AssColor}"
+                   VerticalAlignment="Center"/>
             <TextBox Grid.Column="1"
                      Grid.Row="1"
                      IsEnabled="False"
@@ -45,6 +46,9 @@
             <Button Grid.Column="0"
                     Grid.Row="2"
                     Grid.ColumnSpan="2"
+                    HorizontalAlignment="Right"
+                    IsDefault="True"
+                    Classes="Primary"
                     Content="{x:Static i18n:StyleEditor.ColorDialog_Button_Select}"
                     Command="{Binding SelectColorCommand}" />
         </Grid>

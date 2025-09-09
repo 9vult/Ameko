@@ -33,6 +33,8 @@
         <Style Selector="Button.Small" />
         <Style Selector="Button.Large" />
         <Style Selector="Button.Primary" />
+        <Style Selector="Button.Secondary" />
+        <Style Selector="Button.Tertiary" />
         <Style Selector="Button.Danger" />
         <Style Selector="Button.Warning" />
         <Style Selector="TextBox.Small" />

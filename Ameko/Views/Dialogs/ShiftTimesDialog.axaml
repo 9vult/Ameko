@@ -5,8 +5,8 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        d:DesignWidth="350"
-        d:DesignHeight="300"
+        d:DesignWidth="375"
+        d:DesignHeight="325"
 
         xmlns:converters="clr-namespace:Ameko.Converters"
         xmlns:dm="clr-namespace:Ameko.DataModels"
@@ -17,7 +17,7 @@
         x:Class="Ameko.Views.Dialogs.ShiftTimesDialog"
         x:DataType="vm:ShiftTimesDialogViewModel"
 
-        Width="350"
+        Width="375"
         Topmost="True"
         CanResize="False"
         SizeToContent="Height"
@@ -38,6 +38,7 @@
                   ColumnSpacing="5">
                 <RadioButton Grid.Column="0"
                              Grid.Row="0"
+                             VerticalAlignment="Center"
                              GroupName="ShiftBy"
                              Content="{x:Static i18n:ShiftTimes.ShiftTimes_RB_Time}"
                              IsChecked="{Binding ShiftType,
@@ -45,6 +46,7 @@
                                                  ConverterParameter={x:Static dm:ShiftTimesType.Time}}" />
                 <RadioButton Grid.Column="0"
                              Grid.Row="1"
+                             VerticalAlignment="Center"
                              GroupName="ShiftBy"
                              Content="{x:Static i18n:ShiftTimes.ShiftTimes_RB_Frames}"
                              IsChecked="{Binding ShiftType,
@@ -53,6 +55,7 @@
                              IsEnabled="{Binding CanShiftFrames}" />
                 <RadioButton Grid.Column="0"
                              Grid.Row="2"
+                             VerticalAlignment="Center"
                              GroupName="ShiftBy"
                              Content="{x:Static i18n:ShiftTimes.ShiftTimes_RB_Milliseconds}"
                              IsChecked="{Binding ShiftType,
@@ -88,6 +91,7 @@
                                                    ConverterParameter={x:Static dm:ShiftTimesType.Milliseconds}}" />
                 <RadioButton Grid.Column="2"
                              Grid.Row="0"
+                             VerticalAlignment="Center"
                              GroupName="ShiftDirection"
                              Content="{x:Static i18n:ShiftTimes.ShiftTimes_RB_TowardEnd}"
                              IsChecked="{Binding ShiftDirection,
@@ -95,6 +99,7 @@
                                                  ConverterParameter={x:Static dm:ShiftTimesDirection.Forward}}" />
                 <RadioButton Grid.Column="2"
                              Grid.Row="1"
+                             VerticalAlignment="Center"
                              GroupName="ShiftDirection"
                              Content="{x:Static i18n:ShiftTimes.ShiftTimes_RB_TowardStart}"
                              IsChecked="{Binding ShiftDirection,
@@ -147,7 +152,11 @@
         </HeaderedContentControl>
         <Button Margin="2 5 2 2"
                 Content="{x:Static i18n:ShiftTimes.ShiftTimes_Button_Ok}"
-                Command="{Binding ConfirmCommand}" />
+                Command="{Binding ConfirmCommand}"
+                IsDefault="True"
+                HorizontalAlignment="Right"
+                Width="75"
+                Classes="Primary" />
     </StackPanel>
     
     <Window.Styles>

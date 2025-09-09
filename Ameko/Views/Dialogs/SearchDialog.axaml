@@ -3,8 +3,8 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        d:DesignWidth="325"
-        d:DesignHeight="55"
+        d:DesignWidth="350"
+        d:DesignHeight="75"
 
         xmlns:converters="clr-namespace:Ameko.Converters"
         xmlns:dm="clr-namespace:Ameko.DataModels"
@@ -14,7 +14,7 @@
         x:Class="Ameko.Views.Dialogs.SearchDialog"
         x:DataType="vm:SearchDialogViewModel"
 
-        Width="325"
+        Width="350"
         Topmost="True"
         CanResize="False"
         SizeToContent="Height"
@@ -31,6 +31,7 @@
               Margin="2">
             <Label Grid.Column="0"
                    HorizontalAlignment="Center"
+                   VerticalAlignment="Center"
                    Content="{x:Static i18n:Search.Search_Label_Find}" />
             <TextBox Grid.Column="1"
                      Name="QueryBox"
@@ -40,12 +41,13 @@
                      Text="{Binding Query}"/>
             <Button Grid.Column="2"
                     IsDefault="True"
+                    Classes="Primary"
                     Content="{x:Static i18n:Search.Search_Button_Find}"
                     Command="{Binding FindNextCommand}" />
         </Grid>
         <StackPanel Orientation="Horizontal"
                     Margin="2"
-                    Spacing="2">
+                    Spacing="12">
             <RadioButton GroupName="Filter"
                          Content="{x:Static i18n:Search.Search_RB_Text}"
                          IsChecked="{Binding Filter,

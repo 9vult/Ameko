@@ -3,8 +3,8 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        d:DesignWidth="500"
-        d:DesignHeight="230"
+        d:DesignWidth="550"
+        d:DesignHeight="275"
 
         xmlns:i18n="clr-namespace:Ameko.I18N"
         xmlns:vm="clr-namespace:Ameko.ViewModels.Dialogs"
@@ -12,8 +12,8 @@
         x:Class="Ameko.Views.Dialogs.SpellcheckDialog"
         x:DataType="vm:SpellcheckDialogViewModel"
 
-        Width="500"
-        Height="230"
+        Width="550"
+        Height="275"
         Topmost="True"
         CanResize="False"
         ShowInTaskbar="False"
@@ -49,10 +49,14 @@
                     IsVisible="{Binding HaveSuggestions}">
             <Button Content="{x:Static i18n:Spellcheck.Spellcheck_Button_Change}"
                     IsDefault="True"
+                    Classes="Primary"
+                    HorizontalAlignment="Stretch"
                     IsEnabled="{Binding CanChange}"
                     Command="{Binding ChangeCommand}" />
             <Button Content="{x:Static i18n:Spellcheck.Spellcheck_Button_FindNext}"
-                    Command="{Binding FindNextCommand}" />
+                    Command="{Binding FindNextCommand}"
+                    Classes="Secondary"
+                    HorizontalAlignment="Stretch" />
         </StackPanel>
         <ListBox Grid.Column="0"
                  Grid.Row="3"
@@ -66,13 +70,19 @@
                     IsVisible="{Binding HaveSuggestions}">
             <Button Content="{x:Static i18n:Spellcheck.Spellcheck_Button_AddToProject}"
                     ToolTip.Tip="{x:Static i18n:Spellcheck.Spellcheck_Button_AddToProject_ToolTip}"
-                    Command="{Binding AddToProjectCommand}" />
+                    Command="{Binding AddToProjectCommand}"
+                    Classes="Tertiary"
+                    HorizontalAlignment="Stretch" />
             <Button Content="{x:Static i18n:Spellcheck.Spellcheck_Button_AddToGlobals}"
                     ToolTip.Tip="{x:Static i18n:Spellcheck.Spellcheck_Button_AddToGlobals_ToolTip}"
-                    Command="{Binding AddToGlobalsCommand}" />
+                    Command="{Binding AddToGlobalsCommand}"
+                    Classes="Tertiary"
+                    HorizontalAlignment="Stretch" />
             <Button Content="{x:Static i18n:Spellcheck.Spellcheck_Button_AddToBoth}"
                     ToolTip.Tip="{x:Static i18n:Spellcheck.Spellcheck_Button_AddToBoth_ToolTip}"
-                    Command="{Binding AddToBothCommand}" />
+                    Command="{Binding AddToBothCommand}"
+                    Classes="Tertiary"
+                    HorizontalAlignment="Stretch" />
         </StackPanel>
         <TextBlock Grid.Column="0"
                    Grid.Row="4"

@@ -4,7 +4,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         d:DesignWidth="200"
-        d:DesignHeight="122"
+        d:DesignHeight="150"
 
         xmlns:i18n="clr-namespace:Ameko.I18N"
         xmlns:vm="clr-namespace:Ameko.ViewModels.Dialogs"
@@ -22,16 +22,20 @@
         Title="{x:Static i18n:Jump.JumpDialog_Title}">
     <Grid ColumnDefinitions="Auto, *"
           RowDefinitions="Auto, Auto, Auto, Auto"
-          Margin="5">
+          Margin="5"
+          ColumnSpacing="5">
         <Label Grid.Column="0"
                Grid.Row="0"
-               Content="{x:Static i18n:Jump.Jump_Frame}" />
+               Content="{x:Static i18n:Jump.Jump_Frame}"
+               VerticalAlignment="Center" />
         <Label Grid.Column="0"
                Grid.Row="1"
-               Content="{x:Static i18n:Jump.Jump_Time}" />
+               Content="{x:Static i18n:Jump.Jump_Time}"
+               VerticalAlignment="Center" />
         <Label Grid.Column="0"
                Grid.Row="2"
-               Content="{x:Static i18n:Jump.Jump_Line}" />
+               Content="{x:Static i18n:Jump.Jump_Line}"
+               VerticalAlignment="Center" />
         <NumericUpDown Grid.Column="1"
                        Grid.Row="0"
                        Padding="0"
@@ -59,10 +63,13 @@
                        FormatString="0"
                        ShowButtonSpinner="False"
                        Value="{Binding Line}" />
-        <Button Grid.Column="1"
+        <Button Grid.Column="0"
                 Grid.Row="3"
+                Grid.ColumnSpan="2"
                 Margin="2"
                 IsDefault="True"
+                Classes="Primary"
+                HorizontalAlignment="Right"
                 Content="{x:Static i18n:Jump.Jump_Button_Jump}"
                 Command="{Binding ConfirmCommand}" />
     </Grid>
