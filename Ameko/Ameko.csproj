@@ -44,11 +44,18 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.6" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="9.0.6" />
     <PackageReference Include="NLog" Version="5.5.0" />
+    <PackageReference Include="Semi.Avalonia" Version="11.2.1.9" />
+    <PackageReference Include="Semi.Avalonia.AvaloniaEdit" Version="11.2.0.1" />
+    <PackageReference Include="Semi.Avalonia.ColorPicker" Version="11.2.1.9" />
+    <PackageReference Include="Semi.Avalonia.DataGrid" Version="11.2.1.9" />
+    <PackageReference Include="Semi.Avalonia.Tabalonia" Version="11.0.0-beta1" />
+    <PackageReference Include="Semi.Avalonia.TreeDataGrid" Version="11.0.10.4" />
     <PackageReference Include="Silk.NET.OpenAL" Version="2.22.0" />
     <PackageReference Include="Silk.NET.OpenAL.Extensions.EXT" Version="2.22.0" />
     <PackageReference Include="Silk.NET.OpenAL.Extensions.Soft" Version="2.22.0" />
     <PackageReference Include="Silk.NET.OpenAL.Soft.Native" Version="1.23.1" />
     <PackageReference Include="Silk.NET.OpenGLES" Version="2.22.0" />
+    <PackageReference Include="Tabalonia" Version="0.10.7" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AssCS\AssCS.csproj" />
