@@ -83,7 +83,8 @@ public partial class MainWindowViewModel : ViewModelBase
                     await _messageBoxService.ShowAsync(
                         I18N.Resources.Error,
                         $"{I18N.Resources.Error_FailedToParse}\n\n{ex.Message}",
-                        MessageBoxButtons.Ok,
+                        MsgBoxButtonSet.Ok,
+                        MsgBoxButton.Ok,
                         MaterialIconKind.Error
                     );
                 }
@@ -140,7 +141,8 @@ public partial class MainWindowViewModel : ViewModelBase
                     await _messageBoxService.ShowAsync(
                         I18N.Resources.Error,
                         $"{I18N.Resources.Error_FailedToParse}\n\n{ex.Message}",
-                        MessageBoxButtons.Ok,
+                        MsgBoxButtonSet.Ok,
+                        MsgBoxButton.Ok,
                         MaterialIconKind.Error
                     );
                 }
@@ -514,7 +516,8 @@ public partial class MainWindowViewModel : ViewModelBase
                 await _messageBoxService.ShowAsync(
                     I18N.Resources.Error,
                     $"{I18N.Resources.Error_FailedToParse}\n\n{ex.Message}",
-                    MessageBoxButtons.Ok,
+                    MsgBoxButtonSet.Ok,
+                    MsgBoxButton.Ok,
                     MaterialIconKind.Error
                 );
             }
@@ -567,7 +570,8 @@ public partial class MainWindowViewModel : ViewModelBase
                     await _messageBoxService.ShowAsync(
                         I18N.Resources.Error,
                         $"{I18N.Resources.Error_FailedToParse}\n\n{ex.Message}",
-                        MessageBoxButtons.Ok,
+                        MsgBoxButtonSet.Ok,
+                        MsgBoxButton.Ok,
                         MaterialIconKind.Error
                     );
                 }
@@ -802,11 +806,12 @@ public partial class MainWindowViewModel : ViewModelBase
                 var boxResult = await _messageBoxService.ShowAsync(
                     I18N.Other.MsgBox_RemoveDocument_Title,
                     I18N.Other.MsgBox_RemoveDocument_Body,
-                    MessageBoxButtons.YesNo,
-                    MaterialIconKind.HelpCircleOutline
+                    MsgBoxButtonSet.YesNo,
+                    MsgBoxButton.Yes,
+                    MaterialIconKind.QuestionMark
                 );
 
-                if (boxResult == MessageBoxResult.Yes)
+                if (boxResult == MsgBoxButton.Yes)
                 {
                     ProjectProvider.Current.RemoveWorkspace(id);
                 }
@@ -829,10 +834,12 @@ public partial class MainWindowViewModel : ViewModelBase
                 var boxResult = await _messageBoxService.ShowAsync(
                     I18N.Other.MsgBox_RemoveDirectory_Title,
                     I18N.Other.MsgBox_RemoveDirectory_Body,
-                    MessageBoxButtons.YesNo
+                    MsgBoxButtonSet.YesNo,
+                    MsgBoxButton.Yes,
+                    MaterialIconKind.QuestionMark
                 );
 
-                if (boxResult == MessageBoxResult.Yes)
+                if (boxResult == MsgBoxButton.Yes)
                 {
                     ProjectProvider.Current.RemoveDirectory(id);
                 }
@@ -859,7 +866,8 @@ public partial class MainWindowViewModel : ViewModelBase
                     I18N.Other.MsgBox_NameDirectory_Title,
                     I18N.Other.MsgBox_NameDirectory_Body,
                     dirItem.Title,
-                    MessageBoxButtons.OkCancel,
+                    MsgBoxButtonSet.OkCancel,
+                    MsgBoxButton.Ok,
                     MaterialIconKind.Rename
                 );
 
@@ -868,7 +876,7 @@ public partial class MainWindowViewModel : ViewModelBase
 
                 var (boxResult, userInput) = result.Value;
 
-                if (boxResult == MessageBoxResult.Ok && !string.IsNullOrWhiteSpace(userInput))
+                if (boxResult == MsgBoxButton.Ok && !string.IsNullOrWhiteSpace(userInput))
                 {
                     dirItem.Name = userInput;
                 }
@@ -893,7 +901,8 @@ public partial class MainWindowViewModel : ViewModelBase
                     I18N.Other.MsgBox_NameDocument_Title,
                     I18N.Other.MsgBox_NameDocument_Body,
                     docItem.Title,
-                    MessageBoxButtons.OkCancel,
+                    MsgBoxButtonSet.OkCancel,
+                    MsgBoxButton.Ok,
                     MaterialIconKind.Rename
                 );
 
@@ -902,7 +911,7 @@ public partial class MainWindowViewModel : ViewModelBase
 
                 var (boxResult, userInput) = result.Value;
 
-                if (boxResult == MessageBoxResult.Ok && !string.IsNullOrWhiteSpace(userInput))
+                if (boxResult == MsgBoxButton.Ok && !string.IsNullOrWhiteSpace(userInput))
                 {
                     docItem.Name = userInput;
                 }

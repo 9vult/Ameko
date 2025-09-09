@@ -9,17 +9,27 @@ namespace Holo.Providers;
 public interface IMessageBoxService
 {
     /// <summary>
+    /// Display an OK/Info message box
+    /// </summary>
+    /// <param name="title">Title of the box</param>
+    /// <param name="text">Body of the box</param>
+    /// <returns>Which button was clicked</returns>
+    Task<MsgBoxButton?> ShowAsync(string title, string text);
+
+    /// <summary>
     /// Display a message box
     /// </summary>
     /// <param name="title">Title of the box</param>
     /// <param name="text">Body of the box</param>
     /// <param name="buttonSet">Which buttons to put on the box</param>
+    /// <param name="primary">Which button is default</param>
     /// <param name="iconKind">Icon to use</param>
     /// <returns>Which button was clicked</returns>
-    Task<MessageBoxResult?> ShowAsync(
+    Task<MsgBoxButton?> ShowAsync(
         string title,
         string text,
-        MessageBoxButtons buttonSet,
+        MsgBoxButtonSet buttonSet,
+        MsgBoxButton primary,
         MaterialIconKind iconKind = MaterialIconKind.Info
     );
 
@@ -30,13 +40,15 @@ public interface IMessageBoxService
     /// <param name="text">Body of the box</param>
     /// <param name="initialText">Initial text to have in the input</param>
     /// <param name="buttonSet">Which buttons to put on the box</param>
+    /// <param name="primary">Which button is default</param>
     /// <param name="iconKind">Icon to use</param>
     /// <returns>Which button was clicked and the user input</returns>
-    Task<(MessageBoxResult, string)?> ShowInputAsync(
+    Task<(MsgBoxButton, string)?> ShowInputAsync(
         string title,
         string text,
         string initialText,
-        MessageBoxButtons buttonSet,
+        MsgBoxButtonSet buttonSet,
+        MsgBoxButton primary,
         MaterialIconKind iconKind = MaterialIconKind.Info
     );
 
@@ -45,5 +57,5 @@ public interface IMessageBoxService
     /// </summary>
     /// <param name="result">iunstallation result</param>
     /// <returns>Button that was clicked</returns>
-    Task<MessageBoxResult?> ShowAsync(InstallationResult result);
+    Task<MsgBoxButton?> ShowAsync(InstallationResult result);
 }

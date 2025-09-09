@@ -17,33 +17,43 @@ namespace Ameko.Services;
 /// <param name="mainWindow">Application main window</param>
 public class MessageBoxService(MainWindow mainWindow) : IMessageBoxService
 {
-    public async Task<MessageBoxResult?> ShowAsync(
-        string title,
-        string text,
-        MessageBoxButtons buttonSet,
-        MaterialIconKind iconKind = MaterialIconKind.Info
-    )
+    /// <inheritdoc />
+    public async Task<MsgBoxButton?> ShowAsync(string title, string text)
     {
-        var box = new MessageBox(title, text, buttonSet, iconKind);
-        return await box.ShowDialog<MessageBoxResult>(mainWindow);
+        var box = new MessageBox(title, text);
+        return await box.ShowDialog<MsgBoxButton>(mainWindow);
     }
 
     /// <inheritdoc />
-    public async Task<(MessageBoxResult, string)?> ShowInputAsync(
+    public async Task<MsgBoxButton?> ShowAsync(
+        string title,
+        string text,
+        MsgBoxButtonSet buttonSet,
+        MsgBoxButton primary,
+        MaterialIconKind iconKind = MaterialIconKind.Info
+    )
+    {
+        var box = new MessageBox(title, text, buttonSet, primary, iconKind);
+        return await box.ShowDialog<MsgBoxButton>(mainWindow);
+    }
+
+    /// <inheritdoc />
+    public async Task<(MsgBoxButton, string)?> ShowInputAsync(
         string title,
         string text,
         string initialText,
-        MessageBoxButtons buttonSet,
+        MsgBoxButtonSet buttonSet,
+        MsgBoxButton primary,
         MaterialIconKind iconKind = MaterialIconKind.Information
     )
     {
-        var box = new InputBox(title, text, initialText, buttonSet, iconKind);
-        var result = await box.ShowDialog<MessageBoxResult>(mainWindow);
+        var box = new InputBox(title, text, initialText, buttonSet, primary, iconKind);
+        var result = await box.ShowDialog<MsgBoxButton>(mainWindow);
         return (result, box.InputText);
     }
 
     /// <inheritdoc />
-    public async Task<MessageBoxResult?> ShowAsync(InstallationResult result)
+    public async Task<MsgBoxButton?> ShowAsync(InstallationResult result)
     {
         var box = new MessageBox(
             I18N.PkgMan.PkgManWindow_Title,
@@ -59,13 +69,14 @@ public class MessageBoxService(MainWindow mainWindow) : IMessageBoxService
                 InstallationResult.IsRequiredDependency => I18N.PkgMan.PkgMan_Result_IsRequiredDep,
                 _ => throw new ArgumentOutOfRangeException(nameof(result)),
             },
-            MessageBoxButtons.Ok,
+            MsgBoxButtonSet.Ok,
+            MsgBoxButton.Ok,
             result switch
             {
                 InstallationResult.Success => MaterialIconKind.CheckBold,
                 _ => MaterialIconKind.ExclamationThick,
             }
         );
-        return await box.ShowDialog<MessageBoxResult>(mainWindow);
+        return await box.ShowDialog<MsgBoxButton>(mainWindow);
     }
 }

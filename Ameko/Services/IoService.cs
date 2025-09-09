@@ -128,21 +128,22 @@ public class IoService(
         var boxResult = await messageBoxService.ShowAsync(
             I18N.Other.MsgBox_Save_Title,
             string.Format(I18N.Other.MsgBox_Save_Body, wsp.Title),
-            MessageBoxButtons.YesNoCancel,
-            MaterialIconKind.HelpCircleOutline
+            MsgBoxButtonSet.YesNoCancel,
+            MsgBoxButton.Yes,
+            MaterialIconKind.QuestionMark
         );
 
         switch (boxResult)
         {
-            case MessageBoxResult.Yes:
+            case MsgBoxButton.Yes:
                 var saved = await SaveSubtitle(saveAs, wsp);
                 if (!saved)
                 {
                     Log.Info("Tab close operation aborted");
                     return false;
                 }
-                goto case MessageBoxResult.No; // lol
-            case MessageBoxResult.No:
+                goto case MsgBoxButton.No; // lol
+            case MsgBoxButton.No:
                 prj.CloseDocument(wsp.Id, replaceIfLast);
                 tabFactory.Release(wsp);
                 return true;

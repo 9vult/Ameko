@@ -156,8 +156,7 @@ public partial class PkgManWindowViewModel
 
             await _messageBoxService.ShowAsync(
                 I18N.PkgMan.PkgManWindow_Title,
-                I18N.PkgMan.PkgMan_MsgBox_Refreshed,
-                MessageBoxButtons.Ok
+                I18N.PkgMan.PkgMan_MsgBox_Refreshed
             );
         });
     }
@@ -187,8 +186,7 @@ public partial class PkgManWindowViewModel
                     Logger.Error($"Could not add repository because it was already installed.");
                     await _messageBoxService.ShowAsync(
                         I18N.PkgMan.PkgManWindow_Title,
-                        I18N.PkgMan.PkgMan_Result_Repository_AlreadyInstalled,
-                        MessageBoxButtons.Ok
+                        I18N.PkgMan.PkgMan_Result_Repository_AlreadyInstalled
                     );
                     break;
                 case InstallationResult.Failure:
@@ -228,8 +226,7 @@ public partial class PkgManWindowViewModel
                     Logger.Error($"Could not remove repository because it was not installed");
                     await _messageBoxService.ShowAsync(
                         I18N.PkgMan.PkgManWindow_Title,
-                        I18N.PkgMan.PkgMan_Result_Repository_NotInstalled,
-                        MessageBoxButtons.Ok
+                        I18N.PkgMan.PkgMan_Result_Repository_NotInstalled
                     );
                     break;
                 default:
@@ -250,7 +247,8 @@ public partial class PkgManWindowViewModel
                 await _messageBoxService.ShowAsync(
                     I18N.PkgMan.PkgManWindow_Title,
                     ex.Message,
-                    MessageBoxButtons.Ok,
+                    MsgBoxButtonSet.Ok,
+                    MsgBoxButton.Ok,
                     MaterialIconKind.Error
                 );
             }
