@@ -23,6 +23,10 @@
         <semi:AvaloniaEditSemiTheme />
         <StyleInclude Source="avares://Ameko/Views/Controls/SeekSlider.axaml" />
         <materialIcons:MaterialIconStyles />
+
+        <Style Selector="MenuItem:selected:open /template/ Border">
+            <Setter Property="MaxHeight" Value="800"/> <!-- Max height of menu -->
+        </Style>
     </Application.Styles>
              
     <Application.Resources>
