@@ -24,6 +24,9 @@
 	</UserControl.Resources>
     <DataGrid Name="EventsGrid"
               IsReadOnly="True"
+              Margin="0"
+              Padding="0"
+              Classes="Small"
               CanUserResizeColumns="True"
               CanUserReorderColumns="False"
               SelectionMode="Extended"
@@ -132,15 +135,16 @@
 			            x:DataType="ass:Event"
 			            Value="{Binding IsComment,
 										Converter={StaticResource CommentConverter}}" />
-			    <Setter Property="Padding" Value="0" />
 		    </Style>
 		    <Style Selector="TextBlock">
 			    <Setter Property="Padding" Value="{Binding $parent[UserControl].((vm:TabItemViewModel)DataContext).Configuration.GridPadding,
 														   Converter={StaticResource PaddingConverter},
 														   FallbackValue=.}" />
-			    <Setter Property="Margin" Value="0 0" />
+			    <Setter Property="Margin" Value="0" />
+		    </Style>
+		    <Style Selector="DataGridCell">
+			    <Setter Property="MinHeight" Value="0" />
 		    </Style>
 	    </DataGrid.Styles>
     </DataGrid>
-              
 </UserControl>

@@ -128,5 +128,10 @@
                       Icon="{icons:MaterialIconExt Kind=InformationVariantCircleOutline}"
                       Command="{Binding ShowAboutWindowCommand}" />
         </MenuItem>
+        <Menu.Styles>
+            <Style Selector="MenuItem">
+                <Setter Property="MinHeight" Value="0" />
+            </Style>
+        </Menu.Styles>
     </Menu>
 </UserControl>
