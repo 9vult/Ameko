@@ -70,10 +70,12 @@
                     <TabControl.ItemTemplate>
                         <DataTemplate DataType="{x:Type holo:Workspace}">
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="{Binding DisplayTitle, Mode=OneWay}" />
+                                <TextBlock Text="{Binding DisplayTitle, Mode=OneWay}"
+                                           VerticalAlignment="Center"/>
                                 <Button Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).CloseTabCommand, FallbackValue=.}"
                                         CommandParameter="{Binding Id}"
-                                        ToolTip.Tip="{x:Static i18n:Resources.Tab_CloseButton_ToolTip}">
+                                        ToolTip.Tip="{x:Static i18n:Resources.Tab_CloseButton_ToolTip}"
+                                        Classes="Small Tertiary">
                                     <icons:MaterialIconExt Kind="CloseBox" />
                                     <Button.Styles>
                                         <Style Selector="Button">
@@ -91,7 +93,7 @@
                     </TabControl.ContentTemplate>
                     <TabControl.Styles>
                         <Style Selector="TabItem">
-                            <Setter Property="Padding" Value="3 2 3 2" />
+                            <Setter Property="Padding" Value="0" />
                             <Setter Property="Margin" Value="0" />
                         </Style>
                     </TabControl.Styles>
