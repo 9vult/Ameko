@@ -30,6 +30,8 @@
                    Text="{x:Static i18n:Other.CrashReporter_Info}" />
         <TextBox Grid.Row="2"
                  IsReadOnly="True"
+                 VerticalAlignment="Stretch"
+                 VerticalContentAlignment="Top"
                  Text="{Binding Content}" />
     </Grid>
 </Window>

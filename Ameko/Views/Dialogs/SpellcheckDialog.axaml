@@ -60,6 +60,7 @@
         </StackPanel>
         <ListBox Grid.Column="0"
                  Grid.Row="3"
+                 Classes="Small"
                  ItemsSource="{Binding Suggestions}"
                  SelectedItem="{Binding SelectedSuggestion}"
                  SelectionMode="AlwaysSelected"
@@ -88,4 +89,10 @@
                    Grid.Row="4"
                    Text="{Binding DictionaryInUse}" />
     </Grid>
+    <Window.Styles>
+        <Style Selector="ListBoxItem">
+            <Setter Property="Padding" Value="1" />
+            <Setter Property="Margin" Value="1" />
+        </Style>
+    </Window.Styles>
 </Window>

@@ -185,4 +185,10 @@
             </StackPanel>
         </DockPanel>
     </Panel>
+    <UserControl.Styles>
+        <Style Selector="ListBoxItem">
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Margin" Value="0" />
+        </Style>
+    </UserControl.Styles>
 </UserControl>

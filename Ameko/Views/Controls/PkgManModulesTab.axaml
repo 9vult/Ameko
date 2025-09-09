@@ -92,6 +92,7 @@
         <!-- Store buttons -->
         <Grid Grid.Column="0"
               Grid.Row="2"
+              Margin="2"
               ColumnDefinitions="Auto, *">
             <Button Grid.Column="0"
                     Margin="2 0 1 0"
@@ -103,30 +104,35 @@
                     Content="{x:Static i18n:PkgMan.PkgMan_Button_Install}"
                     ToolTip.Tip="{x:Static i18n:PkgMan.PkgMan_Button_Install_ToolTip}"
                     IsEnabled="{Binding InstallButtonEnabled}"
-                    Command="{Binding InstallCommand}" />
+                    Command="{Binding InstallCommand}"
+                    HorizontalAlignment="Stretch"/>
         </Grid>
         <!-- Installed buttons -->
         <Grid Grid.Column="1"
               Grid.Row="2"
+              Margin="2"
               ColumnDefinitions="*, Auto, Auto">
             <Button Grid.Column="0"
                     Margin="2 0 1 0"
                     Content="{x:Static i18n:PkgMan.PkgMan_Button_UpdateAll}"
                     ToolTip.Tip="{x:Static i18n:PkgMan.PkgMan_Button_UpdateAll_ToolTip}"
                     IsEnabled="{Binding UpdateAllButtonEnabled}"
-                    Command="{Binding UpdateAllCommand}" />
+                    Command="{Binding UpdateAllCommand}"
+                    HorizontalAlignment="Stretch"/>
             <Button Grid.Column="1"
                     Margin="1 0"
                     Content="{x:Static i18n:PkgMan.PkgMan_Button_Update}"
                     ToolTip.Tip="{x:Static i18n:PkgMan.PkgMan_Button_Update_ToolTip}"
                     IsEnabled="{Binding UpdateButtonEnabled}"
-                    Command="{Binding UpdateCommand}" />
+                    Command="{Binding UpdateCommand}"
+                    HorizontalAlignment="Stretch"/>
             <Button Grid.Column="2"
                     Margin="1 0 2 0"
                     Content="{x:Static i18n:PkgMan.PkgMan_Button_Uninstall}"
                     ToolTip.Tip="{x:Static i18n:PkgMan.PkgMan_Button_Uninstall_ToolTip}"
                     IsEnabled="{Binding UninstallButtonEnabled}"
-                    Command="{Binding UninstallCommand}" />
+                    Command="{Binding UninstallCommand}"
+                    HorizontalAlignment="Stretch"/>
         </Grid>
     </Grid>
 </UserControl>
