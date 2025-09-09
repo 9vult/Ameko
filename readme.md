@@ -15,26 +15,20 @@ Ameko is a subtitle editing suite for Advanced Substation Alpha (ASS) subtitles.
 
 ### Milestone 1 - MVP
 
-The primary goal for Milestone 1 is to deliver a Minimum Viable Product (MVP). For Ameko, this MVP will deliver a
-feature-rich subtitle editor with several key features to provide a robust foundation for future extensibility.
+The primary goal for Milestone 1 is to deliver a Minimum Viable Product (MVP).
 
-- **Core Subtitle Editing:** This forms the heart of the MVP, providing essential tools for creating, manipulating, and
-  styling subtitles.
-- **Integrated Video Support:** I've chosen to include support in the MVP as it's an indispensable part of the
-  subtitling workflow.
-  Rendering is handled via a plugin-based system, ensuring flexibility and independence from any single backend. The
-  initial video provider will be [FFMS2](https://github.com/FFMS/ffms2), and [libass](https://github.com/libass/libass/)
-  will be the first subtitle renderer. Video rendering is handled by OpenGL. The first audio renderer is OpenAL Soft.
-- **Tabs and Projects:** Ameko will feature tabs, allowing users to easily switch between multiple open subtitle files.
-  Alongside this, Ameko is introducing *Project Files*. Projects enable logical grouping and organization of
+- **Core Subtitle Editing:** Creating, manipulating, and style subtitles.
+- **Audio and Video Playback:** Initially [FFMS2](https://github.com/FFMS/ffms2)
+  and [libass](https://github.com/libass/libass/), rendered using OpenGL and OpenALSoft. A plugin architecture will
+  allow for this to be extended in the future.
+- **Tabs and Projects:** Ameko features tabs, allowing users to easily switch between multiple open subtitle files.
+  Additionally, Ameko is introducing *Project Files*. Projects enable logical grouping and organization of
   subtitle files
-  independent of the physical filesystem structure. Furthermore, Projects provide a centralized place for common
-  project configuration, styles, colors, and more, offering a significant improvement for teams using automated build
-  processes and version control-based workflows.
-- **C# Scripting Support:** Recognizing that many existing workflows rely heavily on scripting for automation and
-  advanced tasks, the MVP will include robust support for C# scripts and libraries. While existing Lua/Moonscript
-  scripts are not supported by Ameko, the C# scripting platform is highly versatile and supports development of both
-  simple and complex scripts.
+  independent of the physical filesystem structure and provide a centralized place for common
+  project configuration, styles, colors, and more.
+- **Integrated Git Support:** Ameko features basic Git features, like commiting, pulling, pushing, and blaming.
+- **Scripting:** Ameko includes robust support for C# scripts and libraries. Ameko also features a scripting playground
+  and support for simple JavaScript scriptlets.
 
 ### Future Milestones
 
@@ -43,9 +37,6 @@ focus on significantly expanding its capabilities. Potential upcoming milestones
 
 - **Audio Integration:** Implementing audio waveform and spectrum visualizations, related audio tooling.
 - **Graphical Tools:** Tools for visually manipulating subtitles on the video.
-
-These are initial ideas—milestones will be added or removed based on user feedback, community contributions, and
-the natural progression of Ameko's development.
 
 <h2 align="center">Development</h2>
 
@@ -59,6 +50,7 @@ I would strongly recommend using Jetbrains Rider or Visual Studio for developmen
 - Run `dotnet restore` to collect required NuGet packages.
 - To build, either click the `Build` button in your IDE, or run `dotnet build`.
 - To test, either click the `Run Tests` button in your IDE, or run `dotnet test`.
+- To build a release binary, use `dotnet publish`.
 - The final output for debugging and running is the `Ameko` project.
 
 #### Zig
@@ -67,6 +59,7 @@ I would strongly recommend using Jetbrains Rider or Visual Studio for developmen
 - You may need to build FFMS2 and libass yourself.
 - To build, run `zig build`. To run, use `zig build run`.
 - To test, run `zig test`.
+- To build a release binary, use `zig build --release=safe`.
 
 ### Project Components
 
@@ -76,7 +69,7 @@ components working in tandem.
 - **AssCS:** The backbone of the operation. AssCS is responsible for everything involving the subtitle document itself.
   Managing events and styles, parsing tags, and reading/writing files are just part of what AssCS does. Eventually,
   AssCS will likely be split into its own project so anyone can use it for their C# projects.
-- **Holo:** The middleware layer, primarily linking the GUI to AssCS and Mizuki. It also manages Dependency Control,
+- **Holo:** The middleware layer, primarily linking the GUI to AssCS and Mizuki. It also manages the Package Manager,
   projects, configuration, and pretty much everything that's not immediately GUI-related.
 - **Mizuki:** A high-performance interop library and Holo's first A/V plugin. Mizuki facilitates communication between
   Holo and A/V libraries like FFMS and libass. By doing most of the work in a low-level language like Zig, Mizuki is
@@ -90,6 +83,8 @@ components working in tandem.
 Thank you for your interest in contributing to Ameko! Whether you're reporting bugs, fixing bugs, adding features, or
 starting a discussion, all contributions are welcome and appreciated.
 
+### Code
+
 Before submitting a pull request, please make sure your code is properly formatted:
 
 - **C# code** is automatically formatted using [CSharpier](https://github.com/belav/csharpier) as part of the build
@@ -100,6 +95,8 @@ Additionally, there are some testing guidelines:
 
 - Unit tests are required for contributions to the Holo and AssCS projects.
 - Tests are optional, but highly appreciated, for Ameko's ViewModels and for Mizuki.
+
+### Localization
 
 If you are interested in localizing Ameko into your language (Thank you!), please see
 the [Crowdin project](https://crowdin.com/project/ameko). Note: Ameko is localized via the ResX format,
