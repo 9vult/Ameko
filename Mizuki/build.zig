@@ -7,6 +7,15 @@ fn linkLibraries(b: *std.Build, obj: *std.Build.Step.Compile) void {
     obj.linkSystemLibrary("ffms2");
     obj.linkSystemLibrary("ass");
     obj.linkLibC();
+    obj.addIncludePath(b.path("3rdparty/include"));
+    obj.addLibraryPath(b.path("3rdparty/bin"));
+    obj.linkSystemLibrary("avcodec-61");
+    obj.linkSystemLibrary("avformat-61");
+    obj.linkSystemLibrary("avdevice-61");
+    obj.linkSystemLibrary("avfilter-10");
+    obj.linkSystemLibrary("avutil-59");
+    obj.linkSystemLibrary("swresample-5");
+    obj.linkSystemLibrary("swscale-8");
 }
 
 // Although this function looks imperative, note that its job is to
@@ -43,11 +52,7 @@ pub fn build(b: *std.Build) void {
     // Now, we will create a static library based on the module we created above.
     // This creates a `std.Build.Step.Compile`, which is the build step responsible
     // for actually invoking the compiler.
-    const lib = b.addLibrary(.{
-        .name = "Mizuki",
-        .root_module = lib_mod,
-        .linkage = .dynamic
-    });
+    const lib = b.addLibrary(.{ .name = "Mizuki", .root_module = lib_mod, .linkage = .dynamic });
 
     linkLibraries(b, lib);
     lib.root_module.addImport("known-folders", known_folders);

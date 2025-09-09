@@ -7,4 +7,9 @@ pub const c = @cImport({
 
     // libass
     @cInclude("ass.h");
+
+    // libav*
+    @cInclude("libavcodec/avcodec.h");
+    @cInclude("libavformat/avformat.h");
+    @cInclude("libavutil/avutil.h");
 });

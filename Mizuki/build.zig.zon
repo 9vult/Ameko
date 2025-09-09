@@ -47,6 +47,7 @@
         "src",
         "include",
         "lib",
+        "3rdparty",
         // For example...
         //"LICENSE",
         //"README.md",

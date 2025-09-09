@@ -149,18 +149,47 @@ fn FreeLongArray(array: common.LongArray) void {
 }
 
 pub fn main() !void {
-    const ffms_version = ffms.GetVersion();
-    std.debug.print("FFMS2 Version: {x}.{x}.{x}\n", .{
-        ffms_version.major,
-        ffms_version.minor,
-        ffms_version.patch,
-    });
+    const ver = c.avcodec_version();
+    std.debug.print("Avcodec version: {}.{}.{}\n", .{ (ver >> 16) & 0xFF, (ver >> 8) & 0xFF, ver & 0xFF });
+    // const ffms_version = ffms.GetVersion();
+    // std.debug.print("FFMS2 Version: {x}.{x}.{x}\n", .{
+    //     ffms_version.major,
+    //     ffms_version.minor,
+    //     ffms_version.patch,
+    // });
 
-    libass.Initialize();
-    const libass_version = libass.GetVersion();
-    std.debug.print("Libass Version: {x}.{x}.{x}\n", .{
-        libass_version.major,
-        libass_version.minor,
-        libass_version.patch,
-    });
+    // libass.Initialize();
+    // const libass_version = libass.GetVersion();
+    // std.debug.print("Libass Version: {x}.{x}.{x}\n", .{
+    //     libass_version.major,
+    //     libass_version.minor,
+    //     libass_version.patch,
+    // });
+    //
+    //
+
+    var fmt_ctx: ?*c.AVFormatContext = null;
+
+    if (c.avformat_open_input(&fmt_ctx, "input.mkv", null, null) < 0) {
+        return error.OpenFailed;
+    }
+    defer c.avformat_close_input(&fmt_ctx);
+
+    if (c.avformat_find_stream_info(fmt_ctx, null) < 0) {
+        return error.StreamInfoFailed;
+    }
+
+    const nb_streams = fmt_ctx.?.nb_streams;
+    for (0..@intCast(nb_streams)) |i| {
+        const stream = fmt_ctx.?.streams[i];
+        if (stream.*.codecpar.*.codec_type == c.AVMEDIA_TYPE_AUDIO) {
+            const lang = c.av_dict_get(stream.*.metadata, "language", null, 0);
+            const title = c.av_dict_get(stream.*.metadata, "title", null, 0);
+
+            const lang_str = if (lang != null) std.mem.span(lang.*.value) else "unknown";
+            const title_str = if (title != null) std.mem.span(title.*.value) else "unknown";
+
+            std.debug.print("Audio stream {d}: language={s} title={s}\n", .{ i, lang_str, title_str });
+        }
+    }
 }
