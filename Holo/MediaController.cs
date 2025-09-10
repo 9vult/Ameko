@@ -149,6 +149,7 @@ public class MediaController : BindableBase
         if (!IsPlaying)
             return;
         IsPlaying = false;
+        IsPaused = false;
         _playback.Stop();
         OnPlaybackStop?.Invoke(this, EventArgs.Empty);
     }
@@ -158,8 +159,13 @@ public class MediaController : BindableBase
     /// </summary>
     public void Pause()
     {
+        Logger.Debug("Pausing playback");
+        if (!IsPlaying)
+            return;
         IsPaused = true;
-        Stop();
+        IsPlaying = false;
+        _playback.Stop();
+        OnPlaybackStop?.Invoke(this, EventArgs.Empty);
     }
 
     /// <summary>
@@ -251,8 +257,12 @@ public class MediaController : BindableBase
     public void SeekTo(int frameNumber)
     {
         if (_videoInfo is null)
-            throw new InvalidOperationException("Video is not loaded");
+            return;
+        if (_isPlaying)
+            Pause();
         CurrentFrame = Math.Clamp(frameNumber, 0, _videoInfo.FrameCount - 1);
+        if (_isPaused)
+            Resume();
     }
 
     /// <summary>
@@ -261,8 +271,13 @@ public class MediaController : BindableBase
     /// <param name="time">Time to seek to</param>
     public void SeekTo(Time time)
     {
-        if (_videoInfo is not null)
-            CurrentFrame = _videoInfo.FrameFromTime(time);
+        if (_videoInfo is null)
+            return;
+        if (_isPlaying)
+            Pause();
+        CurrentFrame = _videoInfo.FrameFromTime(time);
+        if (_isPaused)
+            Resume();
     }
 
     /// <summary>
@@ -271,8 +286,13 @@ public class MediaController : BindableBase
     /// <param name="event">Event to seek to the start of</param>
     public void SeekTo(Event @event)
     {
-        if (_videoInfo is not null)
-            CurrentFrame = _videoInfo.FrameFromTime(@event.Start);
+        if (_videoInfo is null)
+            return;
+        if (_isPlaying)
+            Pause();
+        CurrentFrame = _videoInfo.FrameFromTime(@event.Start);
+        if (_isPaused)
+            Resume();
     }
 
     /// <summary>
@@ -281,8 +301,13 @@ public class MediaController : BindableBase
     /// <param name="event">Event to seek to the end of</param>
     public void SeekToEnd(Event @event)
     {
-        if (_videoInfo is not null)
-            CurrentFrame = _videoInfo.FrameFromTime(@event.End) - 1;
+        if (_videoInfo is null)
+            return;
+        if (_isPlaying)
+            Pause();
+        CurrentFrame = _videoInfo.FrameFromTime(@event.End) - 1;
+        if (_isPaused)
+            Resume();
     }
 
     /// <summary>
@@ -292,7 +317,13 @@ public class MediaController : BindableBase
     public void AutoSeekTo(Event @event)
     {
         if (_videoInfo is not null && IsAutoSeekEnabled)
+        {
+            if (_isPlaying)
+                Pause();
             CurrentFrame = _videoInfo.FrameFromTime(@event.Start);
+            if (_isPaused)
+                Resume();
+        }
     }
 
     /// <summary>
