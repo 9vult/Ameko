@@ -1,11 +1,12 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
+using System;
+using System.Reactive.Disposables;
 using Ameko.ViewModels.Controls;
 using Avalonia;
-using Avalonia.Controls;
 using Avalonia.Input;
-using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
+using ReactiveUI;
 
 namespace Ameko.Views.Controls;
 
@@ -14,6 +15,18 @@ public partial class TabItemVideoArea : ReactiveUserControl<TabItemViewModel>
     public TabItemVideoArea()
     {
         InitializeComponent();
+
+        this.WhenActivated(disposables =>
+        {
+            this.GetObservable(ViewModelProperty)
+                .WhereNotNull()
+                .Subscribe(vm =>
+                {
+                    SeekBar.DragStarted += (_, _) => vm.Workspace.MediaController.Pause();
+                    SeekBar.DragEnded += (_, _) => vm.Workspace.MediaController.Resume();
+                })
+                .DisposeWith(disposables);
+        });
     }
 
     private void VideoTarget_OnPointerWheelChanged(object? sender, PointerWheelEventArgs e)

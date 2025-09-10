@@ -28,6 +28,7 @@
             <c:SeekSlider Grid.Column="0"
                           Grid.Row="0"
                           Grid.ColumnSpan="3"
+                          Name="SeekBar"
                           VerticalAlignment="Center"
                           SmallChange="1"
                           LargeChange="25"
