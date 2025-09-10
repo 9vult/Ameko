@@ -53,28 +53,25 @@ public partial class MainWindowViewModel : ViewModelBase
             {
                 try
                 {
-                    var ext = Path.GetExtension(uri.LocalPath);
-                    var doc = ext switch
-                    {
-                        ".ass" => new AssParser().Parse(_fileSystem, uri),
-                        ".srt" => new SrtParser().Parse(_fileSystem, uri),
-                        ".txt" => new TxtParser().Parse(_fileSystem, uri),
-                        _ => throw new ArgumentOutOfRangeException(),
-                    };
-
-                    if (ext == ".ass")
-                    {
-                        latest = ProjectProvider.Current.AddWorkspace(doc, uri);
-                        latest.IsSaved = true;
-                    }
-                    else
-                    {
-                        // Non-ass sourced documents need to be re-saved as an ass file
-                        latest = ProjectProvider.Current.AddWorkspace(doc);
-                        latest.IsSaved = false;
-                    }
-
+                    latest = OpenSubtitleFile(uri);
                     Logger.Info($"Opened subtitle file {latest.Title}");
+
+                    var doc = latest.Document;
+                    if (!doc.GarbageManager.Contains("Video File"))
+                        continue;
+
+                    var videoPath = Path.Combine(
+                        Path.GetDirectoryName(uri.LocalPath) ?? "/",
+                        doc.GarbageManager.GetString("Video File")
+                    );
+                    if (_fileSystem.File.Exists(videoPath))
+                    {
+                        // TODO: Ask the user
+                        latest.MediaController.OpenVideo(videoPath);
+                        latest.MediaController.SetSubtitles(latest.Document);
+                    }
+
+                    ProjectProvider.Current.WorkingSpace = latest;
                 }
                 catch (Exception ex)
                 {
@@ -104,34 +101,26 @@ public partial class MainWindowViewModel : ViewModelBase
         return ReactiveCommand.CreateFromTask(
             async (Uri uri) =>
             {
-                Logger.Debug("Opening subtitle (no-gui)");
-
                 try
                 {
-                    var ext = Path.GetExtension(uri.LocalPath);
-                    var doc = ext switch
-                    {
-                        ".ass" => new AssParser().Parse(_fileSystem, uri),
-                        ".srt" => new SrtParser().Parse(_fileSystem, uri),
-                        ".txt" => new TxtParser().Parse(_fileSystem, uri),
-                        _ => throw new ArgumentOutOfRangeException(),
-                    };
-
-                    Workspace latest;
-
-                    if (ext == ".ass")
-                    {
-                        latest = ProjectProvider.Current.AddWorkspace(doc, uri);
-                        latest.IsSaved = true;
-                    }
-                    else
-                    {
-                        // Non-ass sourced documents need to be re-saved as an ass file
-                        latest = ProjectProvider.Current.AddWorkspace(doc);
-                        latest.IsSaved = false;
-                    }
-
+                    var latest = OpenSubtitleFile(uri);
                     Logger.Info($"Opened subtitle file {latest.Title}");
+
+                    var doc = latest.Document;
+                    if (doc.GarbageManager.Contains("Video File"))
+                    {
+                        var videoPath = Path.Combine(
+                            Path.GetDirectoryName(uri.LocalPath) ?? "/",
+                            doc.GarbageManager.GetString("Video File")
+                        );
+                        if (_fileSystem.File.Exists(videoPath))
+                        {
+                            // TODO: Ask the user
+                            latest.MediaController.OpenVideo(videoPath);
+                            latest.MediaController.SetSubtitles(latest.Document);
+                        }
+                    }
+
                     ProjectProvider.Current.WorkingSpace = latest;
                 }
                 catch (Exception ex)
@@ -941,7 +930,7 @@ public partial class MainWindowViewModel : ViewModelBase
     /// <summary>
     /// Check if the configuration-specified spellcheck dictionary is installed
     /// </summary>
-    private ICommand CreateCheckSpellcheckDictionaryCommand()
+    private ReactiveCommand<Unit, Unit> CreateCheckSpellcheckDictionaryCommand()
     {
         return ReactiveCommand.CreateFromTask(async () =>
         {
@@ -957,5 +946,42 @@ public partial class MainWindowViewModel : ViewModelBase
             else
                 _spellcheckService.RebuildDictionary(); // Installed
         });
+    }
+
+    /// <summary>
+    /// Helper function for loading a subtitle
+    /// </summary>
+    /// <param name="uri">URI to the subtitle file</param>
+    /// <returns>Workspace containing the loaded document</returns>
+    /// <exception cref="ArgumentOutOfRangeException">If the subtitle isn't a valid document</exception>
+    private Workspace OpenSubtitleFile(Uri uri)
+    {
+        Logger.Debug("Opening subtitle");
+
+        var ext = Path.GetExtension(uri.LocalPath);
+        var doc = ext switch
+        {
+            ".ass" => new AssParser().Parse(_fileSystem, uri),
+            ".srt" => new SrtParser().Parse(_fileSystem, uri),
+            ".txt" => new TxtParser().Parse(_fileSystem, uri),
+            _ => throw new ArgumentOutOfRangeException(nameof(uri)),
+        };
+
+        Workspace wsp;
+
+        if (ext == ".ass")
+        {
+            wsp = ProjectProvider.Current.AddWorkspace(doc, uri);
+            wsp.IsSaved = true;
+        }
+        else
+        {
+            // Non-ass sourced documents need to be re-saved as an ass file
+            wsp = ProjectProvider.Current.AddWorkspace(doc);
+            wsp.IsSaved = false;
+        }
+
+        Logger.Info($"Opened subtitle file {wsp.Title}");
+        return wsp;
     }
 }
