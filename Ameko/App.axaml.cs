@@ -1,6 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 using System;
+using System.Collections.Generic;
+using System.IO;
+using System.IO.Abstractions;
 using System.Linq;
 using System.Threading.Tasks;
 using Ameko.Converters;
@@ -70,6 +73,49 @@ public partial class App : Application
             else // Normal operation
             {
                 var vm = provider.GetRequiredService<MainWindowViewModel>();
+
+                // Check if there's anything to open
+                // TODO: Probably should defer the actual opening part until after the GUI loads?
+                if (Program.Args.Length > 0)
+                {
+                    var fs = provider.GetRequiredService<IFileSystem>();
+                    List<Uri> subs = [];
+                    List<Uri> projects = [];
+                    foreach (var arg in Program.Args)
+                    {
+                        var path = arg;
+                        if (!Path.IsPathRooted(path)) // De-relative any relative paths
+                        {
+                            path = Path.Combine(fs.Directory.GetCurrentDirectory(), arg);
+                        }
+                        if (fs.File.Exists(path))
+                        {
+                            switch (Path.GetExtension(path))
+                            {
+                                case ".ass":
+                                case ".srt":
+                                    subs.Add(new Uri(path));
+                                    break;
+                                case ".aproj":
+                                    projects.Add(new Uri(path));
+                                    break;
+                                default:
+                                    continue;
+                            }
+                        }
+                    }
+
+                    if (projects.Count > 0)
+                    {
+                        vm.OpenProjectNoGuiCommand.Execute(projects.First());
+                    }
+                    else
+                    {
+                        foreach (var uri in subs)
+                            vm.OpenSubtitleNoGuiCommand.Execute(uri);
+                    }
+                }
+
                 desktop.MainWindow = provider.GetRequiredService<MainWindow>();
                 DataContext = vm;
                 desktop.MainWindow.DataContext = vm;
