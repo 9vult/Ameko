@@ -424,12 +424,8 @@ public sealed partial class SeekSlider : RangeBase
         }
     }
 
-    public event OnDragStarted? DragStarted;
-    public event OnDragEnded? DragEnded;
-
-    public delegate void OnDragStarted(object sender, EventArgs e);
-
-    public delegate void OnDragEnded(object sender, EventArgs e);
+    public event EventHandler<EventArgs>? DragStarted;
+    public event EventHandler<EventArgs>? DragEnded;
 
     /// <summary>
     /// Called when user start dragging the <see cref="Thumb"/>.
