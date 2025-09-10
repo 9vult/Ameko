@@ -431,14 +431,9 @@ public partial class TabItemViewModel : ViewModelBase
             if (!Workspace.MediaController.IsVideoLoaded)
                 return;
             if (Workspace.MediaController.IsPlaying)
-                Workspace.MediaController.Pause();
+                Workspace.MediaController.Stop();
             else
-            {
-                if (Workspace.MediaController.IsPaused)
-                    Workspace.MediaController.Resume();
-                else
-                    Workspace.MediaController.PlayToEnd();
-            }
+                Workspace.MediaController.PlayToEnd();
         });
     }
 
