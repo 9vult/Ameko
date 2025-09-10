@@ -74,7 +74,6 @@
                                            VerticalAlignment="Center"/>
                                 <Button Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).CloseTabCommand, FallbackValue=.}"
                                         CommandParameter="{Binding Id}"
-                                        ToolTip.Tip="{x:Static i18n:Resources.Tab_CloseButton_ToolTip}"
                                         Classes="Small Tertiary">
                                     <icons:MaterialIconExt Kind="CloseBox" />
                                     <Button.Styles>

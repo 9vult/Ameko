@@ -336,8 +336,11 @@ public partial class MainWindowViewModel : ViewModelBase
                     if (wsp is null)
                         return;
 
+                    // If the user opened a project file, don't open a new workspace
+                    var isLoadedProject = ProjectProvider.Current.SavePath is not null;
+
                     Logger.Debug($"Closing tab {wsp.Title}");
-                    await IoService.SafeCloseWorkspace(wsp, SaveSubtitleAs);
+                    await IoService.SafeCloseWorkspace(wsp, SaveSubtitleAs, !isLoadedProject);
                 }
             }
         );
