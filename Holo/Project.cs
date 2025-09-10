@@ -451,6 +451,15 @@ public class Project : BindableBase
     {
         Logger.Trace($"Closing referenced document {id}");
 
+        // If the document is not saved anywhere, remove from the referenced list
+        var isFileDoc = _loadedWorkspaces.FirstOrDefault(w => w.Id == id)?.SavePath is not null;
+        if (!isFileDoc)
+        {
+            var referenced = FindItemById(id);
+            if (referenced is not null)
+                _referencedItems.Remove(referenced);
+        }
+
         if (WorkingSpace?.Id != id)
             return _loadedWorkspaces.RemoveAll(w => w.Id == id) != 0;
         if (_loadedWorkspaces.Count > 1)
