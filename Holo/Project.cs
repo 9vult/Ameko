@@ -799,7 +799,7 @@ public class Project : BindableBase
                         Id = nextId++,
                         Name = model.Name,
                         Uri = model.RelativePath is not null
-                            ? new Uri(Path.Combine(dir, model.RelativePath))
+                            ? new Uri(Path.GetFullPath(Path.Combine(dir, model.RelativePath)))
                             : null,
                     },
                     ProjectItemType.Directory => new DirectoryItem

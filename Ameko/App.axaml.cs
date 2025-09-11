@@ -189,7 +189,7 @@ public partial class App : Application
             var path = arg;
             if (!Path.IsPathRooted(path)) // De-relative any relative paths
             {
-                path = Path.Combine(fs.Directory.GetCurrentDirectory(), arg);
+                path = Path.GetFullPath(Path.Combine(fs.Directory.GetCurrentDirectory(), arg));
             }
             if (fs.File.Exists(path))
             {
@@ -241,7 +241,9 @@ public partial class App : Application
                 continue;
 
             var relVideoPath = doc.GarbageManager.GetString("Video File");
-            var videoPath = Path.Combine(Path.GetDirectoryName(uri.LocalPath) ?? "/", relVideoPath);
+            var videoPath = Path.GetFullPath(
+                Path.Combine(Path.GetDirectoryName(uri.LocalPath) ?? "/", relVideoPath)
+            );
             if (fs.File.Exists(videoPath))
             {
                 var result = await msgBoxService.ShowAsync(
