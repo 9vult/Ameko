@@ -258,6 +258,24 @@ namespace Ameko.I18N {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Do you want to load the associated video?.
+        /// </summary>
+        public static string MsgBox_LoadVideo_Body {
+            get {
+                return ResourceManager.GetString("MsgBox_LoadVideo_Body", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Load Video.
+        /// </summary>
+        public static string MsgBox_LoadVideo_Title {
+            get {
+                return ResourceManager.GetString("MsgBox_LoadVideo_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Please choose a name for the directory:.
         /// </summary>
         public static string MsgBox_NameDirectory_Body {

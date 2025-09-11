@@ -11,14 +11,17 @@ using Ameko.Services;
 using Ameko.Utilities;
 using Ameko.ViewModels.Windows;
 using Ameko.Views.Windows;
+using AssCS.IO;
 using AssCS.Utilities;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
+using Holo;
 using Holo.Configuration;
 using Holo.Configuration.Keybinds;
+using Holo.Models;
 using Holo.Providers;
 using Holo.Scripting;
 using Microsoft.Extensions.DependencyInjection;
@@ -28,6 +31,8 @@ namespace Ameko;
 
 public partial class App : Application
 {
+    private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
@@ -73,49 +78,6 @@ public partial class App : Application
             else // Normal operation
             {
                 var vm = provider.GetRequiredService<MainWindowViewModel>();
-
-                // Check if there's anything to open
-                // TODO: Probably should defer the actual opening part until after the GUI loads?
-                if (Program.Args.Length > 0)
-                {
-                    var fs = provider.GetRequiredService<IFileSystem>();
-                    List<Uri> subs = [];
-                    List<Uri> projects = [];
-                    foreach (var arg in Program.Args)
-                    {
-                        var path = arg;
-                        if (!Path.IsPathRooted(path)) // De-relative any relative paths
-                        {
-                            path = Path.Combine(fs.Directory.GetCurrentDirectory(), arg);
-                        }
-                        if (fs.File.Exists(path))
-                        {
-                            switch (Path.GetExtension(path))
-                            {
-                                case ".ass":
-                                case ".srt":
-                                    subs.Add(new Uri(path));
-                                    break;
-                                case ".aproj":
-                                    projects.Add(new Uri(path));
-                                    break;
-                                default:
-                                    continue;
-                            }
-                        }
-                    }
-
-                    if (projects.Count > 0)
-                    {
-                        vm.OpenProjectNoGuiCommand.Execute(projects.First());
-                    }
-                    else
-                    {
-                        foreach (var uri in subs)
-                            vm.OpenSubtitleNoGuiCommand.Execute(uri);
-                    }
-                }
-
                 desktop.MainWindow = provider.GetRequiredService<MainWindow>();
                 DataContext = vm;
                 desktop.MainWindow.DataContext = vm;
@@ -125,8 +87,12 @@ public partial class App : Application
         base.OnFrameworkInitializationCompleted();
 
         // Start long process loading in the background after GUI finishes loading
-        Dispatcher.UIThread.Post(() =>
+        Dispatcher.UIThread.InvokeAsync(async () =>
         {
+            // Check if there's anything to open
+            if (Program.Args.Length > 0)
+                await InitializeStartupProject(provider);
+
             InitializeKeybindService(provider);
             InitializeScriptService(provider);
             InitializePackageManager(provider);
@@ -209,5 +175,88 @@ public partial class App : Application
                     .Error(ex, "Dependency Control failed to initialize.");
             }
         });
+    }
+
+    private async Task InitializeStartupProject(IServiceProvider provider)
+    {
+        var fs = provider.GetRequiredService<IFileSystem>();
+        var projectProvider = provider.GetRequiredService<IProjectProvider>();
+        var msgBoxService = provider.GetRequiredService<IMessageBoxService>();
+        List<Uri> subs = [];
+        List<Uri> projects = [];
+        foreach (var arg in Program.Args)
+        {
+            var path = arg;
+            if (!Path.IsPathRooted(path)) // De-relative any relative paths
+            {
+                path = Path.Combine(fs.Directory.GetCurrentDirectory(), arg);
+            }
+            if (fs.File.Exists(path))
+            {
+                switch (Path.GetExtension(path))
+                {
+                    case ".ass":
+                    case ".srt":
+                        subs.Add(new Uri(path));
+                        break;
+                    case ".aproj":
+                        projects.Add(new Uri(path));
+                        break;
+                    default:
+                        continue;
+                }
+            }
+        }
+
+        if (projects.Count > 0)
+        {
+            Logger.Info("Loading project file");
+            projectProvider.Current = Project.Parse(fs, projects.First());
+        }
+        foreach (var uri in subs)
+        {
+            var ext = Path.GetExtension(uri.LocalPath);
+            var doc = ext switch
+            {
+                ".ass" => new AssParser().Parse(fs, uri),
+                ".srt" => new SrtParser().Parse(fs, uri),
+                ".txt" => new TxtParser().Parse(fs, uri),
+                _ => throw new ArgumentOutOfRangeException(nameof(uri)),
+            };
+
+            Workspace wsp;
+            if (ext == ".ass")
+            {
+                wsp = projectProvider.Current.AddWorkspace(doc, uri);
+                wsp.IsSaved = true;
+            }
+            else
+            {
+                // Non-ass sourced documents need to be re-saved as an ass file
+                wsp = projectProvider.Current.AddWorkspace(doc);
+                wsp.IsSaved = false;
+            }
+
+            if (!doc.GarbageManager.Contains("Video File"))
+                continue;
+
+            var relVideoPath = doc.GarbageManager.GetString("Video File");
+            var videoPath = Path.Combine(Path.GetDirectoryName(uri.LocalPath) ?? "/", relVideoPath);
+            if (fs.File.Exists(videoPath))
+            {
+                var result = await msgBoxService.ShowAsync(
+                    I18N.Other.MsgBox_LoadVideo_Title,
+                    $"{I18N.Other.MsgBox_LoadVideo_Body}\n\n{relVideoPath}",
+                    MsgBoxButtonSet.YesNo,
+                    MsgBoxButton.Yes
+                );
+                if (result != MsgBoxButton.Yes)
+                    continue;
+                wsp.MediaController.OpenVideo(videoPath);
+                wsp.MediaController.SetSubtitles(wsp.Document);
+            }
+
+            projectProvider.Current.WorkingSpace = wsp;
+        }
     }
 }
