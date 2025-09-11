@@ -61,9 +61,8 @@ public partial class MainWindowViewModel : ViewModelBase
                         continue;
 
                     var relVideoPath = doc.GarbageManager.GetString("Video File");
-                    var videoPath = Path.Combine(
-                        Path.GetDirectoryName(uri.LocalPath) ?? "/",
-                        relVideoPath
+                    var videoPath = Path.GetFullPath(
+                        Path.Combine(Path.GetDirectoryName(uri.LocalPath) ?? "/", relVideoPath)
                     );
                     if (_fileSystem.File.Exists(videoPath))
                     {
@@ -118,9 +117,8 @@ public partial class MainWindowViewModel : ViewModelBase
                     if (doc.GarbageManager.Contains("Video File"))
                     {
                         var relVideoPath = doc.GarbageManager.GetString("Video File");
-                        var videoPath = Path.Combine(
-                            Path.GetDirectoryName(uri.LocalPath) ?? "/",
-                            relVideoPath
+                        var videoPath = Path.GetFullPath(
+                            Path.Combine(Path.GetDirectoryName(uri.LocalPath) ?? "/", relVideoPath)
                         );
                         if (_fileSystem.File.Exists(videoPath))
                         {
