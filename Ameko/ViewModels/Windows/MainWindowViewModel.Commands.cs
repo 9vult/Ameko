@@ -60,13 +60,21 @@ public partial class MainWindowViewModel : ViewModelBase
                     if (!doc.GarbageManager.Contains("Video File"))
                         continue;
 
+                    var relVideoPath = doc.GarbageManager.GetString("Video File");
                     var videoPath = Path.Combine(
                         Path.GetDirectoryName(uri.LocalPath) ?? "/",
-                        doc.GarbageManager.GetString("Video File")
+                        relVideoPath
                     );
                     if (_fileSystem.File.Exists(videoPath))
                     {
-                        // TODO: Ask the user
+                        var result = await _messageBoxService.ShowAsync(
+                            I18N.Other.MsgBox_LoadVideo_Title,
+                            $"{I18N.Other.MsgBox_LoadVideo_Body}\n\n{relVideoPath}",
+                            MsgBoxButtonSet.YesNo,
+                            MsgBoxButton.Yes
+                        );
+                        if (result != MsgBoxButton.Yes)
+                            continue;
                         latest.MediaController.OpenVideo(videoPath);
                         latest.MediaController.SetSubtitles(latest.Document);
                     }
@@ -109,15 +117,24 @@ public partial class MainWindowViewModel : ViewModelBase
                     var doc = latest.Document;
                     if (doc.GarbageManager.Contains("Video File"))
                     {
+                        var relVideoPath = doc.GarbageManager.GetString("Video File");
                         var videoPath = Path.Combine(
                             Path.GetDirectoryName(uri.LocalPath) ?? "/",
-                            doc.GarbageManager.GetString("Video File")
+                            relVideoPath
                         );
                         if (_fileSystem.File.Exists(videoPath))
                         {
-                            // TODO: Ask the user
-                            latest.MediaController.OpenVideo(videoPath);
-                            latest.MediaController.SetSubtitles(latest.Document);
+                            var result = await _messageBoxService.ShowAsync(
+                                I18N.Other.MsgBox_LoadVideo_Title,
+                                $"{I18N.Other.MsgBox_LoadVideo_Body}\n\n{relVideoPath}",
+                                MsgBoxButtonSet.YesNo,
+                                MsgBoxButton.Yes
+                            );
+                            if (result == MsgBoxButton.Yes)
+                            {
+                                latest.MediaController.OpenVideo(videoPath);
+                                latest.MediaController.SetSubtitles(latest.Document);
+                            }
                         }
                     }
 

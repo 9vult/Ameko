@@ -126,4 +126,10 @@
     <data name="MsgBox_Btn_No" xml:space="preserve">
         <value>No</value>
     </data>
+    <data name="MsgBox_LoadVideo_Title" xml:space="preserve">
+        <value>Load Video</value>
+    </data>
+    <data name="MsgBox_LoadVideo_Body" xml:space="preserve">
+        <value>Do you want to load the associated video?</value>
+    </data>
 </root>
