@@ -161,8 +161,8 @@ pub export fn ListAudioTracks(file_path: [*:0]const u8, audio_tracks: *common.Au
     }
 
     const nb_streams = fmt_ctx.?.nb_streams;
-    var tracks = common.allocator.alloc(common.AudioTrack, nb_streams) catch return .AllocationFailed;
-    var count: usize = 0;
+    var tracks_list: std.ArrayList(common.AudioTrack) = .empty;
+    defer tracks_list.deinit(common.allocator);
 
     for (0..@intCast(nb_streams)) |i| {
         const stream = fmt_ctx.?.streams[i];
@@ -170,27 +170,29 @@ pub export fn ListAudioTracks(file_path: [*:0]const u8, audio_tracks: *common.Au
             const lang_dict = c.av_dict_get(stream.*.metadata, "language", null, 0);
             const title_dict = c.av_dict_get(stream.*.metadata, "title", null, 0);
 
-            const lang_src = if (lang_dict != null) std.mem.span(lang_dict.*.value) else "unknown";
-            const title_src = if (title_dict != null) std.mem.span(title_dict.*.value) else "unknown";
+            const lang_src = if (lang_dict) |dict| std.mem.span(dict.*.value) else "unknown";
+            const title_src = if (title_dict) |dict| std.mem.span(dict.*.value) else "unknown";
 
             const lang_copy = common.allocator.dupeZ(u8, lang_src) catch return .AllocationFailed;
-            const title_copy = common.allocator.dupeZ(u8, title_src) catch return .AllocationFailed;
+            errdefer common.allocator.free(lang_copy);
 
-            tracks[count] = common.AudioTrack{
+            const title_copy = common.allocator.dupeZ(u8, title_src) catch return .AllocationFailed;
+            errdefer common.allocator.free(title_copy);
+
+            const track = common.AudioTrack{
                 .index = i,
                 .language = lang_copy.ptr,
                 .title = title_copy.ptr,
             };
-            count += 1;
+
+            tracks_list.append(common.allocator, track) catch return .AllocationFailed;
         }
     }
 
-    // Resize to to avoid the free mismatch
-    tracks = common.allocator.realloc(tracks, count) catch return .AllocationFailed;
-
+    const tracks = tracks_list.toOwnedSlice(common.allocator) catch return .AllocationFailed;
     audio_tracks.* = common.AudioTrackArray{
         .ptr = tracks.ptr,
-        .len = count,
+        .len = tracks.len,
     };
     return .Ok;
 }
