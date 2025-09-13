@@ -57,10 +57,9 @@ public partial class MainWindowViewModel : ViewModelBase
                     Logger.Info($"Opened subtitle file {latest.Title}");
 
                     var doc = latest.Document;
-                    if (!doc.GarbageManager.Contains("Video File"))
+                    if (!doc.GarbageManager.TryGetString("Video File", out var relVideoPath))
                         continue;
 
-                    var relVideoPath = doc.GarbageManager.GetString("Video File");
                     var videoPath = Path.GetFullPath(
                         Path.Combine(Path.GetDirectoryName(uri.LocalPath) ?? "/", relVideoPath)
                     );
@@ -76,6 +75,8 @@ public partial class MainWindowViewModel : ViewModelBase
                             continue;
                         latest.MediaController.OpenVideo(videoPath);
                         latest.MediaController.SetSubtitles(latest.Document);
+                        if (doc.GarbageManager.TryGetInt("Video Position", out var frame))
+                            latest.MediaController.SeekTo(frame.Value); // Seek for clamp safety
                     }
                     else
                     {
@@ -125,9 +126,8 @@ public partial class MainWindowViewModel : ViewModelBase
                     Logger.Info($"Opened subtitle file {latest.Title}");
 
                     var doc = latest.Document;
-                    if (doc.GarbageManager.Contains("Video File"))
+                    if (doc.GarbageManager.TryGetString("Video File", out var relVideoPath))
                     {
-                        var relVideoPath = doc.GarbageManager.GetString("Video File");
                         var videoPath = Path.GetFullPath(
                             Path.Combine(Path.GetDirectoryName(uri.LocalPath) ?? "/", relVideoPath)
                         );
@@ -143,6 +143,8 @@ public partial class MainWindowViewModel : ViewModelBase
                             {
                                 latest.MediaController.OpenVideo(videoPath);
                                 latest.MediaController.SetSubtitles(latest.Document);
+                                if (doc.GarbageManager.TryGetInt("Video Position", out var frame))
+                                    latest.MediaController.SeekTo(frame.Value); // Seek for clamp safety
                             }
                         }
                         else
