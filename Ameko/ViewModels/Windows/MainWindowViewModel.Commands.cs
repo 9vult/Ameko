@@ -1012,6 +1012,12 @@ public partial class MainWindowViewModel : ViewModelBase
         {
             wsp = ProjectProvider.Current.AddWorkspace(doc, uri);
             wsp.IsSaved = true;
+            if (doc.GarbageManager.TryGetInt("Active Line", out var lineIdx))
+            {
+                var line = doc.EventManager.Events.FirstOrDefault(e => e.Index == lineIdx + 1);
+                if (line is not null)
+                    wsp.SelectionManager.Select(line);
+            }
         }
         else
         {
