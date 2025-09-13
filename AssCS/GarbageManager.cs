@@ -2,6 +2,7 @@
 
 using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 
 namespace AssCS;
@@ -89,6 +90,23 @@ public class GarbageManager
     /// Get an entry by <paramref name="name"/>
     /// </summary>
     /// <param name="name">Name of the entry</param>
+    /// <param name="value">Value of the entry</param>
+    /// <returns><see langword="true"/> if the entry was found</returns>
+    public bool TryGetString(string name, [NotNullWhen(true)] out string? value)
+    {
+        if (Contains(name))
+        {
+            value = GetString(name);
+            return true;
+        }
+        value = null;
+        return false;
+    }
+
+    /// <summary>
+    /// Get an entry by <paramref name="name"/>
+    /// </summary>
+    /// <param name="name">Name of the entry</param>
     /// <returns>Value of the entry</returns>
     /// <exception cref="KeyNotFoundException">If the value does not exist</exception>
     public double GetDouble(string name)
@@ -96,6 +114,23 @@ public class GarbageManager
         if (!_data.TryGetValue(name, out GarbageEntry value))
             throw new KeyNotFoundException($"Project Properties: Double {name} does not exist");
         return Convert.ToDouble(value.Value);
+    }
+
+    /// <summary>
+    /// Get an entry by <paramref name="name"/>
+    /// </summary>
+    /// <param name="name">Name of the entry</param>
+    /// <param name="value">Value of the entry</param>
+    /// <returns><see langword="true"/> if the entry was found</returns>
+    public bool TryGetDouble(string name, [NotNullWhen(true)] out double? value)
+    {
+        if (Contains(name))
+        {
+            value = GetDouble(name);
+            return true;
+        }
+        value = null;
+        return false;
     }
 
     /// <summary>
@@ -115,6 +150,23 @@ public class GarbageManager
     /// Get an entry by <paramref name="name"/>
     /// </summary>
     /// <param name="name">Name of the entry</param>
+    /// <param name="value">Value of the entry</param>
+    /// <returns><see langword="true"/> if the entry was found</returns>
+    public bool TryGetDecimal(string name, [NotNullWhen(true)] out decimal? value)
+    {
+        if (Contains(name))
+        {
+            value = GetDecimal(name);
+            return true;
+        }
+        value = null;
+        return false;
+    }
+
+    /// <summary>
+    /// Get an entry by <paramref name="name"/>
+    /// </summary>
+    /// <param name="name">Name of the entry</param>
     /// <returns>Value of the entry</returns>
     /// <exception cref="KeyNotFoundException">If the value does not exist</exception>
     public int GetInt(string name)
@@ -128,6 +180,23 @@ public class GarbageManager
     /// Get an entry by <paramref name="name"/>
     /// </summary>
     /// <param name="name">Name of the entry</param>
+    /// <param name="value">Value of the entry</param>
+    /// <returns><see langword="true"/> if the entry was found</returns>
+    public bool TryGetInt(string name, [NotNullWhen(true)] out int? value)
+    {
+        if (Contains(name))
+        {
+            value = GetInt(name);
+            return true;
+        }
+        value = null;
+        return false;
+    }
+
+    /// <summary>
+    /// Get an entry by <paramref name="name"/>
+    /// </summary>
+    /// <param name="name">Name of the entry</param>
     /// <returns>Value of the entry</returns>
     /// <exception cref="KeyNotFoundException">If the value does not exist</exception>
     public bool GetBool(string name)
@@ -135,6 +204,23 @@ public class GarbageManager
         if (!_data.TryGetValue(name, out GarbageEntry value))
             throw new KeyNotFoundException($"Project Properties: Bool {name} does not exist");
         return Convert.ToBoolean(value.Value);
+    }
+
+    /// <summary>
+    /// Get an entry by <paramref name="name"/>
+    /// </summary>
+    /// <param name="name">Name of the entry</param>
+    /// <param name="value">Value of the entry</param>
+    /// <returns><see langword="true"/> if the entry was found</returns>
+    public bool TryGetBool(string name, [NotNullWhen(true)] out bool? value)
+    {
+        if (Contains(name))
+        {
+            value = GetBool(name);
+            return true;
+        }
+        value = null;
+        return false;
     }
 
     /// <summary>
