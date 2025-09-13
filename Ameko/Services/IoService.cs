@@ -45,7 +45,9 @@ public class IoService(
             var relPath = Path.GetRelativePath(dir, wsp.MediaController.VideoInfo.Path);
             wsp.Document.GarbageManager.Set("Video File", relPath);
             wsp.Document.GarbageManager.Set("Audio File", relPath);
+            wsp.Document.GarbageManager.Set("Video Position", wsp.MediaController.CurrentFrame);
         }
+        wsp.Document.GarbageManager.Set("Active Line", wsp.SelectionManager.ActiveEvent.Index - 1);
 
         var writer = new AssWriter(wsp.Document, ConsumerService.AmekoInfo);
         wsp.SavePath = uri;
@@ -82,7 +84,9 @@ public class IoService(
             var relPath = Path.GetRelativePath(dir, wsp.MediaController.VideoInfo.Path);
             wsp.Document.GarbageManager.Set("Video File", relPath);
             wsp.Document.GarbageManager.Set("Audio File", relPath);
+            wsp.Document.GarbageManager.Set("Video Position", wsp.MediaController.CurrentFrame);
         }
+        wsp.Document.GarbageManager.Set("Active Line", wsp.SelectionManager.ActiveEvent.Index - 1);
 
         var writer = new AssWriter(wsp.Document, ConsumerService.AmekoInfo);
         wsp.SavePath = uri;
