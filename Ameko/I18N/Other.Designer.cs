@@ -222,6 +222,15 @@ namespace Ameko.I18N {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The associated video &quot;{0}&quot; was not found..
+        /// </summary>
+        public static string Message_VideoNotFound {
+            get {
+                return ResourceManager.GetString("Message_VideoNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cancel.
         /// </summary>
         public static string MsgBox_Btn_Cancel {

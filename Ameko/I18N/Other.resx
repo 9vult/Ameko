@@ -132,4 +132,7 @@
     <data name="MsgBox_LoadVideo_Body" xml:space="preserve">
         <value>Do you want to load the associated video?</value>
     </data>
+    <data name="Message_VideoNotFound" xml:space="preserve">
+        <value>The associated video "{0}" was not found.</value>
+    </data>
 </root>

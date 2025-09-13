@@ -182,6 +182,7 @@ public partial class App : Application
         var fs = provider.GetRequiredService<IFileSystem>();
         var projectProvider = provider.GetRequiredService<IProjectProvider>();
         var msgBoxService = provider.GetRequiredService<IMessageBoxService>();
+        var msgService = provider.GetRequiredService<IMessageService>();
         List<Uri> subs = [];
         List<Uri> projects = [];
         foreach (var arg in Program.Args)
@@ -256,6 +257,14 @@ public partial class App : Application
                     continue;
                 wsp.MediaController.OpenVideo(videoPath);
                 wsp.MediaController.SetSubtitles(wsp.Document);
+            }
+            else
+            {
+                // Video not found
+                msgService.Enqueue(
+                    string.Format(I18N.Other.Message_VideoNotFound, Path.GetFileName(videoPath)),
+                    TimeSpan.FromSeconds(7)
+                );
             }
 
             projectProvider.Current.WorkingSpace = wsp;

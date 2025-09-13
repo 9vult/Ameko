@@ -77,6 +77,17 @@ public partial class MainWindowViewModel : ViewModelBase
                         latest.MediaController.OpenVideo(videoPath);
                         latest.MediaController.SetSubtitles(latest.Document);
                     }
+                    else
+                    {
+                        // Video not found
+                        _messageService.Enqueue(
+                            string.Format(
+                                I18N.Other.Message_VideoNotFound,
+                                Path.GetFileName(videoPath)
+                            ),
+                            TimeSpan.FromSeconds(7)
+                        );
+                    }
 
                     ProjectProvider.Current.WorkingSpace = latest;
                 }
@@ -133,6 +144,17 @@ public partial class MainWindowViewModel : ViewModelBase
                                 latest.MediaController.OpenVideo(videoPath);
                                 latest.MediaController.SetSubtitles(latest.Document);
                             }
+                        }
+                        else
+                        {
+                            // Video not found
+                            _messageService.Enqueue(
+                                string.Format(
+                                    I18N.Other.Message_VideoNotFound,
+                                    Path.GetFileName(videoPath)
+                                ),
+                                TimeSpan.FromSeconds(7)
+                            );
                         }
                     }
 
