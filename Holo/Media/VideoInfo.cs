@@ -5,6 +5,7 @@ using AssCS;
 namespace Holo.Media;
 
 public class VideoInfo(
+    string path,
     int frameCount,
     Rational sar,
     long[] frameTimes,
@@ -14,6 +15,7 @@ public class VideoInfo(
     int height
 )
 {
+    public string Path { get; } = path;
     public int FrameCount { get; } = frameCount;
     public Rational Sar { get; init; } = sar;
     public long[] FrameTimes { get; } = frameTimes;

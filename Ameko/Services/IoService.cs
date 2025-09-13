@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 using System;
+using System.IO;
 using System.IO.Abstractions;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
@@ -37,6 +38,15 @@ public class IoService(
             return false;
         }
 
+        // Set the audio/video path, if applicable
+        if (wsp.MediaController.IsVideoLoaded)
+        {
+            var dir = Path.GetDirectoryName(uri.LocalPath) ?? "/";
+            var relPath = Path.GetRelativePath(dir, wsp.MediaController.VideoInfo.Path);
+            wsp.Document.GarbageManager.Set("Video File", relPath);
+            wsp.Document.GarbageManager.Set("Audio File", relPath);
+        }
+
         var writer = new AssWriter(wsp.Document, ConsumerService.AmekoInfo);
         wsp.SavePath = uri;
         wsp.IsSaved = true;
@@ -63,6 +73,15 @@ public class IoService(
         {
             Log.Info("Save operation cancelled");
             return false;
+        }
+
+        // Set the audio/video path, if applicable
+        if (wsp.MediaController.IsVideoLoaded)
+        {
+            var dir = Path.GetDirectoryName(uri.LocalPath) ?? "/";
+            var relPath = Path.GetRelativePath(dir, wsp.MediaController.VideoInfo.Path);
+            wsp.Document.GarbageManager.Set("Video File", relPath);
+            wsp.Document.GarbageManager.Set("Audio File", relPath);
         }
 
         var writer = new AssWriter(wsp.Document, ConsumerService.AmekoInfo);
