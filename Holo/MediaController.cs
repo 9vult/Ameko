@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 
+using System.Diagnostics.CodeAnalysis;
 using AssCS;
 using AssCS.IO;
 using Holo.Media;
@@ -46,6 +47,7 @@ public class MediaController : BindableBase
         private set => SetProperty(ref _videoInfo, value);
     }
 
+    [MemberNotNullWhen(true, nameof(VideoInfo))]
     public bool IsVideoLoaded
     {
         get => _isVideoLoaded;
@@ -362,6 +364,7 @@ public class MediaController : BindableBase
             }
 
             VideoInfo = new VideoInfo(
+                path: filePath,
                 frameCount: _provider.FrameCount,
                 sar: new Rational { Numerator = 1, Denominator = 1 },
                 frameTimes: _provider.GetTimecodes(),

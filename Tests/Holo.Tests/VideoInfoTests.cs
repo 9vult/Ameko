@@ -9,6 +9,7 @@ public class VideoInfoTests
 {
     private static VideoInfo Info =>
         new(
+            "video.mkv",
             12,
             new Rational { Numerator = 16, Denominator = 9 },
             [0, 42, 83, 125, 167, 209, 250, 292, 334, 375, 417, 459],
