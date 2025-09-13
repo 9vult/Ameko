@@ -6,7 +6,7 @@ Your feedback and contributions will help shape Ameko's future ❤️
 
 **Ameko is free software!** If you paid for it, you were scammed!
 
-Ameko is copyright © 2023-2025 9volt et al. and distributed
+Ameko is copyright © 2023-2025 9volt and distributed
 under the terms of the
 [GNU GPL 3.0](https://www.gnu.org/licenses/gpl-3.0.en.html).
 
@@ -17,5 +17,5 @@ are distributed under the terms of the
 ----
 
 Parts of Ameko are based on [Aegisub](https://aegisub.org/),
-which uses a mostly BSD-style license.
+which uses a [mostly BSD-style license](https://github.com/TypesettingTools/Aegisub/blob/master/LICENCE).
 Ameko is not affiliated with the Aegisub project.
