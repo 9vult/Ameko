@@ -6,16 +6,17 @@ fn linkLibraries(b: *std.Build, obj: *std.Build.Step.Compile) void {
     obj.addLibraryPath(b.path("lib"));
     obj.linkSystemLibrary("ffms2");
     obj.linkSystemLibrary("ass");
+
+    // TODO: add option to setup automatically if not found
+    obj.linkSystemLibrary("avcodec"); // avcodec-61
+    obj.linkSystemLibrary("avformat"); // avformat-61
+    obj.linkSystemLibrary("avdevice"); // avdevice-61
+    obj.linkSystemLibrary("avfilter"); // avfilter-10
+    obj.linkSystemLibrary("avutil"); // avutil-59
+    obj.linkSystemLibrary("swresample"); // swresample-5
+    obj.linkSystemLibrary("swscale"); // swscale-8
+
     obj.linkLibC();
-    obj.addIncludePath(b.path("3rdparty/include"));
-    obj.addLibraryPath(b.path("3rdparty/bin"));
-    obj.linkSystemLibrary("avcodec-61");
-    obj.linkSystemLibrary("avformat-61");
-    obj.linkSystemLibrary("avdevice-61");
-    obj.linkSystemLibrary("avfilter-10");
-    obj.linkSystemLibrary("avutil-59");
-    obj.linkSystemLibrary("swresample-5");
-    obj.linkSystemLibrary("swscale-8");
 }
 
 // Although this function looks imperative, note that its job is to

@@ -220,36 +220,34 @@ pub export fn FreeAudioTracks(audio_tracks: *common.AudioTrackArray) void {
 }
 
 pub fn main() !void {
-    const ver = c.avcodec_version();
-    std.debug.print("Avcodec version: {}.{}.{}\n", .{ (ver >> 16) & 0xFF, (ver >> 8) & 0xFF, ver & 0xFF });
-    var tracks: common.AudioTrackArray = undefined;
-    const res = ListAudioTracks("input.mkv", &tracks);
-    if (res != .Ok) {
-        std.debug.print("Failed to list audio tracks, error: {t}\n", .{res});
-        return;
-    }
-    for (0..tracks.len) |i| {
-        const track = tracks.ptr[i];
-        std.debug.print("Track {any}: lang: {s}, name: {s}\n", .{ track.index, track.language, track.title });
-    }
+    const avcodec_version = c.avcodec_version();
+    std.debug.print("Avcodec version: {}.{}.{}\n", .{ (avcodec_version >> 16) & 0xFF, (avcodec_version >> 8) & 0xFF, avcodec_version & 0xFF });
 
-    FreeAudioTracks(&tracks);
+    // var tracks: common.AudioTrackArray = undefined;
+    // const res = ListAudioTracks("input.mkv", &tracks);
+    // if (res != .Ok) {
+    //     std.debug.print("Failed to list audio tracks, error: {t}\n", .{res});
+    //     return;
+    // }
+    // for (0..tracks.len) |i| {
+    //     const track = tracks.ptr[i];
+    //     std.debug.print("Track {any}: lang: {s}, name: {s}\n", .{ track.index, track.language, track.title });
+    // }
 
-    // const ffms_version = ffms.GetVersion();
-    // std.debug.print("FFMS2 Version: {x}.{x}.{x}\n", .{
-    //     ffms_version.major,
-    //     ffms_version.minor,
-    //     ffms_version.patch,
-    // });
+    // FreeAudioTracks(&tracks);
 
-    // libass.Initialize();
-    // const libass_version = libass.GetVersion();
-    // std.debug.print("Libass Version: {x}.{x}.{x}\n", .{
-    //     libass_version.major,
-    //     libass_version.minor,
-    //     libass_version.patch,
-    // });
-    //
-    //
+    const ffms_version = ffms.GetVersion();
+    std.debug.print("FFMS2 Version: {x}.{x}.{x}\n", .{
+        ffms_version.major,
+        ffms_version.minor,
+        ffms_version.patch,
+    });
 
+    libass.Initialize();
+    const libass_version = libass.GetVersion();
+    std.debug.print("Libass Version: {x}.{x}.{x}\n", .{
+        libass_version.major,
+        libass_version.minor,
+        libass_version.patch,
+    });
 }
