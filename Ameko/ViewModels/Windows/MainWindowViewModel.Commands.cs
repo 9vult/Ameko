@@ -634,7 +634,6 @@ public partial class MainWindowViewModel : ViewModelBase
         {
             Logger.Debug("Preparing to open video");
             var uri = await OpenVideo.Handle(Unit.Default);
-
             if (uri is null)
                 return;
 
@@ -644,7 +643,19 @@ public partial class MainWindowViewModel : ViewModelBase
                 ProjectProvider.Current.WorkingSpace = wsp = ProjectProvider.Current.AddWorkspace();
             }
 
+            var audioTracks = wsp.MediaController.GetAudioTracks(uri.LocalPath);
+            int? audioIndex = null;
+
+            if (audioTracks.Length > 1)
+            {
+                audioIndex = await SelectAudioName.Handle(audioTracks);
+                if (!audioIndex.HasValue)
+                    return;
+            }
+            Logger.Debug($"Selected audio track index: {audioIndex}");
+
             wsp.MediaController.OpenVideo(uri.LocalPath);
+            wsp.MediaController.OpenAudio(uri.LocalPath, audioIndex ?? -1);
             wsp.MediaController.SetSubtitles(wsp.Document);
         });
     }

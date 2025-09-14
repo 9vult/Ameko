@@ -32,3 +32,15 @@ pub const LongArray = extern struct {
     ptr: [*c]c_longlong,
     len: usize,
 };
+
+/// Audio track
+pub const AudioTrack = extern struct {
+    index: usize,
+    language: [*:0]const u8,
+    title: [*:0]const u8,
+};
+
+pub const AudioTrackArray = extern struct {
+    ptr: [*]AudioTrack,
+    len: usize,
+};

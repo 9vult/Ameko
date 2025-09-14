@@ -64,28 +64,31 @@ public class OpenAlAudioRenderer(MediaController mediaController) : IAudioRender
             _buffer = null;
         }
 
-        unsafe
+        if (mediaController.HasAudio)
         {
-            var frame = mediaController.GetAudioFrame();
-            start = Math.Clamp(start, 0, frame->DurationMillis);
-            end = Math.Clamp(end, start, frame->DurationMillis);
+            unsafe
+            {
+                var frame = mediaController.GetAudioFrame();
+                start = Math.Clamp(start, 0, frame->DurationMillis);
+                end = Math.Clamp(end, start, frame->DurationMillis);
 
-            var duration = end - start;
-            var format = frame->ChannelCount == 1 ? BufferFormat.Mono16 : BufferFormat.Stereo16;
+                var duration = end - start;
+                var format = frame->ChannelCount == 1 ? BufferFormat.Mono16 : BufferFormat.Stereo16;
 
-            _buffer = new Buffer(_al);
-            _buffer.LoadData(
-                frame->Data,
-                start * frame->SampleRate / 1000,
-                duration * frame->SampleRate / 1000,
-                frame->SampleRate,
-                frame->ChannelCount,
-                format
-            );
+                _buffer = new Buffer(_al);
+                _buffer.LoadData(
+                    frame->Data,
+                    start * frame->SampleRate / 1000,
+                    duration * frame->SampleRate / 1000,
+                    frame->SampleRate,
+                    frame->ChannelCount,
+                    format
+                );
 
-            _source.QueueBuffer(_buffer);
-            _source.Play();
-            IsPlaying = true;
+                _source.QueueBuffer(_buffer);
+                _source.Play();
+                IsPlaying = true;
+            }
         }
     }
 

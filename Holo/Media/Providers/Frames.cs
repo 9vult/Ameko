@@ -48,3 +48,11 @@ public struct AudioFrame
     public long DurationMillis;
     public int Valid;
 }
+
+[StructLayout(LayoutKind.Sequential)]
+public struct AudioTrack
+{
+    public int Index;
+    public string Language;
+    public string Title;
+}

@@ -28,6 +28,9 @@ public unsafe class MizukiSourceProvider : ISourceProvider
     /// <inheritdoc />
     public int FrameCount { get; private set; }
 
+    // <inheritdoc />
+    public bool HasAudio { get; private set; }
+
     /// <inheritdoc />
     public Rational Sar { get; }
 
@@ -51,7 +54,28 @@ public unsafe class MizukiSourceProvider : ISourceProvider
         return status;
     }
 
+    public int LoadAudio(string filename, int audioTrackNumber = -1)
+    {
+        var status = External.LoadAudio(
+            _context,
+            filename,
+            GetCachePath(filename),
+            audioTrackNumber
+        );
+        if (status == 0)
+        {
+            HasAudio = true;
+        }
+
+        return status;
+    }
+
     public int CloseVideo()
+    {
+        return 0;
+    }
+
+    public int CloseAudio()
     {
         return 0;
     }
@@ -117,6 +141,40 @@ public unsafe class MizukiSourceProvider : ISourceProvider
     {
         var ptr = External.GetFrameIntervals(_context);
         return ptr.ToLongArray();
+    }
+
+    public AudioTrack[] GetAudioTracks(string filePath)
+    {
+        var resultCode = External.ListAudioTracks(filePath, out var nativeArray);
+
+        if (resultCode != 0)
+        {
+            throw new Exception("Failed to list audio tracks");
+        }
+
+        try
+        {
+            var tracks = new AudioTrack[nativeArray.Length];
+            var trackSize = Marshal.SizeOf<AudioTrackC>();
+
+            for (var i = 0; i < (int)nativeArray.Length; i++)
+            {
+                var trackPtr = nativeArray.Pointer + (i * trackSize);
+                var trackC = Marshal.PtrToStructure<AudioTrackC>(trackPtr);
+
+                tracks[i] = new AudioTrack
+                {
+                    Index = (int)trackC.Index,
+                    Language = trackC.Language,
+                    Title = trackC.title,
+                };
+            }
+            return tracks;
+        }
+        finally
+        {
+            External.FreeAudioTracks(ref nativeArray);
+        }
     }
 
     /// <summary>
@@ -189,6 +247,14 @@ internal static unsafe partial class External
     );
 
     [LibraryImport("mizuki", StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial int LoadAudio(
+        GlobalContext* context,
+        string fileName,
+        string cacheFileName,
+        int audioTrackNumber
+    );
+
+    [LibraryImport("mizuki", StringMarshalling = StringMarshalling.Utf8)]
     internal static partial int SetSubtitles(
         GlobalContext* context,
         byte[] data,
@@ -238,6 +304,12 @@ internal static unsafe partial class External
     [LibraryImport("mizuki")]
     internal static partial void SetLoggerCallback(LogCallback callback);
 
+    [LibraryImport("mizuki", StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial int ListAudioTracks(string filename, out UnmanagedArray audiotracks);
+
+    [LibraryImport("mizuki")]
+    public static partial void FreeAudioTracks(ref UnmanagedArray audioTracks);
+
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     public delegate void LogCallback(int level, nint message);
 }
@@ -255,6 +327,14 @@ internal struct UnmanagedArray
 {
     public nint Pointer;
     public nuint Length;
+}
+
+[StructLayout(LayoutKind.Sequential)]
+public struct AudioTrackC
+{
+    public nuint Index;
+    public string Language;
+    public string title;
 }
 
 internal static class UnmanagedArrayExtensions

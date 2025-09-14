@@ -18,6 +18,8 @@ using Avalonia.Platform.Storage;
 using Avalonia.ReactiveUI;
 using DynamicData;
 using Holo.Configuration.Keybinds;
+using Holo.Media;
+using Holo.Media.Providers;
 using Holo.Models;
 using NLog;
 using ReactiveUI;
@@ -302,6 +304,33 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         interaction.SetOutput(null);
     }
 
+    private async Task DoShowSelectAudioNameDialogAsync(
+        IInteractionContext<AudioTrack[], int?> interaction
+    )
+    {
+        var tracks = interaction.Input;
+
+        // Convert AudioTrack[] to display strings
+        var options = tracks.Select(t => $"{t.Index}: {t.Language} ({t.Title})").ToList();
+
+        // Use the generic SelectAudioDialog with string options
+        var dialog = new SelectAudioDialog { ViewModel = new SelectAudioDialogViewModel(options) };
+
+        var selectedOption = await dialog.ShowDialog<string?>(this);
+
+        if (string.IsNullOrEmpty(selectedOption))
+        {
+            interaction.SetOutput(null); // canceled
+            return;
+        }
+
+        var firstPart = selectedOption.Split(':')[0];
+        if (int.TryParse(firstPart, out int index))
+            interaction.SetOutput(index);
+        else
+            interaction.SetOutput(null);
+    }
+
     private async Task DoShowJumpDialogAsync(
         IInteractionContext<JumpDialogViewModel, JumpDialogClosedMessage?> interaction
     )
@@ -412,6 +441,7 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
                 ViewModel.ShowShiftTimesDialog.RegisterHandler(DoShowShiftTimesDialogAsync);
                 // Video
                 ViewModel.OpenVideo.RegisterHandler(DoShowOpenVideoDialogAsync);
+                ViewModel.SelectAudioName.RegisterHandler(DoShowSelectAudioNameDialogAsync);
                 ViewModel.ShowJumpDialog.RegisterHandler(DoShowJumpDialogAsync);
                 // Scripts
                 ViewModel.ShowPackageManager.RegisterHandler(DoShowPkgManWindowAsync);

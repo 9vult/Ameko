@@ -118,6 +118,11 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>ShiftTimes.resx</DependentUpon>
     </Compile>
+    <Compile Update="I18N\SelectAudio.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>SelectAudio.resx</DependentUpon>
+    </Compile>
     <Compile Update="I18N\PasteOver.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -202,6 +207,10 @@
     <EmbeddedResource Update="I18N\ShiftTimes.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>ShiftTimes.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="I18N\SelectAudio.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>SelectAudio.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Update="I18N\PasteOver.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
