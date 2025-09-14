@@ -7,7 +7,7 @@
     xmlns:i18n="clr-namespace:Ameko.I18N"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="clr-namespace:Ameko.ViewModels.Dialogs"
-    Title="SelectAudioDialog"
+    Title="{x:Static i18n:SelectAudio.SelectAudio_WindowTitle}"
     Width="400"
     Height="300"
     d:DesignHeight="300"
@@ -23,7 +23,7 @@
         <TextBlock
             Margin="0,0,0,10"
             FontWeight="Bold"
-            Text="Choose an audio track:" />
+            Text="{x:Static i18n:SelectAudio.SelectText}" />
         <ListBox
             Height="200"
             ItemsSource="{Binding Options}"
@@ -35,11 +35,11 @@
             <Button
                 Margin="0,0,5,0"
                 Command="{Binding OkCommand}"
-                Content="OK"
+                Content="{x:Static i18n:SelectAudio.SelectAudio_Button_Ok}"
                 IsDefault="True" />
             <Button
                 Command="{Binding CancelCommand}"
-                Content="Cancel"
+                Content="{x:Static i18n:SelectAudio.SelectAudio_Button_Cancel}"
                 IsCancel="True" />
         </StackPanel>
     </StackPanel>
