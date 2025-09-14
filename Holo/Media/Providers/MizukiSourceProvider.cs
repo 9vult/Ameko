@@ -28,6 +28,9 @@ public unsafe class MizukiSourceProvider : ISourceProvider
     /// <inheritdoc />
     public int FrameCount { get; private set; }
 
+    // <inheritdoc />
+    public bool HasAudio { get; private set; }
+
     /// <inheritdoc />
     public Rational Sar { get; }
 
@@ -51,7 +54,28 @@ public unsafe class MizukiSourceProvider : ISourceProvider
         return status;
     }
 
+    public int LoadAudio(string filename, int audioTrackNumber = -1)
+    {
+        var status = External.LoadAudio(
+            _context,
+            filename,
+            GetCachePath(filename),
+            audioTrackNumber
+        );
+        if (status == 0)
+        {
+            HasAudio = true;
+        }
+
+        return status;
+    }
+
     public int CloseVideo()
+    {
+        return 0;
+    }
+
+    public int CloseAudio()
     {
         return 0;
     }
@@ -220,6 +244,14 @@ internal static unsafe partial class External
         string fileName,
         string cacheFileName,
         string colorMatrix
+    );
+
+    [LibraryImport("mizuki", StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial int LoadAudio(
+        GlobalContext* context,
+        string fileName,
+        string cacheFileName,
+        int audioTrackNumber
     );
 
     [LibraryImport("mizuki", StringMarshalling = StringMarshalling.Utf8)]

@@ -16,6 +16,7 @@ public class MediaController : BindableBase
     private readonly HighResolutionTimer _playback;
     private VideoInfo? _videoInfo;
     private bool _isVideoLoaded;
+    private bool _hasAudio;
 
     private unsafe FrameGroup* _lastFrame;
     private unsafe FrameGroup* _nextFrame;
@@ -52,6 +53,12 @@ public class MediaController : BindableBase
     {
         get => _isVideoLoaded;
         private set => SetProperty(ref _isVideoLoaded, value);
+    }
+
+    public bool HasAudio
+    {
+        get => _hasAudio;
+        private set => SetProperty(ref _hasAudio, value);
     }
 
     /// <summary>
@@ -380,21 +387,6 @@ public class MediaController : BindableBase
         DisplayWidth = VideoInfo.Width;
         DisplayHeight = VideoInfo.Height;
 
-        // Audio time
-        if (_provider.AllocateAudioBuffer() != 0)
-        {
-            return false; // ??
-        }
-
-        unsafe
-        {
-            _audioFrame = _provider.GetAudio();
-            if (_audioFrame->Valid != 1)
-            {
-                return false; // ??
-            }
-        }
-
         IsVideoLoaded = true;
 
         // Re-fetch frame 0 with subtitles
@@ -402,6 +394,43 @@ public class MediaController : BindableBase
         {
             _lastFrame = _provider.GetFrame(0, 0, false);
         }
+        return true;
+    }
+
+    public bool OpenAudio(string filePath, int audioTrackNumber = -1)
+    {
+        if (!_provider.IsInitialized)
+            throw new InvalidOperationException("Provider is not initialized");
+        Logger.Info($"Opening audio {filePath}");
+
+        if (HasAudio)
+            _provider.CloseAudio();
+
+        if (_provider.LoadAudio(filePath, audioTrackNumber) != 0)
+        {
+            // TODO: Handle error
+            return false;
+        }
+
+        if (_provider.HasAudio)
+        {
+            if (_provider.AllocateAudioBuffer() != 0)
+            {
+                return false; // ??
+            }
+
+            unsafe
+            {
+                _audioFrame = _provider.GetAudio();
+                if (_audioFrame->Valid != 1)
+                {
+                    return false; // ??
+                }
+            }
+        }
+
+        HasAudio = _provider.HasAudio;
+
         return true;
     }
 

@@ -19,6 +19,7 @@ pub fn IntFromFfmsError(err: FfmsError) c_int {
         FfmsError.AudioTrackLoadingFailed => 13,
         FfmsError.AudioDataNotFound => 14,
         FfmsError.DecodingAudioFailed => 15,
+        FfmsError.IndexingFailed => 16,
     };
 }
 

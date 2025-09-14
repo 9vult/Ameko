@@ -653,10 +653,9 @@ public partial class MainWindowViewModel : ViewModelBase
                     return;
             }
             Logger.Debug($"Selected audio track index: {audioIndex}");
-            Console.WriteLine($"Selected audio track index: {audioIndex}");
 
             wsp.MediaController.OpenVideo(uri.LocalPath);
-            // wsp.MediaController.SetAudioTrack(audioName); // TODO: add this method
+            wsp.MediaController.OpenAudio(uri.LocalPath, audioIndex ?? -1);
             wsp.MediaController.SetSubtitles(wsp.Document);
         });
     }

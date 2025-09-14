@@ -10,6 +10,11 @@ public interface ISourceProvider
     bool IsInitialized { get; }
 
     /// <summary>
+    /// Whether the loaded video has an audio track
+    /// </summary>
+    bool HasAudio { get; }
+
+    /// <summary>
     /// The number of frames in the loaded video
     /// </summary>
     int FrameCount { get; }
@@ -32,10 +37,23 @@ public interface ISourceProvider
     int LoadVideo(string filename);
 
     /// <summary>
+    /// Load an audio file
+    /// </summary>
+    /// <param name="filename">Path to the audio to load</param>
+    /// <returns>0 on success</returns>
+    int LoadAudio(string filename, int audioTrackNumber = -1);
+
+    /// <summary>
     /// Close the open video
     /// </summary>
     /// <returns>0 on success</returns>
     int CloseVideo();
+
+    /// <summary>
+    /// Close the open audio
+    /// </summary>
+    /// <returns>0 on success</returns>
+    int CloseAudio();
 
     /// <summary>
     /// Set the subtitles to be parsed

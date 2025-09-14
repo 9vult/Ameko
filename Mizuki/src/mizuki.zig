@@ -51,6 +51,19 @@ pub export fn LoadVideo(g_ctx: *context.GlobalContext, file_name: [*c]u8, cache_
     return 0;
 }
 
+/// Open an audio file
+pub export fn LoadAudio(g_ctx: *context.GlobalContext, file_name: [*c]u8, cache_file_name: [*c]u8, audio_track_number: c_int) c_int {
+    ffms.LoadAudio(
+        g_ctx,
+        file_name,
+        cache_file_name,
+        if (audio_track_number < 0) null else audio_track_number,
+    ) catch |err| {
+        return errors.IntFromFfmsError(err);
+    };
+    return 0;
+}
+
 /// Close the open video file
 pub export fn CloseVideo(g_ctx: *context.GlobalContext) c_int {
     _ = g_ctx;
