@@ -7,14 +7,17 @@ fn linkLibraries(b: *std.Build, obj: *std.Build.Step.Compile) void {
     obj.linkSystemLibrary("ffms2");
     obj.linkSystemLibrary("ass");
 
-    // TODO: add option to setup automatically if not found
-    obj.linkSystemLibrary("avcodec"); // avcodec-61
+    // TODO: add an option to set up automatically if not found
+    // and reuse for FFMS2 to avoid bloating program size
+    // so for now, only avformat and avutil are linked
+    // because they are the only ones used directly
     obj.linkSystemLibrary("avformat"); // avformat-61
-    obj.linkSystemLibrary("avdevice"); // avdevice-61
-    obj.linkSystemLibrary("avfilter"); // avfilter-10
     obj.linkSystemLibrary("avutil"); // avutil-59
-    obj.linkSystemLibrary("swresample"); // swresample-5
-    obj.linkSystemLibrary("swscale"); // swscale-8
+    // obj.linkSystemLibrary("avcodec"); // avcodec-61
+    // obj.linkSystemLibrary("avdevice"); // avdevice-61
+    // obj.linkSystemLibrary("avfilter"); // avfilter-10
+    // obj.linkSystemLibrary("swresample"); // swresample-5
+    // obj.linkSystemLibrary("swscale"); // swscale-8
 
     obj.linkLibC();
 }

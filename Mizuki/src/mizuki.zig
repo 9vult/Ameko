@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 
 const c = @import("c.zig").c;
+const av = @import("c.zig").av;
 
 const std = @import("std");
 const ffms = @import("ffms.zig");
@@ -163,13 +164,13 @@ fn FreeLongArray(array: common.LongArray) void {
 
 /// Get audio tracks description
 pub export fn ListAudioTracks(file_path: [*:0]const u8, audio_tracks: *common.AudioTrackArray) errors.listAudioTrackErrors {
-    var fmt_ctx: ?*c.AVFormatContext = null;
-    if (c.avformat_open_input(&fmt_ctx, file_path, null, null) < 0) {
+    var fmt_ctx: ?*av.AVFormatContext = null;
+    if (av.avformat_open_input(&fmt_ctx, file_path, null, null) < 0) {
         return .OpenFailed;
     }
-    defer c.avformat_close_input(&fmt_ctx);
+    defer av.avformat_close_input(&fmt_ctx);
 
-    if (c.avformat_find_stream_info(fmt_ctx, null) < 0) {
+    if (av.avformat_find_stream_info(fmt_ctx, null) < 0) {
         return .StreamInfoFailed;
     }
 
@@ -179,9 +180,9 @@ pub export fn ListAudioTracks(file_path: [*:0]const u8, audio_tracks: *common.Au
 
     for (0..@intCast(nb_streams)) |i| {
         const stream = fmt_ctx.?.streams[i];
-        if (stream.*.codecpar.*.codec_type == c.AVMEDIA_TYPE_AUDIO) {
-            const lang_dict = c.av_dict_get(stream.*.metadata, "language", null, 0);
-            const title_dict = c.av_dict_get(stream.*.metadata, "title", null, 0);
+        if (stream.*.codecpar.*.codec_type == av.AVMEDIA_TYPE_AUDIO) {
+            const lang_dict = av.av_dict_get(stream.*.metadata, "language", null, 0);
+            const title_dict = av.av_dict_get(stream.*.metadata, "title", null, 0);
 
             const lang_src = if (lang_dict) |dict| std.mem.span(dict.*.value) else "unknown";
             const title_src = if (title_dict) |dict| std.mem.span(dict.*.value) else "unknown";
@@ -220,21 +221,21 @@ pub export fn FreeAudioTracks(audio_tracks: *common.AudioTrackArray) void {
 }
 
 pub fn main() !void {
-    const avcodec_version = c.avcodec_version();
-    std.debug.print("Avcodec version: {}.{}.{}\n", .{ (avcodec_version >> 16) & 0xFF, (avcodec_version >> 8) & 0xFF, avcodec_version & 0xFF });
+    const avformat_version = av.avformat_version();
+    std.debug.print("Avformat version: {}.{}.{}\n", .{ (avformat_version >> 16) & 0xFF, (avformat_version >> 8) & 0xFF, avformat_version & 0xFF });
 
-    // var tracks: common.AudioTrackArray = undefined;
-    // const res = ListAudioTracks("input.mkv", &tracks);
-    // if (res != .Ok) {
-    //     std.debug.print("Failed to list audio tracks, error: {t}\n", .{res});
-    //     return;
-    // }
-    // for (0..tracks.len) |i| {
-    //     const track = tracks.ptr[i];
-    //     std.debug.print("Track {any}: lang: {s}, name: {s}\n", .{ track.index, track.language, track.title });
-    // }
+    var tracks: common.AudioTrackArray = undefined;
+    const res = ListAudioTracks("./Mizuki/input.mkv", &tracks);
+    if (res != .Ok) {
+        std.debug.print("Failed to list audio tracks, error: {t}\n", .{res});
+        return;
+    }
+    for (0..tracks.len) |i| {
+        const track = tracks.ptr[i];
+        std.debug.print("Track {any}: lang: {s}, name: {s}\n", .{ track.index, track.language, track.title });
+    }
 
-    // FreeAudioTracks(&tracks);
+    FreeAudioTracks(&tracks);
 
     const ffms_version = ffms.GetVersion();
     std.debug.print("FFMS2 Version: {x}.{x}.{x}\n", .{
