@@ -36,7 +36,7 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
     private bool _isSearching = false;
     private bool _canClose = false;
 
-    private async Task DoShowOpenSubtitleDialogAsync(IInteractionContext<Unit, Uri[]> interaction)
+    private async Task DoShowOpenSubtitleDialogAsync(IInteractionContext<Unit, Uri[]?> interaction)
     {
         var files = await StorageProvider.OpenFilePickerAsync(
             new FilePickerOpenOptions

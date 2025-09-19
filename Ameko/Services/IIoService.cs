@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 using System;
+using System.Reactive;
 using System.Threading.Tasks;
+using AssCS;
 using Holo;
 using ReactiveUI;
 
@@ -53,4 +55,74 @@ public interface IIoService
     /// <param name="prj">Project to save</param>
     /// <returns>Workspace containing the document being saved</returns>
     Task<bool> SaveProject(Interaction<string, Uri?> interaction, Project prj);
+
+    /// <summary>
+    /// Load subtitle files into Workspaces
+    /// </summary>
+    /// <param name="interaction">Open File Dialog interaction</param>
+    /// <param name="prj">Project to add the workspaces to</param>
+    /// <returns><see langword="true"/> if successful</returns>
+    Task<bool> OpenSubtitleFiles(Interaction<Unit, Uri[]?> interaction, Project prj);
+
+    /// <summary>
+    /// Load a subtitle file into a Workspace
+    /// </summary>
+    /// <param name="uri">URI of the subtitle file</param>
+    /// <param name="prj">Project to add the workspace to</param>
+    /// <returns><see langword="true"/> if successful</returns>
+    Task<bool> OpenSubtitleFile(Uri uri, Project prj);
+
+    /// <summary>
+    /// Open a project file
+    /// </summary>
+    /// <param name="uri">URI of the project file</param>
+    /// <param name="saveAs">Interaction for displaying the Save As dialog</param>
+    /// <returns><see langword="true"/> if the project was opened</returns>
+    Task<bool> OpenProjectFile(Uri uri, Interaction<string, Uri?> saveAs);
+
+    /// <summary>
+    /// Open a project directory
+    /// </summary>
+    /// <param name="uri">URI of the directory</param>
+    /// <param name="saveAs">Interaction for displaying the Save As dialog</param>
+    /// <returns><see langword="true"/> if the project was opened</returns>
+    Task<bool> OpenProjectDirectory(Uri uri, Interaction<string, Uri?> saveAs);
+
+    /// <summary>
+    /// Attach a reference file to the workspace
+    /// </summary>
+    /// <param name="interaction">Open File Dialog interaction</param>
+    /// <param name="wsp">Workspace to attach the file to to</param>
+    /// <returns><see langword="true"/> if successful</returns>
+    Task<bool> AttachReferenceFile(Interaction<Unit, Uri?> interaction, Workspace wsp);
+
+    /// <summary>
+    /// Attach a reference file to the workspace
+    /// </summary>
+    /// <param name="uri">URI of the reference file</param>
+    /// <param name="wsp">Workspace to attach the file to</param>
+    /// <returns><see langword="true"/> if the file was attached</returns>
+    Task<bool> AttachReferenceFile(Uri uri, Workspace wsp);
+
+    /// <summary>
+    /// Open a video file and attach it to the <paramref name="workspace"/>
+    /// </summary>
+    /// <param name="interaction">Open File Dialog interaction</param>
+    /// <param name="workspace">Workspace to open the video in</param>
+    /// <returns><see langword="true"/> if successful</returns>
+    Task<bool> OpenVideoFile(Interaction<Unit, Uri?> interaction, Workspace workspace);
+
+    /// <summary>
+    /// Open a linked video file (From the <see cref="Document"/>), if it exists
+    /// </summary>
+    /// <param name="workspace">Workspace to open the video in</param>
+    /// <returns><see langword="true"/> if successful</returns>
+    Task<bool> OpenVideoFile(Workspace workspace);
+
+    /// <summary>
+    /// Open a video file and attach it to the <paramref name="workspace"/>
+    /// </summary>
+    /// <param name="uri">URI of the video file</param>
+    /// <param name="workspace">Workspace to open the video in</param>
+    bool OpenVideoFile(Uri uri, Workspace workspace);
 }

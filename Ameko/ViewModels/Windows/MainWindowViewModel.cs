@@ -46,7 +46,7 @@ public partial class MainWindowViewModel : ViewModelBase
 
     #region Interactions
     // File
-    public Interaction<Unit, Uri[]> OpenSubtitle { get; }
+    public Interaction<Unit, Uri[]?> OpenSubtitle { get; }
     public Interaction<string, Uri?> SaveSubtitleAs { get; }
     public Interaction<string, Uri?> ExportSubtitle { get; }
     public Interaction<Unit, Uri?> OpenProject { get; }

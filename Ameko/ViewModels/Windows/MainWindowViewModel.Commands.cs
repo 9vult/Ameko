@@ -1,17 +1,14 @@
 ﻿// SPDX-License-Identifier: GPL-3.0-only
 
 using System;
-using System.IO;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
-using System.Windows.Input;
 using Ameko.Utilities;
 using Ameko.ViewModels.Dialogs;
 using Ameko.Views.Dialogs;
 using Ameko.Views.Windows;
 using AssCS;
-using AssCS.IO;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Threading;
@@ -44,70 +41,7 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         return ReactiveCommand.CreateFromTask(async () =>
         {
-            Logger.Debug("Preparing to open subtitles");
-            var uris = await OpenSubtitle.Handle(Unit.Default);
-
-            Workspace? latest = null;
-
-            foreach (var uri in uris)
-            {
-                try
-                {
-                    latest = OpenSubtitleFile(uri);
-                    Logger.Info($"Opened subtitle file {latest.Title}");
-
-                    var doc = latest.Document;
-                    if (!doc.GarbageManager.TryGetString("Video File", out var relVideoPath))
-                        continue;
-
-                    var videoPath = Path.GetFullPath(
-                        Path.Combine(Path.GetDirectoryName(uri.LocalPath) ?? "/", relVideoPath)
-                    );
-                    if (_fileSystem.File.Exists(videoPath))
-                    {
-                        var result = await _messageBoxService.ShowAsync(
-                            I18N.Other.MsgBox_LoadVideo_Title,
-                            $"{I18N.Other.MsgBox_LoadVideo_Body}\n\n{relVideoPath}",
-                            MsgBoxButtonSet.YesNo,
-                            MsgBoxButton.Yes
-                        );
-                        if (result != MsgBoxButton.Yes)
-                            continue;
-                        latest.MediaController.OpenVideo(videoPath);
-                        latest.MediaController.SetSubtitles(latest.Document);
-                        if (doc.GarbageManager.TryGetInt("Video Position", out var frame))
-                            latest.MediaController.SeekTo(frame.Value); // Seek for clamp safety
-                    }
-                    else
-                    {
-                        // Video not found
-                        _messageService.Enqueue(
-                            string.Format(
-                                I18N.Other.Message_VideoNotFound,
-                                Path.GetFileName(videoPath)
-                            ),
-                            TimeSpan.FromSeconds(7)
-                        );
-                    }
-
-                    ProjectProvider.Current.WorkingSpace = latest;
-                }
-                catch (Exception ex)
-                {
-                    Logger.Error($"Failed to parse file {uri.LocalPath}");
-                    Logger.Error(ex);
-                    await _messageBoxService.ShowAsync(
-                        I18N.Resources.Error,
-                        $"{I18N.Resources.Error_FailedToParse}\n\n{ex.Message}",
-                        MsgBoxButtonSet.Ok,
-                        MsgBoxButton.Ok,
-                        MaterialIconKind.Error
-                    );
-                }
-            }
-
-            if (latest is not null)
-                ProjectProvider.Current.WorkingSpace = latest;
+            _ = await IoService.OpenSubtitleFiles(OpenSubtitle, ProjectProvider.Current);
         });
     }
 
@@ -120,60 +54,7 @@ public partial class MainWindowViewModel : ViewModelBase
         return ReactiveCommand.CreateFromTask(
             async (Uri uri) =>
             {
-                try
-                {
-                    var latest = OpenSubtitleFile(uri);
-                    Logger.Info($"Opened subtitle file {latest.Title}");
-
-                    var doc = latest.Document;
-                    if (doc.GarbageManager.TryGetString("Video File", out var relVideoPath))
-                    {
-                        var videoPath = Path.GetFullPath(
-                            Path.Combine(Path.GetDirectoryName(uri.LocalPath) ?? "/", relVideoPath)
-                        );
-                        if (_fileSystem.File.Exists(videoPath))
-                        {
-                            var result = await _messageBoxService.ShowAsync(
-                                I18N.Other.MsgBox_LoadVideo_Title,
-                                $"{I18N.Other.MsgBox_LoadVideo_Body}\n\n{relVideoPath}",
-                                MsgBoxButtonSet.YesNo,
-                                MsgBoxButton.Yes
-                            );
-                            if (result == MsgBoxButton.Yes)
-                            {
-                                latest.MediaController.OpenVideo(videoPath);
-                                latest.MediaController.SetSubtitles(latest.Document);
-                                if (doc.GarbageManager.TryGetInt("Video Position", out var frame))
-                                    latest.MediaController.SeekTo(frame.Value); // Seek for clamp safety
-                            }
-                        }
-                        else
-                        {
-                            // Video not found
-                            _messageService.Enqueue(
-                                string.Format(
-                                    I18N.Other.Message_VideoNotFound,
-                                    Path.GetFileName(videoPath)
-                                ),
-                                TimeSpan.FromSeconds(7)
-                            );
-                        }
-                    }
-
-                    ProjectProvider.Current.WorkingSpace = latest;
-                }
-                catch (Exception ex)
-                {
-                    Logger.Error($"Failed to parse file {uri.LocalPath}");
-                    Logger.Error(ex);
-                    await _messageBoxService.ShowAsync(
-                        I18N.Resources.Error,
-                        $"{I18N.Resources.Error_FailedToParse}\n\n{ex.Message}",
-                        MsgBoxButtonSet.Ok,
-                        MsgBoxButton.Ok,
-                        MaterialIconKind.Error
-                    );
-                }
+                _ = await IoService.OpenSubtitleFile(uri, ProjectProvider.Current);
             }
         );
     }
@@ -245,24 +126,10 @@ public partial class MainWindowViewModel : ViewModelBase
                 return;
             }
 
-            foreach (var wsp in ProjectProvider.Current.LoadedWorkspaces.ToArray())
-            {
-                await IoService.SafeCloseWorkspace(wsp, SaveSubtitleAs, false);
-            }
-
-            if (ProjectProvider.Current.LoadedWorkspaces.Count > 0)
-            {
-                Logger.Info(
-                    $"Opening project file aborted - {ProjectProvider.Current.LoadedWorkspaces.Count} workspaces remain open"
-                );
+            if (!await IoService.OpenProjectFile(uri, SaveSubtitleAs))
                 return;
-            }
 
-            var prj = Project.Parse(_fileSystem, uri);
-            ProjectProvider.Current = prj;
-            Logger.Info("Loaded project file");
-
-            var culture = prj.SpellcheckCulture;
+            var culture = ProjectProvider.Current.SpellcheckCulture;
             if (culture is not null && !_spellcheckService.IsDictionaryInstalled(culture))
             {
                 Logger.Info($"Prompting user to download dictionary for {culture}");
@@ -284,21 +151,20 @@ public partial class MainWindowViewModel : ViewModelBase
             {
                 Logger.Debug("Preparing to open project file (no-gui)");
 
-                foreach (var wsp in ProjectProvider.Current.LoadedWorkspaces.ToArray())
-                {
-                    await IoService.SafeCloseWorkspace(wsp, SaveSubtitleAs, false);
-                }
-
-                if (ProjectProvider.Current.LoadedWorkspaces.Count > 0)
-                {
-                    Logger.Info(
-                        $"Opening project file aborted - {ProjectProvider.Current.LoadedWorkspaces.Count} workspaces remain open"
-                    );
+                if (!await IoService.OpenProjectFile(uri, SaveSubtitleAs))
                     return;
-                }
 
-                ProjectProvider.Current = Project.Parse(_fileSystem, uri);
-                Logger.Info("Loaded project file");
+                var culture = ProjectProvider.Current.SpellcheckCulture;
+                if (culture is not null && !_spellcheckService.IsDictionaryInstalled(culture))
+                {
+                    Logger.Info($"Prompting user to download dictionary for {culture}");
+                    var lang = SpellcheckLanguage.AvailableLanguages.First(l =>
+                        l.Locale == culture
+                    );
+                    var vm = new InstallDictionaryDialogViewModel(_dictionaryService, lang, true);
+                    await ShowInstallDictionaryDialog.Handle(vm);
+                    _spellcheckService.RebuildDictionary();
+                }
             }
         );
     }
@@ -319,21 +185,7 @@ public partial class MainWindowViewModel : ViewModelBase
                 return;
             }
 
-            foreach (var wsp in ProjectProvider.Current.LoadedWorkspaces.ToArray())
-            {
-                await IoService.SafeCloseWorkspace(wsp, SaveSubtitleAs, false);
-            }
-
-            if (ProjectProvider.Current.LoadedWorkspaces.Count > 0)
-            {
-                Logger.Info(
-                    $"Opening project directory aborted - {ProjectProvider.Current.LoadedWorkspaces.Count} workspaces remain open"
-                );
-                return;
-            }
-
-            ProjectProvider.Current = Project.LoadDirectory(_fileSystem, uri);
-            Logger.Info("Loaded project directory");
+            _ = await IoService.OpenProjectDirectory(uri, SaveSubtitleAs);
         });
     }
 
@@ -521,37 +373,11 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         return ReactiveCommand.CreateFromTask(async () =>
         {
-            Logger.Debug("Preparing to attach a reference file");
-            var uri = await AttachReferenceFile.Handle(Unit.Default);
-            if (uri is null)
-                return;
-
             var wsp = ProjectProvider.Current.WorkingSpace;
             if (wsp is null)
                 return;
 
-            var ext = Path.GetExtension(uri.LocalPath);
-            try
-            {
-                wsp.ReferenceFileManager.Reference = ext switch
-                {
-                    ".ass" => new AssParser().Parse(_fileSystem, uri),
-                    ".srt" => new SrtParser().Parse(_fileSystem, uri),
-                    _ => throw new ArgumentOutOfRangeException(),
-                };
-            }
-            catch (Exception ex)
-            {
-                Logger.Error($"Failed to parse file {uri.LocalPath}");
-                Logger.Error(ex);
-                await _messageBoxService.ShowAsync(
-                    I18N.Resources.Error,
-                    $"{I18N.Resources.Error_FailedToParse}\n\n{ex.Message}",
-                    MsgBoxButtonSet.Ok,
-                    MsgBoxButton.Ok,
-                    MaterialIconKind.Error
-                );
-            }
+            _ = await IoService.AttachReferenceFile(AttachReferenceFile, wsp);
         });
     }
 
@@ -578,34 +404,10 @@ public partial class MainWindowViewModel : ViewModelBase
         return ReactiveCommand.CreateFromTask(
             async (Uri uri) =>
             {
-                Logger.Debug("Preparing to attach a reference file");
-
                 var wsp = ProjectProvider.Current.WorkingSpace;
                 if (wsp is null)
                     return;
-
-                var ext = Path.GetExtension(uri.LocalPath);
-                try
-                {
-                    wsp.ReferenceFileManager.Reference = ext switch
-                    {
-                        ".ass" => new AssParser().Parse(_fileSystem, uri),
-                        ".srt" => new SrtParser().Parse(_fileSystem, uri),
-                        _ => throw new ArgumentOutOfRangeException(),
-                    };
-                }
-                catch (Exception ex)
-                {
-                    Logger.Error($"Failed to parse file {uri.LocalPath}");
-                    Logger.Error(ex);
-                    await _messageBoxService.ShowAsync(
-                        I18N.Resources.Error,
-                        $"{I18N.Resources.Error_FailedToParse}\n\n{ex.Message}",
-                        MsgBoxButtonSet.Ok,
-                        MsgBoxButton.Ok,
-                        MaterialIconKind.Error
-                    );
-                }
+                _ = await IoService.AttachReferenceFile(uri, wsp);
             }
         );
     }
@@ -632,20 +434,13 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         return ReactiveCommand.CreateFromTask(async () =>
         {
-            Logger.Debug("Preparing to open video");
-            var uri = await OpenVideo.Handle(Unit.Default);
-
-            if (uri is null)
-                return;
-
             var wsp = ProjectProvider.Current.WorkingSpace;
             if (wsp is null)
             {
                 ProjectProvider.Current.WorkingSpace = wsp = ProjectProvider.Current.AddWorkspace();
             }
 
-            wsp.MediaController.OpenVideo(uri.LocalPath);
-            wsp.MediaController.SetSubtitles(wsp.Document);
+            _ = await IoService.OpenVideoFile(OpenVideo, wsp);
         });
     }
 
@@ -657,8 +452,6 @@ public partial class MainWindowViewModel : ViewModelBase
         return ReactiveCommand.Create(
             (Uri uri) =>
             {
-                Logger.Debug("Preparing to open video (no-gui)");
-
                 var wsp = ProjectProvider.Current.WorkingSpace;
                 if (wsp is null)
                 {
@@ -666,8 +459,7 @@ public partial class MainWindowViewModel : ViewModelBase
                         ProjectProvider.Current.AddWorkspace();
                 }
 
-                wsp.MediaController.OpenVideo(uri.LocalPath);
-                wsp.MediaController.SetSubtitles(wsp.Document);
+                _ = IoService.OpenVideoFile(uri, wsp);
             }
         );
     }
@@ -985,48 +777,5 @@ public partial class MainWindowViewModel : ViewModelBase
             else
                 _spellcheckService.RebuildDictionary(); // Installed
         });
-    }
-
-    /// <summary>
-    /// Helper function for loading a subtitle
-    /// </summary>
-    /// <param name="uri">URI to the subtitle file</param>
-    /// <returns>Workspace containing the loaded document</returns>
-    /// <exception cref="ArgumentOutOfRangeException">If the subtitle isn't a valid document</exception>
-    private Workspace OpenSubtitleFile(Uri uri)
-    {
-        Logger.Debug("Opening subtitle");
-
-        var ext = Path.GetExtension(uri.LocalPath);
-        var doc = ext switch
-        {
-            ".ass" => new AssParser().Parse(_fileSystem, uri),
-            ".srt" => new SrtParser().Parse(_fileSystem, uri),
-            ".txt" => new TxtParser().Parse(_fileSystem, uri),
-            _ => throw new ArgumentOutOfRangeException(nameof(uri)),
-        };
-
-        Workspace wsp;
-
-        if (ext == ".ass")
-        {
-            wsp = ProjectProvider.Current.AddWorkspace(doc, uri);
-            wsp.IsSaved = true;
-            if (doc.GarbageManager.TryGetInt("Active Line", out var lineIdx))
-            {
-                var line = doc.EventManager.Events.FirstOrDefault(e => e.Index == lineIdx + 1);
-                if (line is not null)
-                    wsp.SelectionManager.Select(line);
-            }
-        }
-        else
-        {
-            // Non-ass sourced documents need to be re-saved as an ass file
-            wsp = ProjectProvider.Current.AddWorkspace(doc);
-            wsp.IsSaved = false;
-        }
-
-        Logger.Info($"Opened subtitle file {wsp.Title}");
-        return wsp;
     }
 }
