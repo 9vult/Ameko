@@ -128,6 +128,23 @@
                     <RotateTransform Angle="{Binding Workspace.MediaController.DisplayAngle, FallbackValue=0, Mode=OneWay}" />
                 </Panel.RenderTransform>
             </Panel>
+            <ScrollViewer.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="{x:Static i18n:Resources.Video_ContextMenu_Copy_Frame}"
+                              Command="{Binding CopyFrameCommand}" />
+                    <MenuItem Header="{x:Static i18n:Resources.Video_ContextMenu_Copy_VideoOnly}"
+                              Command="{Binding CopyFrameVideoOnlyCommand}" />
+                    <MenuItem Header="{x:Static i18n:Resources.Video_ContextMenu_Copy_SubsOnly}"
+                              Command="{Binding CopyFrameVideoOnlyCommand}" />
+                    <Separator />
+                    <MenuItem Header="{x:Static i18n:Resources.Video_ContextMenu_Save_Frame}"
+                              Command="{Binding SaveFrameCommand}" />
+                    <MenuItem Header="{x:Static i18n:Resources.Video_ContextMenu_Save_VideoOnly}"
+                              Command="{Binding SaveFrameVideoOnlyCommand}" />
+                    <MenuItem Header="{x:Static i18n:Resources.Video_ContextMenu_Save_SubsOnly}"
+                              Command="{Binding SaveFrameSubtitlesOnlyCommand}" />
+                </ContextMenu>
+            </ScrollViewer.ContextMenu>
         </ScrollViewer>
     </DockPanel>
 </UserControl>

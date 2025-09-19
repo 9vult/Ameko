@@ -3,8 +3,11 @@
 using System;
 using System.Reactive;
 using System.Threading.Tasks;
+using Ameko.DataModels;
 using AssCS;
+using Avalonia.Input;
 using Holo;
+using Holo.Media.Providers;
 using ReactiveUI;
 
 namespace Ameko.Services;
@@ -125,4 +128,30 @@ public interface IIoService
     /// <param name="uri">URI of the video file</param>
     /// <param name="workspace">Workspace to open the video in</param>
     bool OpenVideoFile(Uri uri, Workspace workspace);
+
+    /// <summary>
+    /// Save a frame to file
+    /// </summary>
+    /// <param name="interaction">Save File Dialog, if needed</param>
+    /// <param name="workspace">Workspace</param>
+    /// <param name="mode">Save Frame Mode</param>
+    /// <returns></returns>
+    Task<bool> SaveFrameToFile(
+        Interaction<Unit, Uri?> interaction,
+        Workspace workspace,
+        SaveFrameMode mode
+    );
+
+    /// <summary>
+    /// Save a frame to file
+    /// </summary>
+    /// <param name="interaction">Clipboard interaction</param>
+    /// <param name="workspace">Workspace</param>
+    /// <param name="mode">Save Frame Mode</param>
+    /// <returns></returns>
+    Task<bool> CopyFrameToClipboard(
+        Interaction<string, Unit> interaction,
+        Workspace workspace,
+        SaveFrameMode mode
+    );
 }

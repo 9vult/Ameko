@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
+using Ameko.DataModels;
 using Ameko.ViewModels.Dialogs;
 using AssCS;
 using AssCS.History;
@@ -661,6 +662,34 @@ public partial class TabItemViewModel : ViewModelBase
 
             if (index > 0)
                 Workspace.MediaController.RotationalFactor = angles[index - 1];
+        });
+    }
+
+    /// <summary>
+    /// Save frame to disk
+    /// </summary>
+    /// <param name="mode">Save Frame Mode</param>
+    private ReactiveCommand<Unit, Unit> CreateSaveFrameCommand(SaveFrameMode mode)
+    {
+        return ReactiveCommand.CreateFromTask(async () =>
+        {
+            if (!Workspace.MediaController.IsVideoLoaded)
+                return;
+            _ = await _ioService.SaveFrameToFile(SaveFrameAs, Workspace, mode);
+        });
+    }
+
+    /// <summary>
+    /// Copy frame to clipboard
+    /// </summary>
+    /// <param name="mode"></param>
+    private ReactiveCommand<Unit, Unit> CreateCopyFrameCommand(SaveFrameMode mode)
+    {
+        return ReactiveCommand.CreateFromTask(async () =>
+        {
+            if (!Workspace.MediaController.IsVideoLoaded)
+                return;
+            _ = await _ioService.CopyFrameToClipboard(CopyFrame, Workspace, mode);
         });
     }
 

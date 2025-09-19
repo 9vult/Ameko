@@ -4,10 +4,12 @@ using System;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Windows.Input;
+using Ameko.DataModels;
 using Ameko.Messages;
 using Ameko.Services;
 using Ameko.ViewModels.Dialogs;
 using AssCS;
+using Avalonia.Input;
 using Holo;
 using Holo.Configuration;
 using Holo.Configuration.Keybinds;
@@ -34,6 +36,8 @@ public partial class TabItemViewModel : ViewModelBase
         FileModifiedDialogClosedMessage?
     > ShowFileModifiedDialog { get; }
     public Interaction<Event, Unit> ScrollToAndSelectEvent { get; }
+    public Interaction<Unit, Uri?> SaveFrameAs { get; }
+    public Interaction<string, Unit> CopyFrame { get; }
 
     #endregion
 
@@ -138,10 +142,30 @@ public partial class TabItemViewModel : ViewModelBase
     [KeybindTarget("ameko.reference.shift.backward", KeybindContext.Editor)]
     public ICommand ShiftReferenceBackwardCommand { get; }
 
+    // Frame Saving & Copying
+    [KeybindTarget("ameko.frame.save", KeybindContext.Global)]
+    public ICommand SaveFrameCommand { get; }
+
+    [KeybindTarget("ameko.frame.save.video", KeybindContext.Global)]
+    public ICommand SaveFrameVideoOnlyCommand { get; }
+
+    [KeybindTarget("ameko.frame.save.subtitles", KeybindContext.Global)]
+    public ICommand SaveFrameSubtitlesOnlyCommand { get; }
+
+    [KeybindTarget("ameko.frame.copy", KeybindContext.Global)]
+    public ICommand CopyFrameCommand { get; }
+
+    [KeybindTarget("ameko.frame.copy.video", KeybindContext.Global)]
+    public ICommand CopyFrameVideoOnlyCommand { get; }
+
+    [KeybindTarget("ameko.frame.copy.subtitles", KeybindContext.Global)]
+    public ICommand CopyFrameSubtitlesOnlyCommand { get; }
+
     #endregion
 
     private readonly IScriptService _scriptService;
     private readonly IMessageService _messageService;
+    private readonly IIoService _ioService;
 
     private readonly Workspace _workspace;
     private int _editBoxSelectionStart;
@@ -172,6 +196,7 @@ public partial class TabItemViewModel : ViewModelBase
         IScriptService scriptService,
         ILayoutProvider layoutProvider,
         IMessageService messageService,
+        IIoService ioService,
         Workspace workspace
     )
     {
@@ -185,6 +210,8 @@ public partial class TabItemViewModel : ViewModelBase
         ShowFileModifiedDialog =
             new Interaction<FileModifiedDialogViewModel, FileModifiedDialogClosedMessage?>();
         ScrollToAndSelectEvent = new Interaction<Event, Unit>();
+        SaveFrameAs = new Interaction<Unit, Uri?>();
+        CopyFrame = new Interaction<string, Unit>();
         #endregion
 
         #region Commands
@@ -227,11 +254,20 @@ public partial class TabItemViewModel : ViewModelBase
         RotateClockwiseCommand = CreateRotateClockwiseCommand();
         RotateCounterclockwiseCommand = CreateRotateCounterclockwiseCommand();
 
+        // Frame Saving & Copying
+        SaveFrameCommand = CreateSaveFrameCommand(SaveFrameMode.Full);
+        SaveFrameVideoOnlyCommand = CreateSaveFrameCommand(SaveFrameMode.VideoOnly);
+        SaveFrameSubtitlesOnlyCommand = CreateSaveFrameCommand(SaveFrameMode.SubtitlesOnly);
+        CopyFrameCommand = CreateCopyFrameCommand(SaveFrameMode.Full);
+        CopyFrameVideoOnlyCommand = CreateCopyFrameCommand(SaveFrameMode.VideoOnly);
+        CopyFrameSubtitlesOnlyCommand = CreateCopyFrameCommand(SaveFrameMode.SubtitlesOnly);
+
         #endregion
 
         _workspace = workspace;
         _scriptService = scriptService;
         _messageService = messageService;
+        _ioService = ioService;
         ProjectProvider = projectProvider;
         Configuration = configuration;
         KeybindService = keybindService;

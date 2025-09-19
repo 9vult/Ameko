@@ -135,4 +135,16 @@
     <data name="Message_VideoNotFound" xml:space="preserve">
         <value>The associated video "{0}" was not found.</value>
     </data>
+    <data name="Message_SavedFrame" xml:space="preserve">
+        <value>Saved frame to {0}</value>
+    </data>
+    <data name="Message_CopiedFrame" xml:space="preserve">
+        <value>Copied frame to clipboard</value>
+    </data>
+    <data name="FileDialog_SaveFrame_Title" xml:space="preserve">
+        <value>Save Frame</value>
+    </data>
+    <data name="FileDialog_FileType_Png" xml:space="preserve">
+        <value>PNG Files</value>
+    </data>
 </root>
