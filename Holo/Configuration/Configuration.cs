@@ -49,6 +49,7 @@ public partial class Configuration : BindableBase, IConfiguration
     private bool _lineWidthIncludesWhitespace;
     private bool _lineWidthIncludesPunctuation;
     private bool _discordRpcEnabled;
+    private SaveFrames _saveFrames;
     private int _defaultLayer;
     private string _culture;
     private string _spellcheckCulture;
@@ -125,6 +126,13 @@ public partial class Configuration : BindableBase, IConfiguration
     {
         get => _discordRpcEnabled;
         set => SetProperty(ref _discordRpcEnabled, value);
+    }
+
+    /// <inheritdoc />
+    public SaveFrames SaveFrames
+    {
+        get => _saveFrames;
+        set => SetProperty(ref _saveFrames, value);
     }
 
     /// <inheritdoc />
@@ -212,6 +220,7 @@ public partial class Configuration : BindableBase, IConfiguration
                 LineWidthIncludesWhitespace = _lineWidthIncludesWhitespace,
                 LineWidthIncludesPunctuation = _lineWidthIncludesPunctuation,
                 DiscordRpcEnabled = _discordRpcEnabled,
+                SaveFrames = _saveFrames,
                 DefaultLayer = _defaultLayer,
                 Culture = _culture,
                 SpellcheckCulture = _spellcheckCulture,
@@ -276,6 +285,7 @@ public partial class Configuration : BindableBase, IConfiguration
                 _lineWidthIncludesWhitespace = model.LineWidthIncludesWhitespace,
                 _lineWidthIncludesPunctuation = model.LineWidthIncludesPunctuation,
                 _discordRpcEnabled = model.DiscordRpcEnabled,
+                _saveFrames = model.SaveFrames,
                 _defaultLayer = model.DefaultLayer,
                 _culture = model.Culture,
                 _spellcheckCulture = model.SpellcheckCulture,
@@ -305,6 +315,7 @@ public partial class Configuration : BindableBase, IConfiguration
         _cps = 18;
         _useSoftLinebreaks = false;
         _discordRpcEnabled = true;
+        _saveFrames = SaveFrames.WithSubtitles;
         _autosaveEnabled = true;
         _autosaveInterval = 60;
         _repositoryUrls = [];

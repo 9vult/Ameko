@@ -7,14 +7,20 @@ using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
+using Ameko.DataModels;
 using Ameko.Utilities;
 using AssCS.IO;
+using Avalonia.Input;
 using Holo;
+using Holo.Configuration;
+using Holo.IO;
+using Holo.Media.Providers;
 using Holo.Models;
 using Holo.Providers;
 using Material.Icons;
 using NLog;
 using ReactiveUI;
+using SkiaSharp;
 
 namespace Ameko.Services;
 
@@ -23,7 +29,8 @@ public class IoService(
     ITabFactory tabFactory,
     IFileSystem fileSystem,
     IMessageBoxService messageBoxService,
-    IMessageService messageService
+    IMessageService messageService,
+    IConfiguration configuration
 ) : IIoService
 {
     private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
@@ -418,5 +425,160 @@ public class IoService(
             Logger.Error(ex);
             return false;
         }
+    }
+
+    /// <inheritdoc />
+    public async Task<bool> SaveFrameToFile(
+        Interaction<Unit, Uri?> interaction,
+        Workspace workspace,
+        SaveFrameMode mode
+    )
+    {
+        if (!workspace.MediaController.IsVideoLoaded)
+            return false;
+
+        string path;
+        var videoInfo = workspace.MediaController.VideoInfo;
+        var frame = workspace.MediaController.CurrentFrame;
+
+        switch (configuration.SaveFrames)
+        {
+            case SaveFrames.WithVideo:
+                var sourceName = Path.GetFileNameWithoutExtension(videoInfo.Path);
+                var outputName =
+                    $"{sourceName}-{frame}{mode switch {
+                        SaveFrameMode.VideoOnly => "-video",
+                        SaveFrameMode.SubtitlesOnly => "-subs",
+                        _ => string.Empty
+                    }}.png";
+                path = Path.Combine(Path.GetDirectoryName(videoInfo.Path) ?? "/", outputName);
+                break;
+            case SaveFrames.WithSubtitles when workspace.SavePath is not null:
+                sourceName = Path.GetFileNameWithoutExtension(workspace.SavePath!.LocalPath);
+                outputName =
+                    $"{sourceName}-{frame}{mode switch {
+                        SaveFrameMode.VideoOnly => "-video",
+                        SaveFrameMode.SubtitlesOnly => "-subs",
+                        _ => string.Empty
+                    }}.png";
+                path = Path.Combine(
+                    Path.GetDirectoryName(workspace.SavePath!.LocalPath) ?? "/",
+                    outputName
+                );
+                break;
+            default: // Subs aren't saved to disk, so we need to request a filename from the user
+                var uri = await interaction.Handle(Unit.Default);
+                if (uri is null)
+                    return false;
+                path = uri.LocalPath;
+                break;
+        }
+
+        SKData? result;
+        unsafe
+        {
+            result = GetImageData(workspace, workspace.MediaController.GetCurrentFrame(), mode);
+        }
+
+        if (result is null)
+            return false;
+
+        await using var fs = fileSystem.FileStream.New(
+            path,
+            FileMode.Create,
+            FileAccess.Write,
+            FileShare.None
+        );
+        result.SaveTo(fs);
+
+        messageService.Enqueue(
+            string.Format(I18N.Other.Message_SavedFrame, path),
+            TimeSpan.FromSeconds(5)
+        );
+        return true;
+    }
+
+    /// <inheritdoc />
+    public async Task<bool> CopyFrameToClipboard(
+        Interaction<string, Unit> interaction,
+        Workspace workspace,
+        SaveFrameMode mode
+    )
+    {
+        if (!workspace.MediaController.IsVideoLoaded)
+            return false;
+
+        SKData? result;
+        unsafe
+        {
+            result = GetImageData(workspace, workspace.MediaController.GetCurrentFrame(), mode);
+        }
+
+        if (result is null)
+            return false;
+
+        // Save to temp file because apparently copying the byte[] to the clipboard doesn't work
+        var path = Path.Combine(Directories.CacheHome, $"{DateTime.Now:yyyyMMddHHmmssfff}.png");
+        await using var fs = fileSystem.FileStream.New(
+            path,
+            FileMode.Create,
+            FileAccess.Write,
+            FileShare.None
+        );
+        result.SaveTo(fs);
+
+        await interaction.Handle(path);
+
+        messageService.Enqueue(I18N.Other.Message_CopiedFrame, TimeSpan.FromSeconds(5));
+        return true;
+    }
+
+    /// <summary>
+    /// Get the SKData needed for saving or copying a frame
+    /// </summary>
+    /// <param name="workspace">Workspace</param>
+    /// <param name="group">Frame group to copy or save</param>
+    /// <param name="mode">Mode to use</param>
+    /// <returns>SKData if successful</returns>
+    private static unsafe SKData? GetImageData(
+        Workspace workspace,
+        FrameGroup* group,
+        SaveFrameMode mode
+    )
+    {
+        var videoInfo = workspace.MediaController.VideoInfo!;
+        var imageInfo = new SKImageInfo
+        {
+            Width = videoInfo.Width,
+            Height = videoInfo.Height,
+            ColorType = SKColorType.Bgra8888,
+            AlphaType = SKAlphaType.Premul,
+        };
+        var bmp = new SKBitmap(imageInfo);
+
+        switch (mode)
+        {
+            case SaveFrameMode.VideoOnly:
+                bmp.InstallPixels(imageInfo, (nint)group->VideoFrame->Data);
+                break;
+            case SaveFrameMode.SubtitlesOnly:
+                bmp.InstallPixels(imageInfo, (nint)group->SubtitleFrame->Data);
+                break;
+            case SaveFrameMode.Full:
+            {
+                using var vid = new SKBitmap(imageInfo);
+                using var sub = new SKBitmap(imageInfo);
+                vid.InstallPixels(imageInfo, (nint)group->VideoFrame->Data);
+                sub.InstallPixels(imageInfo, (nint)group->SubtitleFrame->Data);
+
+                var canvas = new SKCanvas(bmp);
+                canvas.DrawBitmap(vid, 0, 0);
+                canvas.DrawBitmap(sub, 0, 0);
+                canvas.Flush();
+                break;
+            }
+        }
+
+        return SKImage.FromBitmap(bmp).Encode(SKEncodedImageFormat.Png, 100);
     }
 }

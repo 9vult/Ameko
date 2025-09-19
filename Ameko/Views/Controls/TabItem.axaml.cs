@@ -2,7 +2,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
@@ -14,7 +16,9 @@ using AssCS;
 using AssCS.History;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Media;
+using Avalonia.Platform.Storage;
 using Avalonia.ReactiveUI;
 using Avalonia.Threading;
 using Holo.Configuration.Keybinds;
@@ -153,6 +157,60 @@ public partial class TabItem : ReactiveUserControl<TabItemViewModel>
         });
     }
 
+    private async Task DoShowSaveFrameAsDialogAsync(IInteractionContext<Unit, Uri?> interaction)
+    {
+        var window = TopLevel.GetTopLevel(this);
+        if (window is null)
+        {
+            interaction.SetOutput(null);
+            return;
+        }
+
+        var file = await window.StorageProvider.SaveFilePickerAsync(
+            new FilePickerSaveOptions
+            {
+                Title = I18N.Other.FileDialog_SaveFrame_Title,
+                FileTypeChoices =
+                [
+                    new FilePickerFileType(I18N.Other.FileDialog_FileType_Png)
+                    {
+                        Patterns = ["*.png"],
+                    },
+                ],
+                SuggestedFileName = string.Empty,
+            }
+        );
+
+        if (file is not null)
+        {
+            var path = file.Path;
+            if (!Path.HasExtension(path.LocalPath))
+                path = new Uri(Path.ChangeExtension(path.LocalPath, ".png"));
+
+            interaction.SetOutput(path);
+            return;
+        }
+        interaction.SetOutput(null);
+    }
+
+    private async Task DoCopyFrameAsync(IInteractionContext<string, Unit> interaction)
+    {
+        interaction.SetOutput(Unit.Default);
+
+        var window = TopLevel.GetTopLevel(this);
+        if (window is null)
+            return;
+
+        var file = await window.StorageProvider.TryGetFileFromPathAsync(interaction.Input);
+        if (file is null)
+            return;
+
+        var dataObject = new DataObject();
+        dataObject.Set(DataFormats.Files, new List<IStorageFile> { file });
+
+        await window.Clipboard!.SetDataObjectAsync(dataObject);
+    }
+
     public TabItem()
     {
         InitializeComponent();
@@ -184,6 +242,8 @@ public partial class TabItem : ReactiveUserControl<TabItemViewModel>
                     vm.PasteEvents.RegisterHandler(DoPasteEventsAsync);
                     vm.ShowPasteOverDialog.RegisterHandler(DoShowPasteOverDialogAsync);
                     vm.ShowFileModifiedDialog.RegisterHandler(DoShowFileModifiedDialogAsync);
+                    vm.SaveFrameAs.RegisterHandler(DoShowSaveFrameAsDialogAsync);
+                    vm.CopyFrame.RegisterHandler(DoCopyFrameAsync);
 
                     // Register keybinds
                     vm.KeybindService.KeybindRegistrar.OnKeybindsChanged += (_, _) =>

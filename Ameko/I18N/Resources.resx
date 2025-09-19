@@ -318,4 +318,22 @@
     <data name="Error_FailedToParse" xml:space="preserve">
         <value>Failed to parse file:</value>
     </data>
+    <data name="Video_ContextMenu_Copy_Frame" xml:space="preserve">
+        <value>Copy Frame to Clipboard</value>
+    </data>
+    <data name="Video_ContextMenu_Copy_VideoOnly" xml:space="preserve">
+        <value>Copy Frame to Clipboard (Video Only)</value>
+    </data>
+    <data name="Video_ContextMenu_Copy_SubsOnly" xml:space="preserve">
+        <value>Copy Frame to Clipboard (Subtitles Only)</value>
+    </data>
+    <data name="Video_ContextMenu_Save_Frame" xml:space="preserve">
+        <value>Save Frame</value>
+    </data>
+    <data name="Video_ContextMenu_Save_VideoOnly" xml:space="preserve">
+        <value>Save Frame (Video Only)</value>
+    </data>
+    <data name="Video_ContextMenu_Save_SubsOnly" xml:space="preserve">
+        <value>Save Frame (Subtitles Only)</value>
+    </data>
 </root>

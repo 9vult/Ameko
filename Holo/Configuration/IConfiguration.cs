@@ -67,6 +67,11 @@ public interface IConfiguration
     bool DiscordRpcEnabled { get; set; }
 
     /// <summary>
+    /// Where to save frames
+    /// </summary>
+    SaveFrames SaveFrames { get; set; }
+
+    /// <summary>
     /// Current display language
     /// </summary>
     string Culture { get; set; }
