@@ -97,6 +97,9 @@ public partial class App : Application
             InitializeScriptService(provider);
             InitializePackageManager(provider);
             InitializeDiscordRpcService(provider);
+#if !DEBUG // Skip update checking on debug builds
+            await InitializeUpdateService(provider);
+#endif
         });
     }
 
@@ -117,7 +120,7 @@ public partial class App : Application
     /// <summary>
     /// Initialize the <see cref="KeybindService"/> (and <see cref="KeybindRegistrar"/>)
     /// </summary>
-    /// <param name="provider"></param>
+    /// <param name="provider">Service Provider</param>
     private static void InitializeKeybindService(IServiceProvider provider)
     {
         // Commence keybind registration
@@ -127,10 +130,20 @@ public partial class App : Application
     /// <summary>
     /// Initialize the Discord rich presence service
     /// </summary>
-    /// <param name="provider"></param>
+    /// <param name="provider">Service Provider</param>
     private static void InitializeDiscordRpcService(IServiceProvider provider)
     {
         _ = provider.GetRequiredService<DiscordRpcService>();
+    }
+
+    /// <summary>
+    /// Initialize the Update service and check for updates
+    /// </summary>
+    /// <param name="provider"></param>
+    private static async Task InitializeUpdateService(IServiceProvider provider)
+    {
+        var service = provider.GetRequiredService<UpdateService>();
+        await service.CheckForUpdates();
     }
 
     /// <summary>

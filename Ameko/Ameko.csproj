@@ -51,6 +51,7 @@
     <PackageReference Include="Semi.Avalonia.DataGrid" Version="11.2.1.9" />
     <PackageReference Include="Semi.Avalonia.Tabalonia" Version="11.0.0-beta1" />
     <PackageReference Include="Semi.Avalonia.TreeDataGrid" Version="11.0.10.4" />
+    <PackageReference Include="Semver" Version="3.0.0" />
     <PackageReference Include="Silk.NET.OpenAL" Version="2.22.0" />
     <PackageReference Include="Silk.NET.OpenAL.Extensions.EXT" Version="2.22.0" />
     <PackageReference Include="Silk.NET.OpenAL.Extensions.Soft" Version="2.22.0" />

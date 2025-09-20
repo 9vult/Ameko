@@ -49,6 +49,7 @@ public static class AmekoServiceProvider
 
         // --- Application Services ---
         services.AddSingleton<Directories>();
+        services.AddSingleton<UpdateService>();
         services.AddSingleton<DiscordRpcService>();
         services.AddSingleton<IGitService, GitService>();
         services.AddSingleton<ILayoutProvider, LayoutProvider>();
