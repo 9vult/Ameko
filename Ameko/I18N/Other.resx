@@ -147,4 +147,7 @@
     <data name="FileDialog_FileType_Png" xml:space="preserve">
         <value>PNG Files</value>
     </data>
+    <data name="Message_UpdateAvailable" xml:space="preserve">
+        <value>A new version of Ameko, {0}, is available!</value>
+    </data>
 </root>
