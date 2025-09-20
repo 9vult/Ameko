@@ -260,5 +260,11 @@ public class Time : BindableBase, IComparable<Time>
         return a._local <= b._local;
     }
 
+    /// <inheritdoc />
+    public override string ToString()
+    {
+        return $"{Hours}:{Minutes:00}:{Seconds:00}.{Milliseconds:000}";
+    }
+
     #endregion
 }

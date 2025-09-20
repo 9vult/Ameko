@@ -22,4 +22,10 @@ public readonly struct ExecutionResult
     /// </summary>
     public static ExecutionResult Success =>
         new ExecutionResult { Status = ExecutionStatus.Success };
+
+    /// <summary>
+    /// Generic failure result for convenience
+    /// </summary>
+    public static ExecutionResult Failure =>
+        new ExecutionResult { Status = ExecutionStatus.Failure };
 }
