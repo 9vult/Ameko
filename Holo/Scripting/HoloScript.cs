@@ -18,23 +18,12 @@ public abstract class HoloScript : IHoloExecutable
     /// <summary>
     /// Script entry point
     /// </summary>
+    /// <param name="methodName">
+    /// Qualified name of the called Method, or <see langword="null"/> if no method is being called
+    /// </param>
     /// <returns>Result of script execution</returns>
-    public abstract Task<ExecutionResult> ExecuteAsync();
-
-    /// <summary>
-    /// Entry point for exported methods
-    /// </summary>
-    /// <param name="methodName">Method's qualified name</param>
-    /// <returns>Result of script execution</returns>
-    /// <remarks>
-    /// <para><b>You MUST override this method if your script uses exported methods!</b></para>
-    /// <para>The default implementation calls <see cref="ExecuteAsync()"/>, ignoring the <paramref name="methodName"/>.</para>
-    /// </remarks>
-    public virtual async Task<ExecutionResult> ExecuteAsync(string methodName)
-    {
-        Logger.Info($"Ignoring method {methodName} and executing normally");
-        return await ExecuteAsync();
-    }
+    /// <remarks>It is up to the implementer how to handle method execution</remarks>
+    public abstract Task<ExecutionResult> ExecuteAsync(string? methodName);
 
     /// <summary>
     /// Initialize the script
