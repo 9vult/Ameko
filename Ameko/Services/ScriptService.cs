@@ -65,7 +65,7 @@ public class ScriptService : IScriptService
         {
             try
             {
-                return await script.ExecuteAsync();
+                return await script.ExecuteAsync(null);
             }
             catch (Exception ex)
             {
