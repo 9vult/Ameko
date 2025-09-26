@@ -78,6 +78,12 @@ public record Module
     public required string Url { get; set; }
 
     /// <summary>
+    /// Optional URL to the module's markdown help page
+    /// </summary>
+    /// <example>https://dc.ameko.moe/scripts/9volt/9volt.example1.md</example>
+    public string? HelpUrl { get; set; }
+
+    /// <summary>
     /// Name of repository (automatic)
     /// </summary>
     public string? Repository { get; set; }
