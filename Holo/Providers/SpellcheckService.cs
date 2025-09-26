@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 
 using System.IO.Abstractions;
+using System.Text.RegularExpressions;
 using Holo.Configuration;
 using Holo.Models;
 using NLog;
@@ -8,7 +9,7 @@ using WeCantSpell.Hunspell;
 
 namespace Holo.Providers;
 
-public class SpellcheckService(
+public partial class SpellcheckService(
     IFileSystem fileSystem,
     IDictionaryService dictionaryService,
     IConfiguration configuration,
@@ -51,8 +52,10 @@ public class SpellcheckService(
 
         foreach (var @event in candidates)
         {
-            foreach (var word in @event.Text.Split(' '))
+            var wordMatches = WordRegex().Matches(@event.Text.Trim());
+            foreach (Match match in wordMatches)
             {
+                var word = match.Value;
                 if (string.IsNullOrWhiteSpace(word))
                     continue;
                 if (_dictionary.Check(word))
@@ -144,4 +147,7 @@ public class SpellcheckService(
         globals.AddCustomWord(word);
         _dictionary.Add(word);
     }
+
+    [GeneratedRegex(@"\b[\w']+\b")]
+    private static partial Regex WordRegex();
 }
