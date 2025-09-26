@@ -121,11 +121,14 @@ public partial class PackageManager : IPackageManager
         {
             var path = ModulePath(module);
             var sidecar = SidecarPath(module);
+            var help = HelpPath(module);
             // Create module directories if they don't exist
             if (!_fileSystem.Directory.Exists(Path.GetDirectoryName(path)))
                 _fileSystem.Directory.CreateDirectory(Path.GetDirectoryName(path) ?? "/");
             if (!_fileSystem.Directory.Exists(Path.GetDirectoryName(sidecar)))
                 _fileSystem.Directory.CreateDirectory(Path.GetDirectoryName(sidecar) ?? "/");
+            if (!_fileSystem.Directory.Exists(Path.GetDirectoryName(help)))
+                _fileSystem.Directory.CreateDirectory(Path.GetDirectoryName(help) ?? "/");
 
             await using var dlStream = await _httpClient.GetStreamAsync(module.Url);
             await using var moduleFs = _fileSystem.FileStream.New(
@@ -143,6 +146,26 @@ public partial class PackageManager : IPackageManager
                 FileShare.None
             );
             await JsonSerializer.SerializeAsync(sidecarFs, module, JsonOptions);
+
+            if (!string.IsNullOrEmpty(module.HelpUrl))
+            {
+                try
+                {
+                    await using var helpStream = await _httpClient.GetStreamAsync(module.HelpUrl);
+                    await using var helpFs = _fileSystem.FileStream.New(
+                        help,
+                        FileMode.Create,
+                        FileAccess.Write,
+                        FileShare.None
+                    );
+                    await helpStream.CopyToAsync(helpFs);
+                }
+                catch (Exception e)
+                {
+                    Logger.Warn($"Failed to download help file {help}");
+                    Logger.Warn(e);
+                }
+            }
 
             _installedModules.Add(module);
             Logger.Info($"Successfully installed module {module.QualifiedName}");
@@ -181,6 +204,8 @@ public partial class PackageManager : IPackageManager
         {
             _fileSystem.File.Delete(ModulePath(module));
             _fileSystem.File.Delete(SidecarPath(module));
+            if (!string.IsNullOrEmpty(module.HelpUrl))
+                _fileSystem.File.Delete(HelpPath(module));
             Logger.Info($"Successfully uninstalled module {module.QualifiedName}");
             _installedModules.Remove(module);
             return InstallationResult.Success;
@@ -276,6 +301,23 @@ public partial class PackageManager : IPackageManager
                 $"{qName}.lib.json"
             ),
             ModuleType.Scriptlet => Path.Combine(ModulesRoot.LocalPath, "modules", $"{qName}.json"),
+            _ => throw new ArgumentOutOfRangeException(nameof(module)),
+        };
+    }
+
+    /// <summary>
+    /// Get the filepath for a module help doc
+    /// </summary>
+    /// <param name="module">Module</param>
+    /// <returns>The filepath, ending in <c>.md</c></returns>
+    public static string HelpPath(Module module)
+    {
+        var qName = module.QualifiedName;
+        return module.Type switch
+        {
+            ModuleType.Script => Path.Combine(ModulesRoot.LocalPath, "help", $"{qName}.md"),
+            ModuleType.Library => Path.Combine(ModulesRoot.LocalPath, "help", $"{qName}.lib.md"),
+            ModuleType.Scriptlet => Path.Combine(ModulesRoot.LocalPath, "help", $"{qName}.md"),
             _ => throw new ArgumentOutOfRangeException(nameof(module)),
         };
     }
