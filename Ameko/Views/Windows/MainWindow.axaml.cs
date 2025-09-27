@@ -332,6 +332,14 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         interaction.SetOutput(Unit.Default);
     }
 
+    private static void DoShowHelpWindow(IInteractionContext<HelpWindowViewModel, Unit> interaction)
+    {
+        Logger.Debug("Displaying Help Window");
+        var window = new HelpWindow() { DataContext = interaction.Input };
+        window.Show();
+        interaction.SetOutput(Unit.Default);
+    }
+
     private static void DoShowLogWindow(IInteractionContext<LogWindowViewModel, Unit> interaction)
     {
         Logger.Debug("Displaying Log Window");
@@ -417,6 +425,7 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
                 ViewModel.ShowPackageManager.RegisterHandler(DoShowPkgManWindowAsync);
                 ViewModel.ShowPlaygroundWindow.RegisterHandler(DoShowPlaygroundWindow);
                 // Help
+                ViewModel.ShowHelpWindow.RegisterHandler(DoShowHelpWindow);
                 ViewModel.ShowLogWindow.RegisterHandler(DoShowLogWindow);
                 ViewModel.ShowAboutWindow.RegisterHandler(DoShowAboutWindowAsync);
                 ViewModel.ShowKeybindsWindow.RegisterHandler(DoShowKeybindsWindow);

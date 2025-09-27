@@ -115,6 +115,10 @@
         <MenuItem Header="{x:Static i18n:Resources.Menu_Layouts}"
                   ItemsSource="{Binding LayoutMenuItems}"/>
         <MenuItem Header="{x:Static i18n:Resources.Menu_Help}">
+            <MenuItem Header="{x:Static i18n:Resources.Menu_Help}"
+                      Icon="{icons:MaterialIconExt Kind=HelpCircleOutline}"
+                      Command="{Binding ShowHelpWindowCommand}" />
+            <Separator />
             <MenuItem Header="{x:Static i18n:Resources.Menu_Configuration}"
                       Icon="{icons:MaterialIconExt Kind=CogOutline}" />
             <MenuItem Header="{x:Static i18n:Resources.Menu_Keybinds}"

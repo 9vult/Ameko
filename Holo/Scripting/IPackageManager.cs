@@ -8,6 +8,11 @@ namespace Holo.Scripting;
 public interface IPackageManager
 {
     /// <summary>
+    /// Base repository URL
+    /// </summary>
+    string BaseRepositoryUrl { get; }
+
+    /// <summary>
     /// List of available repositories
     /// </summary>
     ReadOnlyObservableCollection<Repository> Repositories { get; }
@@ -21,11 +26,6 @@ public interface IPackageManager
     /// List of installed modules
     /// </summary>
     ReadOnlyObservableCollection<Module> InstalledModules { get; }
-
-    /// <summary>
-    /// Base repository URL
-    /// </summary>
-    string BaseRepositoryUrl { get; }
 
     /// <summary>
     /// Determine if a module is installed

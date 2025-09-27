@@ -51,6 +51,9 @@
     
     <NativeMenu.Menu>
         <NativeMenu>
+            <NativeMenuItem Header="{x:Static i18n:Resources.Menu_Help}"
+                            Command="{Binding ShowHelpWindowCommand}" />
+            <NativeMenuItemSeparator />
             <NativeMenuItem Header="{x:Static i18n:Resources.Menu_About}"
                             Command="{Binding ShowAboutWindowCommand}" />
             <NativeMenuItemSeparator />

@@ -74,6 +74,7 @@ public partial class MainWindowViewModel : ViewModelBase
     public Interaction<PlaygroundWindowViewModel, Unit> ShowPlaygroundWindow { get; }
 
     // Help
+    public Interaction<HelpWindowViewModel, Unit> ShowHelpWindow { get; }
     public Interaction<LogWindowViewModel, Unit> ShowLogWindow { get; }
     public Interaction<AboutWindowViewModel, Unit> ShowAboutWindow { get; }
     public Interaction<KeybindsWindowViewModel, Unit> ShowKeybindsWindow { get; }
@@ -173,6 +174,9 @@ public partial class MainWindowViewModel : ViewModelBase
     public ICommand RefreshLayoutsCommand { get; }
 
     // Help
+    [KeybindTarget("ameko.help.show", "F1")]
+    public ICommand ShowHelpWindowCommand { get; }
+
     [KeybindTarget("ameko.logs.show", "Ctrl+L")]
     public ICommand ShowLogWindowCommand { get; }
 
@@ -296,7 +300,7 @@ public partial class MainWindowViewModel : ViewModelBase
 
         #region Interactions
         // File
-        OpenSubtitle = new Interaction<Unit, Uri[]>();
+        OpenSubtitle = new Interaction<Unit, Uri[]?>();
         SaveSubtitleAs = new Interaction<string, Uri?>();
         ExportSubtitle = new Interaction<string, Uri?>();
         OpenProject = new Interaction<Unit, Uri?>();
@@ -318,6 +322,7 @@ public partial class MainWindowViewModel : ViewModelBase
         ShowPackageManager = new Interaction<PkgManWindowViewModel, Unit>();
         ShowPlaygroundWindow = new Interaction<PlaygroundWindowViewModel, Unit>();
         // Help
+        ShowHelpWindow = new Interaction<HelpWindowViewModel, Unit>();
         ShowLogWindow = new Interaction<LogWindowViewModel, Unit>();
         ShowAboutWindow = new Interaction<AboutWindowViewModel, Unit>();
         ShowKeybindsWindow = new Interaction<KeybindsWindowViewModel, Unit>();
@@ -365,6 +370,7 @@ public partial class MainWindowViewModel : ViewModelBase
         SelectLayoutCommand = CreateSelectLayoutCommand();
         RefreshLayoutsCommand = CreateRefreshLayoutsCommand();
         // Help
+        ShowHelpWindowCommand = CreateShowHelpWindowCommand();
         ShowLogWindowCommand = CreateShowLogWindowCommand();
         ShowAboutWindowCommand = CreateShowAboutWindowCommand();
         ShowKeybindsWindowCommand = CreateShowKeybindsWindowCommand();
