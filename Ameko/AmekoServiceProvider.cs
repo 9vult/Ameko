@@ -73,6 +73,7 @@ public static class AmekoServiceProvider
         services.AddSingleton<MainWindowViewModel>();
         services.AddSingleton<GitToolboxViewModel>();
         services.AddTransient<LogWindowViewModel>();
+        services.AddTransient<HelpWindowViewModel>();
         services.AddTransient<PkgManWindowViewModel>();
         services.AddTransient<KeybindsWindowViewModel>();
         services.AddTransient<PlaygroundWindowViewModel>();

@@ -1,0 +1,41 @@
+<!-- SPDX-License-Identifier: GPL-3.0-only -->
+
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        d:DesignWidth="600"
+        d:DesignHeight="600"
+
+        xmlns:converters="clr-namespace:Ameko.Converters"
+        xmlns:dm="clr-namespace:Ameko.DataModels"
+        xmlns:i18n="clr-namespace:Ameko.I18N"
+        xmlns:vm="clr-namespace:Ameko.ViewModels.Windows"
+
+        x:Class="Ameko.Views.Windows.HelpWindow"
+        x:DataType="vm:HelpWindowViewModel"
+
+        Width="900"
+        Height="650"
+        MinWidth="900"
+        MinHeight="650"
+        CanResize="True"
+        WindowStartupLocation="CenterScreen"
+        Icon="/Assets/Ameko-Simplified-BG-64.ico"
+        Title="{x:Static i18n:Help.Help_WindowTitle}">
+    <TabControl TabStripPlacement="Bottom">
+        <TabItem Header="{x:Static i18n:Help.Help_Tab_Ameko}">
+            
+        </TabItem>
+        <TabItem Header="{x:Static i18n:Help.Help_Tab_Scripts}">
+            <DockPanel>
+                <ListBox DockPanel.Dock="Left"
+                         ItemsSource="{Binding ScriptHelps}"
+                         SelectedItem="{Binding SelectedScriptHelp}"
+                         DisplayMemberBinding="{Binding DisplayName}" />
+                <HtmlPanel Text="{Binding SelectedScriptHelp.Content, FallbackValue=''}" />                
+            </DockPanel>
+        </TabItem>
+    </TabControl>
+</Window>

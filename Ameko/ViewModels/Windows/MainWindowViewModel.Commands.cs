@@ -579,6 +579,18 @@ public partial class MainWindowViewModel : ViewModelBase
     }
 
     /// <summary>
+    /// Display the <see cref="HelpWindow"/>
+    /// </summary>
+    private ReactiveCommand<Unit, Unit> CreateShowHelpWindowCommand()
+    {
+        return ReactiveCommand.CreateFromTask(async () =>
+        {
+            var vm = _serviceProvider.GetRequiredService<HelpWindowViewModel>();
+            await ShowHelpWindow.Handle(vm);
+        });
+    }
+
+    /// <summary>
     /// Display the <see cref="LogWindow"/>
     /// </summary>
     private ReactiveCommand<Unit, Unit> CreateShowLogWindowCommand()
