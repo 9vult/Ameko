@@ -18,7 +18,7 @@
         <converters:PkgManDependencyConverter x:Key="DependencyConverter" />
         <converters:PkgManUpToDateConverter x:Key="UpToDateConverter" />
     </UserControl.Resources>
-    <ScrollViewer Height="135"
+    <ScrollViewer Height="200"
                   Margin="2"
                   AllowAutoHide="False"
                   VerticalScrollBarVisibility="Visible"

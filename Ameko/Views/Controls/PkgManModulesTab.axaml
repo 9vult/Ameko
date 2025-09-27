@@ -19,7 +19,7 @@
         <converters:PkgManUpToDateConverter x:Key="UpToDateConverter" />
     </UserControl.Resources>
     <Grid ColumnDefinitions="*, *"
-          RowDefinitions="*, 135, Auto">
+          RowDefinitions="*, 200, Auto">
         <!-- Module store -->
         <DockPanel Grid.Column="0"
                    Grid.Row="0">
