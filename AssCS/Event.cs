@@ -338,9 +338,9 @@ public partial class Event(int id) : BindableBase, IEntry
             _actor = match.Groups[6].Value,
             _margins =
             {
-                Left = Convert.ToInt32(match.Groups[7].Value),
-                Right = Convert.ToInt32(match.Groups[8].Value),
-                Vertical = Convert.ToInt32(match.Groups[9].Value),
+                Left = match.Groups[7].Value.ToFlooredInt(),
+                Right = match.Groups[8].Value.ToFlooredInt(),
+                Vertical = match.Groups[9].Value.ToFlooredInt(),
             },
             _effect = match.Groups[10].Value,
             _text = match.Groups[11].Value,
@@ -855,7 +855,7 @@ public partial class Event(int id) : BindableBase, IEntry
     #endregion
 
     [GeneratedRegex(
-        @"^(Comment|Dialogue):\ (\d+),(\d+:\d+:\d+.\d+),(\d+:\d+:\d+.\d+),([^,]*),([^,]*),(-?\d+),(-?\d+),(-?\d+),([^,]*),(.*)"
+        @"^(Comment|Dialogue):\ (\d+),(\d+:\d+:\d+.\d+),(\d+:\d+:\d+.\d+),([^,]*),([^,]*),(-?[\d.]*),(-?[\d.]*),(-?[\d.]*),([^,]*),(.*)"
     )]
     private static partial Regex EventRegex();
 

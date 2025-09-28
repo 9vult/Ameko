@@ -1,6 +1,7 @@
 ﻿// SPDX-License-Identifier: MPL-2.0
 
 using System.Text.RegularExpressions;
+using AssCS.Utilities;
 
 namespace AssCS;
 
@@ -282,9 +283,9 @@ public partial class Style(int id) : BindableBase
             _shadowDistance = Convert.ToDouble(match.Groups[18].Value),
             _alignment = Convert.ToInt32(match.Groups[19].Value),
             _margins = new Margins(
-                Convert.ToInt32(match.Groups[20].Value),
-                Convert.ToInt32(match.Groups[21].Value),
-                Convert.ToInt32(match.Groups[22].Value)
+                match.Groups[20].Value.ToFlooredInt(),
+                match.Groups[21].Value.ToFlooredInt(),
+                match.Groups[22].Value.ToFlooredInt()
             ),
             _encoding = Convert.ToInt32(match.Groups[23].Value),
         };
@@ -409,7 +410,7 @@ public partial class Style(int id) : BindableBase
     }
 
     [GeneratedRegex(
-        @"Style:\ ([^,]*),([^,]*),([\d.]+),(&H[\da-fA-F]{8}&?),(&H[\da-fA-F]{8}&?),(&H[\da-fA-F]{8}&?),(&H[\da-fA-F]{8}&?),(-?[\d.]+),(-?[\d.]+),(-?[\d.]+),(-?[\d.]+),(-?[\d.]+),(-?[\d.]+),(-?[\d.]+),(-?[\d.]+),(-?[\d.]+),(-?[\d.]+),(-?[\d.]+),(-?[\d.]+),(-?[\d.]+),(-?[\d.]+),(-?[\d.]+),(-?[\d.]+)"
+        @"Style:\ ([^,]*),\ *([^,]*),\ *([\d.]+),\ *(&H[\da-fA-F]{8}&?),\ *(&H[\da-fA-F]{8}&?),\ *(&H[\da-fA-F]{8}&?),\ *(&H[\da-fA-F]{8}&?),\ *(-?[\d.]+),\ *(-?[\d.]+),\ *(-?[\d.]+),\ *(-?[\d.]+),\ *(-?[\d.]+),\ *(-?[\d.]+),\ *(-?[\d.]+),\ *(-?[\d.]+),\ *(-?[\d.]+),\ *(-?[\d.]+),\ *(-?[\d.]+),\ *(-?[\d.]+),\ *(-?[\d.]+),\ *(-?[\d.]+),\ *(-?[\d.]+),\ *(-?[\d.]+)"
     )]
     private static partial Regex StyleRegex();
 }

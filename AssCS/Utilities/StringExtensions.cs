@@ -17,4 +17,15 @@ public static class StringExtensions
             ? str
             : oldValues.Aggregate(str, (current, oldValue) => current.Replace(oldValue, newValue));
     }
+
+    /// <summary>
+    /// Convert a string representation of a decimal to an integer
+    /// </summary>
+    /// <param name="value">Numerical string value</param>
+    /// <returns>Floored integer</returns>
+    /// <remarks>This is needed because Closed Caption Converter exports unholy ASS</remarks>
+    public static int ToFlooredInt(this string value)
+    {
+        return string.IsNullOrEmpty(value) ? 0 : Convert.ToInt32(Math.Floor(decimal.Parse(value)));
+    }
 }
