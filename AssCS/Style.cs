@@ -265,7 +265,7 @@ public partial class Style(int id) : BindableBase
         {
             _name = match.Groups[1].Value,
             _fontFamily = match.Groups[2].Value,
-            _fontSize = Convert.ToDouble(match.Groups[3].Value),
+            _fontSize = match.Groups[3].Value.ParseAssDouble(),
             _primaryColor = Color.FromAss(match.Groups[4].Value),
             _secondaryColor = Color.FromAss(match.Groups[5].Value),
             _outlineColor = Color.FromAss(match.Groups[6].Value),
@@ -274,18 +274,18 @@ public partial class Style(int id) : BindableBase
             _isItalic = Convert.ToInt32(match.Groups[9].Value) != 0,
             _isUnderline = Convert.ToInt32(match.Groups[10].Value) != 0,
             _isStrikethrough = Convert.ToInt32(match.Groups[11].Value) != 0,
-            _scaleX = Convert.ToDouble(match.Groups[12].Value),
-            _scaleY = Convert.ToDouble(match.Groups[13].Value),
-            _spacing = Convert.ToDouble(match.Groups[14].Value),
-            _angle = Convert.ToDouble(match.Groups[15].Value),
+            _scaleX = match.Groups[12].Value.ParseAssDouble(),
+            _scaleY = match.Groups[13].Value.ParseAssDouble(),
+            _spacing = match.Groups[14].Value.ParseAssDouble(),
+            _angle = match.Groups[15].Value.ParseAssDouble(),
             _borderStyle = Convert.ToInt32(match.Groups[16].Value),
-            _borderThickness = Convert.ToDouble(match.Groups[17].Value),
-            _shadowDistance = Convert.ToDouble(match.Groups[18].Value),
-            _alignment = Convert.ToInt32(match.Groups[19].Value),
+            _borderThickness = match.Groups[17].Value.ParseAssDouble(),
+            _shadowDistance = match.Groups[18].Value.ParseAssDouble(),
+            _alignment = match.Groups[19].Value.ParseAssInt(),
             _margins = new Margins(
-                match.Groups[20].Value.ToFlooredInt(),
-                match.Groups[21].Value.ToFlooredInt(),
-                match.Groups[22].Value.ToFlooredInt()
+                match.Groups[20].Value.ParseAssInt(),
+                match.Groups[21].Value.ParseAssInt(),
+                match.Groups[22].Value.ParseAssInt()
             ),
             _encoding = Convert.ToInt32(match.Groups[23].Value),
         };
@@ -410,7 +410,7 @@ public partial class Style(int id) : BindableBase
     }
 
     [GeneratedRegex(
-        @"Style:\ ([^,]*),\ *([^,]*),\ *([\d.]+),\ *(&H[\da-fA-F]{8}&?),\ *(&H[\da-fA-F]{8}&?),\ *(&H[\da-fA-F]{8}&?),\ *(&H[\da-fA-F]{8}&?),\ *(-?[\d.]+),\ *(-?[\d.]+),\ *(-?[\d.]+),\ *(-?[\d.]+),\ *(-?[\d.]+),\ *(-?[\d.]+),\ *(-?[\d.]+),\ *(-?[\d.]+),\ *(-?[\d.]+),\ *(-?[\d.]+),\ *(-?[\d.]+),\ *(-?[\d.]+),\ *(-?[\d.]+),\ *(-?[\d.]+),\ *(-?[\d.]+),\ *(-?[\d.]+)"
+        @"Style:\ ([^,]*),\s*([^,]*),\s*([^,]*),\s*(&H[\da-fA-F]{8}&?),\s*(&H[\da-fA-F]{8}&?),\s*(&H[\da-fA-F]{8}&?),\s*(&H[\da-fA-F]{8}&?),\s*([^,]*),\s*([^,]*),\s*([^,]*),\s*([^,]*),\s*([^,]*),\s*([^,]*),\s*([^,]*),\s*([^,]*),\s*([^,]*),\s*([^,]*),\s*([^,]*),\s*([^,]*),\s*([^,]*),\s*([^,]*),\s*([^,]*),\s*([^,]*)"
     )]
     private static partial Regex StyleRegex();
 }
