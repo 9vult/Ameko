@@ -1,30 +1,26 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
-
   <ItemGroup>
-    <PackageReference Include="CSharpier.MsBuild" Version="0.30.6">
+    <PackageReference Include="CSharpier.MsBuild">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Jint" Version="4.2.2" />
-    <PackageReference Include="LibGit2Sharp" Version="0.31.0" />
-    <PackageReference Include="Material.Icons" Version="2.4.1" />
-    <PackageReference Include="NLog" Version="5.3.4" />
-    <PackageReference Include="Samboy063.Tomlet" Version="6.1.0" />
-    <PackageReference Include="TestableIO.System.IO.Abstractions" Version="22.0.14" />
-    <PackageReference Include="TestableIO.System.IO.Abstractions.Wrappers" Version="22.0.14" />
-    <PackageReference Include="WeCantSpell.Hunspell" Version="6.0.1" />
-    <PackageReference Include="Xdg.Directories" Version="0.1.2" />
+    <PackageReference Include="Jint" />
+    <PackageReference Include="LibGit2Sharp" />
+    <PackageReference Include="Material.Icons" />
+    <PackageReference Include="NLog" />
+    <PackageReference Include="Samboy063.Tomlet" />
+    <PackageReference Include="TestableIO.System.IO.Abstractions" />
+    <PackageReference Include="TestableIO.System.IO.Abstractions.Wrappers" />
+    <PackageReference Include="WeCantSpell.Hunspell" />
+    <PackageReference Include="Xdg.Directories" />
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\AssCS\AssCS.csproj" />
   </ItemGroup>
-
 </Project>
