@@ -1,18 +1,15 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
-
   <ItemGroup>
-    <PackageReference Include="CSharpier.MsBuild" Version="0.30.6">
+    <PackageReference Include="CSharpier.MsBuild">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="TestableIO.System.IO.Abstractions" Version="22.0.14" />
-    <PackageReference Include="TestableIO.System.IO.Abstractions.Wrappers" Version="22.0.14" />
+    <PackageReference Include="TestableIO.System.IO.Abstractions" />
+    <PackageReference Include="TestableIO.System.IO.Abstractions.Wrappers" />
   </ItemGroup>
-
 </Project>

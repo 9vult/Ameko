@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net9.0</TargetFramework>
@@ -13,54 +13,54 @@
     <AvaloniaResource Include="Assets\**" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="11.3.0" />
-    <PackageReference Include="Avalonia.AvaloniaEdit" Version="11.3.0" />
-    <PackageReference Include="Avalonia.Controls.ColorPicker" Version="11.3.0" />
-    <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.3.0" />
-    <PackageReference Include="Avalonia.Desktop" Version="11.3.0" />
-    <PackageReference Include="Avalonia.HtmlRenderer" Version="11.2.0" />
-    <PackageReference Include="Avalonia.ReactiveUI" Version="11.3.0" />
-    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.0" />
-    <PackageReference Include="Avalonia.Fonts.Inter" Version="11.3.0" />
+    <PackageReference Include="Avalonia" />
+    <PackageReference Include="Avalonia.AvaloniaEdit" />
+    <PackageReference Include="Avalonia.Controls.ColorPicker" />
+    <PackageReference Include="Avalonia.Controls.DataGrid" />
+    <PackageReference Include="Avalonia.Desktop" />
+    <PackageReference Include="Avalonia.HtmlRenderer" />
+    <PackageReference Include="Avalonia.ReactiveUI" />
+    <PackageReference Include="Avalonia.Themes.Fluent" />
+    <PackageReference Include="Avalonia.Fonts.Inter" />
     <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
-    <PackageReference Include="Avalonia.Diagnostics" Version="11.3.0">
+    <PackageReference Include="Avalonia.Diagnostics">
       <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
       <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Avalonia.Themes.Simple" Version="11.3.0" />
-    <PackageReference Include="AvaloniaEdit.TextMate" Version="11.3.0" />
-    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
-    <PackageReference Include="CS-Script" Version="4.9.6" />
-    <PackageReference Include="CSharpier.MsBuild" Version="1.0.2">
+    <PackageReference Include="Avalonia.Themes.Simple" />
+    <PackageReference Include="AvaloniaEdit.TextMate" />
+    <PackageReference Include="CommunityToolkit.Mvvm" />
+    <PackageReference Include="CS-Script" />
+    <PackageReference Include="CSharpier.MsBuild">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="DiscordRichPresence" Version="1.6.1.70" />
-    <PackageReference Include="GitInfo" Version="3.3.5">
+    <PackageReference Include="DiscordRichPresence" />
+    <PackageReference Include="GitInfo">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Jint" Version="4.2.2" />
-    <PackageReference Include="Markdig" Version="0.42.0" />
-    <PackageReference Include="Markdown.Avalonia.Tight" Version="11.0.3-a1" />
-    <PackageReference Include="Markdown.ColorCode" Version="3.0.1" />
-    <PackageReference Include="Material.Icons.Avalonia" Version="2.4.1" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.6" />
-    <PackageReference Include="Microsoft.Extensions.Http" Version="9.0.6" />
-    <PackageReference Include="NLog" Version="5.5.0" />
-    <PackageReference Include="Semi.Avalonia" Version="11.2.1.9" />
-    <PackageReference Include="Semi.Avalonia.AvaloniaEdit" Version="11.2.0.1" />
-    <PackageReference Include="Semi.Avalonia.ColorPicker" Version="11.2.1.9" />
-    <PackageReference Include="Semi.Avalonia.DataGrid" Version="11.2.1.9" />
-    <PackageReference Include="Semi.Avalonia.Tabalonia" Version="11.0.0-beta1" />
-    <PackageReference Include="Semi.Avalonia.TreeDataGrid" Version="11.0.10.4" />
-    <PackageReference Include="Semver" Version="3.0.0" />
-    <PackageReference Include="Silk.NET.OpenAL" Version="2.22.0" />
-    <PackageReference Include="Silk.NET.OpenAL.Extensions.EXT" Version="2.22.0" />
-    <PackageReference Include="Silk.NET.OpenAL.Extensions.Soft" Version="2.22.0" />
-    <PackageReference Include="Silk.NET.OpenAL.Soft.Native" Version="1.23.1" />
-    <PackageReference Include="Silk.NET.OpenGLES" Version="2.22.0" />
-    <PackageReference Include="Tabalonia" Version="0.10.7" />
+    <PackageReference Include="Jint" />
+    <PackageReference Include="Markdig" />
+    <PackageReference Include="Markdown.Avalonia.Tight" />
+    <PackageReference Include="Markdown.ColorCode" />
+    <PackageReference Include="Material.Icons.Avalonia" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+    <PackageReference Include="Microsoft.Extensions.Http" />
+    <PackageReference Include="NLog" />
+    <PackageReference Include="Semi.Avalonia" />
+    <PackageReference Include="Semi.Avalonia.AvaloniaEdit" />
+    <PackageReference Include="Semi.Avalonia.ColorPicker" />
+    <PackageReference Include="Semi.Avalonia.DataGrid" />
+    <PackageReference Include="Semi.Avalonia.Tabalonia" />
+    <PackageReference Include="Semi.Avalonia.TreeDataGrid" />
+    <PackageReference Include="Semver" />
+    <PackageReference Include="Silk.NET.OpenAL" />
+    <PackageReference Include="Silk.NET.OpenAL.Extensions.EXT" />
+    <PackageReference Include="Silk.NET.OpenAL.Extensions.Soft" />
+    <PackageReference Include="Silk.NET.OpenAL.Soft.Native" />
+    <PackageReference Include="Silk.NET.OpenGLES" />
+    <PackageReference Include="Tabalonia" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AssCS\AssCS.csproj" />
