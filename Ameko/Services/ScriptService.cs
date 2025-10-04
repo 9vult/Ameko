@@ -102,9 +102,11 @@ public class ScriptService : IScriptService
         // Try running a scriptlet
         if (TryGetScriptlet(qualifiedName, out var scriptlet))
         {
+            var logger = _loggerFactory.CreateLogger(scriptlet.Info.QualifiedName);
             var engine = new Engine(cfg => cfg.AllowClr())
                 .SetValue("ChangeType", typeof(ChangeType))
-                .SetValue("logger", _loggerFactory.CreateLogger(scriptlet.Info.QualifiedName));
+                .SetValue("log", new Action<string>(msg => logger.LogInformation("{Message}", msg)))
+                .SetValue("err", new Action<string>(msg => logger.LogError("{Error}", msg)));
 
             var success = engine
                 .Execute(scriptlet.CompiledScript)
