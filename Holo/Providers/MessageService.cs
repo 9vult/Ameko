@@ -1,16 +1,15 @@
 // SPDX-License-Identifier: MPL-2.0
 
 using Holo.Models;
-using NLog;
+using Microsoft.Extensions.Logging;
 
 namespace Holo.Providers;
 
 /// <summary>
 /// A simple service for scheduling messages
 /// </summary>
-public class MessageService : IMessageService
+public class MessageService(ILogger<MessageService> logger) : IMessageService
 {
-    private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
     private readonly Queue<Message> _messages = new();
     private readonly Lock _lock = new();
     private CancellationTokenSource? _cts;
@@ -61,7 +60,7 @@ public class MessageService : IMessageService
             }
             catch (Exception ex)
             {
-                Logger.Error(ex);
+                logger.LogError(ex, "Failed to proc message");
                 return;
             }
         }

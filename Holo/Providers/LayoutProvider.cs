@@ -6,7 +6,7 @@ using AssCS;
 using Holo.Configuration;
 using Holo.IO;
 using Holo.Models;
-using NLog;
+using Microsoft.Extensions.Logging;
 using Tomlet;
 
 namespace Holo.Providers;
@@ -14,8 +14,8 @@ namespace Holo.Providers;
 public class LayoutProvider : BindableBase, ILayoutProvider
 {
     private static readonly Uri LayoutsRoot = new(Path.Combine(Directories.DataHome, "layouts"));
-    private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
     private readonly IFileSystem _fileSystem;
+    private readonly ILogger _logger;
     private readonly IPersistence _persistence;
 
     private readonly ObservableCollection<Layout> _layouts;
@@ -41,7 +41,7 @@ public class LayoutProvider : BindableBase, ILayoutProvider
     /// <inheritdoc />
     public void Reload()
     {
-        Logger.Info("Reloading Layouts...");
+        _logger.LogInformation("Reloading Layouts...");
         if (!_fileSystem.Directory.Exists(LayoutsRoot.LocalPath))
             _fileSystem.Directory.CreateDirectory(LayoutsRoot.LocalPath);
 
@@ -51,7 +51,7 @@ public class LayoutProvider : BindableBase, ILayoutProvider
         {
             try
             {
-                Logger.Debug($"Loading Layout {path}...");
+                _logger.LogDebug("Loading Layout {Path}...", path);
 
                 using var readFs = _fileSystem.FileStream.New(
                     path,
@@ -66,10 +66,10 @@ public class LayoutProvider : BindableBase, ILayoutProvider
             }
             catch (Exception ex)
             {
-                Logger.Error(ex);
+                _logger.LogError(ex, "Failed to load layout");
             }
         }
-        Logger.Info($"Reloaded {_layouts.Count} layouts");
+        _logger.LogInformation("Reloaded {LayoutsCount} layouts", _layouts.Count);
 
         if (_layouts.Any(l => l.Name == _persistence.LayoutName))
         {
@@ -85,7 +85,7 @@ public class LayoutProvider : BindableBase, ILayoutProvider
             return;
         }
 
-        Logger.Info("No layouts loaded! Generating default layouts...");
+        _logger.LogInformation("No layouts loaded! Generating default layouts...");
 
         foreach (
             var defaultLayout in new[]
@@ -120,7 +120,7 @@ public class LayoutProvider : BindableBase, ILayoutProvider
                 throw;
             }
         }
-        Logger.Info("Done!");
+        _logger.LogInformation("Done!");
         Current = _layouts.First(l => l.Name == DefaultLayout.Name);
     }
 
@@ -131,10 +131,16 @@ public class LayoutProvider : BindableBase, ILayoutProvider
     /// Initialize the layout provider
     /// </summary>
     /// <param name="fileSystem">Filesystem to use</param>
+    /// <param name="logger">Logger to use</param>
     /// <param name="persistence">Application persistence</param>
-    public LayoutProvider(IFileSystem fileSystem, IPersistence persistence)
+    public LayoutProvider(
+        IFileSystem fileSystem,
+        ILogger<LayoutProvider> logger,
+        IPersistence persistence
+    )
     {
         _fileSystem = fileSystem;
+        _logger = logger;
         _persistence = persistence;
         _layouts = [];
         Layouts = new AssCS.Utilities.ReadOnlyObservableCollection<Layout>(_layouts);

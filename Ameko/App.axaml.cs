@@ -225,7 +225,7 @@ public partial class App : Application
 
         if (projects.Count > 0)
         {
-            projectProvider.Current = Project.Parse(fs, projects.First());
+            projectProvider.Current = projectProvider.CreateFromFile(projects.First());
         }
         foreach (var uri in subs)
         {

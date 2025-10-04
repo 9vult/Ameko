@@ -5,14 +5,14 @@ using AssCS;
 using AssCS.IO;
 using Holo.Media;
 using Holo.Media.Providers;
-using NLog;
+using Microsoft.Extensions.Logging;
 
 namespace Holo;
 
 public class MediaController : BindableBase
 {
-    private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
     private readonly ISourceProvider _provider;
+    private readonly ILogger _logger;
     private readonly HighResolutionTimer _playback;
     private VideoInfo? _videoInfo;
     private bool _isVideoLoaded;
@@ -24,7 +24,7 @@ public class MediaController : BindableBase
     private readonly Lock _frameLock = new();
     private Task? _fetchTask;
     private int _pendingFrame = -1;
-    private bool _subtitlesChanged = false;
+    private bool _subtitlesChanged;
 
     private ScaleFactor _scaleFactor = ScaleFactor.Default;
     private RotationalFactor _rotationalFactor = RotationalFactor.Default;
@@ -147,7 +147,7 @@ public class MediaController : BindableBase
     /// </summary>
     public void Stop()
     {
-        Logger.Debug("Stopping playback");
+        _logger.LogDebug("Stopping playback");
         if (!IsPlaying)
             return;
         IsPlaying = false;
@@ -161,7 +161,7 @@ public class MediaController : BindableBase
     /// </summary>
     public void Pause()
     {
-        Logger.Debug("Pausing playback");
+        _logger.LogDebug("Pausing playback");
         if (!IsPlaying)
             return;
         IsPaused = true;
@@ -179,7 +179,7 @@ public class MediaController : BindableBase
             throw new InvalidOperationException("Video is not loaded");
 
         Stop();
-        Logger.Debug("Playing to end");
+        _logger.LogDebug("Playing to end");
         _destinationFrame = _videoInfo.FrameCount - 1;
         _playback.IntervalIndex = _currentFrame;
 
@@ -205,7 +205,7 @@ public class MediaController : BindableBase
 
         var startTime = selection.Min(e => e.Start);
         var endTime = selection.Max(e => e.End);
-        Logger.Debug($"Playing selection [{startTime}, {endTime}]");
+        _logger.LogDebug("Playing selection [{StartTime}, {EndTime}]", startTime, endTime);
 
         if (startTime is null || endTime is null)
             return;
@@ -236,7 +236,7 @@ public class MediaController : BindableBase
         if (_videoInfo is null)
             throw new InvalidOperationException("Video is not loaded");
 
-        Logger.Debug("Resuming playback");
+        _logger.LogDebug("Resuming playback");
         _playback.IntervalIndex = _currentFrame;
 
         OnPlaybackStart?.Invoke(
@@ -339,7 +339,7 @@ public class MediaController : BindableBase
         if (!_provider.IsInitialized)
             throw new InvalidOperationException("Provider is not initialized");
 
-        Logger.Info($"Opening video {filePath}");
+        _logger.LogInformation("Opening video {FilePath}", filePath);
 
         if (IsVideoLoaded)
             _provider.CloseVideo();
@@ -470,7 +470,7 @@ public class MediaController : BindableBase
         var writer = new AssWriter(document, new ConsumerInfo("", "", ""));
         lock (_frameLock)
         {
-            _provider.SetSubtitles(writer.Write(false), null);
+            _provider.SetSubtitles(writer.Write(), null);
             _subtitlesChanged = true;
         }
 
@@ -523,9 +523,11 @@ public class MediaController : BindableBase
     /// Controls playback
     /// </summary>
     /// <param name="provider">Source Provider to use</param>
-    public MediaController(ISourceProvider provider)
+    /// <param name="logger">Logger to use</param>
+    public MediaController(ISourceProvider provider, ILogger<MediaController> logger)
     {
         _provider = provider;
+        _logger = logger;
         _playback = new HighResolutionTimer();
         _playback.Elapsed += AdvanceFrame;
     }

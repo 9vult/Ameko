@@ -7,7 +7,7 @@ using System.Text.Json;
 using AssCS;
 using AssCS.IO;
 using Holo.Models;
-using NLog;
+using Microsoft.Extensions.Logging;
 
 namespace Holo;
 
@@ -30,7 +30,6 @@ namespace Holo;
 /// </remarks>
 public class Project : BindableBase
 {
-    private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
     private static readonly JsonSerializerOptions JsonOptions = new() { IncludeFields = true };
 
     private readonly RangeObservableCollection<ProjectItem> _referencedItems;
@@ -41,6 +40,7 @@ public class Project : BindableBase
     /// </summary>
     /// <remarks>This allows for filesystem mocking to be used in tests</remarks>
     private readonly IFileSystem _fileSystem;
+    private readonly ILogger _logger;
 
     private Uri? _savePath;
     private bool _isSaved;
@@ -229,7 +229,7 @@ public class Project : BindableBase
     /// <returns>The created workspace</returns>
     public Workspace AddWorkspace(int parentId = -1)
     {
-        Logger.Trace("Creating a default workspace");
+        _logger.LogTrace("Creating a default workspace");
         var wsp = new Workspace(new Document(true), NextId);
         return AddWorkspace(wsp, parentId);
     }
@@ -243,7 +243,7 @@ public class Project : BindableBase
     /// <returns>The created workspace</returns>
     public Workspace AddWorkspace(Document document, Uri savePath, int parentId = -1)
     {
-        Logger.Trace($"Creating a workspace from document at {savePath}");
+        _logger.LogTrace("Creating a workspace from document at {Uri}", savePath);
         var wsp = new Workspace(document, NextId, savePath);
         return AddWorkspace(wsp, parentId);
     }
@@ -256,8 +256,8 @@ public class Project : BindableBase
     /// <returns>The created workspace</returns>
     public Workspace AddWorkspace(Document document, int parentId = -1)
     {
-        Logger.Trace($"Creating a workspace from document with no save path");
-        var wsp = new Workspace(document, NextId, null);
+        _logger.LogTrace("Creating a workspace from document with no save path");
+        var wsp = new Workspace(document, NextId);
         return AddWorkspace(wsp, parentId);
     }
 
@@ -269,7 +269,11 @@ public class Project : BindableBase
     /// <returns>The workspace</returns>
     public Workspace AddWorkspace(Workspace wsp, int parentId = -1)
     {
-        Logger.Trace($"Adding workspace {wsp.DisplayTitle}, parent: {parentId}");
+        _logger.LogTrace(
+            "Adding workspace {WspDisplayTitle}, parent: {ParentId}",
+            wsp.DisplayTitle,
+            parentId
+        );
         var docItem = new DocumentItem
         {
             Id = wsp.Id,
@@ -303,7 +307,7 @@ public class Project : BindableBase
     /// <returns>The directory item</returns>
     public ProjectItem AddDirectory(string name, int parentId = -1)
     {
-        Logger.Trace($"Adding a new directory, parent: {parentId}");
+        _logger.LogTrace("Adding a new directory, parent: {ParentId}", parentId);
         var dirItem = new DirectoryItem { Id = NextId, Name = name };
 
         if (parentId < 0)
@@ -329,7 +333,7 @@ public class Project : BindableBase
     /// <remarks>Removing a directory will remove all subdirectories and documents!</remarks>
     public bool RemoveDirectory(int id)
     {
-        Logger.Trace($"Removing directory with id: {id}");
+        _logger.LogTrace("Removing directory with id: {Id}", id);
         var dir = FindItemById(id);
         return dir?.Type == ProjectItemType.Directory && RemoveItemById(id);
     }
@@ -347,7 +351,7 @@ public class Project : BindableBase
     /// </remarks>
     public bool RemoveWorkspace(int id)
     {
-        Logger.Trace($"Removing workspace {id}");
+        _logger.LogTrace("Removing workspace {Id}", id);
         if (WorkingSpace?.Id == id)
         {
             WorkingSpace =
@@ -371,25 +375,25 @@ public class Project : BindableBase
     /// </remarks>
     public int OpenDocument(int id)
     {
-        Logger.Trace($"Opening referenced document {id}");
+        _logger.LogTrace("Opening referenced document {Id}", id);
         try
         {
             var item = FindItemById(id);
             if (item is null || item.Type != ProjectItemType.Document)
             {
-                Logger.Error($"A referenced document with id {id} was not found");
+                _logger.LogError("A referenced document with id {Id} was not found", id);
                 return -1;
             }
 
             if (item.Type != ProjectItemType.Document)
             {
-                Logger.Error($"Failed to parse document reference with id {id}");
+                _logger.LogError("Failed to parse document reference with id {Id}", id);
                 return -1;
             }
 
             if (!item.IsSavedToFileSystem)
             {
-                Logger.Error($"Document item with id {id} was not saved to file system");
+                _logger.LogError("Document item with id {Id} was not saved to file system", id);
                 return -1;
             }
 
@@ -403,7 +407,7 @@ public class Project : BindableBase
         }
         catch (Exception ex)
         {
-            Logger.Error(ex);
+            _logger.LogError(ex, "Failed to open document");
             return -1;
         }
     }
@@ -449,7 +453,7 @@ public class Project : BindableBase
     /// </remarks>
     public bool CloseDocument(int id, bool replaceIfLast = true)
     {
-        Logger.Trace($"Closing referenced document {id}");
+        _logger.LogTrace("Closing referenced document {Id}", id);
 
         // If the document is not saved anywhere, remove from the referenced list
         var isFileDoc = _loadedWorkspaces.FirstOrDefault(w => w.Id == id)?.SavePath is not null;
@@ -483,7 +487,7 @@ public class Project : BindableBase
             throw new InvalidOperationException("SavePath is null");
 
         var path = SavePath.LocalPath;
-        Logger.Info($"Saving project {Title} to {path}");
+        _logger.LogInformation("Saving project {S} to {Path}", Title, path);
 
         var dir = _fileSystem.Path.GetDirectoryName(path) ?? string.Empty;
 
@@ -519,139 +523,9 @@ public class Project : BindableBase
         }
         catch (Exception ex) when (ex is IOException or JsonException)
         {
-            Logger.Error(ex);
+            _logger.LogError(ex, "Failed to save project");
             return false;
         }
-    }
-
-    /// <summary>
-    /// Parse a saved project file
-    /// </summary>
-    /// <param name="fileSystem">FileSystem to use</param>
-    /// <param name="savePath">Path to the project file</param>
-    /// <returns><see cref="Project"/> object</returns>
-    public static Project Parse(IFileSystem fileSystem, Uri savePath)
-    {
-        var path = savePath.LocalPath;
-        Logger.Info($"Parsing project {path}");
-
-        try
-        {
-            var dir = fileSystem.Path.GetDirectoryName(path) ?? string.Empty;
-
-            if (!fileSystem.Directory.Exists(Path.GetDirectoryName(path)))
-                fileSystem.Directory.CreateDirectory(Path.GetDirectoryName(path) ?? "/");
-
-            if (!fileSystem.File.Exists(path))
-                throw new FileNotFoundException($"Project {path} was not found");
-
-            using var fs = fileSystem.FileStream.New(
-                path,
-                FileMode.Open,
-                FileAccess.Read,
-                FileShare.ReadWrite
-            );
-            using var reader = new StreamReader(fs);
-
-            var model =
-                JsonSerializer.Deserialize<ProjectModel>(reader.ReadToEnd(), JsonOptions)
-                ?? throw new InvalidDataException("Project model deserialization failed");
-
-            // If the project has no referenced documents, initialize it with one
-            var prj = new Project(fileSystem, model.ReferencedDocuments.Length != 0)
-            {
-                _savePath = savePath,
-            };
-
-            // De-relative the file paths in the project
-            prj._referencedItems.AddRange(
-                ConvertFromModels(model.ReferencedDocuments, dir, ref prj._docId)
-            );
-            prj._cps = model.Cps;
-            prj._cpsIncludesWhitespace = model.CpsIncludesWhitespace;
-            prj._cpsIncludesPunctuation = model.CpsIncludesPunctuation;
-            prj._useSoftLinebreaks = model.UseSoftLinebreaks;
-            prj._spellcheckCulture = model.SpellcheckCulture;
-            prj._customWords = model.CustomWords.ToList();
-
-            model
-                .Styles.Select(s => Style.FromAss(prj.StyleManager.NextId, s))
-                .ToList()
-                .ForEach(prj.StyleManager.Add);
-
-            prj.IsSaved = true;
-            return prj;
-        }
-        catch (Exception ex) when (ex is IOException or JsonException)
-        {
-            Logger.Error(ex);
-            return new Project(fileSystem);
-        }
-    }
-
-    /// <summary>
-    /// Load a directory as a project
-    /// </summary>
-    /// <param name="fileSystem">Filesystem to use</param>
-    /// <param name="dirPath">Path to the directory</param>
-    /// <returns>Populated project</returns>
-    public static Project LoadDirectory(IFileSystem fileSystem, Uri dirPath)
-    {
-        var root = dirPath.LocalPath;
-        Logger.Info($"Generating project from directory {root}...");
-        var prj = new Project(fileSystem, isEmpty: true);
-        if (!fileSystem.Directory.Exists(Path.GetDirectoryName(root)))
-        {
-            return new Project(fileSystem, isEmpty: false);
-        }
-
-        var fileCount = 0;
-        var dirCount = 0;
-        var stack = new Stack<(string, ObservableCollection<ProjectItem>)>();
-        stack.Push((root, prj._referencedItems));
-
-        while (stack.Count > 0)
-        {
-            var (currentPath, currentCollection) = stack.Pop();
-
-            // Subdirectories
-            foreach (var subDirectory in fileSystem.Directory.EnumerateDirectories(currentPath))
-            {
-                var dirName = fileSystem.Path.GetFileName(subDirectory);
-
-                // Skip .directories
-                if (dirName.StartsWith('.'))
-                {
-                    Logger.Trace($"Skipping .directory {subDirectory}");
-                    continue;
-                }
-                // Skip directories that don't have subdirectories or ass files
-                if (
-                    fileSystem.Directory.GetDirectories(subDirectory).Length == 0
-                    && fileSystem.Directory.GetFiles(subDirectory, "*.ass").Length == 0
-                )
-                {
-                    Logger.Trace($"Skipping {subDirectory} as it doesn't contain relevant files");
-                    continue;
-                }
-
-                var dirItem = new DirectoryItem { Id = prj.NextId, Name = dirName };
-                currentCollection.Add(dirItem);
-
-                stack.Push((subDirectory, dirItem.Children));
-                dirCount++;
-            }
-
-            // Files
-            foreach (var file in fileSystem.Directory.EnumerateFiles(currentPath, "*.ass"))
-            {
-                var docItem = new DocumentItem { Id = prj.NextId, Uri = new Uri(file) };
-                currentCollection.Add(docItem);
-                fileCount++;
-            }
-        }
-        Logger.Info($"Done! Project contains {dirCount} directories and {fileCount} files");
-        return prj.ReferencedItems.Count > 0 ? prj : new Project(fileSystem, isEmpty: false);
     }
 
     /// <summary>
@@ -822,11 +696,13 @@ public class Project : BindableBase
     /// Initialize a project
     /// </summary>
     /// <param name="fileSystem">FileSystem to use</param>
+    /// <param name="logger">Logger to use</param>
     /// <param name="isEmpty">If the project should be created
     /// without a default <see cref="Workspace"/></param>
-    public Project(IFileSystem fileSystem, bool isEmpty = false)
+    internal Project(IFileSystem fileSystem, ILogger<Project> logger, bool isEmpty = false)
     {
         _fileSystem = fileSystem;
+        _logger = logger;
         _referencedItems = [];
         _loadedWorkspaces = [];
         _customWords = [];
@@ -845,5 +721,122 @@ public class Project : BindableBase
         _referencedItems.Add(defaultLink);
         _loadedWorkspaces.Add(defaultWorkspace);
         _workingSpace = defaultWorkspace;
+    }
+
+    internal Project(IFileSystem fileSystem, ILogger<Project> logger, Uri uri)
+        : this(fileSystem, logger, isEmpty: true)
+    {
+        var path = uri.LocalPath;
+        // We are loading a project file
+        if (fileSystem.File.Exists(path))
+        {
+            logger.LogInformation("Parsing project {Path}", path);
+            _savePath = uri;
+            try
+            {
+                var dir = fileSystem.Path.GetDirectoryName(path) ?? string.Empty;
+
+                if (!fileSystem.Directory.Exists(Path.GetDirectoryName(path)))
+                    fileSystem.Directory.CreateDirectory(Path.GetDirectoryName(path) ?? "/");
+
+                if (!fileSystem.File.Exists(path))
+                    throw new FileNotFoundException($"Project {path} was not found");
+
+                using var fs = fileSystem.FileStream.New(
+                    path,
+                    FileMode.Open,
+                    FileAccess.Read,
+                    FileShare.ReadWrite
+                );
+                using var reader = new StreamReader(fs);
+
+                var model =
+                    JsonSerializer.Deserialize<ProjectModel>(reader.ReadToEnd(), JsonOptions)
+                    ?? throw new InvalidDataException("Project model deserialization failed");
+
+                // De-relative the file paths in the project
+                _referencedItems.AddRange(
+                    ConvertFromModels(model.ReferencedDocuments, dir, ref _docId)
+                );
+                _cps = model.Cps;
+                _cpsIncludesWhitespace = model.CpsIncludesWhitespace;
+                _cpsIncludesPunctuation = model.CpsIncludesPunctuation;
+                _useSoftLinebreaks = model.UseSoftLinebreaks;
+                _spellcheckCulture = model.SpellcheckCulture;
+                _customWords = model.CustomWords.ToList();
+
+                model
+                    .Styles.Select(s => Style.FromAss(StyleManager.NextId, s))
+                    .ToList()
+                    .ForEach(StyleManager.Add);
+
+                IsSaved = true;
+            }
+            catch (Exception ex) when (ex is IOException or JsonException)
+            {
+                logger.LogError(ex, "Failed to parse project");
+            }
+        }
+        // We are loading a directory as a project
+        else if (fileSystem.Directory.Exists(path))
+        {
+            logger.LogInformation("Generating project from directory {Path}...", path);
+            var fileCount = 0;
+            var dirCount = 0;
+            var stack = new Stack<(string, ObservableCollection<ProjectItem>)>();
+            stack.Push((path, _referencedItems));
+
+            while (stack.Count > 0)
+            {
+                var (currentPath, currentCollection) = stack.Pop();
+
+                // Subdirectories
+                foreach (var subDirectory in fileSystem.Directory.EnumerateDirectories(currentPath))
+                {
+                    var dirName = fileSystem.Path.GetFileName(subDirectory);
+
+                    // Skip .directories
+                    if (dirName.StartsWith('.'))
+                    {
+                        logger.LogTrace("Skipping .directory {SubDirectory}", subDirectory);
+                        continue;
+                    }
+                    // Skip directories that don't have subdirectories or ass files
+                    if (
+                        fileSystem.Directory.GetDirectories(subDirectory).Length == 0
+                        && fileSystem.Directory.GetFiles(subDirectory, "*.ass").Length == 0
+                    )
+                    {
+                        logger.LogTrace(
+                            "Skipping {SubDirectory} as it doesn't contain relevant files",
+                            subDirectory
+                        );
+                        continue;
+                    }
+
+                    var dirItem = new DirectoryItem { Id = NextId, Name = dirName };
+                    currentCollection.Add(dirItem);
+
+                    stack.Push((subDirectory, dirItem.Children));
+                    dirCount++;
+                }
+
+                // Files
+                foreach (var file in fileSystem.Directory.EnumerateFiles(currentPath, "*.ass"))
+                {
+                    var docItem = new DocumentItem { Id = NextId, Uri = new Uri(file) };
+                    currentCollection.Add(docItem);
+                    fileCount++;
+                }
+            }
+            logger.LogInformation(
+                "Done! Project contains {DirCount} directories and {FileCount} files",
+                dirCount,
+                fileCount
+            );
+        }
+
+        if (_referencedItems.Count == 0)
+            AddWorkspace();
     }
 }

@@ -3,6 +3,7 @@
 using System.IO.Abstractions.TestingHelpers;
 using Holo.Scripting;
 using Holo.Scripting.Models;
+using Microsoft.Extensions.Logging.Abstractions;
 using Shouldly;
 
 namespace Holo.Tests;
@@ -22,7 +23,8 @@ public class ScriptConfigurationServiceTests
                 },
             }
         );
-        var service = new ScriptConfigurationService(fs);
+        var lg = NullLogger<ScriptConfigurationService>.Instance;
+        var service = new ScriptConfigurationService(fs, lg);
 
         service.Set(sut1, "test1", 10);
 
@@ -45,7 +47,8 @@ public class ScriptConfigurationServiceTests
                 },
             }
         );
-        var service = new ScriptConfigurationService(fs);
+        var lg = NullLogger<ScriptConfigurationService>.Instance;
+        var service = new ScriptConfigurationService(fs, lg);
         service.TryGet<int>(sut1, "test1", out var initial);
         initial.ShouldNotBe(10);
 
@@ -70,7 +73,8 @@ public class ScriptConfigurationServiceTests
                 },
             }
         );
-        var service = new ScriptConfigurationService(fs);
+        var lg = NullLogger<ScriptConfigurationService>.Instance;
+        var service = new ScriptConfigurationService(fs, lg);
 
         service.Set(sut1, "test2", "planes");
 
@@ -93,7 +97,8 @@ public class ScriptConfigurationServiceTests
                 },
             }
         );
-        var service = new ScriptConfigurationService(fs);
+        var lg = NullLogger<ScriptConfigurationService>.Instance;
+        var service = new ScriptConfigurationService(fs, lg);
         service.TryGet<string>(sut1, "test2", out var initial);
         initial.ShouldNotBe("planes");
 
@@ -110,7 +115,8 @@ public class ScriptConfigurationServiceTests
     {
         var sut1 = new Sut1();
         var fs = new MockFileSystem();
-        var service = new ScriptConfigurationService(fs);
+        var lg = NullLogger<ScriptConfigurationService>.Instance;
+        var service = new ScriptConfigurationService(fs, lg);
 
         var result = service.TryGet<string>(sut1, "test2", out var value);
         result.ShouldBeFalse();
@@ -130,7 +136,8 @@ public class ScriptConfigurationServiceTests
                 },
             }
         );
-        var service = new ScriptConfigurationService(fs);
+        var lg = NullLogger<ScriptConfigurationService>.Instance;
+        var service = new ScriptConfigurationService(fs, lg);
 
         var result = service.TryGet<int>(sut1, "test1", out var value);
         result.ShouldBeFalse();
@@ -150,7 +157,8 @@ public class ScriptConfigurationServiceTests
                 },
             }
         );
-        var service = new ScriptConfigurationService(fs);
+        var lg = NullLogger<ScriptConfigurationService>.Instance;
+        var service = new ScriptConfigurationService(fs, lg);
 
         var result = service.TryGet<int>(sut1, "test1", out var value);
         result.ShouldBeTrue();
@@ -170,7 +178,8 @@ public class ScriptConfigurationServiceTests
                 },
             }
         );
-        var service = new ScriptConfigurationService(fs);
+        var lg = NullLogger<ScriptConfigurationService>.Instance;
+        var service = new ScriptConfigurationService(fs, lg);
 
         var result = service.TryGet<string>(sut1, "test2", out var value);
         result.ShouldBeFalse();
@@ -190,7 +199,8 @@ public class ScriptConfigurationServiceTests
                 },
             }
         );
-        var service = new ScriptConfigurationService(fs);
+        var lg = NullLogger<ScriptConfigurationService>.Instance;
+        var service = new ScriptConfigurationService(fs, lg);
 
         var result = service.TryGet<string>(sut1, "test2", out var value);
         result.ShouldBeTrue();
@@ -210,7 +220,8 @@ public class ScriptConfigurationServiceTests
                 },
             }
         );
-        var service = new ScriptConfigurationService(fs);
+        var lg = NullLogger<ScriptConfigurationService>.Instance;
+        var service = new ScriptConfigurationService(fs, lg);
 
         var result = service.Remove(sut1, "test1");
         result.ShouldBeFalse();
@@ -229,7 +240,8 @@ public class ScriptConfigurationServiceTests
                 },
             }
         );
-        var service = new ScriptConfigurationService(fs);
+        var lg = NullLogger<ScriptConfigurationService>.Instance;
+        var service = new ScriptConfigurationService(fs, lg);
 
         var result = service.Remove(sut1, "test1");
         result.ShouldBeTrue();
@@ -248,7 +260,8 @@ public class ScriptConfigurationServiceTests
                 },
             }
         );
-        var service = new ScriptConfigurationService(fs);
+        var lg = NullLogger<ScriptConfigurationService>.Instance;
+        var service = new ScriptConfigurationService(fs, lg);
 
         var result = service.Contains(sut1, "test1");
         result.ShouldBeFalse();
@@ -267,7 +280,8 @@ public class ScriptConfigurationServiceTests
                 },
             }
         );
-        var service = new ScriptConfigurationService(fs);
+        var lg = NullLogger<ScriptConfigurationService>.Instance;
+        var service = new ScriptConfigurationService(fs, lg);
 
         var result = service.Contains(sut1, "test1");
         result.ShouldBeTrue();

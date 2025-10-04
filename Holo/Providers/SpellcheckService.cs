@@ -4,20 +4,20 @@ using System.IO.Abstractions;
 using System.Text.RegularExpressions;
 using Holo.Configuration;
 using Holo.Models;
-using NLog;
+using Microsoft.Extensions.Logging;
 using WeCantSpell.Hunspell;
 
 namespace Holo.Providers;
 
 public partial class SpellcheckService(
     IFileSystem fileSystem,
+    ILogger<SpellcheckService> logger,
     IDictionaryService dictionaryService,
     IConfiguration configuration,
     IGlobals globals,
     IProjectProvider projectProvider
 ) : ISpellcheckService
 {
-    private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
     private static readonly string[] EffectHeuristics = ["fx", "karaoke", "code"];
     private const string TypesettingHeuristic = @"\pos";
 
@@ -84,7 +84,10 @@ public partial class SpellcheckService(
 
         if (!dictionaryService.TryGetDictionary(culture, out var spd))
         {
-            Logger.Warn($"Spellcheck dictionary could not be found for culture {culture}");
+            logger.LogWarning(
+                "Spellcheck dictionary could not be found for culture {Culture}",
+                culture
+            );
             return;
         }
 
@@ -117,7 +120,7 @@ public partial class SpellcheckService(
     /// <inheritdoc />
     public bool IsDictionaryInstalled(string culture)
     {
-        Logger.Debug($"Checking if {culture} dictionary is installed...");
+        logger.LogDebug("Checking if {Culture} dictionary is installed...", culture);
         if (!dictionaryService.TryGetDictionary(culture, out _))
         {
             var lang = SpellcheckLanguage.AvailableLanguages.FirstOrDefault(l =>
@@ -125,7 +128,7 @@ public partial class SpellcheckService(
             );
             if (lang is null)
             {
-                Logger.Warn($"Language {culture} not found, ignoring for now...");
+                logger.LogWarning("Language {Culture} not found, ignoring for now...", culture);
                 return true; // Ignore
             }
 

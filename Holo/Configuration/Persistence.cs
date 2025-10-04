@@ -7,7 +7,7 @@ using System.Text.Json.Serialization;
 using AssCS;
 using AssCS.Utilities;
 using Holo.IO;
-using NLog;
+using Microsoft.Extensions.Logging;
 
 namespace Holo.Configuration;
 
@@ -17,7 +17,6 @@ namespace Holo.Configuration;
 /// </summary>
 public class Persistence : BindableBase, IPersistence
 {
-    private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
         IncludeFields = true,
@@ -28,6 +27,7 @@ public class Persistence : BindableBase, IPersistence
     /// The filesystem being used
     /// </summary>
     private readonly IFileSystem _fileSystem;
+    private readonly ILogger _logger;
 
     private string _layoutName;
     private bool _useColorRing;
@@ -66,7 +66,7 @@ public class Persistence : BindableBase, IPersistence
     public bool Save()
     {
         var path = Paths.Persistence.LocalPath;
-        Logger.Info($"Writing persistence to {path}...");
+        _logger.LogInformation("Writing persistence to {Path}...", path);
         try
         {
             if (!_fileSystem.Directory.Exists(Path.GetDirectoryName(path)))
@@ -91,19 +91,19 @@ public class Persistence : BindableBase, IPersistence
 
             var content = JsonSerializer.Serialize(model, JsonOptions);
             writer.Write(content);
-            Logger.Info("Done!");
+            _logger.LogInformation("Done!");
             return true;
         }
         catch (Exception ex) when (ex is IOException or JsonException)
         {
-            Logger.Error(ex);
+            _logger.LogError(ex, "Failed to write persistence");
             return false;
         }
     }
 
-    public static Persistence Parse(IFileSystem fileSystem)
+    public static Persistence Parse(IFileSystem fileSystem, ILogger<Persistence> logger)
     {
-        Logger.Info("Parsing persistence...");
+        logger.LogInformation("Parsing persistence...");
         var path = Paths.Persistence.LocalPath;
         try
         {
@@ -112,8 +112,8 @@ public class Persistence : BindableBase, IPersistence
 
             if (!fileSystem.File.Exists(path))
             {
-                Logger.Warn("Persistence file does not exist, using defaults...");
-                return new Persistence(fileSystem);
+                logger.LogWarning("Persistence file does not exist, using defaults...");
+                return new Persistence(fileSystem, logger);
             }
 
             using var fs = fileSystem.FileStream.New(
@@ -128,21 +128,20 @@ public class Persistence : BindableBase, IPersistence
                 JsonSerializer.Deserialize<PersistenceModel>(reader.ReadToEnd(), JsonOptions)
                 ?? throw new InvalidDataException("Persistence model deserialization failed!");
 
-            var result = new Persistence(fileSystem)
+            var result = new Persistence(fileSystem, logger)
             {
                 _layoutName = model.LayoutName,
                 _useColorRing = model.UseColorRing,
                 _playgroundCs = StringEncoder.Base64Decode(model.PlaygroundCs),
                 _playgroundJs = StringEncoder.Base64Decode(model.PlaygroundJs),
             };
-            Logger.Info("Done!");
+            logger.LogInformation("Done!");
             return result;
         }
         catch (Exception ex) when (ex is IOException or JsonException)
         {
-            Logger.Error(ex);
-            Logger.Error("Failed to parse persistence, using defaults...");
-            return new Persistence(fileSystem);
+            logger.LogError(ex, "Failed to parse persistence, using defaults...");
+            return new Persistence(fileSystem, logger);
         }
     }
 
@@ -150,9 +149,11 @@ public class Persistence : BindableBase, IPersistence
     /// Instantiate a Persistence instance
     /// </summary>
     /// <param name="fileSystem">FileSystem to use</param>
-    public Persistence(IFileSystem fileSystem)
+    /// <param name="logger">Logger to use</param>
+    public Persistence(IFileSystem fileSystem, ILogger<Persistence> logger)
     {
         _fileSystem = fileSystem;
+        _logger = logger;
         _layoutName = "Default";
         _useColorRing = false;
         _playgroundCs = string.Empty;

@@ -4,7 +4,8 @@ using AssCS;
 using AssCS.History;
 using Holo.Configuration;
 using Holo.Media.Providers;
-using NLog;
+using Holo.Providers;
+using Microsoft.Extensions.Logging;
 
 namespace Holo;
 
@@ -18,7 +19,7 @@ namespace Holo;
 /// </remarks>
 public class Workspace : BindableBase
 {
-    private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+    private readonly ILogger _logger;
     private FileSystemWatcher? _fileSystemWatcher;
     private DateTimeOffset? _lastWriteTime;
     private DateTimeOffset? _lastExternalModificationAlertTime;
@@ -152,8 +153,11 @@ public class Workspace : BindableBase
                 )
             );
 
-        Logger.Trace(
-            $"Commiting {selection.Count} events under change {changeType} (amend={amend})"
+        _logger.LogTrace(
+            "Commiting {Count} events under change {Type} (amend={Amend})",
+            selection.Count,
+            changeType,
+            amend
         );
 
         foreach (var e in selection)
@@ -170,7 +174,7 @@ public class Workspace : BindableBase
         if (!Document.HistoryManager.CanUndo)
             return;
         SelectionManager.BeginSelectionChange();
-        Logger.Trace("Undoing");
+        _logger.LogTrace("Undoing");
         var commit = Document.HistoryManager.Undo();
 
         if (commit is EventCommit eventCommit)
@@ -185,7 +189,9 @@ public class Workspace : BindableBase
                         if (delta.NewEvent is not null)
                             Document.EventManager.Remove(delta.NewEvent.Id);
                         else
-                            Logger.Warn($"Cannot undo event addition because newEvent is null");
+                            _logger.LogWarning(
+                                "Cannot undo event addition because newEvent is null"
+                            );
                         break;
                     case ChangeType.Remove:
                         if (delta.OldEvent is not null)
@@ -199,7 +205,9 @@ public class Workspace : BindableBase
                                 );
                         }
                         else
-                            Logger.Warn($"Cannot undo event removal because oldEvent is null");
+                            _logger.LogWarning(
+                                "Cannot undo event removal because oldEvent is null"
+                            );
                         break;
                     case ChangeType.Modify:
                         Document.EventManager.ReplaceInPlace(delta.OldEvent!);
@@ -214,7 +222,7 @@ public class Workspace : BindableBase
         if (!Document.HistoryManager.CanRedo)
             return;
         SelectionManager.BeginSelectionChange();
-        Logger.Trace("Redoing");
+        _logger.LogTrace("Redoing");
         var commit = Document.HistoryManager.Redo();
 
         if (commit is EventCommit eventCommit)
@@ -237,14 +245,18 @@ public class Workspace : BindableBase
                                 );
                         }
                         else
-                            Logger.Warn($"Cannot redo event addition because newEvent is null");
+                            _logger.LogWarning(
+                                "Cannot redo event addition because newEvent is null"
+                            );
 
                         break;
                     case ChangeType.Remove:
                         if (delta.OldEvent is not null)
                             Document.EventManager.Remove(delta.OldEvent.Id);
                         else
-                            Logger.Warn($"Cannot redo event removal because oldEvent is null");
+                            _logger.LogWarning(
+                                "Cannot redo event removal because oldEvent is null"
+                            );
                         break;
                     case ChangeType.Modify:
                         Document.EventManager.ReplaceInPlace(delta.NewEvent!);
@@ -334,6 +346,7 @@ public class Workspace : BindableBase
     /// or <see langword="null"/> if unsaved</param>
     public Workspace(Document document, int id, Uri? savePath = null)
     {
+        _logger = StaticLoggerFactory.GetLogger<Workspace>();
         Document = document;
         Id = id;
         _savePath = savePath;
@@ -366,7 +379,7 @@ public class Workspace : BindableBase
         // TODO: make this cleaner
         var mp = new MizukiSourceProvider();
         mp.Initialize();
-        MediaController = new MediaController(mp);
+        MediaController = new MediaController(mp, StaticLoggerFactory.GetLogger<MediaController>());
 
         // TODO: Should this be here or elsewhere?
         document.HistoryManager.OnChangeMade += (_, _) => MediaController.SetSubtitles(document);

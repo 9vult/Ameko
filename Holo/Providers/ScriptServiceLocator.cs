@@ -3,7 +3,7 @@
 using System.Runtime.CompilerServices;
 using Holo.Configuration;
 using Holo.Scripting;
-using NLog;
+using Microsoft.Extensions.Logging;
 
 namespace Holo.Providers;
 
@@ -23,8 +23,8 @@ namespace Holo.Providers;
 /// </remarks>
 public sealed class ScriptServiceLocator
 {
-    private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
     private static Dictionary<Type, object>? Services { get; set; }
+    private static ILoggerFactory? LoggerFactory { get; set; }
 
     /// <summary>
     /// Retrieves a registered service instance of the specified type.
@@ -70,14 +70,31 @@ public sealed class ScriptServiceLocator
         if (Services.TryGetValue(typeof(T), out var service))
             return (T)service;
 
-        Logger.Warn($"{callerName} attempted to get restricted service {typeof(T)}");
         throw new ArgumentOutOfRangeException(
         // nameof(T),
         // string.Format(I18N.Other.ScriptServiceLocator_Get_UnregisteredScript, typeof(T).Name)
         );
     }
 
+    /// <summary>
+    /// Create a logger for a script
+    /// </summary>
+    /// <param name="qualifiedName">Qualified name of the script</param>
+    /// <returns>A logger with its category set to the <paramref name="qualifiedName"/></returns>
+    /// <exception cref="InvalidOperationException">Thrown if this method is called before the locator is initialized</exception>
+    public static ILogger GetLogger(string qualifiedName)
+    {
+        if (LoggerFactory is null)
+        {
+            throw new InvalidOperationException(
+                $"{nameof(ScriptServiceLocator)} is not initialized."
+            );
+        }
+        return LoggerFactory.CreateLogger(qualifiedName);
+    }
+
     public ScriptServiceLocator(
+        ILoggerFactory loggerFactory,
         IConfiguration configuration,
         IGlobals globals,
         IProjectProvider projectProvider,
@@ -87,6 +104,7 @@ public sealed class ScriptServiceLocator
         IWindowService windowService
     )
     {
+        LoggerFactory = loggerFactory;
         Services = new Dictionary<Type, object>
         {
             [typeof(IConfiguration)] = configuration,

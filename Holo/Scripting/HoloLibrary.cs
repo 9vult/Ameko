@@ -1,7 +1,8 @@
 ﻿// SPDX-License-Identifier: MPL-2.0
 
+using Holo.Providers;
 using Holo.Scripting.Models;
-using NLog;
+using Microsoft.Extensions.Logging;
 
 namespace Holo.Scripting;
 
@@ -31,7 +32,7 @@ public abstract class HoloLibrary : IHoloExecutable
     protected HoloLibrary(ModuleInfo info)
     {
         Info = info;
-        Logger = LogManager.GetLogger(info.QualifiedName ?? GetType().Name);
+        Logger = ScriptServiceLocator.GetLogger(info.QualifiedName ?? GetType().Name);
     }
 
     // ReSharper disable once MemberCanBePrivate.Global

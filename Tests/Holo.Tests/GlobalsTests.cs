@@ -4,6 +4,7 @@ using System.IO.Abstractions.TestingHelpers;
 using AssCS;
 using Holo.Configuration;
 using Holo.IO;
+using Microsoft.Extensions.Logging.Abstractions;
 using Shouldly;
 
 namespace Holo.Tests;
@@ -14,7 +15,8 @@ public class GlobalsTests
     public void Constructor()
     {
         var fs = new MockFileSystem();
-        var g = new Globals(fs);
+        var lg = NullLogger<Globals>.Instance;
+        var g = new Globals(fs, lg);
         g.StyleManager.Count.ShouldBe(0);
         g.Colors.Count.ShouldBe(0);
     }
@@ -23,7 +25,8 @@ public class GlobalsTests
     public void AddColor_NotExists()
     {
         var fs = new MockFileSystem();
-        var g = new Globals(fs);
+        var lg = NullLogger<Globals>.Instance;
+        var g = new Globals(fs, lg);
 
         var result = g.AddColor(Color.FromRgb(1, 2, 3));
 
@@ -35,7 +38,8 @@ public class GlobalsTests
     public void AddColor_Exists()
     {
         var fs = new MockFileSystem();
-        var g = new Globals(fs);
+        var lg = NullLogger<Globals>.Instance;
+        var g = new Globals(fs, lg);
 
         var result1 = g.AddColor(Color.FromRgb(1, 2, 3));
         var result2 = g.AddColor(Color.FromRgb(1, 2, 3));
@@ -49,7 +53,8 @@ public class GlobalsTests
     public void RemoveColor_NotExists()
     {
         var fs = new MockFileSystem();
-        var g = new Globals(fs);
+        var lg = NullLogger<Globals>.Instance;
+        var g = new Globals(fs, lg);
 
         var result = g.RemoveColor(Color.FromRgb(1, 2, 3));
 
@@ -61,7 +66,8 @@ public class GlobalsTests
     public void RemoveColor_Exists()
     {
         var fs = new MockFileSystem();
-        var g = new Globals(fs);
+        var lg = NullLogger<Globals>.Instance;
+        var g = new Globals(fs, lg);
 
         var result1 = g.AddColor(Color.FromRgb(1, 2, 3));
         var result2 = g.RemoveColor(Color.FromRgb(1, 2, 3));
@@ -75,7 +81,8 @@ public class GlobalsTests
     public void Parse_NotExists()
     {
         var fs = new MockFileSystem();
-        var g = Globals.Parse(fs);
+        var lg = NullLogger<Globals>.Instance;
+        var g = Globals.Parse(fs, lg);
 
         g.ShouldNotBeNull();
         g.StyleManager.Count.ShouldBe(0);
@@ -91,7 +98,8 @@ public class GlobalsTests
                 { Paths.Globals.LocalPath, new MockFileData(ExampleGlobals1) },
             }
         );
-        var g = Globals.Parse(fs);
+        var lg = NullLogger<Globals>.Instance;
+        var g = Globals.Parse(fs, lg);
 
         g.ShouldNotBeNull();
         g.StyleManager.Count.ShouldBe(0);
@@ -107,7 +115,8 @@ public class GlobalsTests
                 { Paths.Globals.LocalPath, new MockFileData(ExampleGlobals2) },
             }
         );
-        var g = Globals.Parse(fs);
+        var lg = NullLogger<Globals>.Instance;
+        var g = Globals.Parse(fs, lg);
 
         g.ShouldNotBeNull();
         g.StyleManager.Count.ShouldBe(1);
@@ -126,7 +135,8 @@ public class GlobalsTests
                 { Paths.Globals.LocalPath, new MockFileData(ExampleGlobals2) },
             }
         );
-        var g = Globals.Parse(fs);
+        var lg = NullLogger<Globals>.Instance;
+        var g = Globals.Parse(fs, lg);
 
         var result = g.Save();
 
@@ -138,7 +148,8 @@ public class GlobalsTests
     public void Save_NotExists()
     {
         var fs = new MockFileSystem();
-        var g = Globals.Parse(fs);
+        var lg = NullLogger<Globals>.Instance;
+        var g = Globals.Parse(fs, lg);
 
         var result = g.Save();
 

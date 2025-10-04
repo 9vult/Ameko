@@ -2,13 +2,11 @@
 
 using System.Collections.ObjectModel;
 using AssCS;
-using NLog;
 
 namespace Holo;
 
 public class SelectionManager : BindableBase
 {
-    private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
     private Event _activeEvent;
     private readonly RangeObservableCollection<Event> _selectedEventCollection;
 
@@ -36,7 +34,6 @@ public class SelectionManager : BindableBase
     public void EndSelectionChange()
     {
         IsSelectionChanging = false;
-        Logger.Debug("Selection change ended");
     }
 
     /// <summary>
@@ -83,7 +80,6 @@ public class SelectionManager : BindableBase
         if (active == ActiveEvent && selection.Count == SelectedEventCollection.Count)
             return;
 
-        Logger.Debug($"Now selecting {active.Id} ({selection.Count})");
         if (active == ActiveEvent && selection.Count == SelectedEventCollection.Count)
             return;
 

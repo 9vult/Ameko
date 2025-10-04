@@ -3,6 +3,7 @@
 using System.IO.Abstractions.TestingHelpers;
 using AssCS;
 using Holo.Models;
+using Microsoft.Extensions.Logging.Abstractions;
 using Shouldly;
 using static Holo.Tests.Utilities.TestUtils;
 
@@ -14,7 +15,8 @@ public class ProjectTests
     public void Constructor()
     {
         var fs = new MockFileSystem();
-        var prj = new Project(fs);
+        var lg = NullLogger<Project>.Instance;
+        var prj = new Project(fs, lg);
         prj.LoadedWorkspaces.Count.ShouldBe(1);
         prj.WorkingSpace?.Id.ShouldBe(prj.LoadedWorkspaces[0].Id);
     }
@@ -23,7 +25,8 @@ public class ProjectTests
     public void AddWorkspace_New()
     {
         var fs = new MockFileSystem();
-        var prj = new Project(fs);
+        var lg = NullLogger<Project>.Instance;
+        var prj = new Project(fs, lg);
         var workspaceId = prj.AddWorkspace().Id;
 
         prj.LoadedWorkspaces.ShouldContain(w => w.Id == workspaceId);
@@ -34,7 +37,8 @@ public class ProjectTests
     public void AddWorkspace_Existing()
     {
         var fs = new MockFileSystem();
-        var prj = new Project(fs);
+        var lg = NullLogger<Project>.Instance;
+        var prj = new Project(fs, lg);
         var workspace = new Workspace(new Document(true), 123);
         var workspaceId = prj.AddWorkspace(workspace).Id;
 
@@ -46,7 +50,8 @@ public class ProjectTests
     public void AddWorkspace_FromExistingDocument()
     {
         var fs = new MockFileSystem();
-        var prj = new Project(fs);
+        var lg = NullLogger<Project>.Instance;
+        var prj = new Project(fs, lg);
         var document = new Document(true);
         var workspaceId = prj.AddWorkspace(document, MakeTestableUri(fs, "test.ass")).Id;
 
@@ -58,7 +63,8 @@ public class ProjectTests
     public void RemoveWorkspace_Exists()
     {
         var fs = new MockFileSystem();
-        var prj = new Project(fs);
+        var lg = NullLogger<Project>.Instance;
+        var prj = new Project(fs, lg);
         var workspaceId = prj.AddWorkspace().Id;
 
         var result = prj.RemoveWorkspace(workspaceId);
@@ -71,7 +77,8 @@ public class ProjectTests
     public void RemoveWorkspace_NotExists()
     {
         var fs = new MockFileSystem();
-        var prj = new Project(fs);
+        var lg = NullLogger<Project>.Instance;
+        var prj = new Project(fs, lg);
         var result = prj.RemoveWorkspace(999);
 
         result.ShouldBeFalse();
@@ -81,7 +88,8 @@ public class ProjectTests
     public void AddDirectory_Root()
     {
         var fs = new MockFileSystem();
-        var prj = new Project(fs);
+        var lg = NullLogger<Project>.Instance;
+        var prj = new Project(fs, lg);
         var dir = prj.AddDirectory("Directory1");
 
         prj.ReferencedItems.ShouldContain(dir);
@@ -91,7 +99,8 @@ public class ProjectTests
     public void AddDirectory_Child()
     {
         var fs = new MockFileSystem();
-        var prj = new Project(fs);
+        var lg = NullLogger<Project>.Instance;
+        var prj = new Project(fs, lg);
         var dir1 = prj.AddDirectory("Directory1");
         var dir2 = prj.AddDirectory("Directory2", dir1.Id);
 
@@ -103,7 +112,8 @@ public class ProjectTests
     public void RemoveDirectory_Root()
     {
         var fs = new MockFileSystem();
-        var prj = new Project(fs);
+        var lg = NullLogger<Project>.Instance;
+        var prj = new Project(fs, lg);
         var dir1 = prj.AddDirectory("Directory1");
         var dir2 = prj.AddDirectory("Directory2", dir1.Id);
 
@@ -120,7 +130,8 @@ public class ProjectTests
     public void RemoveDirectory_Child()
     {
         var fs = new MockFileSystem();
-        var prj = new Project(fs);
+        var lg = NullLogger<Project>.Instance;
+        var prj = new Project(fs, lg);
         var dir = prj.AddDirectory("Directory1");
 
         prj.ReferencedItems.ShouldContain(dir);
@@ -133,7 +144,8 @@ public class ProjectTests
     public void AddWorkspace_ToDirectory()
     {
         var fs = new MockFileSystem();
-        var prj = new Project(fs);
+        var lg = NullLogger<Project>.Instance;
+        var prj = new Project(fs, lg);
         var dir = prj.AddDirectory("Directory1");
 
         var workspaceId = prj.AddWorkspace(dir.Id).Id;
@@ -147,7 +159,8 @@ public class ProjectTests
     public void OpenDocument_NotExists()
     {
         var fs = new MockFileSystem();
-        var prj = new Project(fs);
+        var lg = NullLogger<Project>.Instance;
+        var prj = new Project(fs, lg);
         var result = prj.OpenDocument(999);
 
         result.ShouldBe(-1);
@@ -157,7 +170,8 @@ public class ProjectTests
     public void CloseDocument_Exists()
     {
         var fs = new MockFileSystem();
-        var prj = new Project(fs);
+        var lg = NullLogger<Project>.Instance;
+        var prj = new Project(fs, lg);
         var docId = prj.AddWorkspace().Id;
 
         var result = prj.CloseDocument(docId);
@@ -170,7 +184,8 @@ public class ProjectTests
     public void CloseDocument_NotExists()
     {
         var fs = new MockFileSystem();
-        var prj = new Project(fs);
+        var lg = NullLogger<Project>.Instance;
+        var prj = new Project(fs, lg);
         var result = prj.CloseDocument(999);
 
         result.ShouldBeFalse();
@@ -180,9 +195,10 @@ public class ProjectTests
     public void Save()
     {
         var fs = new MockFileSystem();
+        var lg = NullLogger<Project>.Instance;
         var path = MakeTestableUri(fs, "test.aproj");
 
-        var prj = new Project(fs) { SavePath = path };
+        var prj = new Project(fs, lg) { SavePath = path };
 
         var result = prj.Save();
 
@@ -194,10 +210,11 @@ public class ProjectTests
     public void Parse()
     {
         var fs = new MockFileSystem();
+        var lg = NullLogger<Project>.Instance;
         var path = MakeTestableUri(fs, "test.aproj");
         fs.AddFile(path.LocalPath, new MockFileData(ExampleProject));
 
-        var prj = Project.Parse(fs, path);
+        var prj = new Project(fs, lg, path);
 
         prj.Cps.ShouldBe<uint?>(21);
         prj.UseSoftLinebreaks.ShouldBeNull();
@@ -209,6 +226,7 @@ public class ProjectTests
     public void LoadDirectory_NotEmpty()
     {
         var fs = new MockFileSystem();
+        var lg = NullLogger<Project>.Instance;
         fs.AddDirectory(MakeTestableUri(fs, "test/01").LocalPath);
         fs.AddDirectory(MakeTestableUri(fs, "test/02").LocalPath);
         fs.AddDirectory(MakeTestableUri(fs, "test/03").LocalPath);
@@ -217,7 +235,7 @@ public class ProjectTests
         fs.AddFile(MakeTestableUri(fs, "test/01/d.ass").LocalPath, new MockFileData(string.Empty));
         fs.AddFile(MakeTestableUri(fs, "test/03/d.ass").LocalPath, new MockFileData(string.Empty));
 
-        var prj = Project.LoadDirectory(fs, MakeTestableUri(fs, "test/"));
+        var prj = new Project(fs, lg, MakeTestableUri(fs, "test/"));
 
         prj.ReferencedItems.Count.ShouldBe(3);
         prj.ReferencedItems.First(i => i.Type == ProjectItemType.Directory)
@@ -230,11 +248,12 @@ public class ProjectTests
     public void LoadDirectory_Empty()
     {
         var fs = new MockFileSystem();
+        var lg = NullLogger<Project>.Instance;
         fs.AddDirectory(MakeTestableUri(fs, "test/01").LocalPath);
         fs.AddDirectory(MakeTestableUri(fs, "test/02").LocalPath);
         fs.AddDirectory(MakeTestableUri(fs, "test/03").LocalPath);
 
-        var prj = Project.LoadDirectory(fs, MakeTestableUri(fs, "test/"));
+        var prj = new Project(fs, lg, MakeTestableUri(fs, "test/"));
 
         prj.ReferencedItems.Count.ShouldBe(1);
         prj.ReferencedItems.First().Type.ShouldBe(ProjectItemType.Document); // default document
@@ -244,7 +263,8 @@ public class ProjectTests
     public void LoadDirectory_NotExists()
     {
         var fs = new MockFileSystem();
-        var prj = Project.LoadDirectory(fs, MakeTestableUri(fs, "test/"));
+        var lg = NullLogger<Project>.Instance;
+        var prj = new Project(fs, lg, MakeTestableUri(fs, "test/"));
 
         prj.ReferencedItems.Count.ShouldBe(1);
         prj.ReferencedItems.First().Type.ShouldBe(ProjectItemType.Document); // default document

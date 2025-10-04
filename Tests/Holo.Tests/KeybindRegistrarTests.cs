@@ -3,6 +3,7 @@
 using System.IO.Abstractions.TestingHelpers;
 using Holo.Configuration.Keybinds;
 using Holo.IO;
+using Microsoft.Extensions.Logging.Abstractions;
 using Shouldly;
 
 namespace Holo.Tests;
@@ -13,7 +14,8 @@ public class KeybindRegistrarTests
     public void Constructor()
     {
         var fs = new MockFileSystem();
-        var k = new KeybindRegistrar(fs);
+        var lg = NullLogger<KeybindRegistrar>.Instance;
+        var k = new KeybindRegistrar(fs, lg);
         k.GetKeybinds(KeybindContext.Global).Count().ShouldBe(0);
     }
 
@@ -21,7 +23,8 @@ public class KeybindRegistrarTests
     public void RegisterKeybind_NotExists()
     {
         var fs = new MockFileSystem();
-        var k = new KeybindRegistrar(fs);
+        var lg = NullLogger<KeybindRegistrar>.Instance;
+        var k = new KeybindRegistrar(fs, lg);
         var bind = new Keybind("test.bind", "Ctrl+A", KeybindContext.Grid);
 
         var result = k.RegisterKeybind(bind);
@@ -34,7 +37,8 @@ public class KeybindRegistrarTests
     public void RegisterKeybind_Exists()
     {
         var fs = new MockFileSystem();
-        var k = new KeybindRegistrar(fs);
+        var lg = NullLogger<KeybindRegistrar>.Instance;
+        var k = new KeybindRegistrar(fs, lg);
         var bind = new Keybind("test.bind", "Ctrl+A", KeybindContext.Grid);
 
         k.RegisterKeybind(bind);
@@ -48,7 +52,8 @@ public class KeybindRegistrarTests
     public void DeregisterKeybind_NotExists()
     {
         var fs = new MockFileSystem();
-        var k = new KeybindRegistrar(fs);
+        var lg = NullLogger<KeybindRegistrar>.Instance;
+        var k = new KeybindRegistrar(fs, lg);
         var bind = new Keybind("test.bind", "Ctrl+A", KeybindContext.Grid);
 
         var result = k.DeregisterKeybind(bind.QualifiedName);
@@ -61,7 +66,8 @@ public class KeybindRegistrarTests
     public void DeregisterKeybind_Exists()
     {
         var fs = new MockFileSystem();
-        var k = new KeybindRegistrar(fs);
+        var lg = NullLogger<KeybindRegistrar>.Instance;
+        var k = new KeybindRegistrar(fs, lg);
         var bind = new Keybind("test.bind", "Ctrl+A", KeybindContext.Grid);
 
         k.RegisterKeybind(bind);
@@ -75,7 +81,8 @@ public class KeybindRegistrarTests
     public void RegisterKeybinds()
     {
         var fs = new MockFileSystem();
-        var k = new KeybindRegistrar(fs);
+        var lg = NullLogger<KeybindRegistrar>.Instance;
+        var k = new KeybindRegistrar(fs, lg);
         var bind1 = new Keybind("test.bind1", "Ctrl+A", KeybindContext.Grid);
         var bind2 = new Keybind("test.bind2", "Ctrl+D", KeybindContext.Audio);
 
@@ -90,7 +97,8 @@ public class KeybindRegistrarTests
     public void ApplyOverride_Key_Exists()
     {
         var fs = new MockFileSystem();
-        var k = new KeybindRegistrar(fs);
+        var lg = NullLogger<KeybindRegistrar>.Instance;
+        var k = new KeybindRegistrar(fs, lg);
         var bind = new Keybind("test.bind", "Ctrl+A", KeybindContext.Grid);
 
         k.RegisterKeybind(bind);
@@ -104,7 +112,8 @@ public class KeybindRegistrarTests
     public void ApplyOverride_NotExists()
     {
         var fs = new MockFileSystem();
-        var k = new KeybindRegistrar(fs);
+        var lg = NullLogger<KeybindRegistrar>.Instance;
+        var k = new KeybindRegistrar(fs, lg);
         var bind = new Keybind("test.bind", "Ctrl+A", KeybindContext.Grid);
 
         var result = k.ApplyOverride(bind.QualifiedName, keybind: "Ctrl+J", null, null);
@@ -116,7 +125,8 @@ public class KeybindRegistrarTests
     public void ClearOverride_Exists()
     {
         var fs = new MockFileSystem();
-        var k = new KeybindRegistrar(fs);
+        var lg = NullLogger<KeybindRegistrar>.Instance;
+        var k = new KeybindRegistrar(fs, lg);
         var bind = new Keybind("test.bind", "Ctrl+A", KeybindContext.Grid);
 
         k.RegisterKeybind(bind);
@@ -131,7 +141,8 @@ public class KeybindRegistrarTests
     public void ClearOverride_NotExists()
     {
         var fs = new MockFileSystem();
-        var k = new KeybindRegistrar(fs);
+        var lg = NullLogger<KeybindRegistrar>.Instance;
+        var k = new KeybindRegistrar(fs, lg);
         var bind = new Keybind("test.bind", "Ctrl+A", KeybindContext.Grid);
 
         var result = k.ClearOverride(bind.QualifiedName);
@@ -143,7 +154,8 @@ public class KeybindRegistrarTests
     public void GetKeybind_Exists()
     {
         var fs = new MockFileSystem();
-        var k = new KeybindRegistrar(fs);
+        var lg = NullLogger<KeybindRegistrar>.Instance;
+        var k = new KeybindRegistrar(fs, lg);
         var bind = new Keybind("test.bind", "Ctrl+A", KeybindContext.Grid);
 
         k.RegisterKeybind(bind);
@@ -157,7 +169,8 @@ public class KeybindRegistrarTests
     public void GetKeybind_NotExists()
     {
         var fs = new MockFileSystem();
-        var k = new KeybindRegistrar(fs);
+        var lg = NullLogger<KeybindRegistrar>.Instance;
+        var k = new KeybindRegistrar(fs, lg);
         var bind = new Keybind("test.bind", "Ctrl+A", KeybindContext.Grid);
 
         var result = k.GetKeybind(bind.QualifiedName);
@@ -169,7 +182,8 @@ public class KeybindRegistrarTests
     public void TryGetKeybind_Exists()
     {
         var fs = new MockFileSystem();
-        var k = new KeybindRegistrar(fs);
+        var lg = NullLogger<KeybindRegistrar>.Instance;
+        var k = new KeybindRegistrar(fs, lg);
         var bind = new Keybind("test.bind", "Ctrl+A", KeybindContext.Grid);
 
         k.RegisterKeybind(bind);
@@ -184,7 +198,8 @@ public class KeybindRegistrarTests
     public void TryGetKeybind_NotExists()
     {
         var fs = new MockFileSystem();
-        var k = new KeybindRegistrar(fs);
+        var lg = NullLogger<KeybindRegistrar>.Instance;
+        var k = new KeybindRegistrar(fs, lg);
         var bind = new Keybind("test.bind", "Ctrl+A", KeybindContext.Grid);
 
         var result = k.TryGetKeybind(bind.QualifiedName, out var bind2);
@@ -197,7 +212,8 @@ public class KeybindRegistrarTests
     public void IsKeybindRegistered_True()
     {
         var fs = new MockFileSystem();
-        var k = new KeybindRegistrar(fs);
+        var lg = NullLogger<KeybindRegistrar>.Instance;
+        var k = new KeybindRegistrar(fs, lg);
         var bind = new Keybind("test.bind", "Ctrl+A", KeybindContext.Grid);
 
         k.RegisterKeybind(bind);
@@ -211,7 +227,8 @@ public class KeybindRegistrarTests
     public void IsKeybindRegistered_False()
     {
         var fs = new MockFileSystem();
-        var k = new KeybindRegistrar(fs);
+        var lg = NullLogger<KeybindRegistrar>.Instance;
+        var k = new KeybindRegistrar(fs, lg);
         var bind = new Keybind("test.bind", "Ctrl+A", KeybindContext.Grid);
 
         var result = k.IsKeybindRegistered(bind.QualifiedName);
@@ -223,7 +240,8 @@ public class KeybindRegistrarTests
     public void GetOverridenKeybinds()
     {
         var fs = new MockFileSystem();
-        var k = new KeybindRegistrar(fs);
+        var lg = NullLogger<KeybindRegistrar>.Instance;
+        var k = new KeybindRegistrar(fs, lg);
         var bind1 = new Keybind("test.bind1", "Ctrl+A", KeybindContext.Grid);
         var bind2 = new Keybind("test.bind2", "Ctrl+D", KeybindContext.Audio);
 
@@ -240,7 +258,8 @@ public class KeybindRegistrarTests
     public void Parse_NotExists()
     {
         var fs = new MockFileSystem();
-        var k = new KeybindRegistrar(fs);
+        var lg = NullLogger<KeybindRegistrar>.Instance;
+        var k = new KeybindRegistrar(fs, lg);
         k.Parse();
 
         k.GetKeybinds(KeybindContext.Global).ShouldBeEmpty();
@@ -255,7 +274,8 @@ public class KeybindRegistrarTests
                 { Paths.Keybinds.LocalPath, new MockFileData(ExampleKeybinds1) },
             }
         );
-        var k = new KeybindRegistrar(fs);
+        var lg = NullLogger<KeybindRegistrar>.Instance;
+        var k = new KeybindRegistrar(fs, lg);
         k.Parse();
 
         k.GetKeybinds(KeybindContext.Global).ShouldNotBeEmpty();
@@ -271,7 +291,8 @@ public class KeybindRegistrarTests
                 { Paths.Keybinds.LocalPath, new MockFileData(ExampleKeybinds2) },
             }
         );
-        var k = new KeybindRegistrar(fs);
+        var lg = NullLogger<KeybindRegistrar>.Instance;
+        var k = new KeybindRegistrar(fs, lg);
         k.Parse();
 
         k.GetKeybind("ameko.document.open")?.OverrideKey.ShouldNotBeNull();
@@ -285,7 +306,8 @@ public class KeybindRegistrarTests
     public void Save_NotExists()
     {
         var fs = new MockFileSystem();
-        var k = new KeybindRegistrar(fs);
+        var lg = NullLogger<KeybindRegistrar>.Instance;
+        var k = new KeybindRegistrar(fs, lg);
 
         var bind = new Keybind("test.bind", "Ctrl+A", KeybindContext.Grid);
         k.RegisterKeybind(bind);

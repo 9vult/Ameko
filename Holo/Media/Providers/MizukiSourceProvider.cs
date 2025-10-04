@@ -6,7 +6,6 @@ using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
 using Holo.IO;
-using NLog;
 
 namespace Holo.Media.Providers;
 
@@ -15,7 +14,6 @@ namespace Holo.Media.Providers;
 /// </summary>
 public unsafe class MizukiSourceProvider : ISourceProvider
 {
-    private static readonly Logger Logger = LogManager.GetLogger("Mizuki");
     private static readonly External.LogCallback LogDelegate = Log;
 
     private GlobalContext* _context;
@@ -126,25 +124,27 @@ public unsafe class MizukiSourceProvider : ISourceProvider
     /// <param name="ptr">Pointer to the c-string</param>
     private static void Log(int level, nint ptr)
     {
-        var msg = Marshal.PtrToStringAnsi(ptr);
-        switch (level)
-        {
-            case 0:
-                Logger.Trace(msg);
-                break;
-            case 1:
-                Logger.Debug(msg);
-                break;
-            case 2:
-                Logger.Info(msg);
-                break;
-            case 3:
-                Logger.Warn(msg);
-                break;
-            case 4:
-                Logger.Error(msg);
-                break;
-        }
+        // TODO: Re-implement once we have a proper SourceProvider factory or something
+
+        // var msg = Marshal.PtrToStringAnsi(ptr);
+        // switch (level)
+        // {
+        //     case 0:
+        //         Logger.Trace(msg);
+        //         break;
+        //     case 1:
+        //         Logger.Debug(msg);
+        //         break;
+        //     case 2:
+        //         Logger.Info(msg);
+        //         break;
+        //     case 3:
+        //         Logger.Warn(msg);
+        //         break;
+        //     case 4:
+        //         Logger.Error(msg);
+        //         break;
+        // }
     }
 
     /// <summary>

@@ -7,7 +7,7 @@ using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using Holo.IO;
 using Holo.Scripting.Models;
-using NLog;
+using Microsoft.Extensions.Logging;
 
 namespace Holo.Scripting;
 
@@ -16,8 +16,6 @@ namespace Holo.Scripting;
 /// </summary>
 public partial class PackageManager : IPackageManager
 {
-    private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
         IncludeFields = true,
@@ -33,6 +31,7 @@ public partial class PackageManager : IPackageManager
     /// </summary>
     /// <remarks>This allows for filesystem mocking to be used in tests</remarks>
     private readonly IFileSystem _fileSystem;
+    private readonly ILogger _logger;
 
     /// <summary>
     /// The HttpClient being used
@@ -89,7 +88,10 @@ public partial class PackageManager : IPackageManager
     {
         if (IsModuleInstalled(module))
             return InstallationResult.AlreadyInstalled;
-        Logger.Info($"Attempting to install module {module.QualifiedName}");
+        _logger.LogInformation(
+            "Attempting to install module {ModuleQualifiedName}",
+            module.QualifiedName
+        );
 
         if (!ValidateQualifiedName(module.QualifiedName))
             return InstallationResult.InvalidName;
@@ -102,8 +104,10 @@ public partial class PackageManager : IPackageManager
         {
             if (!_moduleMap.TryGetValue(dependencyName, out var dependency))
             {
-                Logger.Error(
-                    $"Failed to find dependency {dependencyName} for module {module.QualifiedName}"
+                _logger.LogError(
+                    "Failed to find dependency {DependencyName} for module {ModuleQualifiedName}",
+                    dependencyName,
+                    module.QualifiedName
                 );
                 return InstallationResult.DependencyNotFound;
             }
@@ -162,25 +166,33 @@ public partial class PackageManager : IPackageManager
                 }
                 catch (Exception e)
                 {
-                    Logger.Warn($"Failed to download help file {help}");
-                    Logger.Warn(e);
+                    _logger.LogWarning(e, "Failed to download help file {Help}", help);
                 }
             }
 
             _installedModules.Add(module);
-            Logger.Info($"Successfully installed module {module.QualifiedName}");
+            _logger.LogInformation(
+                "Successfully installed module {ModuleQualifiedName}",
+                module.QualifiedName
+            );
             return InstallationResult.Success;
         }
         catch (IOException e)
         {
-            Logger.Error($"Failed to write module {module.QualifiedName} to disk");
-            Logger.Error(e);
+            _logger.LogError(
+                e,
+                "Failed to write module {ModuleQualifiedName} to disk",
+                module.QualifiedName
+            );
             return InstallationResult.FilesystemFailure;
         }
         catch (Exception e)
         {
-            Logger.Error($"Failed to install module {module.QualifiedName}");
-            Logger.Error(e);
+            _logger.LogError(
+                e,
+                "Failed to install module {ModuleQualifiedName}",
+                module.QualifiedName
+            );
             return InstallationResult.Failure;
         }
     }
@@ -198,7 +210,10 @@ public partial class PackageManager : IPackageManager
             return InstallationResult.NotInstalled;
         if (!isUpdate && _installedModules.Any(m => m.Dependencies.Contains(module.QualifiedName)))
             return InstallationResult.IsRequiredDependency;
-        Logger.Info($"Attempting to uninstall module {module.QualifiedName}");
+        _logger.LogInformation(
+            "Attempting to uninstall module {ModuleQualifiedName}",
+            module.QualifiedName
+        );
 
         try
         {
@@ -206,14 +221,20 @@ public partial class PackageManager : IPackageManager
             _fileSystem.File.Delete(SidecarPath(module));
             if (!string.IsNullOrEmpty(module.HelpUrl))
                 _fileSystem.File.Delete(HelpPath(module));
-            Logger.Info($"Successfully uninstalled module {module.QualifiedName}");
+            _logger.LogInformation(
+                "Successfully uninstalled module {ModuleQualifiedName}",
+                module.QualifiedName
+            );
             _installedModules.Remove(module);
             return InstallationResult.Success;
         }
         catch (Exception e)
         {
-            Logger.Error($"Failed to uninstall module {module.QualifiedName}");
-            Logger.Error(e);
+            _logger.LogError(
+                e,
+                "Failed to uninstall module {ModuleQualifiedName}",
+                module.QualifiedName
+            );
             return InstallationResult.Failure;
         }
     }
@@ -225,7 +246,10 @@ public partial class PackageManager : IPackageManager
     /// <returns><see cref="InstallationResult.Success"/> on success</returns>
     public async Task<InstallationResult> UpdateModule(Module module)
     {
-        Logger.Info($"Update for module {module.QualifiedName} requested...");
+        _logger.LogInformation(
+            "Update for module {ModuleQualifiedName} requested...",
+            module.QualifiedName
+        );
         var uninstallResult = UninstallModule(module, true);
         if (uninstallResult == InstallationResult.Success)
             return await InstallModule(module);
@@ -343,7 +367,10 @@ public partial class PackageManager : IPackageManager
     /// <returns>List of new repositories</returns>
     private async Task<IList<Repository>> GatherRepositories(Repository repository)
     {
-        Logger.Trace($"Gathering repositories for repository '{repository.Name}'");
+        _logger.LogTrace(
+            "Gathering repositories for repository '{RepositoryName}'",
+            repository.Name
+        );
         var newRepos = new List<Repository>();
 
         if (_repositoryMap.TryAdd(repository.Name, repository))
@@ -354,15 +381,16 @@ public partial class PackageManager : IPackageManager
 
         foreach (var url in repository.Repositories)
         {
-            var repo = await Repository.Build(url, _httpClient);
-            if (repo is null)
+            try
             {
-                Logger.Warn($"Unable to build repository {url}");
-                continue;
+                var repo = await Repository.Build(url, _httpClient);
+                if (!_repositoryMap.ContainsKey(repo.Name))
+                    newRepos.AddRange(await GatherRepositories(repo));
             }
-
-            if (!_repositoryMap.ContainsKey(repo.Name))
-                newRepos.AddRange(await GatherRepositories(repo));
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Unable to build repository {Url}", url);
+            }
         }
         return newRepos;
     }
@@ -382,17 +410,20 @@ public partial class PackageManager : IPackageManager
     /// <param name="repositories">Repositories to gather for. Defaults to <see cref="Repositories"/></param>
     private void GatherModules(IList<Repository>? repositories = null)
     {
-        Logger.Trace("Gathering modules...");
+        _logger.LogTrace("Gathering modules...");
         foreach (var repo in repositories ?? _repositories)
         {
-            Logger.Trace($"Gathering modules in repository '{repo.Name}'...");
+            _logger.LogTrace("Gathering modules in repository '{RepoName}'...", repo.Name);
             foreach (var module in repo.Modules)
             {
                 module.Repository = repo.Name;
                 if (_moduleMap.TryGetValue(module.QualifiedName, out var conflict))
                 {
-                    Logger.Warn(
-                        $"Conflict between {module.QualifiedName} from '{conflict.Repository}' and '{module.Repository}'!"
+                    _logger.LogWarning(
+                        "Conflict between {ModuleQualifiedName} from '{ConflictRepository}' and '{ModuleRepository}'!",
+                        module.QualifiedName,
+                        conflict.Repository,
+                        module.Repository
                     );
                     continue;
                 }
@@ -413,12 +444,16 @@ public partial class PackageManager : IPackageManager
                         );
                         var sidecar = JsonSerializer.Deserialize<Module>(sidecarFs, JsonOptions);
                         if (sidecar is null)
-                            Logger.Warn($"Failed to read sidecar {sidecarPath}");
+                            _logger.LogWarning("Failed to read sidecar {S}", sidecarPath);
                         _installedModules.Add(sidecar ?? module);
                     }
                     catch (Exception e)
                     {
-                        Logger.Warn($"Failed to read sidecar {sidecarPath} because of {e}");
+                        _logger.LogWarning(
+                            "Failed to read sidecar {S} because of {Exception}",
+                            sidecarPath,
+                            e
+                        );
                         _installedModules.Add(module);
                     }
                 }
@@ -428,7 +463,7 @@ public partial class PackageManager : IPackageManager
                 }
             }
         }
-        Logger.Trace("Done!");
+        _logger.LogTrace("Done!");
     }
 
     /// <summary>
@@ -437,35 +472,49 @@ public partial class PackageManager : IPackageManager
     /// <param name="repoUrls">List of <see cref="Repository"/> URLs</param>
     public async Task AddAdditionalRepositories(IList<string> repoUrls)
     {
-        Logger.Info($"Adding additional {repoUrls.Count} user repositories...");
+        _logger.LogInformation(
+            "Adding additional {RepoUrlsCount} user repositories...",
+            repoUrls.Count
+        );
         List<Repository> newRepos = [];
 
         foreach (var url in repoUrls)
         {
-            var repo = await Repository.Build(url, _httpClient);
-            if (repo is not null)
+            try
+            {
+                var repo = await Repository.Build(url, _httpClient);
                 newRepos.AddRange(await GatherRepositories(repo));
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Unable to build repository {Url}", url);
+            }
         }
         if (repoUrls.Count > 1)
             GatherModules(newRepos);
-        Logger.Info("Done!");
+        _logger.LogInformation("Done!");
     }
 
     /// <inheritdoc cref="IPackageManager.AddRepository"/>
     public async Task<InstallationResult> AddRepository(string repoUrl)
     {
-        var repo = await Repository.Build(repoUrl, _httpClient);
-        if (repo is null)
+        try
+        {
+            var repo = await Repository.Build(repoUrl, _httpClient);
+            if (_repositoryMap.ContainsKey(repo.Name))
+                return InstallationResult.AlreadyInstalled;
+
+            _logger.LogInformation("Adding repository '{RepoName}'", repo.Name);
+            _repositories.Add(repo);
+            _repositoryMap.Add(repo.Name, repo);
+            GatherModules(repo);
+            return InstallationResult.Success;
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Unable to build repository {Url}", repoUrl);
             return InstallationResult.Failure;
-
-        if (_repositoryMap.ContainsKey(repo.Name))
-            return InstallationResult.AlreadyInstalled;
-
-        Logger.Info($"Adding repository '{repo.Name}'");
-        _repositories.Add(repo);
-        _repositoryMap.Add(repo.Name, repo);
-        GatherModules(repo);
-        return InstallationResult.Success;
+        }
     }
 
     /// <inheritdoc cref="IPackageManager.RemoveRepository"/>
@@ -474,7 +523,7 @@ public partial class PackageManager : IPackageManager
         if (!_repositoryMap.Remove(repositoryName, out var repo))
             return InstallationResult.NotInstalled;
 
-        Logger.Info($"Removing repository '{repositoryName}'");
+        _logger.LogInformation("Removing repository '{RepositoryName}'", repositoryName);
         _repositories.Remove(repo);
         _moduleMap.Clear();
         _moduleStore.Clear();
@@ -488,20 +537,24 @@ public partial class PackageManager : IPackageManager
     /// <remarks>This clears Dependency Control</remarks>
     public async Task SetUpBaseRepository()
     {
-        Logger.Info("Setting up base repository...");
+        _logger.LogInformation("Setting up base repository...");
         _repositories.Clear();
         _repositoryMap.Clear();
         _installedModules.Clear();
         _moduleStore.Clear();
         _moduleMap.Clear();
 
-        _baseRepository = await Repository.Build(BaseRepositoryUrl, _httpClient);
-        if (_baseRepository is not null)
+        try
         {
+            _baseRepository = await Repository.Build(BaseRepositoryUrl, _httpClient);
             await GatherRepositories(_baseRepository);
             GatherModules();
         }
-        Logger.Info("Done!");
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Unable to build base repository!");
+        }
+        _logger.LogInformation("Done!");
     }
 
     #endregion Repositories
@@ -510,14 +563,20 @@ public partial class PackageManager : IPackageManager
     /// Instantiate a Dependency Control instance
     /// </summary>
     /// <param name="fileSystem">FileSystem to use</param>
+    /// <param name="logger">Logger to use</param>
     /// <param name="httpClient">HttpClient to use</param>
     /// <remarks>
     /// This constructor does not set up the base repository.
     /// <see cref="SetUpBaseRepository"/> should be called following construction
     /// </remarks>
-    public PackageManager(IFileSystem fileSystem, HttpClient httpClient)
+    public PackageManager(
+        IFileSystem fileSystem,
+        ILogger<PackageManager> logger,
+        HttpClient httpClient
+    )
     {
         _fileSystem = fileSystem;
+        _logger = logger;
         _httpClient = httpClient;
         _repositoryMap = [];
         _moduleMap = [];
@@ -531,7 +590,7 @@ public partial class PackageManager : IPackageManager
 
         InstalledModules = new ReadOnlyObservableCollection<Module>(_installedModules);
 
-        Logger.Info("Initialized Dependency Control");
+        _logger.LogInformation("Initialized Dependency Control");
     }
 
     [GeneratedRegex(@"^[a-zA-Z0-9._]+$")]

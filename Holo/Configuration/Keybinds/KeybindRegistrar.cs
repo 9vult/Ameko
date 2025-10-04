@@ -5,13 +5,13 @@ using System.IO.Abstractions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Holo.IO;
-using NLog;
+using Microsoft.Extensions.Logging;
 
 namespace Holo.Configuration.Keybinds;
 
-public class KeybindRegistrar(IFileSystem fileSystem) : IKeybindRegistrar
+public class KeybindRegistrar(IFileSystem fileSystem, ILogger<KeybindRegistrar> logger)
+    : IKeybindRegistrar
 {
-    private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
         Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) },
@@ -71,7 +71,7 @@ public class KeybindRegistrar(IFileSystem fileSystem) : IKeybindRegistrar
     {
         if (!_keybinds.TryGetValue(qualifiedName, out var target))
         {
-            Logger.Error($"Could not find keybind {qualifiedName}");
+            logger.LogError("Could not find keybind {QualifiedName}", qualifiedName);
             return false;
         }
 
@@ -105,7 +105,7 @@ public class KeybindRegistrar(IFileSystem fileSystem) : IKeybindRegistrar
     {
         if (!_keybinds.TryGetValue(qualifiedName, out var target))
         {
-            Logger.Error($"Could not find keybind {qualifiedName}");
+            logger.LogError("Could not find keybind {QualifiedName}", qualifiedName);
             return false;
         }
 
@@ -159,7 +159,7 @@ public class KeybindRegistrar(IFileSystem fileSystem) : IKeybindRegistrar
     public void Save()
     {
         var path = Paths.Keybinds.LocalPath;
-        Logger.Info($"Saving keybinds to {path}...");
+        logger.LogInformation("Saving keybinds to {Path}...", path);
         try
         {
             if (!_fileSystem.Directory.Exists(Path.GetDirectoryName(path)))
@@ -175,18 +175,18 @@ public class KeybindRegistrar(IFileSystem fileSystem) : IKeybindRegistrar
 
             var content = JsonSerializer.Serialize(_keybinds, JsonOptions);
             writer.Write(content);
-            Logger.Info("Done!");
+            logger.LogInformation("Done!");
         }
         catch (Exception ex) when (ex is IOException or JsonException)
         {
-            Logger.Error(ex);
+            logger.LogError(ex, "Failed to save keybinds");
         }
     }
 
     /// <inheritdoc />
     public void Parse()
     {
-        Logger.Info("Parsing keybinds...");
+        logger.LogInformation("Parsing keybinds...");
         var path = Paths.Keybinds.LocalPath;
         try
         {
@@ -195,7 +195,7 @@ public class KeybindRegistrar(IFileSystem fileSystem) : IKeybindRegistrar
 
             if (!_fileSystem.File.Exists(path))
             {
-                Logger.Warn("Keybinds file does not exist, using defaults...");
+                logger.LogWarning("Keybinds file does not exist, using defaults...");
                 Save();
                 return;
             }
@@ -215,7 +215,7 @@ public class KeybindRegistrar(IFileSystem fileSystem) : IKeybindRegistrar
 
             if (imports is null)
             {
-                Logger.Error("Failed to parse keybinds, using defaults...");
+                logger.LogError("Failed to parse keybinds, using defaults...");
                 return;
             }
 
@@ -234,12 +234,11 @@ public class KeybindRegistrar(IFileSystem fileSystem) : IKeybindRegistrar
                     _keybinds.TryAdd(import.Key, import.Value);
                 }
             }
-            Logger.Info("Done!");
+            logger.LogInformation("Done!");
         }
         catch (Exception ex) when (ex is IOException or JsonException)
         {
-            Logger.Error(ex);
-            Logger.Error("Failed to parse keybinds, using defaults...");
+            logger.LogError(ex, "Failed to parse keybinds, using defaults...");
         }
         finally
         {

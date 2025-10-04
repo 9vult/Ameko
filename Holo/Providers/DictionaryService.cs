@@ -5,19 +5,18 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO.Abstractions;
 using Holo.IO;
 using Holo.Models;
-using NLog;
+using Microsoft.Extensions.Logging;
 
 namespace Holo.Providers;
 
 public class DictionaryService : IDictionaryService
 {
-    private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-
     private static readonly Uri DictionariesRoot = new(
         Path.Combine(Directories.DataHome, "dictionaries")
     );
 
     private readonly IFileSystem _fileSystem;
+    private readonly ILogger _logger;
     private readonly HttpClient _httpClient;
 
     private readonly ObservableCollection<SpellcheckDictionary> _installedDictionaries;
@@ -40,7 +39,7 @@ public class DictionaryService : IDictionaryService
         if (TryGetDictionary(lang.Locale, out _))
             return false;
 
-        Logger.Info($"Attempting to download dictionary {lang}");
+        _logger.LogInformation("Attempting to download dictionary {SpellcheckLanguage}", lang);
         try
         {
             if (!_fileSystem.Directory.Exists(DictionariesRoot.LocalPath))
@@ -73,8 +72,7 @@ public class DictionaryService : IDictionaryService
         }
         catch (Exception e)
         {
-            Logger.Error($"Failed to download dictionary {lang}");
-            Logger.Error(e);
+            _logger.LogError(e, "Failed to download dictionary {SpellcheckLanguage}", lang);
             return false;
         }
     }
@@ -105,7 +103,7 @@ public class DictionaryService : IDictionaryService
         }
         catch (Exception)
         {
-            Logger.Error($"Failed to populate dictionaries list");
+            _logger.LogError("Failed to populate dictionaries list");
         }
     }
 
@@ -123,9 +121,14 @@ public class DictionaryService : IDictionaryService
         return new Uri($"{baseUrl}/{locale.Directory}/{locale.Locale}{locale.Suffix}.aff");
     }
 
-    public DictionaryService(IFileSystem fileSystem, HttpClient httpClient)
+    public DictionaryService(
+        IFileSystem fileSystem,
+        ILogger<DictionaryService> logger,
+        HttpClient httpClient
+    )
     {
         _fileSystem = fileSystem;
+        _logger = logger;
         _httpClient = httpClient;
         _installedDictionaries = [];
 
