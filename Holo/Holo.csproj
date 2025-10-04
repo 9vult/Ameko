@@ -13,6 +13,7 @@
     <PackageReference Include="Jint" />
     <PackageReference Include="LibGit2Sharp" />
     <PackageReference Include="Material.Icons" />
+    <PackageReference Include="Microsoft.Extensions.Logging" />
     <PackageReference Include="NLog" />
     <PackageReference Include="Samboy063.Tomlet" />
     <PackageReference Include="TestableIO.System.IO.Abstractions" />

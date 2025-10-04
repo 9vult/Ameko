@@ -10,7 +10,6 @@ using System.Threading.Tasks;
 using Ameko.DataModels;
 using Ameko.Utilities;
 using AssCS.IO;
-using Avalonia.Input;
 using Holo;
 using Holo.Configuration;
 using Holo.IO;
@@ -18,7 +17,7 @@ using Holo.Media.Providers;
 using Holo.Models;
 using Holo.Providers;
 using Material.Icons;
-using NLog;
+using Microsoft.Extensions.Logging;
 using ReactiveUI;
 using SkiaSharp;
 
@@ -30,21 +29,20 @@ public class IoService(
     IFileSystem fileSystem,
     IMessageBoxService messageBoxService,
     IMessageService messageService,
-    IConfiguration configuration
+    IConfiguration configuration,
+    ILogger<IoService> logger
 ) : IIoService
 {
-    private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-
     /// <inheritdoc />
     public async Task<bool> SaveSubtitle(Interaction<string, Uri?> interaction, Workspace wsp)
     {
-        Logger.Debug($"Preparing to save subtitle file {wsp.Title}");
+        logger.LogDebug("Preparing to save subtitle file {WspTitle}", wsp.Title);
         var uriChanged = wsp.SavePath is null;
         var uri = wsp.SavePath ?? await interaction.Handle(wsp.Title);
 
         if (uri is null)
         {
-            Logger.Info($"Saving {wsp.Title} cancelled");
+            logger.LogInformation("Saving {WspTitle} cancelled", wsp.Title);
             return false;
         }
 
@@ -63,7 +61,7 @@ public class IoService(
         wsp.SavePath = uri;
         wsp.IsSaved = true;
         writer.Write(fileSystem, uri);
-        Logger.Info($"Saved subtitle file {wsp.Title}");
+        logger.LogInformation("Saved subtitle file {WspTitle}", wsp.Title);
 
         if (uriChanged)
         {
@@ -77,13 +75,13 @@ public class IoService(
     /// <inheritdoc />
     public async Task<bool> SaveSubtitleAs(Interaction<string, Uri?> interaction, Workspace wsp)
     {
-        Logger.Debug($"Preparing to save subtitle file {wsp.Title}");
+        logger.LogDebug("Preparing to save subtitle file {WspTitle}", wsp.Title);
         var isForking = wsp.SavePath is not null;
         var uri = await interaction.Handle(wsp.Title);
 
         if (uri is null)
         {
-            Logger.Info($"Saving {wsp.Title} cancelled");
+            logger.LogInformation("Saving {WspTitle} cancelled", wsp.Title);
             return false;
         }
 
@@ -102,7 +100,7 @@ public class IoService(
         wsp.SavePath = uri;
         wsp.IsSaved = true;
         writer.Write(fileSystem, uri);
-        Logger.Info($"Saved subtitle file {wsp.Title}");
+        logger.LogInformation("Saved subtitle file {WspTitle}", wsp.Title);
 
         var projItem = projectProvider.Current.FindItemById(wsp.Id);
         // The user is forking the file into a second file
@@ -124,18 +122,18 @@ public class IoService(
     /// <inheritdoc />
     public async Task<bool> ExportSubtitle(Interaction<string, Uri?> interaction, Workspace wsp)
     {
-        Logger.Debug($"Preparing to export subtitle file {wsp.Title}");
+        logger.LogDebug("Preparing to export subtitle file {WspTitle}", wsp.Title);
         var uri = await interaction.Handle(wsp.Title);
 
         if (uri is null)
         {
-            Logger.Info($"Exporting {wsp.Title} cancelled");
+            logger.LogInformation("Exporting {WspTitle} cancelled", wsp.Title);
             return false;
         }
 
         var writer = new TxtWriter(wsp.Document, ConsumerService.AmekoInfo);
         writer.Write(fileSystem, uri, true);
-        Logger.Info($"Exported {wsp.Title}");
+        logger.LogInformation("Exported {WspTitle}", wsp.Title);
         return true;
     }
 
@@ -146,7 +144,7 @@ public class IoService(
         bool replaceIfLast = true
     )
     {
-        Logger.Debug($"Closing workspace {wsp.Title}");
+        logger.LogDebug("Closing workspace {WspTitle}", wsp.Title);
         var prj = projectProvider.Current;
 
         if (wsp.IsSaved)
@@ -156,7 +154,10 @@ public class IoService(
             return true;
         }
 
-        Logger.Trace($"Displaying message box because workspace {wsp.Title} is not saved");
+        logger.LogTrace(
+            "Displaying message box because workspace {WspTitle} is not saved",
+            wsp.Title
+        );
 
         var boxResult = await messageBoxService.ShowAsync(
             I18N.Other.MsgBox_Save_Title,
@@ -172,7 +173,7 @@ public class IoService(
                 var saved = await SaveSubtitle(saveAs, wsp);
                 if (!saved)
                 {
-                    Logger.Info("Tab close operation aborted");
+                    logger.LogInformation("Tab close operation aborted");
                     return false;
                 }
                 goto case MsgBoxButton.No; // lol
@@ -188,19 +189,19 @@ public class IoService(
     /// <inheritdoc />
     public async Task<bool> SaveProject(Interaction<string, Uri?> interaction, Project prj)
     {
-        Logger.Debug($"Preparing to save project file {prj.Title}");
+        logger.LogDebug("Preparing to save project file {PrjTitle}", prj.Title);
         var uri = prj.SavePath ?? await interaction.Handle(prj.Title);
 
         if (uri is null)
         {
-            Logger.Info($"Saving {prj.Title} cancelled");
+            logger.LogInformation("Saving {PrjTitle} cancelled", prj.Title);
             return false;
         }
 
         prj.SavePath = uri;
         prj.Save();
 
-        Logger.Info($"Saved project file {prj.Title}");
+        logger.LogInformation("Saved project file {PrjTitle}", prj.Title);
         return true;
     }
 
@@ -228,7 +229,7 @@ public class IoService(
     /// <exception cref="ArgumentOutOfRangeException">If the format is invalid</exception>
     public async Task<bool> OpenSubtitleFile(Uri uri, Project prj)
     {
-        Logger.Debug($"Opening subtitle file {uri}");
+        logger.LogDebug("Opening subtitle file {Uri}", uri);
 
         try
         {
@@ -263,14 +264,13 @@ public class IoService(
                 wsp.IsSaved = false;
             }
 
-            Logger.Info($"Opened subtitle file {wsp.Title}");
+            logger.LogInformation("Opened subtitle file {WspTitle}", wsp.Title);
             prj.WorkingSpace = wsp;
             return true;
         }
         catch (Exception ex)
         {
-            Logger.Error($"Failed to parse file {uri.LocalPath}");
-            Logger.Error(ex);
+            logger.LogError(ex, "Failed to parse file {UriLocalPath}", uri.LocalPath);
             await messageBoxService.ShowAsync(
                 I18N.Resources.Error,
                 $"{I18N.Resources.Error_FailedToParse}\n\n{ex.Message}",
@@ -285,7 +285,7 @@ public class IoService(
     /// <inheritdoc />
     public async Task<bool> OpenProjectFile(Uri uri, Interaction<string, Uri?> saveAs)
     {
-        Logger.Debug("Preparing to open project file");
+        logger.LogDebug("Preparing to open project file");
         foreach (var wsp in projectProvider.Current.LoadedWorkspaces.ToArray())
         {
             await SafeCloseWorkspace(wsp, saveAs, false);
@@ -293,21 +293,22 @@ public class IoService(
 
         if (projectProvider.Current.LoadedWorkspaces.Count > 0)
         {
-            Logger.Info(
-                $"Opening project file aborted - {projectProvider.Current.LoadedWorkspaces.Count} workspaces remain open"
+            logger.LogInformation(
+                "Opening project file aborted - {LoadedWorkspacesCount} workspaces remain open",
+                projectProvider.Current.LoadedWorkspaces.Count
             );
             return false;
         }
 
         projectProvider.Current = Project.Parse(fileSystem, uri);
-        Logger.Info("Loaded project file");
+        logger.LogInformation("Loaded project file");
         return true;
     }
 
     /// <inheritdoc />
     public async Task<bool> OpenProjectDirectory(Uri uri, Interaction<string, Uri?> saveAs)
     {
-        Logger.Debug("Preparing to open project directory");
+        logger.LogDebug("Preparing to open project directory");
         foreach (var wsp in projectProvider.Current.LoadedWorkspaces.ToArray())
         {
             await SafeCloseWorkspace(wsp, saveAs, false);
@@ -315,14 +316,15 @@ public class IoService(
 
         if (projectProvider.Current.LoadedWorkspaces.Count > 0)
         {
-            Logger.Info(
-                $"Opening project directory aborted - {projectProvider.Current.LoadedWorkspaces.Count} workspaces remain open"
+            logger.LogInformation(
+                "Opening project directory aborted - {LoadedWorkspacesCount} workspaces remain open",
+                projectProvider.Current.LoadedWorkspaces.Count
             );
             return false;
         }
 
         projectProvider.Current = Project.LoadDirectory(fileSystem, uri);
-        Logger.Info("Loaded project directory");
+        logger.LogInformation("Loaded project directory");
         return true;
     }
 
@@ -339,7 +341,7 @@ public class IoService(
     /// <inheritdoc />
     public async Task<bool> AttachReferenceFile(Uri uri, Workspace wsp)
     {
-        Logger.Debug("Preparing to attach a reference file");
+        logger.LogDebug("Preparing to attach a reference file");
         var ext = Path.GetExtension(uri.LocalPath);
         try
         {
@@ -353,8 +355,7 @@ public class IoService(
         }
         catch (Exception ex)
         {
-            Logger.Error($"Failed to parse file {uri.LocalPath}");
-            Logger.Error(ex);
+            logger.LogError(ex, "Failed to parse file {UriLocalPath}", uri.LocalPath);
             await messageBoxService.ShowAsync(
                 I18N.Resources.Error,
                 $"{I18N.Resources.Error_FailedToParse}\n\n{ex.Message}",
@@ -422,7 +423,7 @@ public class IoService(
         }
         catch (Exception ex)
         {
-            Logger.Error(ex);
+            logger.LogError(ex, "Failed to open video file");
             return false;
         }
     }

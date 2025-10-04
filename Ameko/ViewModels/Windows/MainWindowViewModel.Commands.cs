@@ -16,6 +16,7 @@ using Holo;
 using Holo.Models;
 using Material.Icons;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using ReactiveUI;
 
 namespace Ameko.ViewModels.Windows;
@@ -117,12 +118,12 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         return ReactiveCommand.CreateFromTask(async () =>
         {
-            Logger.Debug("Preparing to open project file");
+            _logger.LogDebug("Preparing to open project file");
             var uri = await OpenProject.Handle(Unit.Default);
 
             if (uri is null)
             {
-                Logger.Info("Opening project file aborted");
+                _logger.LogInformation("Opening project file aborted");
                 return;
             }
 
@@ -132,7 +133,10 @@ public partial class MainWindowViewModel : ViewModelBase
             var culture = ProjectProvider.Current.SpellcheckCulture;
             if (culture is not null && !_spellcheckService.IsDictionaryInstalled(culture))
             {
-                Logger.Info($"Prompting user to download dictionary for {culture}");
+                _logger.LogInformation(
+                    "Prompting user to download dictionary for {Culture}",
+                    culture
+                );
                 var lang = SpellcheckLanguage.AvailableLanguages.First(l => l.Locale == culture);
                 var vm = new InstallDictionaryDialogViewModel(_dictionaryService, lang, true);
                 await ShowInstallDictionaryDialog.Handle(vm);
@@ -149,7 +153,7 @@ public partial class MainWindowViewModel : ViewModelBase
         return ReactiveCommand.CreateFromTask(
             async (Uri uri) =>
             {
-                Logger.Debug("Preparing to open project file (no-gui)");
+                _logger.LogDebug("Preparing to open project file (no-gui)");
 
                 if (!await IoService.OpenProjectFile(uri, SaveSubtitleAs))
                     return;
@@ -157,7 +161,10 @@ public partial class MainWindowViewModel : ViewModelBase
                 var culture = ProjectProvider.Current.SpellcheckCulture;
                 if (culture is not null && !_spellcheckService.IsDictionaryInstalled(culture))
                 {
-                    Logger.Info($"Prompting user to download dictionary for {culture}");
+                    _logger.LogInformation(
+                        "Prompting user to download dictionary for {Culture}",
+                        culture
+                    );
                     var lang = SpellcheckLanguage.AvailableLanguages.First(l =>
                         l.Locale == culture
                     );
@@ -176,12 +183,12 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         return ReactiveCommand.CreateFromTask(async () =>
         {
-            Logger.Debug("Preparing to open a directory as a project");
+            _logger.LogDebug("Preparing to open a directory as a project");
             var uri = await OpenFolderAsProject.Handle(Unit.Default);
 
             if (uri is null)
             {
-                Logger.Info("Opening project directory aborted");
+                _logger.LogInformation("Opening project directory aborted");
                 return;
             }
 
@@ -219,7 +226,7 @@ public partial class MainWindowViewModel : ViewModelBase
                     // If the user opened a project file, don't open a new workspace
                     var isLoadedProject = ProjectProvider.Current.SavePath is not null;
 
-                    Logger.Debug($"Closing tab {wsp.Title}");
+                    _logger.LogDebug("Closing tab {WspTitle}", wsp.Title);
                     await IoService.SafeCloseWorkspace(wsp, SaveSubtitleAs, !isLoadedProject);
                 }
             }
@@ -233,7 +240,7 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         return ReactiveCommand.CreateFromTask(async () =>
         {
-            Logger.Debug("Preparing to close project");
+            _logger.LogDebug("Preparing to close project");
 
             foreach (var wsp in ProjectProvider.Current.LoadedWorkspaces.ToArray())
             {
@@ -242,15 +249,16 @@ public partial class MainWindowViewModel : ViewModelBase
 
             if (ProjectProvider.Current.LoadedWorkspaces.Count > 0)
             {
-                Logger.Info(
-                    $"Closing project aborted - {ProjectProvider.Current.LoadedWorkspaces.Count} workspaces remain open"
+                _logger.LogInformation(
+                    "Closing project aborted - {LoadedWorkspacesCount} workspaces remain open",
+                    ProjectProvider.Current.LoadedWorkspaces.Count
                 );
                 return;
             }
 
             var prj = new Project(_fileSystem);
             ProjectProvider.Current = prj;
-            Logger.Debug("Successfully closed project and opened a new one");
+            _logger.LogDebug("Successfully closed project and opened a new one");
         });
     }
 
@@ -261,7 +269,7 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         return ReactiveCommand.CreateFromTask(async () =>
         {
-            Logger.Debug("Preparing to quit");
+            _logger.LogDebug("Preparing to quit");
 
             foreach (var wsp in ProjectProvider.Current.LoadedWorkspaces.ToArray())
             {
@@ -270,8 +278,9 @@ public partial class MainWindowViewModel : ViewModelBase
 
             if (ProjectProvider.Current.LoadedWorkspaces.Count > 0)
             {
-                Logger.Info(
-                    $"Quit aborted - {ProjectProvider.Current.LoadedWorkspaces.Count} workspaces remain open"
+                _logger.LogInformation(
+                    "Quit aborted - {LoadedWorkspacesCount} workspaces remain open",
+                    ProjectProvider.Current.LoadedWorkspaces.Count
                 );
                 return;
             }
@@ -388,7 +397,7 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         return ReactiveCommand.Create(() =>
         {
-            Logger.Debug("Detaching reference file");
+            _logger.LogDebug("Detaching reference file");
             var wsp = ProjectProvider.Current.WorkingSpace;
             if (wsp is null)
                 return;
@@ -471,7 +480,7 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         return ReactiveCommand.CreateFromTask(async () =>
         {
-            Logger.Debug("Opening Jump dialog");
+            _logger.LogDebug("Opening Jump dialog");
 
             var wsp = ProjectProvider.Current.WorkingSpace;
             if (wsp is null)
@@ -561,7 +570,7 @@ public partial class MainWindowViewModel : ViewModelBase
         return ReactiveCommand.Create(
             (string name) =>
             {
-                Logger.Debug($"Switching to layout {name}");
+                _logger.LogDebug("Switching to layout {Name}", name);
                 var layout = LayoutProvider.Layouts.FirstOrDefault(l => l.Name == name);
                 if (layout is null)
                     return;
@@ -634,8 +643,9 @@ public partial class MainWindowViewModel : ViewModelBase
         return ReactiveCommand.CreateFromTask(
             async (int id) =>
             {
-                Logger.Debug(
-                    $"Displaying message to confirm removal of document {id} from project"
+                _logger.LogDebug(
+                    "Displaying message to confirm removal of document {Id} from project",
+                    id
                 );
 
                 var boxResult = await _messageBoxService.ShowAsync(
@@ -662,8 +672,9 @@ public partial class MainWindowViewModel : ViewModelBase
         return ReactiveCommand.CreateFromTask(
             async (int id) =>
             {
-                Logger.Debug(
-                    $"Displaying message to confirm removal of directory {id} from project"
+                _logger.LogDebug(
+                    "Displaying message to confirm removal of directory {Id} from project",
+                    id
                 );
 
                 var boxResult = await _messageBoxService.ShowAsync(
@@ -693,8 +704,10 @@ public partial class MainWindowViewModel : ViewModelBase
                 if (ProjectProvider.Current.FindItemById(id) is not DirectoryItem dirItem)
                     return;
 
-                Logger.Debug(
-                    $"Displaying input box for rename of directory {id} ({dirItem.Title})"
+                _logger.LogDebug(
+                    "Displaying input box for rename of directory {Id} ({DirItemTitle})",
+                    id,
+                    dirItem.Title
                 );
 
                 var result = await _messageBoxService.ShowInputAsync(
@@ -730,7 +743,11 @@ public partial class MainWindowViewModel : ViewModelBase
                 if (ProjectProvider.Current.FindItemById(id) is not DocumentItem docItem)
                     return;
 
-                Logger.Debug($"Displaying input box for rename of document {id} ({docItem.Title})");
+                _logger.LogDebug(
+                    "Displaying input box for rename of document {Id} ({DocItemTitle})",
+                    id,
+                    docItem.Title
+                );
 
                 var result = await _messageBoxService.ShowInputAsync(
                     I18N.Other.MsgBox_NameDocument_Title,
@@ -780,7 +797,10 @@ public partial class MainWindowViewModel : ViewModelBase
             var culture = _configuration.SpellcheckCulture;
             if (!_spellcheckService.IsDictionaryInstalled(culture)) // Not installed
             {
-                Logger.Info($"Prompting user to download dictionary for {culture}");
+                _logger.LogInformation(
+                    "Prompting user to download dictionary for {Culture}",
+                    culture
+                );
                 var lang = SpellcheckLanguage.AvailableLanguages.First(l => l.Locale == culture);
                 var vm = new InstallDictionaryDialogViewModel(_dictionaryService, lang, false);
                 await ShowInstallDictionaryDialog.Handle(vm);

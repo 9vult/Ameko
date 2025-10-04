@@ -6,14 +6,14 @@ using System.Globalization;
 using System.Linq;
 using System.Threading;
 using Holo.Configuration;
-using NLog;
+using Microsoft.Extensions.Logging;
 
 namespace Ameko.Services;
 
 public class CultureService
 {
-    private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
     private readonly IConfiguration _configuration;
+    private readonly ILogger _logger;
 
     public IReadOnlyList<CultureInfo> AvailableCultures { get; } = [new("en-US")];
 
@@ -22,7 +22,7 @@ public class CultureService
         var culture =
             AvailableCultures.FirstOrDefault(c => c.Name == cultureName) ?? AvailableCultures[0];
 
-        Logger.Info($"Setting culture to {culture.Name}");
+        _logger.LogInformation("Setting culture to {CultureName}", culture.Name);
 
         Thread.CurrentThread.CurrentUICulture = culture;
         Thread.CurrentThread.CurrentCulture = culture;
@@ -38,9 +38,10 @@ public class CultureService
         }
     }
 
-    public CultureService(IConfiguration configuration)
+    public CultureService(IConfiguration configuration, ILogger<CultureService> logger)
     {
         _configuration = configuration;
+        _logger = logger;
 
         SetCulture(_configuration.Culture);
         _configuration.PropertyChanged += OnConfigurationChanged;

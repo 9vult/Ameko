@@ -5,14 +5,14 @@ using Avalonia;
 using Avalonia.Styling;
 using Holo.Configuration;
 using Holo.Models;
-using NLog;
+using Microsoft.Extensions.Logging;
 
 namespace Ameko.Services;
 
 public class ThemeService
 {
-    private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
     private readonly IConfiguration _configuration;
+    private readonly ILogger _logger;
     private readonly Application? _app;
 
     private void ApplyTheme(Theme theme)
@@ -20,7 +20,7 @@ public class ThemeService
         if (_app is null)
             return;
 
-        Logger.Info($"Applying {theme} theme");
+        _logger.LogInformation("Applying {Theme} theme", theme);
 
         _app.RequestedThemeVariant = theme switch
         {
@@ -38,9 +38,10 @@ public class ThemeService
         }
     }
 
-    public ThemeService(IConfiguration configuration)
+    public ThemeService(IConfiguration configuration, ILogger<ThemeService> logger)
     {
         _configuration = configuration;
+        _logger = logger;
         _app = Application.Current;
 
         ApplyTheme(_configuration.Theme);
