@@ -2,6 +2,7 @@
 
 using System;
 using System.IO.Abstractions;
+using System.Net.Http;
 using Ameko.Services;
 using Ameko.Utilities;
 using Ameko.ViewModels.Controls;
@@ -14,6 +15,7 @@ using Holo.Providers;
 using Holo.Scripting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NLog.Extensions.Logging;
 
 namespace Ameko;
 
@@ -26,20 +28,35 @@ public class AmekoServiceProvider
         var services = new ServiceCollection();
 
         // --- Infrastructure ---
-        services.AddHttpClient();
+        services.AddHttpClient("default");
         services.AddSingleton<IFileSystem, FileSystem>();
         services.AddSingleton<ILogProvider, LogProvider>();
         services.AddSingleton(p => p.GetRequiredService<ILogProvider>().LogEntries);
+        services.AddLogging(p =>
+        {
+            p.ClearProviders();
+            p.SetMinimumLevel(LogLevel.Debug);
+            p.AddNLog();
+        });
 
         // --- Configuration ---
         services.AddSingleton<IConfiguration, Configuration>(p =>
-            Configuration.Parse(p.GetRequiredService<IFileSystem>())
+            Configuration.Parse(
+                p.GetRequiredService<IFileSystem>(),
+                p.GetRequiredService<ILogger<Configuration>>()
+            )
         );
         services.AddSingleton<IPersistence, Persistence>(p =>
-            Persistence.Parse(p.GetRequiredService<IFileSystem>())
+            Persistence.Parse(
+                p.GetRequiredService<IFileSystem>(),
+                p.GetRequiredService<ILogger<Persistence>>()
+            )
         );
         services.AddSingleton<IGlobals, Globals>(p =>
-            Globals.Parse(p.GetRequiredService<IFileSystem>())
+            Globals.Parse(
+                p.GetRequiredService<IFileSystem>(),
+                p.GetRequiredService<ILogger<Globals>>()
+            )
         );
         services.AddSingleton<IKeybindRegistrar, KeybindRegistrar>();
         services.AddSingleton<IKeybindService, KeybindService>();
@@ -64,6 +81,7 @@ public class AmekoServiceProvider
         services.AddSingleton<IWindowService, WindowService>();
 
         // --- Factories ---
+        services.AddSingleton<StaticLoggerFactory>();
         services.AddSingleton<ITabFactory, TabFactory>();
         services.AddSingleton<IStylesManagerFactory, StylesManagerFactory>();
 
@@ -84,6 +102,9 @@ public class AmekoServiceProvider
 
         // --- Main Window ---
         services.AddSingleton<MainWindow>();
+
+        // Extra config
+        services.ConfigureHttpClientDefaults(p => p.RemoveAllLoggers()); // disable HttpClient logging
 
         Provider = services.BuildServiceProvider();
 

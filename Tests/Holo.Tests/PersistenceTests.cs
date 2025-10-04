@@ -3,6 +3,7 @@
 using System.IO.Abstractions.TestingHelpers;
 using Holo.Configuration;
 using Holo.IO;
+using Microsoft.Extensions.Logging.Abstractions;
 using Shouldly;
 
 namespace Holo.Tests;
@@ -13,7 +14,8 @@ public class PersistenceTests
     public void Constructor()
     {
         var fs = new MockFileSystem();
-        var p = new Persistence(fs);
+        var lg = NullLogger<Persistence>.Instance;
+        var p = new Persistence(fs, lg);
 
         p.LayoutName.ShouldBe("Default");
         p.UseColorRing.ShouldBeFalse();
@@ -23,7 +25,8 @@ public class PersistenceTests
     public void Parse_NotExists()
     {
         var fs = new MockFileSystem();
-        var p = Persistence.Parse(fs);
+        var lg = NullLogger<Persistence>.Instance;
+        var p = Persistence.Parse(fs, lg);
 
         p.LayoutName.ShouldBe("Default");
         p.UseColorRing.ShouldBeFalse();
@@ -38,7 +41,8 @@ public class PersistenceTests
                 { Paths.Persistence.LocalPath, new MockFileData(ExamplePersistence) },
             }
         );
-        var p = Persistence.Parse(fs);
+        var lg = NullLogger<Persistence>.Instance;
+        var p = Persistence.Parse(fs, lg);
 
         p.LayoutName.ShouldBe("Upside Down");
         p.UseColorRing.ShouldBeTrue();
@@ -53,7 +57,8 @@ public class PersistenceTests
                 { Paths.Persistence.LocalPath, new MockFileData(ExamplePersistence) },
             }
         );
-        var p = new Persistence(fs) { LayoutName = "Wayside School" };
+        var lg = NullLogger<Persistence>.Instance;
+        var p = new Persistence(fs, lg) { LayoutName = "Wayside School" };
 
         var result = p.Save();
 
@@ -65,7 +70,8 @@ public class PersistenceTests
     public void Save_NotExists()
     {
         var fs = new MockFileSystem();
-        var p = new Persistence(fs) { LayoutName = "Wayside School" };
+        var lg = NullLogger<Persistence>.Instance;
+        var p = new Persistence(fs, lg) { LayoutName = "Wayside School" };
 
         var result = p.Save();
 

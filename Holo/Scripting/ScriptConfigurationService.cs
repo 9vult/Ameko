@@ -5,13 +5,15 @@ using System.IO.Abstractions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Holo.IO;
-using NLog;
+using Microsoft.Extensions.Logging;
 
 namespace Holo.Scripting;
 
-public class ScriptConfigurationService(IFileSystem fileSystem) : IScriptConfigurationService
+public class ScriptConfigurationService(
+    IFileSystem fileSystem,
+    ILogger<ScriptConfigurationService> logger
+) : IScriptConfigurationService
 {
-    private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
         IncludeFields = true,
@@ -89,7 +91,7 @@ public class ScriptConfigurationService(IFileSystem fileSystem) : IScriptConfigu
     /// <returns>Configuration data if found, else empty</returns>
     private Dictionary<string, JsonElement> Read(string qualifiedName)
     {
-        Logger.Trace($"Reading configuration file for module {qualifiedName}");
+        logger.LogTrace($"Reading configuration file for module {qualifiedName}");
         var path = ConfigPath(qualifiedName);
         try
         {
@@ -98,7 +100,7 @@ public class ScriptConfigurationService(IFileSystem fileSystem) : IScriptConfigu
 
             if (!fileSystem.File.Exists(path))
             {
-                Logger.Trace("Configuration file does not exist, using empty...");
+                logger.LogTrace("Configuration file does not exist, using empty...");
                 return [];
             }
 
@@ -114,13 +116,12 @@ public class ScriptConfigurationService(IFileSystem fileSystem) : IScriptConfigu
                 reader.ReadToEnd(),
                 JsonOptions
             );
-            Logger.Trace("Done!");
+            logger.LogTrace("Done!");
             return result ?? [];
         }
         catch (Exception ex) when (ex is IOException or JsonException)
         {
-            Logger.Error(ex);
-            Logger.Trace("Failed to parse configuration, using empty...");
+            logger.LogError(ex, "Failed to parse configuration, using empty...");
             return [];
         }
     }
@@ -134,7 +135,7 @@ public class ScriptConfigurationService(IFileSystem fileSystem) : IScriptConfigu
     /// </returns>
     private bool Write(string qualifiedName)
     {
-        Logger.Trace($"Writing configuration file for module {qualifiedName}");
+        logger.LogTrace($"Writing configuration file for module {qualifiedName}");
         var path = ConfigPath(qualifiedName);
         try
         {
@@ -143,7 +144,10 @@ public class ScriptConfigurationService(IFileSystem fileSystem) : IScriptConfigu
 
             if (!_cache.TryGetValue(qualifiedName, out var data))
             {
-                Logger.Trace($"No data found for module {qualifiedName}, skipping...");
+                logger.LogTrace(
+                    "No data found for module {QualifiedName}, skipping...",
+                    qualifiedName
+                );
                 return true;
             }
 
@@ -157,13 +161,12 @@ public class ScriptConfigurationService(IFileSystem fileSystem) : IScriptConfigu
 
             var content = JsonSerializer.Serialize(data, JsonOptions);
             writer.Write(content);
-            Logger.Trace("Done!");
+            logger.LogTrace("Done!");
             return true;
         }
         catch (Exception ex) when (ex is IOException or JsonException)
         {
-            Logger.Error(ex);
-            Logger.Trace("Failed to parse configuration, using empty...");
+            logger.LogError(ex, "Failed to parse configuration, using empty...");
             return false;
         }
     }

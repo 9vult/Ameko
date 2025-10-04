@@ -256,8 +256,7 @@ public partial class MainWindowViewModel : ViewModelBase
                 return;
             }
 
-            var prj = new Project(_fileSystem);
-            ProjectProvider.Current = prj;
+            ProjectProvider.Current = ProjectProvider.Create();
             _logger.LogDebug("Successfully closed project and opened a new one");
         });
     }

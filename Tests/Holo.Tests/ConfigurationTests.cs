@@ -3,6 +3,7 @@
 using System.IO.Abstractions.TestingHelpers;
 using Holo.IO;
 using Holo.Models;
+using Microsoft.Extensions.Logging.Abstractions;
 using Shouldly;
 
 namespace Holo.Tests;
@@ -13,7 +14,8 @@ public class ConfigurationTests
     public void Constructor()
     {
         var fs = new MockFileSystem();
-        var cfg = new Configuration.Configuration(fs);
+        var lg = NullLogger<Configuration.Configuration>.Instance;
+        var cfg = new Configuration.Configuration(fs, lg);
 
         cfg.Cps.ShouldBe<uint>(18);
         cfg.UseSoftLinebreaks.ShouldBe(false);
@@ -25,7 +27,8 @@ public class ConfigurationTests
     public void Parse_NotExists()
     {
         var fs = new MockFileSystem();
-        var cfg = Configuration.Configuration.Parse(fs);
+        var lg = NullLogger<Configuration.Configuration>.Instance;
+        var cfg = Configuration.Configuration.Parse(fs, lg);
 
         cfg.ShouldNotBeNull();
         cfg.Cps.ShouldBe<uint>(18);
@@ -43,7 +46,8 @@ public class ConfigurationTests
                 { Paths.Configuration.LocalPath, new MockFileData(ExampleConfiguration) },
             }
         );
-        var cfg = Configuration.Configuration.Parse(fs);
+        var lg = NullLogger<Configuration.Configuration>.Instance;
+        var cfg = Configuration.Configuration.Parse(fs, lg);
 
         cfg.ShouldNotBeNull();
         cfg.Cps.ShouldBe<uint>(12);
@@ -66,7 +70,8 @@ public class ConfigurationTests
                 { Paths.Configuration.LocalPath, new MockFileData(ExampleConfiguration) },
             }
         );
-        var cfg = new Configuration.Configuration(fs) { Cps = 12 };
+        var lg = NullLogger<Configuration.Configuration>.Instance;
+        var cfg = new Configuration.Configuration(fs, lg) { Cps = 12 };
 
         var result = cfg.Save();
 
@@ -78,7 +83,8 @@ public class ConfigurationTests
     public void Save_NotExists()
     {
         var fs = new MockFileSystem();
-        var cfg = new Configuration.Configuration(fs) { Cps = 12 };
+        var lg = NullLogger<Configuration.Configuration>.Instance;
+        var cfg = new Configuration.Configuration(fs, lg) { Cps = 12 };
 
         var result = cfg.Save();
 

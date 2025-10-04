@@ -3,7 +3,6 @@
 using System.Collections.Frozen;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using NLog;
 
 namespace Holo.Scripting.Models;
 
@@ -60,26 +59,16 @@ public record Repository
     //
     //
 
-    private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-
     /// <summary>
     /// Build a repository
     /// </summary>
     /// <param name="url">Url to download repository data from</param>
     /// <param name="client">HttpClient to use</param>
     /// <returns><see cref="Repository"/> object, or <see langword="null"/> on failure</returns>
-    public static async Task<Repository?> Build(string url, HttpClient client)
+    public static async Task<Repository> Build(string url, HttpClient client)
     {
-        try
-        {
-            string content = await client.GetStringAsync(url);
-            return Build(url, content);
-        }
-        catch (Exception e)
-        {
-            Logger.Error(e);
-            return null;
-        }
+        var content = await client.GetStringAsync(url);
+        return Build(url, content);
     }
 
     /// <summary>
@@ -88,26 +77,14 @@ public record Repository
     /// <param name="url">Url of the repository</param>
     /// <param name="jsonContent">JSON content to parse</param>
     /// <returns><see cref="Repository"/> object, or <see langword="null"/> on failure</returns>
-    public static Repository? Build(string url, string jsonContent)
+    public static Repository Build(string url, string jsonContent)
     {
-        try
-        {
-            var repo = JsonSerializer.Deserialize<Repository>(jsonContent, JsonOptions);
-            if (repo is not null)
-                repo.Url = url;
-            return repo;
-        }
-        catch (JsonException e)
-        {
-            Logger.Error($"Failed to parse json from {url}");
-            Logger.Error(e);
-            return null;
-        }
-        catch (Exception e)
-        {
-            Logger.Error(e);
-            return null;
-        }
+        var repo = JsonSerializer.Deserialize<Repository>(jsonContent, JsonOptions);
+        if (repo is not null)
+            repo.Url = url;
+        else
+            throw new NullReferenceException($"Unable to deserialize {nameof(Repository)}");
+        return repo;
     }
 
     #region Serialization fields

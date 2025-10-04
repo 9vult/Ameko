@@ -6,6 +6,7 @@ using System.Net;
 using System.Net.Sockets;
 using Holo.Scripting;
 using Holo.Scripting.Models;
+using Microsoft.Extensions.Logging.Abstractions;
 using RichardSzalay.MockHttp;
 using Shouldly;
 
@@ -22,8 +23,8 @@ public class PackageManagerTests
                 { PackageManager.ModulePath(TestScriptModule), new MockFileData(string.Empty) },
             }
         );
-
-        var dc = new PackageManager(fileSystem, new HttpClient());
+        var lg = NullLogger<PackageManager>.Instance;
+        var dc = new PackageManager(fileSystem, lg, new HttpClient());
 
         dc.IsModuleInstalled(TestScriptModule).ShouldBeTrue();
     }
@@ -32,8 +33,8 @@ public class PackageManagerTests
     public void IsModuleInstalled_False()
     {
         var fileSystem = new MockFileSystem();
-
-        var dc = new PackageManager(fileSystem, new HttpClient());
+        var lg = NullLogger<PackageManager>.Instance;
+        var dc = new PackageManager(fileSystem, lg, new HttpClient());
 
         dc.IsModuleInstalled(TestScriptModule).ShouldBeFalse();
     }
@@ -101,8 +102,9 @@ public class PackageManagerTests
     [Fact]
     public async Task SetUpBaseRepository_Handles_404()
     {
+        var lg = NullLogger<PackageManager>.Instance;
         var mockClient = new MockHttpMessageHandler();
-        var dc = new PackageManager(new FileSystem(), new HttpClient(mockClient));
+        var dc = new PackageManager(new FileSystem(), lg, new HttpClient(mockClient));
 
         mockClient.When(HttpMethod.Get, dc.BaseRepositoryUrl).Respond(HttpStatusCode.NotFound);
 
@@ -115,8 +117,9 @@ public class PackageManagerTests
     [Fact]
     public async Task SetUpBaseRepository()
     {
+        var lg = NullLogger<PackageManager>.Instance;
         var mockClient = new MockHttpMessageHandler();
-        var dc = new PackageManager(new FileSystem(), new HttpClient(mockClient));
+        var dc = new PackageManager(new FileSystem(), lg, new HttpClient(mockClient));
 
         mockClient
             .When(HttpMethod.Get, dc.BaseRepositoryUrl)
@@ -131,8 +134,9 @@ public class PackageManagerTests
     [Fact]
     public async Task SetUpBaseRepository_NoInternetConnection()
     {
+        var lg = NullLogger<PackageManager>.Instance;
         var mockClient = new MockHttpMessageHandler();
-        var dc = new PackageManager(new FileSystem(), new HttpClient(mockClient));
+        var dc = new PackageManager(new FileSystem(), lg, new HttpClient(mockClient));
 
         mockClient
             .When(HttpMethod.Get, dc.BaseRepositoryUrl)
@@ -148,8 +152,9 @@ public class PackageManagerTests
     public async Task InstallModule_NoInternetConnection()
     {
         var fileSystem = new MockFileSystem();
+        var lg = NullLogger<PackageManager>.Instance;
         var mockClient = new MockHttpMessageHandler();
-        var dc = new PackageManager(fileSystem, new HttpClient(mockClient));
+        var dc = new PackageManager(fileSystem, lg, new HttpClient(mockClient));
 
         mockClient
             .When(HttpMethod.Get, dc.BaseRepositoryUrl)
@@ -177,9 +182,9 @@ public class PackageManagerTests
                 { PackageManager.SidecarPath(Script1), new MockFileData(string.Empty) },
             }
         );
-
+        var lg = NullLogger<PackageManager>.Instance;
         var mockClient = new MockHttpMessageHandler();
-        var dc = new PackageManager(fileSystem, new HttpClient(mockClient));
+        var dc = new PackageManager(fileSystem, lg, new HttpClient(mockClient));
 
         mockClient
             .When(HttpMethod.Get, dc.BaseRepositoryUrl)
@@ -198,8 +203,9 @@ public class PackageManagerTests
     public async Task InstallModule_NoDependencies()
     {
         var fileSystem = new MockFileSystem();
+        var lg = NullLogger<PackageManager>.Instance;
         var mockClient = new MockHttpMessageHandler();
-        var dc = new PackageManager(fileSystem, new HttpClient(mockClient));
+        var dc = new PackageManager(fileSystem, lg, new HttpClient(mockClient));
 
         mockClient
             .When(HttpMethod.Get, dc.BaseRepositoryUrl)
@@ -222,8 +228,9 @@ public class PackageManagerTests
     public async Task UninstallModule_NotInstalled()
     {
         var fileSystem = new MockFileSystem();
+        var lg = NullLogger<PackageManager>.Instance;
         var mockClient = new MockHttpMessageHandler();
-        var dc = new PackageManager(fileSystem, new HttpClient(mockClient));
+        var dc = new PackageManager(fileSystem, lg, new HttpClient(mockClient));
 
         mockClient
             .When(HttpMethod.Get, dc.BaseRepositoryUrl)
@@ -248,9 +255,9 @@ public class PackageManagerTests
                 { PackageManager.SidecarPath(Script1), new MockFileData(string.Empty) },
             }
         );
-
+        var lg = NullLogger<PackageManager>.Instance;
         var mockClient = new MockHttpMessageHandler();
-        var dc = new PackageManager(fileSystem, new HttpClient(mockClient));
+        var dc = new PackageManager(fileSystem, lg, new HttpClient(mockClient));
 
         mockClient
             .When(HttpMethod.Get, dc.BaseRepositoryUrl)
@@ -278,9 +285,9 @@ public class PackageManagerTests
                 { PackageManager.SidecarPath(Lib1), new MockFileData(string.Empty) },
             }
         );
-
+        var lg = NullLogger<PackageManager>.Instance;
         var mockClient = new MockHttpMessageHandler();
-        var dc = new PackageManager(fileSystem, new HttpClient(mockClient));
+        var dc = new PackageManager(fileSystem, lg, new HttpClient(mockClient));
 
         mockClient
             .When(HttpMethod.Get, dc.BaseRepositoryUrl)
@@ -309,9 +316,9 @@ public class PackageManagerTests
                 { PackageManager.SidecarPath(Lib1), new MockFileData(string.Empty) },
             }
         );
-
+        var lg = NullLogger<PackageManager>.Instance;
         var mockClient = new MockHttpMessageHandler();
-        var dc = new PackageManager(fileSystem, new HttpClient(mockClient));
+        var dc = new PackageManager(fileSystem, lg, new HttpClient(mockClient));
 
         mockClient
             .When(HttpMethod.Get, dc.BaseRepositoryUrl)
@@ -339,9 +346,9 @@ public class PackageManagerTests
                 { PackageManager.SidecarPath(Script1), new MockFileData(ScriptExample1Json) },
             }
         );
-
+        var lg = NullLogger<PackageManager>.Instance;
         var mockClient = new MockHttpMessageHandler();
-        var dc = new PackageManager(fileSystem, new HttpClient(mockClient));
+        var dc = new PackageManager(fileSystem, lg, new HttpClient(mockClient));
 
         mockClient
             .When(HttpMethod.Get, dc.BaseRepositoryUrl)
@@ -363,9 +370,9 @@ public class PackageManagerTests
                 { PackageManager.SidecarPath(Script1), new MockFileData(ScriptExample1Json) },
             }
         );
-
+        var lg = NullLogger<PackageManager>.Instance;
         var mockClient = new MockHttpMessageHandler();
-        var dc = new PackageManager(fileSystem, new HttpClient(mockClient));
+        var dc = new PackageManager(fileSystem, lg, new HttpClient(mockClient));
 
         mockClient
             .When(HttpMethod.Get, dc.BaseRepositoryUrl)
@@ -387,9 +394,9 @@ public class PackageManagerTests
                 { PackageManager.SidecarPath(Script1), new MockFileData(ScriptExample1Json) },
             }
         );
-
+        var lg = NullLogger<PackageManager>.Instance;
         var mockClient = new MockHttpMessageHandler();
-        var dc = new PackageManager(fileSystem, new HttpClient(mockClient));
+        var dc = new PackageManager(fileSystem, lg, new HttpClient(mockClient));
 
         mockClient
             .When(HttpMethod.Get, dc.BaseRepositoryUrl)
@@ -411,9 +418,9 @@ public class PackageManagerTests
                 { PackageManager.SidecarPath(Script1), new MockFileData(ScriptExample1Json) },
             }
         );
-
+        var lg = NullLogger<PackageManager>.Instance;
         var mockClient = new MockHttpMessageHandler();
-        var dc = new PackageManager(fileSystem, new HttpClient(mockClient));
+        var dc = new PackageManager(fileSystem, lg, new HttpClient(mockClient));
 
         mockClient
             .When(HttpMethod.Get, dc.BaseRepositoryUrl)
@@ -429,8 +436,9 @@ public class PackageManagerTests
     public async Task AddRepository_NoInternetConnection()
     {
         var fileSystem = new MockFileSystem();
+        var lg = NullLogger<PackageManager>.Instance;
         var mockClient = new MockHttpMessageHandler();
-        var dc = new PackageManager(fileSystem, new HttpClient(mockClient));
+        var dc = new PackageManager(fileSystem, lg, new HttpClient(mockClient));
 
         const string repoUrl = "https://coolrepo.com/pkgman.json";
 
@@ -451,8 +459,9 @@ public class PackageManagerTests
     public async Task AddRepository_AlreadyInstalled()
     {
         var fileSystem = new MockFileSystem();
+        var lg = NullLogger<PackageManager>.Instance;
         var mockClient = new MockHttpMessageHandler();
-        var dc = new PackageManager(fileSystem, new HttpClient(mockClient));
+        var dc = new PackageManager(fileSystem, lg, new HttpClient(mockClient));
 
         mockClient
             .When(HttpMethod.Get, dc.BaseRepositoryUrl)
@@ -468,8 +477,9 @@ public class PackageManagerTests
     public async Task AddRepository()
     {
         var fileSystem = new MockFileSystem();
+        var lg = NullLogger<PackageManager>.Instance;
         var mockClient = new MockHttpMessageHandler();
-        var dc = new PackageManager(fileSystem, new HttpClient(mockClient));
+        var dc = new PackageManager(fileSystem, lg, new HttpClient(mockClient));
 
         const string repoUrl = "https://coolrepo.com/pkgman.json";
 
@@ -488,8 +498,9 @@ public class PackageManagerTests
     public async Task RemoveRepository_NotInstalled()
     {
         var fileSystem = new MockFileSystem();
+        var lg = NullLogger<PackageManager>.Instance;
         var mockClient = new MockHttpMessageHandler();
-        var dc = new PackageManager(fileSystem, new HttpClient(mockClient));
+        var dc = new PackageManager(fileSystem, lg, new HttpClient(mockClient));
 
         mockClient
             .When(HttpMethod.Get, dc.BaseRepositoryUrl)
@@ -505,8 +516,9 @@ public class PackageManagerTests
     public async Task RemoveRepository()
     {
         var fileSystem = new MockFileSystem();
+        var lg = NullLogger<PackageManager>.Instance;
         var mockClient = new MockHttpMessageHandler();
-        var dc = new PackageManager(fileSystem, new HttpClient(mockClient));
+        var dc = new PackageManager(fileSystem, lg, new HttpClient(mockClient));
 
         const string repoUrl = "https://coolrepo.com/pkgman.json";
 

@@ -300,7 +300,7 @@ public class IoService(
             return false;
         }
 
-        projectProvider.Current = Project.Parse(fileSystem, uri);
+        projectProvider.Current = projectProvider.CreateFromFile(uri);
         logger.LogInformation("Loaded project file");
         return true;
     }
@@ -323,7 +323,7 @@ public class IoService(
             return false;
         }
 
-        projectProvider.Current = Project.LoadDirectory(fileSystem, uri);
+        projectProvider.Current = projectProvider.CreateFromDirectory(uri);
         logger.LogInformation("Loaded project directory");
         return true;
     }

@@ -8,7 +8,7 @@ using System.Text.Json.Serialization;
 using AssCS;
 using Holo.IO;
 using Holo.Models;
-using NLog;
+using Microsoft.Extensions.Logging;
 
 namespace Holo.Configuration;
 
@@ -28,7 +28,6 @@ namespace Holo.Configuration;
 /// </remarks>
 public partial class Configuration : BindableBase, IConfiguration
 {
-    private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
         IncludeFields = true,
@@ -39,6 +38,7 @@ public partial class Configuration : BindableBase, IConfiguration
     /// The filesystem being used
     /// </summary>
     private readonly IFileSystem _fileSystem;
+    private readonly ILogger _logger;
 
     private uint _cps;
     private bool _cpsIncludesWhitespace;
@@ -176,7 +176,7 @@ public partial class Configuration : BindableBase, IConfiguration
     /// <inheritdoc />
     public void AddRepositoryUrl(string url)
     {
-        Logger.Debug($"Adding repository url {url}");
+        _logger.LogDebug("Adding repository url {Url}", url);
         _repositoryUrls.Add(url);
         Save();
     }
@@ -184,7 +184,7 @@ public partial class Configuration : BindableBase, IConfiguration
     /// <inheritdoc />
     public bool RemoveRepositoryUrl(string url)
     {
-        Logger.Debug($"Removing repository url {url}");
+        _logger.LogDebug("Removing repository url {Url}", url);
         var result = _repositoryUrls.Remove(url);
         Save();
         return result;
@@ -194,7 +194,7 @@ public partial class Configuration : BindableBase, IConfiguration
     public bool Save()
     {
         var path = Paths.Configuration.LocalPath;
-        Logger.Info($"Writing configuration to {path}...");
+        _logger.LogInformation("Writing configuration to {Path}...", path);
         try
         {
             if (!_fileSystem.Directory.Exists(Path.GetDirectoryName(path)))
@@ -232,12 +232,12 @@ public partial class Configuration : BindableBase, IConfiguration
 
             var content = JsonSerializer.Serialize(model, JsonOptions);
             writer.Write(content);
-            Logger.Info($"Done!");
+            _logger.LogInformation("Done!");
             return true;
         }
         catch (Exception ex) when (ex is IOException or JsonException)
         {
-            Logger.Error(ex);
+            _logger.LogError(ex, "Failed to save configuration");
             return false;
         }
     }
@@ -246,10 +246,11 @@ public partial class Configuration : BindableBase, IConfiguration
     /// Parse a saved configuration file
     /// </summary>
     /// <param name="fileSystem">FileSystem to use</param>
+    /// <param name="logger">Logger to use</param>
     /// <returns><see cref="Configuration"/> object</returns>
-    public static Configuration Parse(IFileSystem fileSystem)
+    public static Configuration Parse(IFileSystem fileSystem, ILogger<Configuration> logger)
     {
-        Logger.Info("Parsing configuration...");
+        logger.LogInformation("Parsing configuration...");
         var path = Paths.Configuration.LocalPath;
         try
         {
@@ -258,8 +259,8 @@ public partial class Configuration : BindableBase, IConfiguration
 
             if (!fileSystem.File.Exists(path))
             {
-                Logger.Warn("Configuration file does not exist, using defaults...");
-                return new Configuration(fileSystem);
+                logger.LogWarning("Configuration file does not exist, using defaults...");
+                return new Configuration(fileSystem, logger);
             }
 
             using var fs = fileSystem.FileStream.New(
@@ -274,7 +275,7 @@ public partial class Configuration : BindableBase, IConfiguration
                 JsonSerializer.Deserialize<ConfigurationModel>(reader.ReadToEnd(), JsonOptions)
                 ?? throw new InvalidDataException("Configuration model deserialization failed!");
 
-            var result = new Configuration(fileSystem)
+            var result = new Configuration(fileSystem, logger)
             {
                 _cps = model.Cps,
                 _cpsIncludesWhitespace = model.CpsIncludesWhitespace,
@@ -294,14 +295,13 @@ public partial class Configuration : BindableBase, IConfiguration
                 _propagateFields = model.PropagateFields,
                 _repositoryUrls = new RangeObservableCollection<string>(model.RepositoryUrls),
             };
-            Logger.Info("Done!");
+            logger.LogInformation("Done!");
             return result;
         }
         catch (Exception ex) when (ex is IOException or JsonException)
         {
-            Logger.Error(ex);
-            Logger.Error("Failed to parse configuration, using defaults...");
-            return new Configuration(fileSystem);
+            logger.LogError(ex, "Failed to parse configuration, using defaults...");
+            return new Configuration(fileSystem, logger);
         }
     }
 
@@ -309,9 +309,11 @@ public partial class Configuration : BindableBase, IConfiguration
     /// Instantiate a Configuration instance
     /// </summary>
     /// <param name="fileSystem">FileSystem to use</param>
-    public Configuration(IFileSystem fileSystem)
+    /// <param name="logger">Logger to use</param>
+    public Configuration(IFileSystem fileSystem, ILogger<Configuration> logger)
     {
         _fileSystem = fileSystem;
+        _logger = logger;
         _cps = 18;
         _useSoftLinebreaks = false;
         _discordRpcEnabled = true;

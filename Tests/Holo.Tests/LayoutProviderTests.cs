@@ -6,6 +6,7 @@ using Holo.Configuration;
 using Holo.IO;
 using Holo.Providers;
 using Holo.Tests.Utilities;
+using Microsoft.Extensions.Logging.Abstractions;
 using Shouldly;
 
 namespace Holo.Tests;
@@ -16,8 +17,9 @@ public class LayoutProviderTests
     public void Constructor()
     {
         var fs = new MockFileSystem();
+        var lg = NullLogger<LayoutProvider>.Instance;
         var p = new MockPersistence();
-        var provider = new LayoutProvider(fs, p);
+        var provider = new LayoutProvider(fs, lg, p);
 
         provider.Current.ShouldBeNull();
         provider.Layouts.ShouldBeEmpty();
@@ -33,8 +35,9 @@ public class LayoutProviderTests
                 .LocalPath,
             new MockFileData(ExampleLayout)
         );
+        var lg = NullLogger<LayoutProvider>.Instance;
         var p = new MockPersistence();
-        var provider = new LayoutProvider(fs, p);
+        var provider = new LayoutProvider(fs, lg, p);
 
         provider.Reload();
 

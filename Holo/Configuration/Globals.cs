@@ -5,8 +5,7 @@ using System.IO.Abstractions;
 using System.Text.Json;
 using AssCS;
 using Holo.IO;
-using Holo.Models;
-using NLog;
+using Microsoft.Extensions.Logging;
 
 namespace Holo.Configuration;
 
@@ -15,7 +14,6 @@ namespace Holo.Configuration;
 /// </summary>
 public class Globals : BindableBase, IGlobals
 {
-    private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
     private static readonly JsonSerializerOptions JsonOptions = new() { IncludeFields = true };
 
     private readonly ObservableCollection<Color> _colors;
@@ -25,6 +23,7 @@ public class Globals : BindableBase, IGlobals
     /// The filesystem being used
     /// </summary>
     private readonly IFileSystem _fileSystem;
+    private readonly ILogger _logger;
 
     /// <inheritdoc cref="IGlobals.StyleManager"/>
     public StyleManager StyleManager { get; }
@@ -77,7 +76,7 @@ public class Globals : BindableBase, IGlobals
     public bool Save()
     {
         var path = Paths.Globals.LocalPath;
-        Logger.Info($"Writing globals to {path}...");
+        _logger.LogInformation("Writing globals to {Path}...", path);
         try
         {
             if (!_fileSystem.Directory.Exists(Path.GetDirectoryName(path)))
@@ -101,12 +100,12 @@ public class Globals : BindableBase, IGlobals
 
             var content = JsonSerializer.Serialize(model, JsonOptions);
             writer.Write(content);
-            Logger.Info("Done!");
+            _logger.LogInformation("Done!");
             return true;
         }
         catch (Exception ex) when (ex is IOException or JsonException)
         {
-            Logger.Error(ex);
+            _logger.LogError(ex, "Failed to save globals");
             return false;
         }
     }
@@ -115,10 +114,11 @@ public class Globals : BindableBase, IGlobals
     /// Parse a saved globals file
     /// </summary>
     /// <param name="fileSystem">FileSystem to use</param>
+    /// <param name="logger">Logger to use</param>
     /// <returns><see cref="Globals"/> object</returns>
-    public static Globals Parse(IFileSystem fileSystem)
+    public static Globals Parse(IFileSystem fileSystem, ILogger<Globals> logger)
     {
-        Logger.Info("Parsing globals...");
+        logger.LogInformation("Parsing globals...");
         var path = Paths.Globals.LocalPath;
         try
         {
@@ -127,8 +127,8 @@ public class Globals : BindableBase, IGlobals
 
             if (!fileSystem.File.Exists(path))
             {
-                Logger.Warn("Globals file does not exist, using defaults...");
-                return new Globals(fileSystem);
+                logger.LogWarning("Globals file does not exist, using defaults...");
+                return new Globals(fileSystem, logger);
             }
 
             using var fs = fileSystem.FileStream.New(
@@ -143,7 +143,7 @@ public class Globals : BindableBase, IGlobals
                 JsonSerializer.Deserialize<GlobalsModel>(reader.ReadToEnd(), JsonOptions)
                 ?? throw new InvalidDataException("Globals model deserialization failed");
 
-            var g = new Globals(fileSystem);
+            var g = new Globals(fileSystem, logger);
             foreach (var style in model.Styles.Select(s => Style.FromAss(g.StyleManager.NextId, s)))
                 g.StyleManager.Add(style);
 
@@ -153,14 +153,13 @@ public class Globals : BindableBase, IGlobals
             foreach (var word in model.CustomWords)
                 g._customWords.Add(word);
 
-            Logger.Info("Done!");
+            logger.LogInformation("Done!");
             return g;
         }
         catch (Exception ex) when (ex is IOException or JsonException)
         {
-            Logger.Error(ex);
-            Logger.Error("Failed to parse globals, using defaults...");
-            return new Globals(fileSystem);
+            logger.LogError(ex, "Failed to parse globals, using defaults...");
+            return new Globals(fileSystem, logger);
         }
     }
 
@@ -168,9 +167,11 @@ public class Globals : BindableBase, IGlobals
     /// Instantiate a Globals instance
     /// </summary>
     /// <param name="fileSystem">FileSystem to use</param>
-    public Globals(IFileSystem fileSystem)
+    /// <param name="logger">Logger to use</param>
+    public Globals(IFileSystem fileSystem, ILogger<Globals> logger)
     {
         _fileSystem = fileSystem;
+        _logger = logger;
         _colors = [];
         _customWords = [];
 
