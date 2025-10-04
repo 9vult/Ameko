@@ -9,7 +9,7 @@ using System.Windows.Input;
 using Ameko.ViewModels;
 using Avalonia.Input;
 using Holo.Configuration.Keybinds;
-using NLog;
+using Microsoft.Extensions.Logging;
 
 namespace Ameko.Services;
 
@@ -19,8 +19,7 @@ namespace Ameko.Services;
 /// </summary>
 public class KeybindService : IKeybindService
 {
-    private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-
+    private readonly ILogger _logger;
     private readonly FrozenDictionary<string, (Type, string)> _commandMap;
 
     /// <inheritdoc />
@@ -74,7 +73,7 @@ public class KeybindService : IKeybindService
             }
             catch (Exception ex)
             {
-                Logger.Error(ex);
+                _logger.LogError(ex, "Failed to parse keybind");
             }
         }
     }
@@ -109,7 +108,7 @@ public class KeybindService : IKeybindService
             }
             catch (Exception ex)
             {
-                Logger.Error(ex);
+                _logger.LogError(ex, "Failed to parse script keybind");
             }
         }
     }
@@ -169,17 +168,19 @@ public class KeybindService : IKeybindService
     /// Initialize the keybind scanner service
     /// </summary>
     /// <param name="registrar">Keybind Registrar to use</param>
+    /// <param name="logger">Logger to use</param>
     /// <remarks>Initial scanning will commence automatically upon initialization</remarks>
-    public KeybindService(IKeybindRegistrar registrar)
+    public KeybindService(IKeybindRegistrar registrar, ILogger<KeybindService> logger)
     {
         KeybindRegistrar = registrar;
+        _logger = logger;
 
         // Discover the keybinds
-        Logger.Info("Searching for keybind targets...");
+        _logger.LogInformation("Searching for keybind targets...");
         var metadata = ScanAllViewModelsInAssembly(typeof(App).Assembly)
             .Where(m => m.DeclaringType is not null && m.MemberName is not null)
             .ToList();
-        Logger.Info($"Found {metadata.Count} targets");
+        _logger.LogInformation("Found {MetadataCount} targets", metadata.Count);
 
         // Register the keybinds
         KeybindRegistrar.RegisterKeybinds(

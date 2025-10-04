@@ -8,15 +8,14 @@ using Holo.Configuration;
 using Holo.Providers;
 using Holo.Scripting;
 using Holo.Scripting.Models;
-using NLog;
+using Microsoft.Extensions.Logging;
 using ReactiveUI;
 
 namespace Ameko.ViewModels.Windows;
 
 public partial class PkgManWindowViewModel : ViewModelBase
 {
-    private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-
+    private readonly ILogger _logger;
     private readonly IScriptService _scriptService;
     private readonly IConfiguration _configuration;
     private readonly IMessageBoxService _messageBoxService;
@@ -101,6 +100,7 @@ public partial class PkgManWindowViewModel : ViewModelBase
         IPackageManager packageManager,
         IScriptService scriptService,
         IConfiguration configuration,
+        ILogger<PkgManWindowViewModel> logger,
         IMessageBoxService messageBoxService
     )
     {
@@ -109,6 +109,7 @@ public partial class PkgManWindowViewModel : ViewModelBase
         _scriptService = scriptService;
         _configuration = configuration;
         _messageBoxService = messageBoxService;
+        _logger = logger;
 
         _repoUrlInput = string.Empty;
 

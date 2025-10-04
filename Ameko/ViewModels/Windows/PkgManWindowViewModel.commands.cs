@@ -2,11 +2,11 @@
 
 using System;
 using System.Reactive;
-using System.Reactive.Linq;
 using DynamicData;
 using Holo.Models;
 using Holo.Scripting.Models;
 using Material.Icons;
+using Microsoft.Extensions.Logging;
 using ReactiveUI;
 
 namespace Ameko.ViewModels.Windows;
@@ -172,7 +172,7 @@ public partial class PkgManWindowViewModel
             if (string.IsNullOrWhiteSpace(input))
                 return;
 
-            Logger.Info($"Adding repository {input}");
+            _logger.LogInformation("Adding repository {Input}", input);
 
             var result = await PackageManager.AddRepository(input);
 
@@ -183,18 +183,18 @@ public partial class PkgManWindowViewModel
                     await _messageBoxService.ShowAsync(result);
                     break;
                 case InstallationResult.AlreadyInstalled:
-                    Logger.Error($"Could not add repository because it was already installed.");
+                    _logger.LogError("Could not add repository because it was already installed.");
                     await _messageBoxService.ShowAsync(
                         I18N.PkgMan.PkgManWindow_Title,
                         I18N.PkgMan.PkgMan_Result_Repository_AlreadyInstalled
                     );
                     break;
                 case InstallationResult.Failure:
-                    Logger.Error("Failed to add repository");
+                    _logger.LogError("Failed to add repository");
                     await _messageBoxService.ShowAsync(result);
                     break;
                 default:
-                    Logger.Error("Invalid repository add response");
+                    _logger.LogError("Invalid repository add response");
                     throw new ArgumentOutOfRangeException();
             }
             // Clean up
@@ -212,7 +212,7 @@ public partial class PkgManWindowViewModel
             if (SelectedRepository?.Url is null)
                 return;
 
-            Logger.Info($"Removing repository {SelectedRepository.Name}");
+            _logger.LogInformation("Removing repository {RepositoryName}", SelectedRepository.Name);
 
             var result = PackageManager.RemoveRepository(SelectedRepository.Name);
 
@@ -223,14 +223,14 @@ public partial class PkgManWindowViewModel
                     await _messageBoxService.ShowAsync(result);
                     break;
                 case InstallationResult.NotInstalled:
-                    Logger.Error($"Could not remove repository because it was not installed");
+                    _logger.LogError("Could not remove repository because it was not installed");
                     await _messageBoxService.ShowAsync(
                         I18N.PkgMan.PkgManWindow_Title,
                         I18N.PkgMan.PkgMan_Result_Repository_NotInstalled
                     );
                     break;
                 default:
-                    Logger.Error("Invalid repository remove response");
+                    _logger.LogError("Invalid repository remove response");
                     throw new ArgumentOutOfRangeException();
             }
 
@@ -243,7 +243,7 @@ public partial class PkgManWindowViewModel
             }
             catch (Exception ex)
             {
-                Logger.Error(ex, "Removing repository failed");
+                _logger.LogError(ex, "Removing repository failed");
                 await _messageBoxService.ShowAsync(
                     I18N.PkgMan.PkgManWindow_Title,
                     ex.Message,

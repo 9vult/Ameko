@@ -5,10 +5,9 @@ using System.IO;
 using Ameko.Messages;
 using DiscordRPC;
 using DiscordRPC.Logging;
-using Holo;
 using Holo.Configuration;
 using Holo.Providers;
-using NLog;
+using Microsoft.Extensions.Logging;
 using ReactiveUI;
 using LogLevel = DiscordRPC.Logging.LogLevel;
 
@@ -19,10 +18,9 @@ namespace Ameko.Services;
 /// </summary>
 public class DiscordRpcService
 {
-    private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-
     private readonly IProjectProvider _projectProvider;
     private readonly IConfiguration _configuration;
+    private readonly ILogger<DiscordRpcService> _logger;
     private readonly DiscordRpcClient _client;
     private readonly Timestamps _timestamps;
 
@@ -37,7 +35,7 @@ public class DiscordRpcService
 
         if (_configuration.DiscordRpcEnabled)
         {
-            Logger.Debug($"Setting rich presence to {prjName}/{wspName}");
+            _logger.LogDebug("Setting rich presence to {PrjName}/{WspName}", prjName, wspName);
 
             _client.SetPresence(
                 new RichPresence
@@ -54,17 +52,22 @@ public class DiscordRpcService
         }
     }
 
-    public DiscordRpcService(IProjectProvider projectProvider, IConfiguration config)
+    public DiscordRpcService(
+        IProjectProvider projectProvider,
+        IConfiguration config,
+        ILogger<DiscordRpcService> logger
+    )
     {
         _projectProvider = projectProvider;
         _configuration = config;
+        _logger = logger;
 
         _client = new DiscordRpcClient("1209896771719921704");
         _client.Logger = new ConsoleLogger { Level = LogLevel.Warning };
         _client.Initialize();
         _timestamps = Timestamps.Now;
 
-        Logger.Info("Discord RPC Initialized");
+        _logger.LogInformation("Discord RPC Initialized");
         MessageBus.Current.Listen<WorkingSpaceChangedMessage>().Subscribe(Update);
         Update(null);
     }

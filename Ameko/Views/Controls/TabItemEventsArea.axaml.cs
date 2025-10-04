@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables;
@@ -13,16 +12,12 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.ReactiveUI;
 using Avalonia.Threading;
-using Avalonia.VisualTree;
-using NLog;
 using ReactiveUI;
 
 namespace Ameko.Views.Controls;
 
 public partial class TabItemEventsArea : ReactiveUserControl<TabItemViewModel>
 {
-    private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-
     private void DoScrollToAndSelectEvent(IInteractionContext<Event, Unit> interaction)
     {
         EventsGrid.ScrollIntoView(interaction.Input, null);
@@ -72,7 +67,6 @@ public partial class TabItemEventsArea : ReactiveUserControl<TabItemViewModel>
 
         // Prepare for edits
         ViewModel?.Workspace.Document.HistoryManager.BeginTransaction(selection);
-        Logger.Debug($"Began transaction for {selection.Count} events");
 
         // Mark the selection change complete (on the UI thread)
         // to re-allow Commit() calls

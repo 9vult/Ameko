@@ -23,8 +23,6 @@ namespace Ameko;
 
 sealed class Program
 {
-    private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-
     internal static string[] Args { get; private set; } = null!;
 
     // Initialization code. Don't use any Avalonia, third-party APIs or any
@@ -84,8 +82,6 @@ sealed class Program
     {
         try
         {
-            Logger.Error(ex);
-
             var wittyComments = new StreamReader(
                 AssetLoader.Open(new Uri("avares://Ameko/Assets/Text/WittyComments.txt"))
             )

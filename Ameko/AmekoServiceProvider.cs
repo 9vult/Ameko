@@ -13,14 +13,12 @@ using Holo.IO;
 using Holo.Providers;
 using Holo.Scripting;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using NLog;
+using Microsoft.Extensions.Logging;
 
 namespace Ameko;
 
-public static class AmekoServiceProvider
+public class AmekoServiceProvider
 {
-    private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
     public static IServiceProvider? Provider { get; private set; }
 
     public static IServiceProvider Build()
@@ -91,7 +89,8 @@ public static class AmekoServiceProvider
 
         // Load the logger immediately
         _ = Provider.GetRequiredService<ILogProvider>();
-        Logger.Info($"Starting Ameko {VersionService.FullLabel}");
+        var logger = Provider.GetRequiredService<ILogger<AmekoServiceProvider>>();
+        logger.LogInformation("Starting Ameko {Version}", VersionService.FullLabel);
 
         // Load in other key services
         _ = Provider.GetRequiredService<Directories>();

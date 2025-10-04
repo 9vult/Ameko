@@ -18,7 +18,7 @@ using Holo;
 using Holo.Configuration;
 using Holo.Configuration.Keybinds;
 using Holo.Providers;
-using NLog;
+using Microsoft.Extensions.Logging;
 using ReactiveUI;
 
 namespace Ameko.ViewModels.Windows;
@@ -26,8 +26,6 @@ namespace Ameko.ViewModels.Windows;
 [KeybindContext(KeybindContext.Global)]
 public partial class MainWindowViewModel : ViewModelBase
 {
-    private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-
     private readonly IServiceProvider _serviceProvider;
     private readonly IStylesManagerFactory _stylesManagerFactory;
     private readonly IMessageService _messageService;
@@ -36,6 +34,7 @@ public partial class MainWindowViewModel : ViewModelBase
     private readonly IDictionaryService _dictionaryService;
     private readonly IConfiguration _configuration;
     private readonly IFileSystem _fileSystem;
+    private readonly ILogger _logger;
 
     private string _currentMessage = I18N.Resources.Message_Welcome;
 
@@ -233,7 +232,7 @@ public partial class MainWindowViewModel : ViewModelBase
 
     private void GenerateScriptsMenu()
     {
-        Logger.Debug("Regenerating scripts menu...");
+        _logger.LogDebug("Regenerating scripts menu...");
         var menuItems = ScriptMenuService.GenerateMenuItemSource(
             ScriptService.Scripts,
             ExecuteScriptCommand
@@ -248,12 +247,12 @@ public partial class MainWindowViewModel : ViewModelBase
         ScriptMenuItems.Add(new Separator());
         ScriptMenuItems.Add(ScriptMenuService.GenerateReloadMenuItem(ReloadScriptsCommand));
         ScriptMenuItems.Add(ScriptMenuService.GeneratePkgManMenuItem(ShowPackageManagerCommand));
-        Logger.Debug("Done!");
+        _logger.LogDebug("Done!");
     }
 
     private void GenerateLayoutsMenu()
     {
-        Logger.Debug("Regenerating layouts menu...");
+        _logger.LogDebug("Regenerating layouts menu...");
         var menuItems = LayoutMenuService.GenerateMenuItemSource(
             LayoutProvider.Layouts,
             SelectLayoutCommand
@@ -263,11 +262,12 @@ public partial class MainWindowViewModel : ViewModelBase
         if (menuItems.Count > 0)
             LayoutMenuItems.Add(new Separator());
         LayoutMenuItems.Add(LayoutMenuService.GenerateReloadMenuItem(RefreshLayoutsCommand));
-        Logger.Debug("Done!");
+        _logger.LogDebug("Done!");
     }
 
     public MainWindowViewModel(
         IServiceProvider serviceProvider,
+        ILogger<MainWindowViewModel> logger,
         IFileSystem fileSystem,
         IIoService ioService,
         ILayoutProvider layoutProvider,
@@ -283,6 +283,7 @@ public partial class MainWindowViewModel : ViewModelBase
         GitToolboxViewModel gitToolboxViewModel
     )
     {
+        _logger = logger;
         _serviceProvider = serviceProvider;
         _fileSystem = fileSystem;
         IoService = ioService;

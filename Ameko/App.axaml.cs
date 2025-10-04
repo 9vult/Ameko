@@ -25,14 +25,13 @@ using Holo.Models;
 using Holo.Providers;
 using Holo.Scripting;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using NLog;
 
 namespace Ameko;
 
 public partial class App : Application
 {
-    private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
@@ -160,7 +159,9 @@ public partial class App : Application
             }
             catch (Exception ex)
             {
-                LogManager.GetCurrentClassLogger().Error(ex, "ScriptService failed to initialize.");
+                provider
+                    .GetRequiredService<ILogger<App>>()
+                    .LogError(ex, "ScriptService failed to initialize.");
             }
         });
     }
@@ -183,9 +184,9 @@ public partial class App : Application
             }
             catch (Exception ex)
             {
-                LogManager
-                    .GetCurrentClassLogger()
-                    .Error(ex, "Dependency Control failed to initialize.");
+                provider
+                    .GetRequiredService<ILogger<App>>()
+                    .LogError(ex, "Dependency Control failed to initialize.");
             }
         });
     }
@@ -224,7 +225,6 @@ public partial class App : Application
 
         if (projects.Count > 0)
         {
-            Logger.Info("Loading project file");
             projectProvider.Current = Project.Parse(fs, projects.First());
         }
         foreach (var uri in subs)

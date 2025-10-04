@@ -8,6 +8,7 @@ using Holo.Configuration;
 using Holo.Providers;
 using Holo.Scripting;
 using Holo.Scripting.Models;
+using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
 using ReactiveUI;
 using Shouldly;
@@ -33,6 +34,7 @@ public class PkgManWindowViewModelTests
             packageManager,
             scriptService,
             configuration,
+            NullLogger<PkgManWindowViewModel>.Instance,
             messageBoxService
         );
 
@@ -58,6 +60,7 @@ public class PkgManWindowViewModelTests
             packageManager,
             scriptService,
             configuration,
+            NullLogger<PkgManWindowViewModel>.Instance,
             messageBoxService
         );
 
@@ -114,6 +117,7 @@ public class PkgManWindowViewModelTests
             packageManager,
             scriptService,
             configuration,
+            NullLogger<PkgManWindowViewModel>.Instance,
             messageBoxService
         )
         {
@@ -150,6 +154,7 @@ public class PkgManWindowViewModelTests
             packageManager,
             scriptService,
             configuration,
+            NullLogger<PkgManWindowViewModel>.Instance,
             messageBoxService
         )
         {
@@ -186,6 +191,7 @@ public class PkgManWindowViewModelTests
             packageManager,
             scriptService,
             configuration,
+            NullLogger<PkgManWindowViewModel>.Instance,
             messageBoxService
         )
         {
@@ -218,6 +224,7 @@ public class PkgManWindowViewModelTests
             packageManager,
             scriptService,
             configuration,
+            NullLogger<PkgManWindowViewModel>.Instance,
             messageBoxService
         );
 

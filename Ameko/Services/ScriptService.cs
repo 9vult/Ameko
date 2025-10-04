@@ -8,21 +8,17 @@ using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
 using System.Threading.Tasks;
-using Ameko.Converters;
-using Ameko.Views.Sdk;
 using AssCS.History;
-using Avalonia.Controls;
 using Avalonia.Threading;
 using CSScriptLib;
 using Holo.Configuration.Keybinds;
 using Holo.IO;
-using Holo.Models;
 using Holo.Providers;
 using Holo.Scripting;
 using Holo.Scripting.Models;
 using Jint;
 using Jint.Native;
-using NLog;
+using Microsoft.Extensions.Logging;
 
 namespace Ameko.Services;
 
@@ -32,8 +28,9 @@ namespace Ameko.Services;
 public class ScriptService : IScriptService
 {
     private static readonly Uri ScriptsRoot = new(Path.Combine(Directories.DataHome, "scripts"));
-    private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
+    private readonly ILogger _logger;
+    private readonly ILoggerFactory _loggerFactory;
     private readonly IFileSystem _fileSystem;
     private readonly IProjectProvider _projectProvider;
     private readonly IKeybindRegistrar _keybindRegistrar;
@@ -69,7 +66,7 @@ public class ScriptService : IScriptService
             }
             catch (Exception ex)
             {
-                Logger.Error(ex, "Error executing script");
+                _logger.LogError(ex, "Error executing script");
                 return new ExecutionResult
                 {
                     Status = ExecutionStatus.Failure,
@@ -92,7 +89,7 @@ public class ScriptService : IScriptService
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error(ex, "Error executing script");
+                    _logger.LogError(ex, "Error executing script");
                     return new ExecutionResult
                     {
                         Status = ExecutionStatus.Failure,
@@ -107,7 +104,7 @@ public class ScriptService : IScriptService
         {
             var engine = new Engine(cfg => cfg.AllowClr())
                 .SetValue("ChangeType", typeof(ChangeType))
-                .SetValue("logger", LogManager.GetLogger(scriptlet.Info.QualifiedName));
+                .SetValue("logger", _loggerFactory.CreateLogger(scriptlet.Info.QualifiedName));
 
             var success = engine
                 .Execute(scriptlet.CompiledScript)
@@ -121,7 +118,7 @@ public class ScriptService : IScriptService
         }
 
         // Not found
-        Logger.Error($"Script or method not found: {qualifiedName}");
+        _logger.LogError("Script or method not found: {QualifiedName}", qualifiedName);
         return new ExecutionResult
         {
             Status = ExecutionStatus.Failure,
@@ -149,7 +146,7 @@ public class ScriptService : IScriptService
     /// <inheritdoc />
     public async Task Reload(bool isManual)
     {
-        Logger.Info("Reloading scripts...");
+        _logger.LogInformation("Reloading scripts...");
         if (!Directory.Exists(ScriptsRoot.LocalPath))
             Directory.CreateDirectory(ScriptsRoot.LocalPath);
 
@@ -163,11 +160,11 @@ public class ScriptService : IScriptService
         {
             try
             {
-                Logger.Debug($"Loading script {path}...");
+                _logger.LogDebug("Loading script {Path}...", path);
                 var script = CSScript.Evaluator.LoadFile<HoloScript>(path);
                 if (script is null)
                 {
-                    Logger.Warn($"Script {path} was invalid!");
+                    _logger.LogWarning("Script {Path} was invalid!", path);
                     continue;
                 }
 
@@ -175,8 +172,7 @@ public class ScriptService : IScriptService
             }
             catch (Exception ex)
             {
-                Logger.Error(ex);
-                continue;
+                _logger.LogError(ex, "Failed to load script");
             }
         }
 
@@ -188,7 +184,7 @@ public class ScriptService : IScriptService
         {
             try
             {
-                Logger.Debug($"Loading scriptlet {path}...");
+                _logger.LogDebug("Loading scriptlet {Path}...", path);
                 await using var fs = _fileSystem.FileStream.New(
                     path,
                     FileMode.Open,
@@ -212,14 +208,17 @@ public class ScriptService : IScriptService
             }
             catch (Exception ex)
             {
-                Logger.Error(ex);
+                _logger.LogError(ex, "An error occured while reloading scripts");
             }
         }
 
         // For informational purposes
         var libCount = Directory.GetFiles(ScriptsRoot.LocalPath, "*.lib.cs").Length;
-        Logger.Info(
-            $"Reloaded {loadedScripts.Count} scripts ({libCount} libraries) and {loadedScriptlets.Count} scriptlets"
+        _logger.LogInformation(
+            "Reloaded {LoadedScriptsCount} scripts ({LibCount} libraries) and {LoadedScriptletsCount} scriptlets",
+            loadedScripts.Count,
+            libCount,
+            loadedScriptlets.Count
         );
 
         // Update UI-bound collections and fire event on the UI thread for safety
@@ -274,12 +273,16 @@ public class ScriptService : IScriptService
     public event EventHandler<EventArgs>? OnReload;
 
     public ScriptService(
+        ILogger<ScriptService> logger,
+        ILoggerFactory loggerFactory,
         IFileSystem fileSystem,
         IProjectProvider projectProvider,
         IKeybindRegistrar keybindRegistrar,
         IMessageBoxService messageBoxService
     )
     {
+        _logger = logger;
+        _loggerFactory = loggerFactory;
         _fileSystem = fileSystem;
         _projectProvider = projectProvider;
         _keybindRegistrar = keybindRegistrar;
