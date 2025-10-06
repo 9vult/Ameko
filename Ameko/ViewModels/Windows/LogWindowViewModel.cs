@@ -1,7 +1,6 @@
 ﻿// SPDX-License-Identifier: GPL-3.0-only
 
 using System.Collections.ObjectModel;
-using Holo;
 using Holo.Providers;
 using ReactiveUI;
 

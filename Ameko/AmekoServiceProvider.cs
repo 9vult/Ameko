@@ -2,7 +2,6 @@
 
 using System;
 using System.IO.Abstractions;
-using System.Net.Http;
 using Ameko.Services;
 using Ameko.Utilities;
 using Ameko.ViewModels.Controls;
@@ -31,7 +30,6 @@ public class AmekoServiceProvider
         services.AddHttpClient("default");
         services.AddSingleton<IFileSystem, FileSystem>();
         services.AddSingleton<ILogProvider, LogProvider>();
-        services.AddSingleton(p => p.GetRequiredService<ILogProvider>().LogEntries);
         services.AddLogging(p =>
         {
             p.ClearProviders();
@@ -108,10 +106,11 @@ public class AmekoServiceProvider
 
         Provider = services.BuildServiceProvider();
 
-        // Load the logger immediately
+        // Set up logging
         _ = Provider.GetRequiredService<ILogProvider>();
-        var logger = Provider.GetRequiredService<ILogger<AmekoServiceProvider>>();
-        logger.LogInformation("Starting Ameko {Version}", VersionService.FullLabel);
+        Provider
+            .GetRequiredService<ILogger<AmekoServiceProvider>>()
+            .LogInformation("Starting Ameko {Version}", VersionService.FullLabel);
 
         // Load in other key services
         _ = Provider.GetRequiredService<Directories>();
