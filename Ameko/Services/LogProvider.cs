@@ -1,41 +1,48 @@
-﻿// SPDX-License-Identifier: MPL-2.0
+﻿// SPDX-License-Identifier: GPL-3.0-only
 
+using System;
 using System.Collections.ObjectModel;
+using System.IO;
+using System.Threading;
+using Holo.IO;
+using Holo.Providers;
 using NLog;
 using NLog.Config;
 using NLog.Targets;
 
-namespace Holo.IO;
+namespace Ameko.Services;
 
 /// <summary>
 /// Manages the logger
 /// </summary>
-internal static class LoggerHelper
+internal class LogProvider : ILogProvider
 {
-    /// <summary>
-    /// Set up the logger
-    /// </summary>
-    /// <param name="logEntries">Observable collection for log viewing</param>
-    internal static void Initialize(ObservableCollection<string> logEntries)
+    // ${logger}.${callsite:className=false:methodName=true}
+    // achieves the same thing as ${callsite}, but allows for custom-named loggers when appropriate.
+    // GetCurrentClassLogger() will work as normal, while Scripts inject their QualifiedName for the same effect.
+    private const string Layout =
+        "${longdate} | ${level:uppercase=true:padding=-5} | ${logger}.${callsite:className=false:methodName=true} → ${message}";
+
+    /// <inheritdoc />
+    public AssCS.Utilities.ReadOnlyObservableCollection<string> LogEntries { get; }
+
+    public LogProvider()
     {
-        // ${logger}.${callsite:className=false:methodName=true}
-        // achieves the same thing as ${callsite}, but allows for custom-named loggers when appropriate.
-        // GetCurrentClassLogger() will work as normal, while Scripts inject their QualifiedName for the same effect.
-        const string layout =
-            "${longdate} | ${level:uppercase=true:padding=-5} | ${logger}.${callsite:className=false:methodName=true} → ${message}";
+        ObservableCollection<string> entries = [];
+        LogEntries = new AssCS.Utilities.ReadOnlyObservableCollection<string>(entries);
 
         var config = new LoggingConfiguration();
-        var consoleTarget = new ColoredConsoleTarget("console") { Layout = layout };
+        var consoleTarget = new ColoredConsoleTarget("console") { Layout = Layout };
         var fileTarget = new FileTarget("file")
         {
-            Layout = layout,
+            Layout = Layout,
             FileName = Path.Combine(
                 Directories.StateHome,
                 "logs",
                 $"{DateTime.Now:yyyy-MM-dd}.log"
             ),
         };
-        var collectionTarget = new ObservableCollectionTarget(logEntries) { Layout = layout };
+        var collectionTarget = new ObservableCollectionTarget(entries) { Layout = Layout };
 
         config.AddTarget("console", consoleTarget);
         config.AddTarget("file", fileTarget);
