@@ -88,23 +88,22 @@ public class LayoutProvider : BindableBase, ILayoutProvider
         _logger.LogInformation("No layouts loaded! Generating default layouts...");
 
         foreach (
-            var defaultLayout in new[]
+            var (layout, fileName) in new[]
             {
                 (DefaultLayout, "default"),
                 (DefaultRightPrjExplorer, "default-right"),
                 (SubsOnlyLayout, "subs-only"),
                 (PetzkuLayout, "petzku"),
+                (VerticalLayout, "vertical"),
             }
         )
         {
-            var layout = defaultLayout.Item1;
-            var fileName = $"{defaultLayout.Item2}.toml";
             _layouts.Add(layout);
 
             try
             {
                 using var writeFs = _fileSystem.FileStream.New(
-                    Path.Combine(LayoutsRoot.LocalPath, fileName),
+                    Path.Combine(LayoutsRoot.LocalPath, $"{fileName}.toml"),
                     FileMode.Create,
                     FileAccess.Write,
                     FileShare.None
@@ -363,6 +362,61 @@ public class LayoutProvider : BindableBase, ILayoutProvider
                     IsVertical = true,
                     Column = 1,
                     Row = 2,
+                },
+            ],
+        };
+
+    private static Layout VerticalLayout =>
+        new()
+        {
+            Name = "Vertical",
+            Author = "9volt",
+            ColumnDefinitions = "*",
+            RowDefinitions = "0.2*, 2, 1.8*, 2, 0.75*, 2, *",
+            Window = new WindowSection { IsProjectExplorerOnLeft = true },
+            Video = new TabSection
+            {
+                IsVisible = true,
+                Column = 0,
+                Row = 2,
+            },
+            Audio = new TabSection
+            {
+                IsVisible = true,
+                Column = 0,
+                Row = 0,
+            },
+            Editor = new TabSection
+            {
+                IsVisible = true,
+                Column = 0,
+                Row = 4,
+            },
+            Events = new TabSection
+            {
+                IsVisible = true,
+                Column = 0,
+                Row = 6,
+            },
+            Splitters =
+            [
+                new Splitter
+                {
+                    IsVertical = false,
+                    Column = 0,
+                    Row = 1,
+                },
+                new Splitter
+                {
+                    IsVertical = false,
+                    Column = 0,
+                    Row = 3,
+                },
+                new Splitter
+                {
+                    IsVertical = false,
+                    Column = 0,
+                    Row = 5,
                 },
             ],
         };
