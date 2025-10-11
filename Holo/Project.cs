@@ -30,7 +30,11 @@ namespace Holo;
 /// </remarks>
 public class Project : BindableBase
 {
-    private static readonly JsonSerializerOptions JsonOptions = new() { IncludeFields = true };
+    private static readonly JsonSerializerOptions JsonOptions = new()
+    {
+        IncludeFields = true,
+        WriteIndented = true,
+    };
 
     private readonly RangeObservableCollection<ProjectItem> _referencedItems;
     private readonly RangeObservableCollection<Workspace> _loadedWorkspaces;
