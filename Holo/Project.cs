@@ -6,6 +6,7 @@ using System.IO.Abstractions;
 using System.Text.Json;
 using AssCS;
 using AssCS.IO;
+using AssCS.Utilities;
 using Holo.Models;
 using Microsoft.Extensions.Logging;
 
@@ -64,12 +65,12 @@ public class Project : BindableBase
     /// <summary>
     /// All items referenced by the project
     /// </summary>
-    public ReadOnlyObservableCollection<ProjectItem> ReferencedItems { get; }
+    public System.Collections.ObjectModel.ReadOnlyObservableCollection<ProjectItem> ReferencedItems { get; }
 
     /// <summary>
     /// Currently-open workspaces
     /// </summary>
-    public ReadOnlyObservableCollection<Workspace> LoadedWorkspaces { get; }
+    public System.Collections.ObjectModel.ReadOnlyObservableCollection<Workspace> LoadedWorkspaces { get; }
 
     /// <summary>
     /// The project's style manager
@@ -641,7 +642,7 @@ public class Project : BindableBase
                 Type = item.Type,
                 RelativePath =
                     item.Type == ProjectItemType.Document
-                        ? Path.GetRelativePath(dir, item.Uri!.LocalPath)
+                        ? PathExtensions.GetRelativePath(dir, item.Uri!.LocalPath)
                         : null,
                 Children =
                     item.Type == ProjectItemType.Directory
@@ -712,8 +713,14 @@ public class Project : BindableBase
         _customWords = [];
         StyleManager = new StyleManager();
 
-        ReferencedItems = new ReadOnlyObservableCollection<ProjectItem>(_referencedItems);
-        LoadedWorkspaces = new ReadOnlyObservableCollection<Workspace>(_loadedWorkspaces);
+        ReferencedItems =
+            new System.Collections.ObjectModel.ReadOnlyObservableCollection<ProjectItem>(
+                _referencedItems
+            );
+        LoadedWorkspaces =
+            new System.Collections.ObjectModel.ReadOnlyObservableCollection<Workspace>(
+                _loadedWorkspaces
+            );
 
         if (isEmpty)
             return;
