@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Ameko.DataModels;
 using Ameko.Utilities;
 using AssCS.IO;
+using AssCS.Utilities;
 using Holo;
 using Holo.Configuration;
 using Holo.IO;
@@ -50,7 +51,7 @@ public class IoService(
         if (wsp.MediaController.IsVideoLoaded)
         {
             var dir = Path.GetDirectoryName(uri.LocalPath) ?? "/";
-            var relPath = Path.GetRelativePath(dir, wsp.MediaController.VideoInfo.Path);
+            var relPath = PathExtensions.GetRelativePath(dir, wsp.MediaController.VideoInfo.Path);
             wsp.Document.GarbageManager.Set("Video File", relPath);
             wsp.Document.GarbageManager.Set("Audio File", relPath);
             wsp.Document.GarbageManager.Set("Video Position", wsp.MediaController.CurrentFrame);
@@ -89,7 +90,7 @@ public class IoService(
         if (wsp.MediaController.IsVideoLoaded)
         {
             var dir = Path.GetDirectoryName(uri.LocalPath) ?? "/";
-            var relPath = Path.GetRelativePath(dir, wsp.MediaController.VideoInfo.Path);
+            var relPath = PathExtensions.GetRelativePath(dir, wsp.MediaController.VideoInfo.Path);
             wsp.Document.GarbageManager.Set("Video File", relPath);
             wsp.Document.GarbageManager.Set("Audio File", relPath);
             wsp.Document.GarbageManager.Set("Video Position", wsp.MediaController.CurrentFrame);
