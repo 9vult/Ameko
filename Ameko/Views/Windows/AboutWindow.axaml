@@ -35,6 +35,7 @@
             <TextBlock Text="{Binding Version}"
                        HorizontalAlignment="Center"
                        FontSize="14"
+                       Cursor="Hand"
                        PointerPressed="VersionLabel_OnPointerPressed"/>
         </StackPanel>
         <TabControl TabStripPlacement="Bottom">

@@ -97,7 +97,10 @@ sealed class Program
             report.AppendLine($"Time: {time}");
             report.AppendLine($"Version: Ameko {VersionService.FullLabel}");
             report.AppendLine($"OS: {RuntimeInformation.OSDescription}");
-            report.AppendLine($"Architecture: {RuntimeInformation.OSArchitecture}");
+            report.AppendLine($"Platform: {SystemService.Platform}");
+            report.AppendLine($"Platform Architecture: {RuntimeInformation.OSArchitecture}");
+            report.AppendLine($"Desktop Environment: {SystemService.DesktopEnvironment}");
+            report.AppendLine($"Display Server: {SystemService.WindowManager}");
             report.AppendLine($"Framework: {RuntimeInformation.FrameworkDescription}");
             report.AppendLine($"Category: {category}");
             report.AppendLine(string.Empty);
