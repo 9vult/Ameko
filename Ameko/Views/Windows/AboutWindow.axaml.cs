@@ -20,11 +20,12 @@ public partial class AboutWindow : Window
         var window = GetTopLevel(this);
         _ = window!.Clipboard!.SetTextAsync(
             $"""
-            Ameko
-            Version: {VersionService.FullLabel}
-
+            Version: Ameko {VersionService.FullLabel}
             OS: {RuntimeInformation.OSDescription}
-            Architecture: {RuntimeInformation.OSArchitecture}
+            Platform: {SystemService.Platform}
+            Platform Architecture: {RuntimeInformation.OSArchitecture}
+            Desktop Environment: {SystemService.DesktopEnvironment}
+            Display Server: {SystemService.WindowManager}
             Framework: {RuntimeInformation.FrameworkDescription}
             """
         );
