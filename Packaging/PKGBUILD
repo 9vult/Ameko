@@ -1,0 +1,46 @@
+# Maintainer: 9volt <ninevult@gmail.com>
+
+pkgname='ameko-git'
+pkgver=0.0.1.alpha.r545.gdcb9906
+pkgrel=1
+pkgdesc='Cross-platform editor for Advanced Substation Alpha (ASS) subtitles'
+arch=('x86_64')
+url='https://ameko.moe'
+license=('GPL-3.0-only' 'MPL-2.0')
+depends=(
+  'libass'
+  'ffms2'
+  'dotnet-runtime-9.0'
+)
+makedepends=(
+  'git'
+  'zig'
+  'dotnet-sdk-9.0'
+  'aspnet-runtime-9.0'
+)
+provides=('ameko=${pkgver}')
+conflicts=('ameko')
+source=('git+https://github.com/9vult/Ameko.git')
+sha256sums=('SKIP')
+
+pkgver() {
+  cd "Ameko"
+  git describe --long --abbrev=7 | sed 's/^v//;s/\([^-]*-g\)/r\1/;s/-/./g'
+}
+
+build() {
+  cd "Ameko/Mizuki"
+  zig build
+  cd ..
+  dotnet publish Ameko -c Release -p:SolutionDir=./
+}
+
+package() {
+  install -d "${pkgdir}/usr/bin" "${pkgdir}/usr/lib/ameko"
+
+  cp -a "Ameko/Ameko/bin/Release/net9.0/publish/." "${pkgdir}/usr/lib/ameko/"
+  install -Dm 755 "Ameko/Ameko/bin/Release/net9.0/publish/Ameko" "${pkgdir}/usr/lib/ameko/ameko"
+  ln -s "/usr/lib/ameko/ameko" "${pkgdir}/usr/bin/ameko"
+
+  install -Dm 755 "Ameko/Mizuki/zig-out/lib/libmizuki.so" "${pkgdir}/usr/lib/ameko/libmizuki.so"
+}
