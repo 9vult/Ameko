@@ -139,10 +139,10 @@
         <value>Display an outline and shadow around each character</value>
     </data>
     <data name="StyleEditor_BBox3_ToolTip" xml:space="preserve">
-        <value>Display an opaque box around each line</value>
+        <value>Display an opaque box around each line in the event</value>
     </data>
     <data name="StyleEditor_BBox4_ToolTip" xml:space="preserve">
-        <value>Display an opaque box around all lines (libass only)</value>
+        <value>Display a single opaque box around all lines in the event (libass only)</value>
     </data>
     <data name="StyleEditor_Header_Appearance" xml:space="preserve">
         <value>Appearance</value>
