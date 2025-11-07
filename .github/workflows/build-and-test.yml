@@ -1,9 +1,13 @@
 name: Build and Test
+
 on:
   workflow_dispatch:
   pull_request:
   schedule:
     - cron: '0 8 * * *'
+
+env:
+  DOTNET_VERSION: "9.0"
 
 jobs:
   should-build:
@@ -54,7 +58,7 @@ jobs:
           version: 0.15.1
       - uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: "9.0.x"
+          dotnet-version: "${{ env.DOTNET_VERSION }}.x"
 
       - name: Download dependencies
         shell: pwsh
@@ -73,28 +77,28 @@ jobs:
           zig build --release=safe
           popd
 
-      - name: Build Ameko
+      - name: Build and Test Ameko
+        shell: pwsh
+        run: |
+          dotnet build
+          cp "Mizuki/zig-out/bin/mizuki.dll" "Tests/Holo.Tests/bin/Debug/net${{ env.DOTNET_VERSION }}/"
+          cp -Force "Mizuki/lib/*" "Tests/Holo.Tests/bin/Debug/net${{ env.DOTNET_VERSION }}/"
+          dotnet test
+
+      - name: Publish Ameko
         shell: pwsh
         run: |
           pushd Ameko
           dotnet publish -c Release -p:SolutionDir=..\ -r win-x64 --self-contained true /p:PublishSingleFile=true /p:IncludeNativeLibrariesInSingleFile=true
           popd
-
-      - name: Test Ameko
-        shell: pwsh
-        run: dotnet test
-
-      - name: Copy Dependencies
-        shell: pwsh
-        run: |
-          cp "Mizuki/zig-out/bin/mizuki.dll" "Ameko/bin/Release/net9.0/win-x64/publish"
-          cp -Force "Mizuki/lib/*" "Ameko/bin/Release/net9.0/win-x64/publish/"
+          cp "Mizuki/zig-out/bin/mizuki.dll" "Ameko/bin/Release/net${{ env.DOTNET_VERSION }}/win-x64/publish"
+          cp -Force "Mizuki/lib/*" "Ameko/bin/Release/net${{ env.DOTNET_VERSION }}/win-x64/publish/"
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: ameko-win-x64-${{ needs.should-build.outputs.version }}
-          path: Ameko/bin/Release/net9.0/win-x64/publish
+          path: Ameko/bin/Release/net${{ env.DOTNET_VERSION }}/win-x64/publish
 
   build-macos:
     needs: should-build
@@ -108,7 +112,7 @@ jobs:
           version: 0.15.1
       - uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: "9.0.x"
+          dotnet-version: "${{ env.DOTNET_VERSION }}.x"
 
       - name: Cache Homebrew
         uses: actions/cache@v3
@@ -136,28 +140,27 @@ jobs:
           zig build --release=safe
           popd
 
-      - name: Build Ameko
+      - name: Build and Test Ameko
+        shell: bash
+        run: |
+          dotnet build
+          cp "Mizuki/zig-out/lib/libmizuki.dylib" "Tests/Holo.Tests/bin/Debug/net${{ env.DOTNET_VERSION }}/"
+          dotnet test
+
+      - name: Publish Ameko
         shell: bash
         run: |
           pushd Ameko
           dotnet publish -c Release -p:SolutionDir=../ -r osx-arm64 --self-contained true /p:PublishSingleFile=true /p:IncludeNativeLibrariesInSingleFile=true
           popd
-
-      - name: Test Ameko
-        shell: bash
-        run: dotnet test
-
-      - name: Copy Dependencies
-        shell: bash
-        run: |
-          cp "Mizuki/zig-out/lib/libmizuki.dylib" "Ameko/bin/Release/net9.0/osx-arm64/publish"
-          echo "You will need to install libass and ffms2 to run Ameko. Example: brew install libass ffms2" > "Ameko/bin/Release/net9.0/osx-arm64/publish/DEPENDENCIES.txt"
+          cp "Mizuki/zig-out/lib/libmizuki.dylib" "Ameko/bin/Release/net${{ env.DOTNET_VERSION }}/osx-arm64/publish"
+          echo "You will need to install libass and ffms2 to run Ameko. Example: brew install libass ffms2" > "Ameko/bin/Release/net${{ env.DOTNET_VERSION }}/osx-arm64/publish/DEPENDENCIES.txt"
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: ameko-mac-arm64-${{ needs.should-build.outputs.version }}
-          path: Ameko/bin/Release/net9.0/osx-arm64/publish
+          path: Ameko/bin/Release/net${{ env.DOTNET_VERSION }}/osx-arm64/publish
 
   build-linux:
     needs: should-build
@@ -171,7 +174,7 @@ jobs:
           version: 0.15.1
       - uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: "9.0.x"
+          dotnet-version: "${{ env.DOTNET_VERSION }}.x"
 
       - name: Install dependencies
         shell: bash
@@ -188,25 +191,24 @@ jobs:
           zig build --release=safe
           popd
 
-      - name: Build Ameko
+      - name: Build and Test Ameko
+        shell: bash
+        run: |
+          dotnet build
+          cp "Mizuki/zig-out/lib/libmizuki.so" "Tests/Holo.Tests/bin/Debug/net${{ env.DOTNET_VERSION }}/"
+          dotnet test
+
+      - name: Publish Ameko
         shell: bash
         run: |
           pushd Ameko
           dotnet publish -c Release -p:SolutionDir=../ -r linux-x64 --self-contained true /p:PublishSingleFile=true /p:IncludeNativeLibrariesInSingleFile=true
           popd
-
-      - name: Test Ameko
-        shell: bash
-        run: dotnet test
-
-      - name: Copy Dependencies
-        shell: bash
-        run: |
-          cp "Mizuki/zig-out/lib/libmizuki.so" "Ameko/bin/Release/net9.0/linux-x64/publish"
-          echo "You will need to install libass and ffms2 to run Ameko. Example: sudo apt install libass ffms2" > "Ameko/bin/Release/net9.0/linux-x64/publish/DEPENDENCIES.txt"
+          cp "Mizuki/zig-out/lib/libmizuki.so" "Ameko/bin/Release/net${{ env.DOTNET_VERSION }}/linux-x64/publish"
+          echo "You will need to install libass and ffms2 to run Ameko. Example: sudo apt install libass ffms2" > "Ameko/bin/Release/net${{ env.DOTNET_VERSION }}/linux-x64/publish/DEPENDENCIES.txt"
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: ameko-linux-x64-${{ needs.should-build.outputs.version }}
-          path: Ameko/bin/Release/net9.0/linux-x64/publish
+          path: Ameko/bin/Release/net${{ env.DOTNET_VERSION }}/linux-x64/publish
