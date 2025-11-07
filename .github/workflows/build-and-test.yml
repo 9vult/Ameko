@@ -93,24 +93,11 @@ jobs:
         with:
           dotnet-version: "${{ env.DOTNET_VERSION }}.x"
 
-      - name: Cache Homebrew
-        uses: actions/cache@v3
-        with:
-          path: |
-            /opt/homebrew/Cellar
-            /opt/homebrew/Cache
-            /opt/homebrew/lib/
-          key: ${{ runner.os }}-homebrew-deps-v1
-          restore-keys: |
-            ${{ runner.os }}-homebrew-deps-
-
       - name: Install dependencies
         shell: bash
         run: |
           brew update
           brew install libass ffms2
-          brew link libass
-          brew link ffms2
 
       - name: Build Mizuki
         shell: bash
