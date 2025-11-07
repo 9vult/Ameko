@@ -47,6 +47,7 @@
                                                   Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).OpenDocumentCommand, FallbackValue=.}" />
                                         <MenuItem Header="{x:Static i18n:Resources.ProjectExplorer_ContextMenu_AttachAsReference}"
                                                   Icon="{icons:MaterialIconExt Kind=ClosedCaptionOutline}"
+                                                  IsVisible="{Binding IsSavedToFileSystem}"
                                                   IsEnabled="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).ProjectProvider.Current.WorkingSpace,
                                                                       FallbackValue=.,
                                                                       Converter={StaticResource NullToBoolConverter},
