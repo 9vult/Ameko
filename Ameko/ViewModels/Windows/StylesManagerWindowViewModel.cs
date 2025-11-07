@@ -62,7 +62,7 @@ public partial class StylesManagerWindowViewModel : ViewModelBase
     public ICommand DuplicateCommand { get; }
     public ICommand EditStyleCommand { get; }
     public ICommand DeleteCommand { get; }
-    public ICommand NewStyleCommand { get; }
+    // public ICommand NewStyleCommand { get; } TODO: New Style command
     #endregion
 
     public StylesManagerWindowViewModel(

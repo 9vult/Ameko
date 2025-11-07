@@ -98,6 +98,7 @@ file class MockPersistence : IPersistence
 
     public bool Save()
     {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(LayoutName)));
         return true;
     }
 
