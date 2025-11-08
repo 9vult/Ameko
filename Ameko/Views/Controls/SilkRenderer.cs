@@ -69,6 +69,10 @@ public class SilkRenderer : OpenGlControlBase
         IsInitialized = true;
 
         _scaleFactor = VisualRoot?.RenderScaling ?? 1.0d;
+        if (MediaController is not null)
+        {
+            MediaController.ScreenScaleFactor = _scaleFactor;
+        }
 
         _ebo = new BufferObject<uint>(_gl, Indices, BufferTargetARB.ElementArrayBuffer);
         _vbo = new BufferObject<float>(_gl, Vertices, BufferTargetARB.ArrayBuffer);

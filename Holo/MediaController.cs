@@ -28,6 +28,7 @@ public class MediaController : BindableBase
 
     private ScaleFactor _scaleFactor = ScaleFactor.Default;
     private RotationalFactor _rotationalFactor = RotationalFactor.Default;
+    private double _screenScaleFactor = 1.0d;
     private double _displayWidth;
     private double _displayHeight;
     private double _displayAngle;
@@ -63,8 +64,8 @@ public class MediaController : BindableBase
         set
         {
             SetProperty(ref _scaleFactor, value);
-            DisplayWidth = (VideoInfo?.Width ?? 1) * _scaleFactor.Multiplier;
-            DisplayHeight = (VideoInfo?.Height ?? 1) * _scaleFactor.Multiplier;
+            DisplayWidth = (VideoInfo?.Width ?? 1) * _scaleFactor.Multiplier / _screenScaleFactor;
+            DisplayHeight = (VideoInfo?.Height ?? 1) * _scaleFactor.Multiplier / _screenScaleFactor;
         }
     }
 
@@ -75,6 +76,20 @@ public class MediaController : BindableBase
         {
             SetProperty(ref _rotationalFactor, value);
             DisplayAngle = value.Angle;
+        }
+    }
+
+    /// <summary>
+    /// Screen scale factor (125% scale = 1.25)
+    /// </summary>
+    public double ScreenScaleFactor
+    {
+        get => _screenScaleFactor;
+        set
+        {
+            SetProperty(ref _screenScaleFactor, value);
+            DisplayWidth = (VideoInfo?.Width ?? 1) * _scaleFactor.Multiplier / _screenScaleFactor;
+            DisplayHeight = (VideoInfo?.Height ?? 1) * _scaleFactor.Multiplier / _screenScaleFactor;
         }
     }
 
@@ -377,8 +392,8 @@ public class MediaController : BindableBase
             _playback.Intervals = VideoInfo.FrameIntervals;
         }
 
-        DisplayWidth = VideoInfo.Width;
-        DisplayHeight = VideoInfo.Height;
+        DisplayWidth = VideoInfo.Width / _screenScaleFactor;
+        DisplayHeight = VideoInfo.Height / _screenScaleFactor;
 
         // Audio time
         if (_provider.AllocateAudioBuffer() != 0)
