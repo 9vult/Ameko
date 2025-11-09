@@ -126,10 +126,10 @@ jobs:
           cp "Mizuki/zig-out/lib/libmizuki.dylib" "Ameko/bin/Release/net${{ env.DOTNET_VERSION }}/osx-arm64/publish"
           chmod +x Ameko/bin/Release/net${{ env.DOTNET_VERSION }}/osx-arm64/publish/Ameko
 
-          mkdir -p "publish/Ameko.app/Contents/MacOS"
-          mkdir -p "publish/Ameko.app/Contents/Resources"
-          cp "Ameko/bin/Release/net${{ env.DOTNET_VERSION }}/osx-arm64/publish/*" "publish/Ameko.app/Contents/MacOS"
-          cp "Ameko/Assets/Ameko.icns" "publish/Ameko.app/Contents/Resources/Ameko.icns"
+          mkdir -p publish/Ameko.app/Contents/MacOS
+          mkdir -p publish/Ameko.app/Contents/Resources
+          cp -a Ameko/bin/Release/net${{ env.DOTNET_VERSION }}/osx-arm64/publish/* publish/Ameko.app/Contents/MacOS
+          cp Ameko/Assets/Ameko.icns publish/Ameko.app/Contents/Resources/Ameko.icns
 
           cat << EOF > "publish/Ameko.app/Info.plist"
           <?xml version="1.0" encoding="UTF-8"?>
