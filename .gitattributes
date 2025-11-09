@@ -69,3 +69,4 @@
 ###############################################################################
 /Mizuki/include/** linguist-vendored
 /Ameko/Assets/** linguist-vendored
+/Packaging/** linguist-vendored
