@@ -17,7 +17,7 @@ jobs:
       version: ${{ steps.ver.outputs.version }}
       patch: ${{ steps.ver.outputs.patch }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
       - name: Get version information
@@ -37,6 +37,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
       - uses: mlugg/setup-zig@v2
         with:
           version: 0.15.1
@@ -90,6 +92,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
       - uses: mlugg/setup-zig@v2
         with:
           version: 0.15.1
@@ -163,6 +167,7 @@ jobs:
           EOF
 
           echo "You will need to install libass and ffms2 to run Ameko. Example: brew install libass ffms2" > "publish/DEPENDENCIES.txt"
+          echo "Because Ameko is unsigned, you will need to run the following in a terminal to open Ameko: xattr -cr ./Ameko.app" > "publish/OPENING.txt"
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
@@ -176,6 +181,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
       - uses: mlugg/setup-zig@v2
         with:
           version: 0.15.1
