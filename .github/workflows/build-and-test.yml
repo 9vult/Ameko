@@ -131,7 +131,7 @@ jobs:
           cp -a Ameko/bin/Release/net${{ env.DOTNET_VERSION }}/osx-arm64/publish/* publish/Ameko.app/Contents/MacOS
           cp Ameko/Assets/Ameko.icns publish/Ameko.app/Contents/Resources/Ameko.icns
 
-          cat << EOF > "publish/Ameko.app/Info.plist"
+          cat << EOF > "publish/Ameko.app/Contents/Info.plist"
           <?xml version="1.0" encoding="UTF-8"?>
           <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
           "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
