@@ -14,7 +14,8 @@ jobs:
   calculate-version:
     runs-on: ubuntu-latest
     outputs:
-      version: ${{ steps.ver.outputs.value }}
+      version: ${{ steps.ver.outputs.version }}
+      patch: ${{ steps.ver.outputs.patch }}
     steps:
       - uses: actions/checkout@v3
         with:
@@ -23,9 +24,12 @@ jobs:
         id: ver
         shell: bash
         run: |
-          version="$(git describe --long --abbrev=7 2>/dev/null | sed 's/^v//;s/\([^-]*-g\)/r\1/;s/-/./g' || git rev-parse --short HEAD)"
+          version="$(git describe --long --abbrev=7 2>/dev/null | sed -E 's/^v//; s/([0-9]+)\.([0-9]+)\.[0-9]+-([A-Za-z0-9]+)-([0-9]+)-g/ \1.\2.\4.\3.g/; s/ //; s/-/./g' || git rev-parse --short HEAD)"
           echo Version: $version
-          echo "value=$version" >> "$GITHUB_OUTPUT"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+          patch="$(git describe --long --abbrev=7 | sed -E 's/^v([0-9]+)\.([0-9]+)\.[0-9]+-.+-([0-9]+)-g.*/\1.\2.\3/')"
+          echo "patch=$patch" >> "$GITHUB_OUTPUT"
 
   build-windows:
     needs: calculate-version
@@ -120,13 +124,51 @@ jobs:
           dotnet publish -c Release -p:SolutionDir=../ -r osx-arm64 --self-contained true /p:PublishSingleFile=true /p:IncludeNativeLibrariesInSingleFile=true
           popd
           cp "Mizuki/zig-out/lib/libmizuki.dylib" "Ameko/bin/Release/net${{ env.DOTNET_VERSION }}/osx-arm64/publish"
-          echo "You will need to install libass and ffms2 to run Ameko. Example: brew install libass ffms2" > "Ameko/bin/Release/net${{ env.DOTNET_VERSION }}/osx-arm64/publish/DEPENDENCIES.txt"
+          chmod +x Ameko/bin/Release/net${{ env.DOTNET_VERSION }}/osx-arm64/publish/Ameko
+
+          mkdir -p "publish/Ameko.app/Contents/MacOS"
+          mkdir -p "publish/Ameko.app/Contents/Resources"
+          cp "Ameko/bin/Release/net${{ env.DOTNET_VERSION }}/osx-arm64/publish/*" "publish/Ameko.app/Contents/MacOS"
+          cp "Ameko/Assets/Ameko.icns" "publish/Ameko.app/Contents/Resources/Ameko.icns"
+
+          cat << EOF > "publish/Ameko.app/Info.plist"
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+          "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+
+          <plist version="1.0">
+              <dict>
+                  <key>CFBundleName</key>
+                  <string>Ameko</string>
+                  <key>CFBundleIdentifier</key>
+                  <string>moe.ninevolt.ameko</string>
+                  <key>CFBundleVersion</key>
+                  <string>${{ needs.calculate-version.outputs.version }}</string>
+                  <key>CFBundleShortVersionString</key>
+                  <string>${{ needs.calculate-version.outputs.patch }}</string>
+                  <key>CFBundleExecutable</key>
+                  <string>Ameko</string>
+                  <key>CFBundleIconFile</key>
+                  <string>Ameko.icns</string>
+                  <key>LSApplicationCategoryType</key>
+                  <string>public.app-category.productivity</string>
+                  <key>LSMinimumSystemVersion</key>
+                  <string>12.0</string>
+                  <key>NSHighResolutionCapable</key>
+                  <true/>
+                  <key>NSQuitAlwaysKeepsWindows</key>
+                  <false/>
+              </dict>
+          </plist>
+          EOF
+
+          echo "You will need to install libass and ffms2 to run Ameko. Example: brew install libass ffms2" > "publish/DEPENDENCIES.txt"
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: ameko-mac-arm64-${{ needs.calculate-version.outputs.version }}
-          path: Ameko/bin/Release/net${{ env.DOTNET_VERSION }}/osx-arm64/publish
+          path: publish
 
   build-linux:
     needs: calculate-version
