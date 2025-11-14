@@ -10,13 +10,13 @@ license=('GPL-3.0-only' 'MPL-2.0')
 depends=(
   'libass'
   'ffms2'
-  'dotnet-runtime-9.0'
+  'dotnet-runtime-10.0-bin'
 )
 makedepends=(
   'git'
   'zig'
-  'dotnet-sdk-9.0'
-  'aspnet-runtime-9.0'
+  'dotnet-sdk-10.0-bin'
+  'aspnet-runtime-10.0-bin'
 )
 provides=('ameko=${pkgver}')
 conflicts=('ameko')
