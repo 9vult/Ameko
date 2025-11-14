@@ -57,7 +57,6 @@
     <PackageReference Include="Semi.Avalonia.ColorPicker" />
     <PackageReference Include="Semi.Avalonia.DataGrid" />
     <PackageReference Include="Semi.Avalonia.Tabalonia" />
-    <PackageReference Include="Semi.Avalonia.TreeDataGrid" />
     <PackageReference Include="Semver" />
     <PackageReference Include="Silk.NET.OpenAL" />
     <PackageReference Include="Silk.NET.OpenAL.Extensions.EXT" />

@@ -16,16 +16,14 @@ public class EditableKeybind
     public required EditableKeybindContext Context { get; set; }
 
     public static ReadOnlyCollection<EditableKeybindContext> Contexts { get; } =
-        new(
-            [
-                new EditableKeybindContext(KeybindContext.None),
-                new EditableKeybindContext(KeybindContext.Global),
-                new EditableKeybindContext(KeybindContext.Grid),
-                new EditableKeybindContext(KeybindContext.Editor),
-                new EditableKeybindContext(KeybindContext.Video),
-                new EditableKeybindContext(KeybindContext.Audio),
-            ]
-        );
+        new([
+            new EditableKeybindContext(KeybindContext.None),
+            new EditableKeybindContext(KeybindContext.Global),
+            new EditableKeybindContext(KeybindContext.Grid),
+            new EditableKeybindContext(KeybindContext.Editor),
+            new EditableKeybindContext(KeybindContext.Video),
+            new EditableKeybindContext(KeybindContext.Audio),
+        ]);
 
     public string Key
     {

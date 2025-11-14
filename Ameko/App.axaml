@@ -20,7 +20,6 @@
         <semi:SemiTheme Locale="en-US" />
         <semi:ColorPickerSemiTheme />
         <semi:DataGridSemiTheme />
-        <semi:TreeDataGridSemiTheme />
         <semi:AvaloniaEditSemiTheme />
         <StyleInclude Source="avares://Ameko/Views/Controls/SeekSlider.axaml" />
         <materialIcons:MaterialIconStyles />
