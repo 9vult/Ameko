@@ -12,6 +12,7 @@ using AssCS.History;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.Input.Platform;
 using Avalonia.Interactivity;
 using Avalonia.ReactiveUI;
 using ReactiveUI;
@@ -139,7 +140,7 @@ public partial class TabItemEditorArea : ReactiveUserControl<TabItemViewModel>
         else
             return;
 
-        var text = await clipboard.GetTextAsync();
+        var text = await clipboard.TryGetTextAsync();
         text = text?.Replace(Environment.NewLine, UseSoftLinebreaks ? @"\n" : @"\N");
 
         if (text is not null)

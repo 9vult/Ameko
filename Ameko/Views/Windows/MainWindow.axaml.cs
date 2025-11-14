@@ -577,9 +577,10 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
 
     private void DoDragAndDrop(object? sender, DragEventArgs e)
     {
-        if (e.Data.GetFiles() is not { } files || ViewModel is null)
+        if (e.DataTransfer is not { } transfer || ViewModel is null)
             return;
 
+        var files = transfer.TryGetFiles() ?? [];
         foreach (var file in files)
         {
             var ext = Path.GetExtension(file.Path.LocalPath);

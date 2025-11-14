@@ -17,6 +17,7 @@ using AssCS.History;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.Input.Platform;
 using Avalonia.Media;
 using Avalonia.Platform.Storage;
 using Avalonia.ReactiveUI;
@@ -101,7 +102,7 @@ public partial class TabItem : ReactiveUserControl<TabItemViewModel>
             return;
         }
 
-        var output = await window.Clipboard!.GetTextAsync();
+        var output = await window.Clipboard!.TryGetTextAsync();
         if (output is null)
         {
             interaction.SetOutput([]);
@@ -205,10 +206,10 @@ public partial class TabItem : ReactiveUserControl<TabItemViewModel>
         if (file is null)
             return;
 
-        var dataObject = new DataObject();
-        dataObject.Set(DataFormats.Files, new List<IStorageFile> { file });
+        var dataObject = new DataTransfer();
+        dataObject.Add(DataTransferItem.CreateFile(file));
 
-        await window.Clipboard!.SetDataObjectAsync(dataObject);
+        await window.Clipboard!.SetDataAsync(dataObject);
     }
 
     public TabItem()
