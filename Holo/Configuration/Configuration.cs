@@ -321,7 +321,7 @@ public partial class Configuration : BindableBase, IConfiguration
         _autosaveEnabled = true;
         _autosaveInterval = 60;
         _repositoryUrls = [];
-        _culture = "en-US";
+        _culture = "es-419";
         _spellcheckCulture = "en_US";
         _theme = Theme.Default;
         _gridPadding = 2;

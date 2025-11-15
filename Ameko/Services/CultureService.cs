@@ -1,49 +1,68 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Globalization;
+using System.IO;
 using System.Linq;
+using System.Text.Json;
 using System.Threading;
 using Holo.Configuration;
-using Microsoft.Extensions.Logging;
+using Holo.IO;
 
 namespace Ameko.Services;
 
-public class CultureService
+public static class CultureService
 {
-    private readonly IConfiguration _configuration;
-    private readonly ILogger _logger;
+    public static IReadOnlyList<CultureInfo> AvailableCultures { get; } = [new("en-US")];
 
-    public IReadOnlyList<CultureInfo> AvailableCultures { get; } = [new("en-US")];
-
-    private void SetCulture(string cultureName)
+    public static void SetCulture()
     {
+        var cultureName = GetConfiguredCulture();
         var culture =
             AvailableCultures.FirstOrDefault(c => c.Name == cultureName) ?? AvailableCultures[0];
 
-        _logger.LogInformation("Setting culture to {CultureName}", culture.Name);
-
         Thread.CurrentThread.CurrentUICulture = culture;
         Thread.CurrentThread.CurrentCulture = culture;
-
-        _configuration.Culture = culture.Name;
     }
 
-    private void OnConfigurationChanged(object? sender, PropertyChangedEventArgs e)
+    /// <summary>
+    /// Get the configured culture
+    /// </summary>
+    /// <returns>The configured culture</returns>
+    /// <remarks>
+    /// This method is needed to bypass the DI container, since using the "normal way" of <see cref="IConfiguration"/>
+    /// results in issues since this needs to be called <i>before</i> the window XMLs are loaded
+    /// </remarks>
+    private static string GetConfiguredCulture()
     {
-        if (e.PropertyName == nameof(IConfiguration.Culture))
+        const string defaultCulture = "en-US";
+
+        var configPath = Paths.Configuration.LocalPath;
+        if (!File.Exists(configPath))
         {
-            SetCulture(_configuration.Culture);
+            return defaultCulture;
         }
-    }
 
-    public CultureService(IConfiguration configuration, ILogger<CultureService> logger)
-    {
-        _configuration = configuration;
-        _logger = logger;
+        try
+        {
+            using var fs = new FileStream(
+                configPath,
+                FileMode.Open,
+                FileAccess.Read,
+                FileShare.ReadWrite
+            );
+            using var reader = new StreamReader(fs);
+            using var doc = JsonDocument.Parse(reader.ReadToEnd());
+            if (doc.RootElement.TryGetProperty("culture", out var cultureElement))
+            {
+                return cultureElement.GetString() ?? defaultCulture;
+            }
 
-        SetCulture(_configuration.Culture);
-        _configuration.PropertyChanged += OnConfigurationChanged;
+            return defaultCulture;
+        }
+        catch
+        {
+            return defaultCulture;
+        }
     }
 }

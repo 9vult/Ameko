@@ -34,6 +34,7 @@ public partial class App : Application
 {
     public override void Initialize()
     {
+        CultureService.SetCulture();
         AvaloniaXamlLoader.Load(this);
     }
 
@@ -42,7 +43,6 @@ public partial class App : Application
         var provider = AmekoServiceProvider.Build();
 
         // Activate some key services
-        _ = provider.GetRequiredService<CultureService>();
         _ = provider.GetRequiredService<ThemeService>();
         // May have to move this if it gets too resource-intensive
         provider.GetRequiredService<ILayoutProvider>().Reload();

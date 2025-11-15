@@ -72,7 +72,6 @@ public class AmekoServiceProvider
         services.AddSingleton<IMessageService, MessageService>();
 
         // --- Presentation ---
-        services.AddSingleton<CultureService>();
         services.AddSingleton<ThemeService>();
         services.AddSingleton<IIoService, IoService>();
         services.AddSingleton<IMessageBoxService, MessageBoxService>();
