@@ -36,8 +36,6 @@ public partial class MainWindowViewModel : ViewModelBase
     private readonly IFileSystem _fileSystem;
     private readonly ILogger _logger;
 
-    private string _currentMessage = I18N.Resources.Message_Welcome;
-
     public IScriptService ScriptService { get; }
     public ILayoutProvider LayoutProvider { get; }
 
@@ -205,9 +203,9 @@ public partial class MainWindowViewModel : ViewModelBase
 
     public string CurrentMessage
     {
-        get => _currentMessage;
-        set => this.RaiseAndSetIfChanged(ref _currentMessage, value);
-    }
+        get;
+        set => this.RaiseAndSetIfChanged(ref field, value);
+    } = I18N.Resources.Message_Welcome;
 
     /// <summary>
     /// WindowSection title

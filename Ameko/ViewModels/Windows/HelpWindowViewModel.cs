@@ -17,8 +17,6 @@ namespace Ameko.ViewModels.Windows;
 public partial class HelpWindowViewModel(IPackageManager packageManager, IFileSystem fileSystem)
     : ViewModelBase
 {
-    private ScriptHelp? _selectedScriptHelp;
-
     private static readonly MarkdownPipeline Pipeline = new MarkdownPipelineBuilder()
         .UseAdvancedExtensions()
         .UseColorCode()
@@ -40,8 +38,8 @@ public partial class HelpWindowViewModel(IPackageManager packageManager, IFileSy
 
     public ScriptHelp? SelectedScriptHelp
     {
-        get => _selectedScriptHelp;
-        set => this.RaiseAndSetIfChanged(ref _selectedScriptHelp, value);
+        get;
+        set => this.RaiseAndSetIfChanged(ref field, value);
     }
 
     private string BuildScriptHelp(string path)

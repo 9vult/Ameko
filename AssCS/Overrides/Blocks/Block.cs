@@ -24,12 +24,11 @@ namespace AssCS.Overrides.Blocks;
 public abstract class Block
 {
     protected string _text;
-    private readonly BlockType _type;
 
     /// <summary>
     /// Type of block
     /// </summary>
-    public BlockType Type => _type;
+    public BlockType Type { get; }
 
     /// <summary>
     /// Text content
@@ -43,7 +42,7 @@ public abstract class Block
     /// <param name="type">Type of block</param>
     protected Block(string data, BlockType type)
     {
-        _type = type;
+        Type = type;
         _text = data;
     }
 }

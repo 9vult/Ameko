@@ -167,11 +167,8 @@ public partial class TabItemViewModel : ViewModelBase
     private readonly IMessageService _messageService;
     private readonly IIoService _ioService;
 
-    private readonly Workspace _workspace;
-    private int _editBoxSelectionStart;
-    private int _editBoxSelectionEnd;
+    public Workspace Workspace { get; }
 
-    public Workspace Workspace => _workspace;
     public IProjectProvider ProjectProvider { get; }
     public IConfiguration Configuration { get; }
     public IKeybindService KeybindService { get; }
@@ -179,14 +176,14 @@ public partial class TabItemViewModel : ViewModelBase
 
     public int EditBoxSelectionStart
     {
-        get => _editBoxSelectionStart;
-        set => this.RaiseAndSetIfChanged(ref _editBoxSelectionStart, value);
+        get;
+        set => this.RaiseAndSetIfChanged(ref field, value);
     }
 
     public int EditBoxSelectionEnd
     {
-        get => _editBoxSelectionEnd;
-        set => this.RaiseAndSetIfChanged(ref _editBoxSelectionEnd, value);
+        get;
+        set => this.RaiseAndSetIfChanged(ref field, value);
     }
 
     public TabItemViewModel(
@@ -264,7 +261,7 @@ public partial class TabItemViewModel : ViewModelBase
 
         #endregion
 
-        _workspace = workspace;
+        Workspace = workspace;
         _scriptService = scriptService;
         _messageService = messageService;
         _ioService = ioService;
@@ -273,7 +270,7 @@ public partial class TabItemViewModel : ViewModelBase
         KeybindService = keybindService;
         LayoutProvider = layoutProvider;
 
-        _workspace.OnFileModifiedExternally += async (_, _) =>
+        Workspace.OnFileModifiedExternally += async (_, _) =>
         {
             var result = await ShowFileModifiedDialog.Handle(
                 new FileModifiedDialogViewModel(Workspace.Title)

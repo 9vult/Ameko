@@ -25,7 +25,6 @@ public class Workspace : BindableBase
     private DateTimeOffset? _lastExternalModificationAlertTime;
 
     private Uri? _savePath;
-    private bool _isSaved;
 
     /// <summary>
     /// The ass document in the workspace
@@ -84,10 +83,10 @@ public class Workspace : BindableBase
     /// </summary>
     public bool IsSaved
     {
-        get => _isSaved;
+        get;
         set
         {
-            SetProperty(ref _isSaved, value);
+            SetProperty(ref field, value);
             RaisePropertyChanged(nameof(DisplayTitle));
             if (value)
                 _lastWriteTime = DateTimeOffset.Now;

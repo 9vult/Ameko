@@ -48,7 +48,6 @@ public class Project : BindableBase
     private readonly ILogger _logger;
 
     private Uri? _savePath;
-    private bool _isSaved;
 
     private int _docId = 1;
     private Workspace? _workingSpace;
@@ -57,7 +56,6 @@ public class Project : BindableBase
     private bool? _cpsIncludesWhitespace;
     private bool? _cpsIncludesPunctuation;
     private bool? _useSoftLinebreaks;
-    private int? _defaultLayer;
 
     private string? _spellcheckCulture;
     private List<string> _customWords;
@@ -92,8 +90,8 @@ public class Project : BindableBase
     /// </summary>
     public bool IsSaved
     {
-        get => _isSaved;
-        private set => SetProperty(ref _isSaved, value);
+        get;
+        private set => SetProperty(ref field, value);
     }
 
     /// <summary>
@@ -183,10 +181,10 @@ public class Project : BindableBase
     /// </summary>
     public int? DefaultLayer
     {
-        get => _defaultLayer;
+        get;
         set
         {
-            SetProperty(ref _defaultLayer, value);
+            SetProperty(ref field, value);
             IsSaved = false;
         }
     }

@@ -15,7 +15,6 @@ public class MediaController : BindableBase
     private readonly ILogger _logger;
     private readonly HighResolutionTimer _playback;
     private VideoInfo? _videoInfo;
-    private bool _isVideoLoaded;
 
     private unsafe FrameGroup* _lastFrame;
     private unsafe FrameGroup* _nextFrame;
@@ -27,13 +26,8 @@ public class MediaController : BindableBase
     private bool _subtitlesChanged;
 
     private ScaleFactor _scaleFactor = ScaleFactor.Default;
-    private RotationalFactor _rotationalFactor = RotationalFactor.Default;
     private double _screenScaleFactor = 1.0d;
-    private double _displayWidth;
-    private double _displayHeight;
-    private double _displayAngle;
 
-    private bool _isAutoSeekEnabled = true;
     private bool _isPlaying;
     private bool _isPaused;
 
@@ -51,8 +45,8 @@ public class MediaController : BindableBase
     [MemberNotNullWhen(true, nameof(VideoInfo))]
     public bool IsVideoLoaded
     {
-        get => _isVideoLoaded;
-        private set => SetProperty(ref _isVideoLoaded, value);
+        get;
+        private set => SetProperty(ref field, value);
     }
 
     /// <summary>
@@ -71,13 +65,13 @@ public class MediaController : BindableBase
 
     public RotationalFactor RotationalFactor
     {
-        get => _rotationalFactor;
+        get;
         set
         {
-            SetProperty(ref _rotationalFactor, value);
+            SetProperty(ref field, value);
             DisplayAngle = value.Angle;
         }
-    }
+    } = RotationalFactor.Default;
 
     /// <summary>
     /// Screen scale factor (125% scale = 1.25)
@@ -95,20 +89,20 @@ public class MediaController : BindableBase
 
     public double DisplayWidth
     {
-        get => _displayWidth;
-        private set => SetProperty(ref _displayWidth, value);
+        get;
+        private set => SetProperty(ref field, value);
     }
 
     public double DisplayHeight
     {
-        get => _displayHeight;
-        private set => SetProperty(ref _displayHeight, value);
+        get;
+        private set => SetProperty(ref field, value);
     }
 
     public double DisplayAngle
     {
-        get => _displayAngle;
-        private set => SetProperty(ref _displayAngle, value);
+        get;
+        private set => SetProperty(ref field, value);
     }
 
     /// <summary>
@@ -116,9 +110,9 @@ public class MediaController : BindableBase
     /// </summary>
     public bool IsAutoSeekEnabled
     {
-        get => _isAutoSeekEnabled;
-        set => SetProperty(ref _isAutoSeekEnabled, value);
-    }
+        get;
+        set => SetProperty(ref field, value);
+    } = true;
 
     /// <summary>
     /// The current frame

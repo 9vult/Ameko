@@ -7,8 +7,6 @@ namespace Holo;
 
 public class ReferenceFileManager : BindableBase
 {
-    private Document? _reference;
-    private string _currentLines = string.Empty;
     private readonly SelectionManager _selectionManager;
 
     /// <summary>
@@ -16,10 +14,10 @@ public class ReferenceFileManager : BindableBase
     /// </summary>
     public Document? Reference
     {
-        get => _reference;
+        get;
         set
         {
-            SetProperty(ref _reference, value);
+            SetProperty(ref field, value);
             IsReferenceLoaded = value is not null;
             RaisePropertyChanged(nameof(IsReferenceLoaded));
             GetCorrespondingLines();
@@ -34,9 +32,9 @@ public class ReferenceFileManager : BindableBase
 
     public string CurrentLines
     {
-        get => _currentLines;
-        set => SetProperty(ref _currentLines, value);
-    }
+        get;
+        set => SetProperty(ref field, value);
+    } = string.Empty;
 
     public void Shift(int seconds)
     {

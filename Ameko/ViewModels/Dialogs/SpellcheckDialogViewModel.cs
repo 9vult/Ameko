@@ -25,14 +25,12 @@ public partial class SpellcheckDialogViewModel : ViewModelBase
     private readonly IProjectProvider _projectProvider;
 
     private IEnumerator<SpellcheckSuggestion> _spellcheckSuggestions;
-    private bool _haveSuggestions = true;
 
     private readonly Workspace? _workspace;
     private readonly TabItemViewModel? _tabVm;
 
     private string _misspelledWord = string.Empty;
     private string _misspelledWordCopy = string.Empty;
-    private string? _selectedSuggestion;
     private readonly ObservableCollection<string> _suggestions;
 
     public string DictionaryInUse { get; }
@@ -51,10 +49,10 @@ public partial class SpellcheckDialogViewModel : ViewModelBase
 
     public string? SelectedSuggestion
     {
-        get => _selectedSuggestion;
+        get;
         set
         {
-            this.RaiseAndSetIfChanged(ref _selectedSuggestion, value);
+            this.RaiseAndSetIfChanged(ref field, value);
             this.RaisePropertyChanged(nameof(CanChange));
         }
     }
@@ -63,9 +61,9 @@ public partial class SpellcheckDialogViewModel : ViewModelBase
 
     public bool HaveSuggestions
     {
-        get => _haveSuggestions;
-        private set => this.RaiseAndSetIfChanged(ref _haveSuggestions, value);
-    }
+        get;
+        private set => this.RaiseAndSetIfChanged(ref field, value);
+    } = true;
 
     public bool CanChange =>
         MisspelledWord != _misspelledWordCopy || SelectedSuggestion is not null;

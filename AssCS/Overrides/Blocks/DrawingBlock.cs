@@ -16,14 +16,12 @@ namespace AssCS.Overrides.Blocks;
 /// </remarks>
 public class DrawingBlock(string data, int scale) : Block(data, BlockType.Drawing)
 {
-    private int _scale = scale;
-
     /// <summary>
     /// Scale of the drawing
     /// </summary>
     public int Scale
     {
-        get => _scale;
-        set => _scale = value;
-    }
+        get;
+        set => field = value;
+    } = scale;
 }

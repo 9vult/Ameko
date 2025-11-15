@@ -14,7 +14,6 @@ namespace Ameko.ViewModels.Windows;
 public partial class PlaygroundWindowViewModel : ViewModelBase
 {
     private string _status;
-    private bool _isExecuting;
 
     public ICommand ExecuteCommand { get; }
     public ICommand ResetCommand { get; }
@@ -28,8 +27,8 @@ public partial class PlaygroundWindowViewModel : ViewModelBase
 
     public bool IsExecuting
     {
-        get => _isExecuting;
-        private set => this.RaiseAndSetIfChanged(ref _isExecuting, value);
+        get;
+        private set => this.RaiseAndSetIfChanged(ref field, value);
     }
 
     private void Reset()

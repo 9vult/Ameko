@@ -77,11 +77,11 @@ public class RangeObservableCollection<T> : ObservableCollection<T>
     //------------------------------------------------------
 
     #region Public Properties
-    EqualityComparer<T>? _Comparer;
+
     public EqualityComparer<T> Comparer
     {
-        get => _Comparer ??= EqualityComparer<T>.Default;
-        private set => _Comparer = value;
+        get => field ??= EqualityComparer<T>.Default;
+        private set;
     }
 
     /// <summary>

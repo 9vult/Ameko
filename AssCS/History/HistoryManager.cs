@@ -10,7 +10,6 @@ namespace AssCS.History;
 /// </summary>
 public class HistoryManager : BindableBase
 {
-    private int _nextId;
     private readonly ConcurrentStack<ICommit> _history = [];
     private readonly ConcurrentStack<ICommit> _future = [];
 
@@ -20,7 +19,7 @@ public class HistoryManager : BindableBase
     /// <summary>
     /// Next commit ID
     /// </summary>
-    private int NextId => _nextId++;
+    private int NextId => field++;
 
     /// <summary>
     /// If there is history to undo

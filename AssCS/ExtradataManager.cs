@@ -10,15 +10,14 @@ namespace AssCS;
 public class ExtradataManager
 {
     private readonly List<ExtradataEntry> _extradata = [];
-    private int _id;
 
     /// <summary>
     /// The next available extradata ID
     /// </summary>
     public int NextId
     {
-        get => _id++;
-        internal set => _id = value;
+        get => field++;
+        internal set;
     }
 
     /// <summary>

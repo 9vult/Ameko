@@ -10,8 +10,6 @@ namespace Holo.Models;
 /// </summary>
 public abstract class ProjectItem : BindableBase
 {
-    private string? _name;
-
     /// <summary>
     /// Unique identifier for the item.
     /// </summary>
@@ -22,10 +20,10 @@ public abstract class ProjectItem : BindableBase
     /// </summary>
     public string? Name
     {
-        get => _name;
+        get;
         set
         {
-            SetProperty(ref _name, value);
+            SetProperty(ref field, value);
             RaisePropertyChanged(nameof(Title));
         }
     }

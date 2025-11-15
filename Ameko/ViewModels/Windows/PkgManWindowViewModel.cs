@@ -20,9 +20,6 @@ public partial class PkgManWindowViewModel : ViewModelBase
     private readonly IConfiguration _configuration;
     private readonly IMessageBoxService _messageBoxService;
 
-    private Module? _selectedStoreModule;
-    private Module? _selectedInstalledModule;
-    private Repository? _selectedRepository;
     private readonly ObservableCollection<Module> _updateCandidates;
     private string _repoUrlInput;
 
@@ -38,20 +35,20 @@ public partial class PkgManWindowViewModel : ViewModelBase
 
     public Module? SelectedStoreModule
     {
-        get => _selectedStoreModule;
+        get;
         set
         {
-            this.RaiseAndSetIfChanged(ref _selectedStoreModule, value);
+            this.RaiseAndSetIfChanged(ref field, value);
             this.RaisePropertyChanged(nameof(InstallButtonEnabled));
         }
     }
 
     public Module? SelectedInstalledModule
     {
-        get => _selectedInstalledModule;
+        get;
         set
         {
-            this.RaiseAndSetIfChanged(ref _selectedInstalledModule, value);
+            this.RaiseAndSetIfChanged(ref field, value);
             this.RaisePropertyChanged(nameof(UninstallButtonEnabled));
             this.RaisePropertyChanged(nameof(UpdateButtonEnabled));
         }
@@ -59,10 +56,10 @@ public partial class PkgManWindowViewModel : ViewModelBase
 
     public Repository? SelectedRepository
     {
-        get => _selectedRepository;
+        get;
         set
         {
-            this.RaiseAndSetIfChanged(ref _selectedRepository, value);
+            this.RaiseAndSetIfChanged(ref field, value);
             this.RaisePropertyChanged(nameof(RemoveRepoButtonEnabled));
         }
     }

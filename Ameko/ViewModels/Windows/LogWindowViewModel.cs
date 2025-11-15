@@ -9,12 +9,11 @@ namespace Ameko.ViewModels.Windows;
 public partial class LogWindowViewModel : ViewModelBase
 {
     private readonly ILogProvider _logProvider;
-    private object? _selectedLog;
 
     public object? SelectedLog
     {
-        get => _selectedLog;
-        set => this.RaiseAndSetIfChanged(ref _selectedLog, value);
+        get;
+        set => this.RaiseAndSetIfChanged(ref field, value);
     }
 
     public ReadOnlyObservableCollection<string> LogEntries => _logProvider.LogEntries;

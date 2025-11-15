@@ -11,12 +11,11 @@ namespace Ameko.ViewModels.Dialogs;
 
 public partial class InstallDictionaryDialogViewModel : ViewModelBase
 {
-    private bool _areButtonsEnabled = true;
     public bool AreButtonsEnabled
     {
-        get => _areButtonsEnabled;
-        set => this.RaiseAndSetIfChanged(ref _areButtonsEnabled, value);
-    }
+        get;
+        set => this.RaiseAndSetIfChanged(ref field, value);
+    } = true;
 
     public string Header { get; }
 

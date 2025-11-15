@@ -15,55 +15,47 @@ namespace Ameko.ViewModels.Dialogs;
 public partial class ShiftTimesDialogViewModel : ViewModelBase
 {
     private readonly Workspace _workspace;
-    private readonly Time _shiftTime;
-    private int _shiftFrames;
-    private int _shiftMillis;
-
-    private ShiftTimesType _shiftType;
-    private ShiftTimesDirection _shiftDirection;
-    private ShiftTimesFilter _shiftFilter;
-    private ShiftTimesTarget _shiftTarget;
 
     public ReactiveCommand<Unit, object?> ConfirmCommand { get; }
 
     public bool CanShiftFrames { get; set; }
 
-    public Time ShiftTime => _shiftTime;
+    public Time ShiftTime { get; }
 
     public int ShiftFrames
     {
-        get => _shiftFrames;
-        set => this.RaiseAndSetIfChanged(ref _shiftFrames, value);
+        get;
+        set => this.RaiseAndSetIfChanged(ref field, value);
     }
 
     public int ShiftMillis
     {
-        get => _shiftMillis;
-        set => this.RaiseAndSetIfChanged(ref _shiftMillis, value);
+        get;
+        set => this.RaiseAndSetIfChanged(ref field, value);
     }
 
     public ShiftTimesType ShiftType
     {
-        get => _shiftType;
-        set => this.RaiseAndSetIfChanged(ref _shiftType, value);
+        get;
+        set => this.RaiseAndSetIfChanged(ref field, value);
     }
 
     public ShiftTimesDirection ShiftDirection
     {
-        get => _shiftDirection;
-        set => this.RaiseAndSetIfChanged(ref _shiftDirection, value);
+        get;
+        set => this.RaiseAndSetIfChanged(ref field, value);
     }
 
     public ShiftTimesFilter ShiftFilter
     {
-        get => _shiftFilter;
-        set => this.RaiseAndSetIfChanged(ref _shiftFilter, value);
+        get;
+        set => this.RaiseAndSetIfChanged(ref field, value);
     }
 
     public ShiftTimesTarget ShiftTarget
     {
-        get => _shiftTarget;
-        set => this.RaiseAndSetIfChanged(ref _shiftTarget, value);
+        get;
+        set => this.RaiseAndSetIfChanged(ref field, value);
     }
 
     private object? ShiftTimes()
@@ -168,7 +160,7 @@ public partial class ShiftTimesDialogViewModel : ViewModelBase
     {
         _workspace = workspace;
 
-        _shiftTime = new Time();
+        ShiftTime = new Time();
         ShiftType = ShiftTimesType.Time;
         ShiftDirection = ShiftTimesDirection.Forward;
         ShiftFilter = ShiftTimesFilter.SelectedEvents;

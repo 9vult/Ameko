@@ -10,14 +10,12 @@ public class ProjectProvider(IFileSystem fileSystem, ILoggerFactory loggerFactor
     : BindableBase,
         IProjectProvider
 {
-    private Project _current = new(fileSystem, loggerFactory.CreateLogger<Project>());
-
     /// <inheritdoc />
     public Project Current
     {
-        get => _current;
-        set => SetProperty(ref _current, value);
-    }
+        get;
+        set => SetProperty(ref field, value);
+    } = new(fileSystem, loggerFactory.CreateLogger<Project>());
 
     /// <inheritdoc />
     public Project Create(bool isEmpty = false)

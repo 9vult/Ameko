@@ -13,40 +13,36 @@ public partial class StylesManagerWindowViewModel : ViewModelBase
 {
     private readonly IPersistence _persistence;
 
-    private Style? _selectedGlobalStyle;
-    private Style? _selectedProjectStyle;
-    private Style? _selectedDocumentStyle;
-
     public Project Project { get; }
     public Document Document { get; }
     public IGlobals Globals { get; }
 
     public Style? SelectedGlobalStyle
     {
-        get => _selectedGlobalStyle;
+        get;
         set
         {
-            this.RaiseAndSetIfChanged(ref _selectedGlobalStyle, value);
+            this.RaiseAndSetIfChanged(ref field, value);
             this.RaisePropertyChanged(nameof(GlobalButtonsEnabled));
         }
     }
 
     public Style? SelectedProjectStyle
     {
-        get => _selectedProjectStyle;
+        get;
         set
         {
-            this.RaiseAndSetIfChanged(ref _selectedProjectStyle, value);
+            this.RaiseAndSetIfChanged(ref field, value);
             this.RaisePropertyChanged(nameof(ProjectButtonsEnabled));
         }
     }
 
     public Style? SelectedDocumentStyle
     {
-        get => _selectedDocumentStyle;
+        get;
         set
         {
-            this.RaiseAndSetIfChanged(ref _selectedDocumentStyle, value);
+            this.RaiseAndSetIfChanged(ref field, value);
             this.RaisePropertyChanged(nameof(DocumentButtonsEnabled));
         }
     }
