@@ -124,8 +124,7 @@ public partial class SrtParser : FileParser
         if (state is ParseState.Timestamp or ParseState.FirstBodyLine)
             throw new FormatException("Unexpected end of SRT file");
 
-        if (@event is not null)
-            @event.Text = SrtTagParser.ToAss(text.ToString().Trim());
+        @event?.Text = SrtTagParser.ToAss(text.ToString().Trim());
 
         return doc;
     }

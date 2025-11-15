@@ -193,10 +193,7 @@ public sealed partial class SeekSlider : RangeBase
         Track = e.NameScope.Find<Track>("PART_Track");
         _increaseButton = e.NameScope.Find<Button>("PART_IncreaseButton");
 
-        if (Track != null)
-        {
-            Track.IgnoreThumbDrag = true;
-        }
+        Track?.IgnoreThumbDrag = true;
 
         if (_decreaseButton != null)
         {
