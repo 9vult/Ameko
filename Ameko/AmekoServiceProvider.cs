@@ -107,6 +107,7 @@ public class AmekoServiceProvider
 
         // Set up logging
         _ = Provider.GetRequiredService<ILogProvider>();
+        _ = Provider.GetRequiredService<StaticLoggerFactory>();
         Provider
             .GetRequiredService<ILogger<AmekoServiceProvider>>()
             .LogInformation("Starting Ameko {Version}", VersionService.FullLabel);
