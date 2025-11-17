@@ -22,7 +22,8 @@ public interface ISourceProvider
     /// <summary>
     /// Initialize the provider
     /// </summary>
-    void Initialize();
+    /// <returns>0 on success</returns>
+    int Initialize();
 
     /// <summary>
     /// Load a video

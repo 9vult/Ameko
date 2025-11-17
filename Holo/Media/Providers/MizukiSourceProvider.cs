@@ -29,13 +29,17 @@ public unsafe class MizukiSourceProvider : ISourceProvider
     /// <inheritdoc />
     public Rational Sar { get; }
 
-    public void Initialize()
+    public int Initialize()
     {
         External.SetLoggerCallback(LogDelegate);
-        External.Initialize();
+        var result = External.Initialize();
 
-        _context = External.CreateContext();
-        IsInitialized = true;
+        if (result == 0) // OK
+        {
+            _context = External.CreateContext();
+            IsInitialized = true;
+        }
+        return result;
     }
 
     public int LoadVideo(string filename)
@@ -172,7 +176,7 @@ public unsafe class MizukiSourceProvider : ISourceProvider
 internal static unsafe partial class External
 {
     [LibraryImport("mizuki")]
-    internal static partial void Initialize();
+    internal static partial int Initialize();
 
     [LibraryImport("mizuki")]
     internal static unsafe partial GlobalContext* CreateContext();

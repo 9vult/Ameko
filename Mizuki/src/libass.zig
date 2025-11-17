@@ -3,6 +3,8 @@
 //! Libass Subtitle Provider
 
 const std = @import("std");
+const builtin = @import("builtin");
+
 const c = @import("c.zig").c;
 const fnv = @import("fnv.zig");
 const frames = @import("frames.zig");
@@ -27,6 +29,23 @@ pub fn GetVersion() common.BackingVersion {
         .minor = (version >> 20) & 0xFF,
         .patch = (version >> 12) & 0xFF,
     };
+}
+
+/// Check if the library is available
+pub fn CheckAvailability() bool {
+    if (builtin.target.os.tag == .linux) {
+        _ = std.DynLib.open("libass.so") catch return false;
+        return true;
+    }
+    if (builtin.target.os.tag == .macos) {
+        _ = std.DynLib.open("libass.dylib") catch return false;
+        return true;
+    }
+    if (builtin.target.os.tag == .windows) {
+        std.DynLib.open("ass-9.dll");
+        return true;
+    }
+    return false;
 }
 
 /// Initialize libass

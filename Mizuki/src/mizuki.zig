@@ -15,17 +15,29 @@ const context = @import("context.zig");
 var is_initialized = false;
 
 /// Initialize the library
-pub export fn Initialize() void {
+pub export fn Initialize() c_int {
     if (is_initialized) {
-        return;
+        return 0;
     }
     logger.Debug("Initializing Mizuki...");
+
+    if (!ffms.CheckAvailability()) {
+        logger.Error("FATAL: FFMS2 could not be found!");
+        return 1;
+    }
+
+    if (!libass.CheckAvailability()) {
+        logger.Error("FATAL: libass could not be found!");
+        return 2;
+    }
 
     ffms.Initialize();
     libass.Initialize();
 
     is_initialized = true;
     logger.Debug("Done!");
+
+    return 0;
 }
 
 /// Create a context

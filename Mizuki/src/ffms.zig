@@ -3,6 +3,8 @@
 //! FFMS2 Audio-Video Provider
 
 const std = @import("std");
+const builtin = @import("builtin");
+
 const c = @import("c.zig").c;
 const frames = @import("frames.zig");
 const common = @import("common.zig");
@@ -45,6 +47,23 @@ pub fn GetVersion() common.BackingVersion {
         .minor = (version >> 16) & 0xFF,
         .patch = version & 0xFFFF,
     };
+}
+
+/// Check if the library is available
+pub fn CheckAvailability() bool {
+    if (builtin.target.os.tag == .linux) {
+        _ = std.DynLib.open("libffms2.so") catch return false;
+        return true;
+    }
+    if (builtin.target.os.tag == .macos) {
+        _ = std.DynLib.open("libffms2.dylib") catch return false;
+        return true;
+    }
+    if (builtin.target.os.tag == .windows) {
+        _ = std.DynLib.open("ffms2.dll") catch return false;
+        return true;
+    }
+    return false;
 }
 
 /// Initialize FFMS
