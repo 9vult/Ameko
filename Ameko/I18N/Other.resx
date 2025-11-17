@@ -150,4 +150,10 @@
     <data name="Message_UpdateAvailable" xml:space="preserve">
         <value>A new version of Ameko, {0}, is available!</value>
     </data>
+    <data name="MsgBox_MediaDisabled_Body" xml:space="preserve">
+        <value>Media playback is disabled! Ffms2 or libass may be missing!</value>
+    </data>
+    <data name="MsgBox_MediaDisabled_Title" xml:space="preserve">
+        <value>Media Playback</value>
+    </data>
 </root>

@@ -34,6 +34,11 @@ public class MediaController : BindableBase
     private int _destinationFrame;
 
     /// <summary>
+    /// If media operations are to be enabled
+    /// </summary>
+    public bool IsEnabled { get; init; }
+
+    /// <summary>
     /// Information about the loaded video
     /// </summary>
     public VideoInfo? VideoInfo
@@ -539,6 +544,13 @@ public class MediaController : BindableBase
         _logger = logger;
         _playback = new HighResolutionTimer();
         _playback.Elapsed += AdvanceFrame;
+
+        var initResult = _provider.Initialize();
+        IsEnabled = initResult == 0;
+        if (!IsEnabled)
+        {
+            _logger.LogWarning("Source provider initialization failed! Disabling media playback.");
+        }
     }
 
     public event EventHandler<PlaybackStartEventArgs>? OnPlaybackStart;

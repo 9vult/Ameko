@@ -390,6 +390,18 @@ public class IoService(
 
         if (fileSystem.File.Exists(videoPath))
         {
+            if (!workspace.MediaController.IsEnabled)
+            {
+                await messageBoxService.ShowAsync(
+                    I18N.Other.MsgBox_MediaDisabled_Title,
+                    I18N.Other.MsgBox_MediaDisabled_Body,
+                    MsgBoxButtonSet.Ok,
+                    MsgBoxButton.Ok,
+                    MaterialIconKind.Error
+                );
+                return true;
+            }
+
             var result = await messageBoxService.ShowAsync(
                 I18N.Other.MsgBox_LoadVideo_Title,
                 $"{I18N.Other.MsgBox_LoadVideo_Body}\n\n{relVideoPath}",
@@ -416,6 +428,18 @@ public class IoService(
     /// <inheritdoc />
     public bool OpenVideoFile(Uri uri, Workspace workspace)
     {
+        if (!workspace.MediaController.IsEnabled)
+        {
+            _ = messageBoxService.ShowAsync(
+                I18N.Other.MsgBox_MediaDisabled_Title,
+                I18N.Other.MsgBox_MediaDisabled_Body,
+                MsgBoxButtonSet.Ok,
+                MsgBoxButton.Ok,
+                MaterialIconKind.Error
+            );
+            return true;
+        }
+
         try
         {
             workspace.MediaController.OpenVideo(uri.LocalPath);

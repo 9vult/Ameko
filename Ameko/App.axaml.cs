@@ -24,6 +24,7 @@ using Holo.Configuration.Keybinds;
 using Holo.Models;
 using Holo.Providers;
 using Holo.Scripting;
+using Material.Icons;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NLog;
@@ -257,8 +258,22 @@ public partial class App : Application
                 wsp.IsSaved = false;
             }
 
+            projectProvider.Current.WorkingSpace = wsp;
+
             if (!doc.GarbageManager.TryGetString("Video File", out var relVideoPath))
                 continue;
+
+            if (!wsp.MediaController.IsEnabled)
+            {
+                await msgBoxService.ShowAsync(
+                    I18N.Other.MsgBox_MediaDisabled_Title,
+                    I18N.Other.MsgBox_MediaDisabled_Body,
+                    MsgBoxButtonSet.Ok,
+                    MsgBoxButton.Ok,
+                    MaterialIconKind.Error
+                );
+                continue;
+            }
 
             var videoPath = Path.GetFullPath(
                 Path.Combine(Path.GetDirectoryName(uri.LocalPath) ?? "/", relVideoPath)
@@ -286,8 +301,6 @@ public partial class App : Application
                     TimeSpan.FromSeconds(7)
                 );
             }
-
-            projectProvider.Current.WorkingSpace = wsp;
         }
     }
 }

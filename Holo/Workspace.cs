@@ -377,7 +377,6 @@ public class Workspace : BindableBase
 
         // TODO: make this cleaner
         var mp = new MizukiSourceProvider();
-        mp.Initialize();
         MediaController = new MediaController(mp, StaticLoggerFactory.GetLogger<MediaController>());
 
         // TODO: Should this be here or elsewhere?
