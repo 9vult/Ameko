@@ -42,7 +42,7 @@ pub fn CheckAvailability() bool {
         return true;
     }
     if (builtin.target.os.tag == .windows) {
-        std.DynLib.open("ass-9.dll") catch return false;
+        _ = std.DynLib.open("ass-9.dll") catch return false;
         return true;
     }
     return false;
