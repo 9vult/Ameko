@@ -68,6 +68,9 @@ public class Document
 
         if (initDefault)
             LoadDefault();
+
+        // Commit initial state
+        HistoryManager.Commit(ChangeType.Initial);
     }
 }
 

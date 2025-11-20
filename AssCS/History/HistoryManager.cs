@@ -1,7 +1,6 @@
 ﻿// SPDX-License-Identifier: MPL-2.0
 
 using System.Collections.Concurrent;
-using System.Collections.ObjectModel;
 
 namespace AssCS.History;
 
@@ -16,9 +15,6 @@ public class HistoryManager(
 {
     private readonly ConcurrentStack<Commit> _history = [];
     private readonly ConcurrentStack<Commit> _future = [];
-
-    private readonly List<Event> _initialState = [];
-    private Style? _initialStyleState = null;
 
     /// <summary>
     /// Next commit ID
@@ -36,45 +32,10 @@ public class HistoryManager(
     public bool CanRedo => !_future.IsEmpty;
 
     /// <summary>
-    /// The ID of the most recent commit, used for coalescing
-    /// </summary>
-    public int LastId { get; private set; } = -1;
-
-    /// <summary>
     /// The type of the most recent commit, used for coalescing
     /// </summary>
     public ChangeType LastCommitType { get; private set; }
     public DateTimeOffset LastCommitTime { get; private set; }
-
-    /// <summary>
-    /// Signal that modifications may be starting
-    /// </summary>
-    /// <param name="events">List of events to track</param>
-    public void BeginTransaction(IEnumerable<Event> events)
-    {
-        _initialState.Clear();
-        _initialState.AddRange(events.Select(e => e.Clone()));
-    }
-
-    /// <summary>
-    /// Signal that modifications may be starting
-    /// </summary>
-    /// <param name="event">Event to track</param>
-    public void BeginTransaction(Event @event)
-    {
-        _initialState.Clear();
-        _initialState.Add(@event.Clone());
-    }
-
-    public void BeginTransaction(Style style)
-    {
-        _initialStyleState = style;
-    }
-
-    /// <summary>
-    /// Get the initial event state, useful for performing diff checks
-    /// </summary>
-    public ReadOnlyCollection<Event> InitialState => _initialState.AsReadOnly();
 
     /// <summary>
     /// Commit the current state to history
@@ -90,7 +51,6 @@ public class HistoryManager(
 
         LastCommitTime = DateTimeOffset.Now;
         LastCommitType = ChangeType.ModifyEvent;
-        LastId = commit.Id;
         _future.Clear();
         NotifyAbilitiesChanged();
         return commit.Id;
@@ -130,7 +90,6 @@ public class HistoryManager(
 
         LastCommitTime = DateTimeOffset.Now;
         LastCommitType = ChangeType.ModifyEvent;
-        LastId = commit.Id;
         _future.Clear();
         NotifyAbilitiesChanged();
         return commit.Id;
@@ -171,7 +130,6 @@ public class HistoryManager(
 
         LastCommitTime = DateTimeOffset.Now;
         LastCommitType = ChangeType.ModifyStyle;
-        LastId = commit.Id;
         _future.Clear();
         NotifyAbilitiesChanged();
         return commit.Id;
