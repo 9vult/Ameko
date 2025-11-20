@@ -105,9 +105,8 @@ public partial class SpellcheckDialogViewModel : ViewModelBase
                 MisspelledWord != _misspelledWordCopy ? MisspelledWord : SelectedSuggestion!;
 
             var @event = _workspace.Document.EventManager.Get(EventId);
-            _workspace.Document.HistoryManager.BeginTransaction(@event);
             @event.Text = @event.Text.Replace(_misspelledWordCopy, replacement);
-            _workspace.Commit(@event, ChangeType.Modify);
+            _workspace.Commit(@event, ChangeType.ModifyEvent);
 
             await LoadNextSuggestion();
         });

@@ -7,9 +7,11 @@ public enum ChangeType
     AddEvent,
     RemoveEvent,
     ModifyEvent,
+    ComplexEvent,
     AddStyle,
     RemoveStyle,
     ModifyStyle,
+    ComplexStyle,
     Initial,
     TimeMachine,
 }

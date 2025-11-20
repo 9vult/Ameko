@@ -87,7 +87,7 @@ public partial class TabItem : ReactiveUserControl<TabItemViewModel>
             ?? eventManager.GetOrCreateAfter(selectionManager.ActiveEvent.Id);
 
         eventManager.Remove(selectionManager.ActiveEvent.Id);
-        workspace.Commit(nextEvent, ChangeType.Remove);
+        workspace.Commit(nextEvent, ChangeType.RemoveEvent);
         selectionManager.Select(nextEvent);
     }
 
