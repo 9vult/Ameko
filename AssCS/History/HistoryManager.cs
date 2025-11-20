@@ -50,7 +50,7 @@ public class HistoryManager(
         _history.Push(commit);
 
         LastCommitTime = DateTimeOffset.Now;
-        LastCommitType = ChangeType.ModifyEvent;
+        LastCommitType = type;
         _future.Clear();
         NotifyAbilitiesChanged();
         return commit.Id;
