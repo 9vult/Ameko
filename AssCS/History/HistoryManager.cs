@@ -28,7 +28,7 @@ public class HistoryManager(
     /// <summary>
     /// If there is history to undo
     /// </summary>
-    public bool CanUndo => !_history.IsEmpty;
+    public bool CanUndo => _history.Count >= 2;
 
     /// <summary>
     /// If there is future to redo
@@ -184,10 +184,12 @@ public class HistoryManager(
     /// <returns><see langword="true"/> if the operation was successful</returns>
     public bool Undo()
     {
-        if (!CanUndo || !_history.TryPop(out var commit))
+        if (!CanUndo || !_history.TryPop(out var top))
             return false;
 
-        _future.Push(commit);
+        _future.Push(top);
+        if (!_history.TryPeek(out var commit))
+            throw new InvalidOperationException("Undo failed, no commits in the undo stack!");
 
         eventManager.RestoreState(commit);
         styleManager.RestoreState(commit);
@@ -223,7 +225,7 @@ public class HistoryManager(
 
     public Commit PeekHistory()
     {
-        if (!CanUndo || !_history.TryPeek(out var commit))
+        if (_history.IsEmpty || !_history.TryPeek(out var commit))
             throw new InvalidOperationException(
                 "Cannot peek history, no commits in the undo stack!"
             );
@@ -232,7 +234,7 @@ public class HistoryManager(
 
     public Commit PeekFuture()
     {
-        if (!CanRedo || !_future.TryPeek(out var commit))
+        if (_future.IsEmpty || !_future.TryPeek(out var commit))
             throw new InvalidOperationException(
                 "Cannot peek future, no commits in the redo stack!"
             );

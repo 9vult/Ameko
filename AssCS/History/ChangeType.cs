@@ -10,5 +10,6 @@ public enum ChangeType
     AddStyle,
     RemoveStyle,
     ModifyStyle,
+    Initial,
     TimeMachine,
 }
