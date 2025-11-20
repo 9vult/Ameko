@@ -4,8 +4,11 @@ namespace AssCS.History;
 
 public enum ChangeType
 {
-    Add,
-    Remove,
-    Modify,
+    AddEvent,
+    RemoveEvent,
+    ModifyEvent,
+    AddStyle,
+    RemoveStyle,
+    ModifyStyle,
     TimeMachine,
 }
