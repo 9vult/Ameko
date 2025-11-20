@@ -7,130 +7,538 @@ namespace AssCS.Tests;
 
 public class HistoryManagerTests
 {
-    private Event event1 = new(1);
-    private Event event2 = new(2);
-    private Style style1 = new(1);
-
     [Fact]
-    public void Event_Commit()
+    public void Commit_AddEvent()
     {
-        var hm = new HistoryManager();
+        var event1 = new Event(100);
+        var doc = new Document(false);
+        var hm = doc.HistoryManager;
+        hm.Commit(ChangeType.Initial);
 
-        hm.Commit(ChangeType.Add, event1, null, false);
+        doc.EventManager.AddFirst(event1);
+
+        hm.Commit(ChangeType.AddEvent);
 
         hm.CanUndo.ShouldBeTrue();
         hm.CanRedo.ShouldBeFalse();
 
-        var lastCommit = hm.Undo();
-        lastCommit.ShouldBeOfType<EventCommit>();
+        var lastCommit = hm.PeekHistory();
+        lastCommit.Type.ShouldBe(ChangeType.AddEvent);
+        lastCommit.Chain.ShouldContain(event1.Id);
+        lastCommit.Events[event1.Id].ShouldBe(event1);
     }
 
     [Fact]
-    public void Style_Commit()
+    public void Commit_RemoveEvent()
     {
-        var hm = new HistoryManager();
+        var event1 = new Event(100);
+        var doc = new Document(false);
+        var hm = doc.HistoryManager;
+        hm.Commit(ChangeType.Initial);
 
-        hm.Commit(ChangeType.Add, style1);
+        doc.EventManager.AddFirst(event1);
+        hm.Commit(ChangeType.AddEvent);
+
+        doc.EventManager.Remove(event1.Id);
+        hm.Commit(ChangeType.RemoveEvent);
 
         hm.CanUndo.ShouldBeTrue();
         hm.CanRedo.ShouldBeFalse();
 
-        var lastCommit = hm.Undo();
-        lastCommit.ShouldBeOfType<StyleCommit>();
-        var styleCommit = lastCommit as StyleCommit;
-        styleCommit?.Type.ShouldBe(ChangeType.Add);
+        var lastCommit = hm.PeekHistory();
+        lastCommit.Type.ShouldBe(ChangeType.RemoveEvent);
+        lastCommit.Chain.ShouldNotContain(event1.Id);
+        lastCommit.Events.Keys.ShouldNotContain(event1.Id);
     }
 
     [Fact]
-    public void Event_Commit_Amend()
+    public void Commit_ModifyEvent()
     {
-        var hm = new HistoryManager();
-        hm.Commit(ChangeType.Add, event1, null, false);
+        var eventA = new Event(100) { Text = "Holo" };
+        var doc = new Document(false);
+        var hm = doc.HistoryManager;
+        hm.Commit(ChangeType.Initial);
 
-        hm.Commit(ChangeType.Add, event2, null, true);
+        doc.EventManager.AddFirst(eventA);
+        hm.Commit(ChangeType.AddEvent);
+
+        eventA.Text = "Lawrence";
+        hm.Commit(ChangeType.ModifyEvent);
 
         hm.CanUndo.ShouldBeTrue();
         hm.CanRedo.ShouldBeFalse();
 
-        var lastCommit = (EventCommit)hm.Undo();
-        lastCommit.Deltas.Count.ShouldBe(2);
+        var lastCommit = hm.PeekHistory();
+        lastCommit.Type.ShouldBe(ChangeType.ModifyEvent);
+        lastCommit.Chain.ShouldContain(eventA.Id);
+        lastCommit.Events[eventA.Id].Text.ShouldBe("Lawrence");
     }
 
     [Fact]
-    public void Event_Commit_Amend_Invalid()
+    public void Commit_ModifyEvent_NoCoalesce()
     {
-        var hm = new HistoryManager();
-        hm.Commit(ChangeType.Add, style1);
+        var eventA = new Event(100) { Text = "Frieren" };
+        var doc = new Document(false);
+        var hm = doc.HistoryManager;
+        hm.Commit(ChangeType.Initial);
 
-        Action amendToStyleCommit = () => hm.Commit(ChangeType.Add, event1, null, true);
+        doc.EventManager.AddFirst(eventA);
+        hm.Commit(ChangeType.AddEvent);
 
-        amendToStyleCommit
-            .ShouldThrow<InvalidOperationException>()
-            .Message.ShouldBe("Cannot amend to a non-Event commit");
+        eventA.Text = "Fern";
+        hm.Commit(ChangeType.ModifyEvent);
+
+        eventA.Text = "Stark";
+        hm.Commit(eventA);
+
+        var lastCommit = hm.PeekHistory();
+        lastCommit.Type.ShouldBe(ChangeType.ModifyEvent);
+        lastCommit.Events[eventA.Id].Text.ShouldBe("Stark");
+
+        hm.Undo();
+        lastCommit = hm.PeekHistory();
+        lastCommit.Type.ShouldBe(ChangeType.ModifyEvent); // Make sure there were 2 modify commits
+        lastCommit.Events[eventA.Id].Text.ShouldBe("Fern");
     }
 
     [Fact]
-    public void Event_Commit_Amend_Empty()
+    public void Commit_ModifyEvent_Coalesce()
     {
-        var hm = new HistoryManager();
+        var eventA = new Event(100) { Text = "Frieren" };
+        var doc = new Document(false);
+        var hm = doc.HistoryManager;
+        hm.Commit(ChangeType.Initial);
 
-        Action amendToStyleCommit = () => hm.Commit(ChangeType.Add, event1, null, true);
+        doc.EventManager.AddFirst(eventA);
+        hm.Commit(ChangeType.AddEvent);
 
-        amendToStyleCommit
-            .ShouldThrow<InvalidOperationException>()
-            .Message.ShouldBe("Cannot amend, no commits in the undo stack!");
+        eventA.Text = "Fern";
+        hm.Commit(ChangeType.ModifyEvent);
+
+        var lastCommit = hm.PeekHistory();
+        lastCommit.Type.ShouldBe(ChangeType.ModifyEvent);
+        lastCommit.Events[eventA.Id].Text.ShouldBe("Fern");
+
+        eventA.Text = "Stark";
+        hm.Commit(eventA, true);
+
+        lastCommit = hm.PeekHistory();
+        lastCommit.Type.ShouldBe(ChangeType.ModifyEvent);
+        lastCommit.Events[eventA.Id].Text.ShouldBe("Stark");
+
+        hm.Undo();
+        lastCommit = hm.PeekHistory();
+        lastCommit.Type.ShouldBe(ChangeType.AddEvent); // Make sure there was only 1 modify commit
     }
 
     [Fact]
-    public void Undo()
+    public void Commit_AddStyle()
     {
-        var hm = new HistoryManager();
-        hm.Commit(ChangeType.Add, event1, null, false);
-        var c = hm.Undo();
+        var style1 = new Style(100);
+        var doc = new Document(false);
+        var hm = doc.HistoryManager;
+        hm.Commit(ChangeType.Initial);
 
-        c.ShouldNotBeNull();
-        c.ShouldBeOfType<EventCommit>();
-        hm.CanUndo.ShouldBe(false);
-        hm.CanRedo.ShouldBe(true);
+        doc.StyleManager.Add(style1);
+
+        hm.Commit(ChangeType.AddStyle);
+
+        hm.CanUndo.ShouldBeTrue();
+        hm.CanRedo.ShouldBeFalse();
+
+        var lastCommit = hm.PeekHistory();
+        lastCommit.Type.ShouldBe(ChangeType.AddStyle);
+        lastCommit.Styles.ShouldContain(style1);
     }
 
     [Fact]
-    public void Undo_Empty()
+    public void Commit_RemoveStyle()
     {
-        var hm = new HistoryManager();
+        var style1 = new Style(100);
+        var doc = new Document(false);
+        var hm = doc.HistoryManager;
+        hm.Commit(ChangeType.Initial);
 
-        Action undoAction = () => hm.Undo();
+        doc.StyleManager.Add(style1);
+        hm.Commit(ChangeType.AddStyle);
 
-        undoAction
-            .ShouldThrow<InvalidOperationException>()
-            .Message.ShouldBe("Cannot undo, no commits in the undo stack!");
+        doc.StyleManager.Remove(style1.Name);
+        hm.Commit(ChangeType.RemoveStyle);
+
+        hm.CanUndo.ShouldBeTrue();
+        hm.CanRedo.ShouldBeFalse();
+
+        var lastCommit = hm.PeekHistory();
+        lastCommit.Type.ShouldBe(ChangeType.RemoveStyle);
+        lastCommit.Styles.ShouldNotContain(style1);
     }
 
     [Fact]
-    public void Redo()
+    public void Commit_ModifyStyle()
     {
-        var hm = new HistoryManager();
-        hm.Commit(ChangeType.Add, event1, null, false);
-        var cU = hm.Undo();
-        var cR = hm.Redo();
+        var style1 = new Style(100) { Name = "Cool Style 1" };
+        var doc = new Document(false);
+        var hm = doc.HistoryManager;
+        hm.Commit(ChangeType.Initial);
 
-        cR.ShouldNotBeNull();
-        cR.ShouldBeOfType<EventCommit>();
-        hm.CanRedo.ShouldBe(false);
-        hm.CanUndo.ShouldBe(true);
+        doc.StyleManager.Add(style1);
+        hm.Commit(ChangeType.AddStyle);
 
-        cU.ShouldBeSameAs(cR);
+        style1.Name = "Uncool!";
+        hm.Commit(ChangeType.ModifyStyle);
+
+        hm.CanUndo.ShouldBeTrue();
+        hm.CanRedo.ShouldBeFalse();
+
+        var lastCommit = hm.PeekHistory();
+        lastCommit.Type.ShouldBe(ChangeType.ModifyStyle);
+        lastCommit.Styles.ShouldContain(style1);
+        lastCommit.Styles[0].Name.ShouldBe("Uncool!");
     }
 
     [Fact]
-    public void Redo_Empty()
+    public void Commit_ModifyStyle_NoCoalesce()
     {
-        var hm = new HistoryManager();
+        var style1 = new Style(100) { Name = "Cool Style 1" };
+        var doc = new Document(false);
+        var hm = doc.HistoryManager;
+        hm.Commit(ChangeType.Initial);
 
-        Action redoAction = () => hm.Redo();
+        doc.StyleManager.Add(style1);
+        hm.Commit(ChangeType.AddStyle);
 
-        redoAction
-            .ShouldThrow<InvalidOperationException>()
-            .Message.ShouldBe("Cannot redo, no commits in the redo stack!");
+        style1.Name = "Uncool!";
+        hm.Commit(ChangeType.ModifyStyle);
+
+        style1.Name = "Jinkies!";
+        hm.Commit(style1);
+
+        var lastCommit = hm.PeekHistory();
+        lastCommit.Type.ShouldBe(ChangeType.ModifyStyle);
+        lastCommit.Styles[0].Name.ShouldBe("Jinkies!");
+
+        hm.Undo();
+        lastCommit = hm.PeekHistory();
+        lastCommit.Type.ShouldBe(ChangeType.ModifyStyle); // Make sure there were 2 modify commits
+        lastCommit.Styles[0].Name.ShouldBe("Uncool!");
+    }
+
+    [Fact]
+    public void Commit_ModifyStyle_Coalesce()
+    {
+        var style1 = new Style(100) { Name = "Cool Style 1" };
+        var doc = new Document(false);
+        var hm = doc.HistoryManager;
+        hm.Commit(ChangeType.Initial);
+
+        doc.StyleManager.Add(style1);
+        hm.Commit(ChangeType.AddStyle);
+
+        style1.Name = "Uncool!";
+        hm.Commit(ChangeType.ModifyStyle);
+
+        var lastCommit = hm.PeekHistory();
+        lastCommit.Type.ShouldBe(ChangeType.ModifyStyle);
+        lastCommit.Styles[0].Name.ShouldBe("Uncool!");
+
+        style1.Name = "Jinkies!";
+        hm.Commit(style1, true);
+
+        lastCommit = hm.PeekHistory();
+        lastCommit.Type.ShouldBe(ChangeType.ModifyStyle);
+        lastCommit.Styles[0].Name.ShouldBe("Jinkies!");
+
+        hm.Undo();
+        lastCommit = hm.PeekHistory();
+        lastCommit.Type.ShouldBe(ChangeType.AddStyle); // Make sure there was only 1 modify commit
+    }
+
+    [Fact]
+    public void Undo_AddEvent()
+    {
+        var event1 = new Event(100);
+        var doc = new Document(false);
+        var hm = doc.HistoryManager;
+        hm.Commit(ChangeType.Initial);
+
+        doc.EventManager.AddFirst(event1);
+        hm.Commit(ChangeType.AddEvent);
+        doc.EventManager.Events.ShouldContain(event1);
+
+        hm.Undo();
+
+        doc.EventManager.Events.ShouldNotContain(event1);
+        hm.CanRedo.ShouldBeTrue();
+        var commit = hm.PeekFuture();
+        commit.Type.ShouldBe(ChangeType.AddEvent);
+    }
+
+    [Fact]
+    public void Undo_RemoveEvent()
+    {
+        var event1 = new Event(100);
+        var doc = new Document(false);
+        var hm = doc.HistoryManager;
+        doc.EventManager.AddFirst(event1);
+        hm.Commit(ChangeType.Initial);
+
+        doc.EventManager.Remove(event1.Id);
+        hm.Commit(ChangeType.RemoveEvent);
+        doc.EventManager.Events.ShouldNotContain(event1);
+
+        hm.Undo();
+
+        doc.EventManager.Events.ShouldContain(event1);
+        hm.CanRedo.ShouldBeTrue();
+        var commit = hm.PeekFuture();
+        commit.Type.ShouldBe(ChangeType.RemoveEvent);
+    }
+
+    [Fact]
+    public void Undo_ModifyEvent()
+    {
+        var event1 = new Event(100) { Text = "Hello" };
+        var doc = new Document(false);
+        var hm = doc.HistoryManager;
+        doc.EventManager.AddFirst(event1);
+        hm.Commit(ChangeType.Initial);
+
+        event1.Text = "Goodbye";
+        hm.Commit(event1);
+        doc.EventManager.Head.Text.ShouldBe("Goodbye");
+
+        hm.Undo();
+
+        doc.EventManager.Head.Text.ShouldBe("Hello");
+        hm.CanRedo.ShouldBeTrue();
+        var commit = hm.PeekFuture();
+        commit.Type.ShouldBe(ChangeType.ModifyEvent);
+    }
+
+    [Fact]
+    public void Undo_AddStyle()
+    {
+        var style1 = new Style(100);
+        var doc = new Document(false);
+        var hm = doc.HistoryManager;
+        hm.Commit(ChangeType.Initial);
+
+        doc.StyleManager.Add(style1);
+        hm.Commit(ChangeType.AddStyle);
+        doc.StyleManager.TryGet(style1.Name, out _).ShouldBeTrue();
+
+        hm.Undo();
+
+        doc.StyleManager.TryGet(style1.Name, out _).ShouldBeFalse();
+        hm.CanRedo.ShouldBeTrue();
+        var commit = hm.PeekFuture();
+        commit.Type.ShouldBe(ChangeType.AddStyle);
+    }
+
+    [Fact]
+    public void Undo_RemoveStyle()
+    {
+        var style1 = new Style(100);
+        var doc = new Document(false);
+        var hm = doc.HistoryManager;
+        doc.StyleManager.Add(style1);
+        hm.Commit(ChangeType.Initial);
+
+        doc.StyleManager.Remove(style1.Name);
+        hm.Commit(ChangeType.RemoveStyle);
+        doc.StyleManager.TryGet(style1.Name, out _).ShouldBeFalse();
+
+        hm.Undo();
+
+        doc.StyleManager.TryGet(style1.Name, out _).ShouldBeTrue();
+        hm.CanRedo.ShouldBeTrue();
+        var commit = hm.PeekFuture();
+        commit.Type.ShouldBe(ChangeType.RemoveStyle);
+    }
+
+    [Fact]
+    public void Undo_ModifyStyle()
+    {
+        var style1 = new Style(100) { Name = "Hello" };
+        var doc = new Document(false);
+        var hm = doc.HistoryManager;
+        doc.StyleManager.Add(style1);
+        hm.Commit(ChangeType.Initial);
+
+        style1.Name = "Goodbye";
+        hm.Commit(style1);
+        doc.StyleManager.TryGet("Goodbye", out _).ShouldBeTrue();
+        doc.StyleManager.TryGet("Hello", out _).ShouldBeFalse();
+
+        hm.Undo();
+
+        doc.StyleManager.TryGet("Goodbye", out _).ShouldBeFalse();
+        doc.StyleManager.TryGet("Hello", out _).ShouldBeTrue();
+        hm.CanRedo.ShouldBeTrue();
+        var commit = hm.PeekFuture();
+        commit.Type.ShouldBe(ChangeType.ModifyStyle);
+    }
+
+    [Fact]
+    public void Redo_AddEvent()
+    {
+        var event1 = new Event(100);
+        var doc = new Document(false);
+        var hm = doc.HistoryManager;
+        hm.Commit(ChangeType.Initial);
+
+        doc.EventManager.AddFirst(event1);
+        hm.Commit(ChangeType.AddEvent);
+        doc.EventManager.Events.ShouldContain(event1);
+
+        hm.Undo();
+        doc.EventManager.Events.ShouldNotContain(event1);
+        hm.CanRedo.ShouldBeTrue();
+        var commit = hm.PeekFuture();
+        commit.Type.ShouldBe(ChangeType.AddEvent);
+
+        hm.Redo();
+
+        doc.EventManager.Events.ShouldContain(event1);
+        hm.CanRedo.ShouldBeFalse();
+        commit = hm.PeekHistory();
+        commit.Type.ShouldBe(ChangeType.AddEvent);
+    }
+
+    [Fact]
+    public void Redo_RemoveEvent()
+    {
+        var event1 = new Event(100);
+        var doc = new Document(false);
+        var hm = doc.HistoryManager;
+        doc.EventManager.AddFirst(event1);
+        hm.Commit(ChangeType.Initial);
+
+        doc.EventManager.Remove(event1.Id);
+        hm.Commit(ChangeType.RemoveEvent);
+        doc.EventManager.Events.ShouldNotContain(event1);
+
+        hm.Undo();
+        doc.EventManager.Events.ShouldContain(event1);
+        hm.CanRedo.ShouldBeTrue();
+        var commit = hm.PeekFuture();
+        commit.Type.ShouldBe(ChangeType.RemoveEvent);
+
+        hm.Redo();
+
+        doc.EventManager.Events.ShouldNotContain(event1);
+        hm.CanRedo.ShouldBeFalse();
+        commit = hm.PeekHistory();
+        commit.Type.ShouldBe(ChangeType.RemoveEvent);
+    }
+
+    [Fact]
+    public void Redo_ModifyEvent()
+    {
+        var event1 = new Event(100) { Text = "Hello" };
+        var doc = new Document(false);
+        var hm = doc.HistoryManager;
+        doc.EventManager.AddFirst(event1);
+        hm.Commit(ChangeType.Initial);
+
+        event1.Text = "Goodbye";
+        hm.Commit(event1);
+        doc.EventManager.Head.Text.ShouldBe("Goodbye");
+
+        hm.Undo();
+        doc.EventManager.Head.Text.ShouldBe("Hello");
+        hm.CanRedo.ShouldBeTrue();
+        var commit = hm.PeekFuture();
+        commit.Type.ShouldBe(ChangeType.ModifyEvent);
+
+        hm.Redo();
+
+        doc.EventManager.Head.Text.ShouldBe("Goodbye");
+        hm.CanRedo.ShouldBeFalse();
+        commit = hm.PeekHistory();
+        commit.Type.ShouldBe(ChangeType.ModifyEvent);
+    }
+
+    [Fact]
+    public void Redo_AddStyle()
+    {
+        var style1 = new Style(100);
+        var doc = new Document(false);
+        var hm = doc.HistoryManager;
+        hm.Commit(ChangeType.Initial);
+
+        doc.StyleManager.Add(style1);
+        hm.Commit(ChangeType.AddStyle);
+        doc.StyleManager.TryGet(style1.Name, out _).ShouldBeTrue();
+
+        hm.Undo();
+        doc.StyleManager.TryGet(style1.Name, out _).ShouldBeFalse();
+        hm.CanRedo.ShouldBeTrue();
+        var commit = hm.PeekFuture();
+        commit.Type.ShouldBe(ChangeType.AddStyle);
+
+        hm.Redo();
+
+        doc.StyleManager.TryGet(style1.Name, out _).ShouldBeTrue();
+        hm.CanRedo.ShouldBeFalse();
+        commit = hm.PeekHistory();
+        commit.Type.ShouldBe(ChangeType.AddStyle);
+    }
+
+    [Fact]
+    public void Redo_RemoveStyle()
+    {
+        var style1 = new Style(100);
+        var doc = new Document(false);
+        var hm = doc.HistoryManager;
+        doc.StyleManager.Add(style1);
+        hm.Commit(ChangeType.Initial);
+
+        doc.StyleManager.Remove(style1.Name);
+        hm.Commit(ChangeType.RemoveStyle);
+        doc.StyleManager.TryGet(style1.Name, out _).ShouldBeFalse();
+
+        hm.Undo();
+        doc.StyleManager.TryGet(style1.Name, out _).ShouldBeTrue();
+        hm.CanRedo.ShouldBeTrue();
+        var commit = hm.PeekFuture();
+        commit.Type.ShouldBe(ChangeType.RemoveStyle);
+
+        hm.Redo();
+
+        doc.StyleManager.TryGet(style1.Name, out _).ShouldBeFalse();
+        hm.CanRedo.ShouldBeFalse();
+        commit = hm.PeekHistory();
+        commit.Type.ShouldBe(ChangeType.RemoveStyle);
+    }
+
+    [Fact]
+    public void Redo_ModifyStyle()
+    {
+        var style1 = new Style(100) { Name = "Hello" };
+        var doc = new Document(false);
+        var hm = doc.HistoryManager;
+        doc.StyleManager.Add(style1);
+        hm.Commit(ChangeType.Initial);
+
+        style1.Name = "Goodbye";
+        hm.Commit(style1);
+        doc.StyleManager.TryGet("Goodbye", out _).ShouldBeTrue();
+        doc.StyleManager.TryGet("Hello", out _).ShouldBeFalse();
+
+        hm.Undo();
+        doc.StyleManager.TryGet("Goodbye", out _).ShouldBeFalse();
+        doc.StyleManager.TryGet("Hello", out _).ShouldBeTrue();
+        hm.CanRedo.ShouldBeTrue();
+        var commit = hm.PeekFuture();
+        commit.Type.ShouldBe(ChangeType.ModifyStyle);
+
+        hm.Redo();
+
+        doc.StyleManager.TryGet("Goodbye", out _).ShouldBeTrue();
+        doc.StyleManager.TryGet("Hello", out _).ShouldBeFalse();
+        hm.CanRedo.ShouldBeFalse();
+        commit = hm.PeekHistory();
+        commit.Type.ShouldBe(ChangeType.ModifyStyle);
     }
 }
