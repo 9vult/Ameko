@@ -2,6 +2,7 @@
 
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
+using AssCS.History;
 
 namespace AssCS;
 
@@ -10,7 +11,7 @@ namespace AssCS;
 /// </summary>
 public class StyleManager : BindableBase
 {
-    private readonly ObservableCollection<Style> _styles;
+    private readonly RangeObservableCollection<Style> _styles;
     private int _id;
 
     /// <summary>
@@ -148,6 +149,28 @@ public class StyleManager : BindableBase
         value = _styles.FirstOrDefault(s => s.Id == id);
         return value is not null;
     }
+
+    #region History
+
+    /// <summary>
+    /// Get the current state of the manager for history operations
+    /// </summary>
+    /// <returns>Manager state</returns>
+    internal IReadOnlyList<Style> GetState()
+    {
+        return _styles.Select(s => s.Clone()).ToList();
+    }
+
+    /// <summary>
+    /// Restore state from a history operation
+    /// </summary>
+    /// <param name="commit">Commit to restore from</param>
+    internal void RestoreState(Commit commit)
+    {
+        _styles.ReplaceRange(commit.Styles);
+    }
+
+    #endregion History
 
     /// <summary>
     /// Clear everything and load in a default style
