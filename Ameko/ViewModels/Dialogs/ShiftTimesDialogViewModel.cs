@@ -152,7 +152,7 @@ public partial class ShiftTimesDialogViewModel : ViewModelBase
                 @event.Start = @event.End;
         }
 
-        _workspace.Commit(events, ChangeType.ModifyEvent);
+        _workspace.Commit(events, ChangeType.ModifyEventMeta);
         return null;
     }
 

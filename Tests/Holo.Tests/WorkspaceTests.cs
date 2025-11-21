@@ -45,10 +45,10 @@ public class WorkspaceTests
         wsp.Commit(e1, ChangeType.AddEvent);
 
         e1.Text = "Hello";
-        wsp.Commit(e1, ChangeType.ModifyEvent);
+        wsp.Commit(e1, ChangeType.ModifyEventText);
 
         e1.Text = "Hello World";
-        wsp.Commit(e1, ChangeType.ModifyEvent);
+        wsp.Commit(e1, ChangeType.ModifyEventText);
 
         wsp.Document.HistoryManager.CanUndo.ShouldBeTrue();
     }
@@ -62,7 +62,7 @@ public class WorkspaceTests
         wsp.Commit(e1, ChangeType.AddEvent);
 
         e1.Text = "test";
-        wsp.Commit(wsp.Document.EventManager.Tail, ChangeType.ModifyEvent);
+        wsp.Commit(wsp.Document.EventManager.Tail, ChangeType.ModifyEventText);
 
         wsp.Document.HistoryManager.CanUndo.ShouldBeTrue();
     }
@@ -192,7 +192,7 @@ public class WorkspaceTests
         var e1 = wsp.Document.EventManager.Head;
 
         e1.Text = "Hello!";
-        wsp.Commit(e1, ChangeType.ModifyEvent);
+        wsp.Commit(e1, ChangeType.ModifyEventText);
 
         wsp.Undo();
         wsp.Document.EventManager.Head.Text.ShouldBe(string.Empty);
@@ -205,7 +205,7 @@ public class WorkspaceTests
         var e1 = wsp.Document.EventManager.Head;
 
         e1.Text = "Hello!";
-        wsp.Commit(e1, ChangeType.ModifyEvent);
+        wsp.Commit(e1, ChangeType.ModifyEventText);
         wsp.Undo();
 
         wsp.Document.HistoryManager.CanRedo.ShouldBeTrue();
@@ -221,9 +221,9 @@ public class WorkspaceTests
         var e1 = wsp.Document.EventManager.Head;
 
         e1.Text = "Hello!";
-        wsp.Commit(e1, ChangeType.ModifyEvent);
+        wsp.Commit(e1, ChangeType.ModifyEventText);
         e1.Text = "Hello! World!";
-        wsp.Commit(e1, ChangeType.ModifyEvent);
+        wsp.Commit(e1, ChangeType.ModifyEventText);
 
         wsp.Undo();
         wsp.Document.EventManager.Head.Text.ShouldBe(string.Empty);
@@ -236,9 +236,9 @@ public class WorkspaceTests
         var e1 = wsp.Document.EventManager.Head;
 
         e1.Text = "Hello!";
-        wsp.Commit(e1, ChangeType.ModifyEvent);
+        wsp.Commit(e1, ChangeType.ModifyEventText);
         e1.Text = "Hello! World!";
-        wsp.Commit(e1, ChangeType.ModifyEvent);
+        wsp.Commit(e1, ChangeType.ModifyEventText);
         wsp.Undo();
 
         wsp.Document.HistoryManager.CanRedo.ShouldBeTrue();

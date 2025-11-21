@@ -148,7 +148,7 @@ public partial class TabItemViewModel : ViewModelBase
             } while (i < lines.Length);
 
             if (editedEvents.Count != 0 && newEvents.Count == 0)
-                Workspace.Commit(editedEvents, ChangeType.ModifyEvent);
+                Workspace.Commit(editedEvents, ChangeType.ComplexEvent); // Use complexEvent to prevent coalescing
             if (newEvents.Count != 0 && editedEvents.Count == 0)
                 Workspace.Commit(newEvents, ChangeType.AddEvent);
             if (newEvents.Count != 0 && editedEvents.Count != 0)
@@ -408,7 +408,7 @@ public partial class TabItemViewModel : ViewModelBase
             }
             Workspace.Commit(
                 Workspace.SelectionManager.SelectedEventCollection,
-                ChangeType.ModifyEvent
+                ChangeType.ModifyEventMeta
             );
         });
     }

@@ -145,9 +145,9 @@ public class Workspace : BindableBase
             && (
                 amend
                 || (
-                    Document.HistoryManager.LastCommitType == changeType
+                    changeType is ChangeType.ModifyEventText or ChangeType.ModifyEventMeta
                     && Document.HistoryManager.LastCommitTime.AddSeconds(30) > DateTimeOffset.Now // TODO: Add an option for this
-                    && Document.HistoryManager.PeekHistory().Type == ChangeType.ModifyEvent
+                    && Document.HistoryManager.PeekHistory().Type == changeType
                 )
             );
 
@@ -158,11 +158,11 @@ public class Workspace : BindableBase
             amend
         );
 
-        if (changeType == ChangeType.ModifyEvent)
+        if (changeType is ChangeType.ModifyEventText or ChangeType.ModifyEventMeta)
         {
             foreach (var @event in selection)
             {
-                Document.HistoryManager.Commit(@event, amend);
+                Document.HistoryManager.Commit(changeType, @event, amend);
                 amend = true;
             }
         }

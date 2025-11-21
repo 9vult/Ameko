@@ -6,7 +6,8 @@ public enum ChangeType
 {
     AddEvent,
     RemoveEvent,
-    ModifyEvent,
+    ModifyEventText,
+    ModifyEventMeta,
     ComplexEvent,
     AddStyle,
     RemoveStyle,

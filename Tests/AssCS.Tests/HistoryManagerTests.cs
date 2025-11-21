@@ -63,13 +63,13 @@ public class HistoryManagerTests
         hm.Commit(ChangeType.AddEvent);
 
         eventA.Text = "Lawrence";
-        hm.Commit(ChangeType.ModifyEvent);
+        hm.Commit(ChangeType.ModifyEventText);
 
         hm.CanUndo.ShouldBeTrue();
         hm.CanRedo.ShouldBeFalse();
 
         var lastCommit = hm.PeekHistory();
-        lastCommit.Type.ShouldBe(ChangeType.ModifyEvent);
+        lastCommit.Type.ShouldBe(ChangeType.ModifyEventText);
         lastCommit.Chain.ShouldContain(eventA.Id);
         lastCommit.Events[eventA.Id].Text.ShouldBe("Lawrence");
     }
@@ -86,18 +86,18 @@ public class HistoryManagerTests
         hm.Commit(ChangeType.AddEvent);
 
         eventA.Text = "Fern";
-        hm.Commit(ChangeType.ModifyEvent);
+        hm.Commit(ChangeType.ModifyEventText);
 
         eventA.Text = "Stark";
-        hm.Commit(eventA);
+        hm.Commit(ChangeType.ModifyEventText, eventA);
 
         var lastCommit = hm.PeekHistory();
-        lastCommit.Type.ShouldBe(ChangeType.ModifyEvent);
+        lastCommit.Type.ShouldBe(ChangeType.ModifyEventText);
         lastCommit.Events[eventA.Id].Text.ShouldBe("Stark");
 
         hm.Undo();
         lastCommit = hm.PeekHistory();
-        lastCommit.Type.ShouldBe(ChangeType.ModifyEvent); // Make sure there were 2 modify commits
+        lastCommit.Type.ShouldBe(ChangeType.ModifyEventText); // Make sure there were 2 modify commits
         lastCommit.Events[eventA.Id].Text.ShouldBe("Fern");
     }
 
@@ -113,17 +113,17 @@ public class HistoryManagerTests
         hm.Commit(ChangeType.AddEvent);
 
         eventA.Text = "Fern";
-        hm.Commit(ChangeType.ModifyEvent);
+        hm.Commit(ChangeType.ModifyEventText);
 
         var lastCommit = hm.PeekHistory();
-        lastCommit.Type.ShouldBe(ChangeType.ModifyEvent);
+        lastCommit.Type.ShouldBe(ChangeType.ModifyEventText);
         lastCommit.Events[eventA.Id].Text.ShouldBe("Fern");
 
         eventA.Text = "Stark";
-        hm.Commit(eventA, true);
+        hm.Commit(ChangeType.ModifyEventText, eventA, true);
 
         lastCommit = hm.PeekHistory();
-        lastCommit.Type.ShouldBe(ChangeType.ModifyEvent);
+        lastCommit.Type.ShouldBe(ChangeType.ModifyEventText);
         lastCommit.Events[eventA.Id].Text.ShouldBe("Stark");
 
         hm.Undo();
@@ -304,7 +304,7 @@ public class HistoryManagerTests
         hm.Commit(ChangeType.Initial);
 
         event1.Text = "Goodbye";
-        hm.Commit(event1);
+        hm.Commit(ChangeType.ModifyEventText, event1);
         doc.EventManager.Head.Text.ShouldBe("Goodbye");
 
         hm.Undo();
@@ -312,7 +312,7 @@ public class HistoryManagerTests
         doc.EventManager.Head.Text.ShouldBe("Hello");
         hm.CanRedo.ShouldBeTrue();
         var commit = hm.PeekFuture();
-        commit.Type.ShouldBe(ChangeType.ModifyEvent);
+        commit.Type.ShouldBe(ChangeType.ModifyEventText);
     }
 
     [Fact]
@@ -442,21 +442,21 @@ public class HistoryManagerTests
         hm.Commit(ChangeType.Initial);
 
         event1.Text = "Goodbye";
-        hm.Commit(event1);
+        hm.Commit(ChangeType.ModifyEventText, event1);
         doc.EventManager.Head.Text.ShouldBe("Goodbye");
 
         hm.Undo();
         doc.EventManager.Head.Text.ShouldBe("Hello");
         hm.CanRedo.ShouldBeTrue();
         var commit = hm.PeekFuture();
-        commit.Type.ShouldBe(ChangeType.ModifyEvent);
+        commit.Type.ShouldBe(ChangeType.ModifyEventText);
 
         hm.Redo();
 
         doc.EventManager.Head.Text.ShouldBe("Goodbye");
         hm.CanRedo.ShouldBeFalse();
         commit = hm.PeekHistory();
-        commit.Type.ShouldBe(ChangeType.ModifyEvent);
+        commit.Type.ShouldBe(ChangeType.ModifyEventText);
     }
 
     [Fact]

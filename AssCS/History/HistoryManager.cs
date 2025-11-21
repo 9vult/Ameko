@@ -43,6 +43,7 @@ public class HistoryManager(
     /// <remarks>
     /// Side effect: Clears future stack
     /// </remarks>
+    /// <param name="type">Change type</param>
     /// <returns>ID of the commit</returns>
     public int Commit(ChangeType type)
     {
@@ -62,23 +63,26 @@ public class HistoryManager(
     /// <remarks>
     /// Side effect: Clears future stack
     /// </remarks>
+    /// <param name="type">Change type</param>
     /// <param name="target">The new state of the modified event</param>
     /// <param name="coalesce">Whether to amend the previous commit or not</param>
     /// <returns>ID of the commit</returns>
     /// <exception cref="InvalidOperationException">If an amend is attempted where disallowed</exception>
-    public int Commit(Event target, bool coalesce = false)
+    public int Commit(ChangeType type, Event target, bool coalesce = false)
     {
         Commit commit;
         if (coalesce)
         {
             if (!CanUndo || !_history.TryPeek(out var latest))
                 throw new InvalidOperationException("Cannot amend, no commits in the undo stack!");
-            if (latest.Type != ChangeType.ModifyEvent)
+            if (type != ChangeType.ModifyEventText && type != ChangeType.ModifyEventMeta)
+                throw new InvalidOperationException("Cannot amend non-Modify changes!");
+            if (latest.Type != type)
                 throw new InvalidOperationException("Cannot amend to a different change type!");
             commit = latest;
         }
         else
-            commit = CreateCommit(ChangeType.ModifyEvent);
+            commit = CreateCommit(type);
 
         // Perform the coalescing
         if (coalesce && commit.Events.TryGetValue(target.Id, out var modEvent))
@@ -89,7 +93,7 @@ public class HistoryManager(
             _history.Push(commit);
 
         LastCommitTime = DateTimeOffset.Now;
-        LastCommitType = ChangeType.ModifyEvent;
+        LastCommitType = type;
         _future.Clear();
         NotifyAbilitiesChanged();
         return commit.Id;
