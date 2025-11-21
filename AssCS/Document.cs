@@ -53,6 +53,7 @@ public class Document
         StyleManager.LoadDefault();
         EventManager.LoadDefault();
         ScriptInfoManager.LoadDefault();
+        HistoryManager.Commit(ChangeType.Initial, [EventManager.Head]);
     }
 
     /// <summary>
@@ -68,9 +69,6 @@ public class Document
 
         if (initDefault)
             LoadDefault();
-
-        // Commit initial state
-        HistoryManager.Commit(ChangeType.Initial);
     }
 }
 

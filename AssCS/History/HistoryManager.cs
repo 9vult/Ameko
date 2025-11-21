@@ -150,11 +150,11 @@ public class HistoryManager(
     /// Retrieve the latest commit from the Undo stack,
     /// apply its state, and add it to the Redo stack
     /// </summary>
-    /// <returns><see langword="true"/> if the operation was successful</returns>
-    public bool Undo()
+    /// <returns>The commit, or <see langword="null"/> on failure</returns>
+    public Commit? Undo()
     {
         if (!CanUndo || !_history.TryPop(out var top))
-            return false;
+            return null;
 
         _future.Push(top);
         if (!_history.TryPeek(out var commit))
@@ -167,18 +167,18 @@ public class HistoryManager(
         LastCommitTime = DateTimeOffset.Now;
         LastCommitType = ChangeType.TimeMachine;
         NotifyAbilitiesChanged();
-        return true;
+        return commit;
     }
 
     /// <summary>
     /// Retrieve the latest commit from the Redo stack,
     /// apply its state, and add it to the Undo stack
     /// </summary>
-    /// <returns><see langword="true"/> if the operation was successful</returns>
-    public bool Redo()
+    /// <returns>The commit, or <see langword="null"/> on failure</returns>
+    public Commit? Redo()
     {
         if (!CanRedo || !_future.TryPop(out var commit))
-            return false;
+            return null;
 
         _history.Push(commit);
 
@@ -189,7 +189,7 @@ public class HistoryManager(
         LastCommitTime = DateTimeOffset.Now;
         LastCommitType = ChangeType.TimeMachine;
         NotifyAbilitiesChanged();
-        return true;
+        return commit;
     }
 
     public Commit PeekHistory()
