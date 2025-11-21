@@ -44,10 +44,11 @@ public class HistoryManager(
     /// Side effect: Clears future stack
     /// </remarks>
     /// <param name="type">Change type</param>
+    /// <param name="selection">Selected events</param>
     /// <returns>ID of the commit</returns>
-    public int Commit(ChangeType type)
+    public int Commit(ChangeType type, IReadOnlyList<Event>? selection = null)
     {
-        var commit = CreateCommit(type);
+        var commit = CreateCommit(type, selection);
         _history.Push(commit);
 
         LastCommitTime = DateTimeOffset.Now;
@@ -66,9 +67,15 @@ public class HistoryManager(
     /// <param name="type">Change type</param>
     /// <param name="target">The new state of the modified event</param>
     /// <param name="coalesce">Whether to amend the previous commit or not</param>
+    /// <param name="selection">Selected events</param>
     /// <returns>ID of the commit</returns>
     /// <exception cref="InvalidOperationException">If an amend is attempted where disallowed</exception>
-    public int Commit(ChangeType type, Event target, bool coalesce = false)
+    public int Commit(
+        ChangeType type,
+        Event target,
+        bool coalesce = false,
+        IReadOnlyList<Event>? selection = null
+    )
     {
         Commit commit;
         if (coalesce)
@@ -82,7 +89,7 @@ public class HistoryManager(
             commit = latest;
         }
         else
-            commit = CreateCommit(type);
+            commit = CreateCommit(type, selection);
 
         // Perform the coalescing
         if (coalesce && commit.Events.TryGetValue(target.Id, out var modEvent))
@@ -121,7 +128,7 @@ public class HistoryManager(
             commit = latest;
         }
         else
-            commit = CreateCommit(ChangeType.ModifyStyle);
+            commit = CreateCommit(ChangeType.ModifyStyle, null);
 
         // Perform the coalescing
         if (coalesce && commit.Styles.Any(s => s.Id == target.Id))
@@ -207,18 +214,20 @@ public class HistoryManager(
     /// Create a commit with the current state
     /// </summary>
     /// <param name="type"></param>
-    /// <returns></returns>
-    private Commit CreateCommit(ChangeType type)
+    /// <param name="selection">Selected events</param>
+    /// <returns>Commit containing the current state</returns>
+    private Commit CreateCommit(ChangeType type, IReadOnlyList<Event>? selection)
     {
         var (chain, events) = eventManager.GetState();
 
         return new Commit(
-            NextId,
-            type,
-            chain,
-            events,
-            styleManager.GetState(),
-            extradataManager.Get().Select(e => e.Clone()).ToList()
+            Id: NextId,
+            Type: type,
+            Chain: chain,
+            Events: events,
+            Styles: styleManager.GetState(),
+            Extradata: extradataManager.Get().Select(e => e.Clone()).ToList(),
+            Selection: selection
         );
     }
 
