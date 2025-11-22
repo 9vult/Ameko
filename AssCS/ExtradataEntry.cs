@@ -37,6 +37,15 @@ public class ExtradataEntry(int id, int expiration, string key, string value)
     /// </summary>
     public string Value { get; set; } = value;
 
+    /// <summary>
+    /// Clone this extradata entry
+    /// </summary>
+    /// <returns>Clone of self</returns>
+    public ExtradataEntry Clone()
+    {
+        return new ExtradataEntry(Id, Expiration, Key, Value);
+    }
+
     public int CompareTo(ExtradataEntry? other)
     {
         return Id.CompareTo(other?.Id);

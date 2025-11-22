@@ -1,13 +1,16 @@
 ﻿// SPDX-License-Identifier: MPL-2.0
 
+using System.Text.RegularExpressions;
+
 namespace AssCS;
 
 /// <summary>
 /// Manages the script information headers for a document
 /// </summary>
-public class ScriptInfoManager
+public partial class ScriptInfoManager
 {
     private readonly OrderedDictionary<string, string> _data = [];
+    private readonly Random _random = new();
 
     /// <summary>
     /// Number of entries in the manager
@@ -21,6 +24,10 @@ public class ScriptInfoManager
     /// <param name="value">Value</param>
     public void Set(string key, string value)
     {
+        // Guard against duplicate `!` headers
+        if (key == "!")
+            key = $"![{_random.Next(100, 1000)}]";
+
         _data[key] = value;
     }
 
@@ -40,7 +47,12 @@ public class ScriptInfoManager
     /// <returns>Read-only collection of key/value pairs</returns>
     public IReadOnlyCollection<KeyValuePair<string, string>> GetAll()
     {
-        return _data;
+        return _data
+            .Select(kvp => new KeyValuePair<string, string>(
+                BangHeaderRegex().IsMatch(kvp.Key) ? "!" : kvp.Key,
+                kvp.Value
+            ))
+            .ToList();
     }
 
     /// <summary>
@@ -83,4 +95,7 @@ public class ScriptInfoManager
         Set("ScaledBorderAndShadow", "yes");
         Set("YCbCr Matrix", "TV.709");
     }
+
+    [GeneratedRegex(@"^!\[\d+\]$")]
+    private static partial Regex BangHeaderRegex();
 }

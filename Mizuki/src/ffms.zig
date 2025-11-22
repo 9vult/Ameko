@@ -56,7 +56,9 @@ pub fn CheckAvailability() bool {
         return true;
     }
     if (builtin.target.os.tag == .macos) {
-        _ = std.DynLib.open("libffms2.dylib") catch return false;
+        _ = std.DynLib.open("libffms2.dylib") catch {
+           _ = std.DynLib.open("/opt/homebrew/lib/libffms2.dylib") catch return false;
+        };
         return true;
     }
     if (builtin.target.os.tag == .windows) {

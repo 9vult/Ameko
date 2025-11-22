@@ -36,13 +36,27 @@
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <ItemGroup>
-      <MIZUKI Include="$(SolutionDir)Mizuki\zig-out\bin\*.*" />
+      <MIZUKI
+        Condition="$([MSBuild]::IsOSPlatform('Windows'))"
+        Include="$(SolutionDir)Mizuki\zig-out\bin\*.*"
+      />
+      <MIZUKI
+        Condition="$([MSBuild]::IsOSPlatform('OSX')) or $([MSBuild]::IsOSPlatform('Linux'))"
+        Include="$(SolutionDir)Mizuki\zig-out\lib\*.*"
+      />
     </ItemGroup>
     <Copy SourceFiles="@(MIZUKI)" DestinationFolder="$(TargetDir)" SkipUnchangedFiles="true" />
   </Target>
   <Target Name="PostPublish" AfterTargets="Publish">
     <ItemGroup>
-      <MIZUKI Include="$(SolutionDir)Mizuki\zig-out\bin\*.*" />
+      <MIZUKI
+        Condition="$([MSBuild]::IsOSPlatform('Windows'))"
+        Include="$(SolutionDir)Mizuki\zig-out\bin\*.*"
+      />
+      <MIZUKI
+        Condition="$([MSBuild]::IsOSPlatform('OSX')) or $([MSBuild]::IsOSPlatform('Linux'))"
+        Include="$(SolutionDir)Mizuki\zig-out\lib\*.*"
+      />
     </ItemGroup>
     <Copy SourceFiles="@(MIZUKI)" DestinationFolder="$(TargetDir)" SkipUnchangedFiles="true" />
   </Target>

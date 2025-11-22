@@ -28,7 +28,7 @@ public class Document
     /// <summary>
     /// The document's History Manager
     /// </summary>
-    public HistoryManager HistoryManager { get; } = new();
+    public HistoryManager HistoryManager { get; }
 
     /// <summary>
     /// The document's Extradata Manager
@@ -53,6 +53,7 @@ public class Document
         StyleManager.LoadDefault();
         EventManager.LoadDefault();
         ScriptInfoManager.LoadDefault();
+        HistoryManager.Commit(ChangeType.Initial, [EventManager.Head.Id]);
     }
 
     /// <summary>
@@ -63,6 +64,8 @@ public class Document
     public Document(bool initDefault, AssVersion version = AssVersion.V400P)
     {
         Version = version;
+
+        HistoryManager = new HistoryManager(EventManager, StyleManager, ExtradataManager);
 
         if (initDefault)
             LoadDefault();

@@ -65,6 +65,7 @@ public class MediaController : BindableBase
             SetProperty(ref _scaleFactor, value);
             DisplayWidth = (VideoInfo?.Width ?? 1) * _scaleFactor.Multiplier / _screenScaleFactor;
             DisplayHeight = (VideoInfo?.Height ?? 1) * _scaleFactor.Multiplier / _screenScaleFactor;
+            FrameReady?.Invoke();
         }
     }
 
@@ -528,6 +529,8 @@ public class MediaController : BindableBase
             // if (frameToFetch == _currentFrame || subtitlesChanged) // Do we want this gate?
             _nextFrame = frame;
 
+            FrameReady?.Invoke();
+
             if (_pendingFrame != -1 || _subtitlesChanged)
                 _fetchTask = Task.Run(FetchFrame);
         }
@@ -552,6 +555,8 @@ public class MediaController : BindableBase
             _logger.LogWarning("Source provider initialization failed! Disabling media playback.");
         }
     }
+
+    public event Action? FrameReady;
 
     public event EventHandler<PlaybackStartEventArgs>? OnPlaybackStart;
     public event EventHandler<EventArgs>? OnPlaybackStop;

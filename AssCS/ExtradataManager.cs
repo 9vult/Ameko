@@ -1,6 +1,7 @@
 ﻿// SPDX-License-Identifier: MPL-2.0
 
 using System.Collections.ObjectModel;
+using AssCS.History;
 
 namespace AssCS;
 
@@ -172,4 +173,27 @@ public class ExtradataManager
         if (usedIds.Count != _extradata.Count)
             _extradata.RemoveAll(e => e.Expiration >= 10);
     }
+
+    #region History
+
+    /// <summary>
+    /// Get the current state of the manager for history operations
+    /// </summary>
+    /// <returns>Manager state</returns>
+    internal IReadOnlyList<ExtradataEntry> GetState()
+    {
+        return _extradata.Select(e => e.Clone()).ToList();
+    }
+
+    /// <summary>
+    /// Restore state from a history operation
+    /// </summary>
+    /// <param name="commit">Commit to restore from</param>
+    internal void RestoreState(Commit commit)
+    {
+        _extradata.Clear();
+        _extradata.AddRange(commit.Extradata);
+    }
+
+    #endregion History
 }

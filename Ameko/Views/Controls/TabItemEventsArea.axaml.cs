@@ -65,9 +65,6 @@ public partial class TabItemEventsArea : ReactiveUserControl<TabItemViewModel>
 
         EventsGrid.ScrollIntoView(active, null);
 
-        // Prepare for edits
-        ViewModel?.Workspace.Document.HistoryManager.BeginTransaction(selection);
-
         // Mark the selection change complete (on the UI thread)
         // to re-allow Commit() calls
         Dispatcher.UIThread.Post(

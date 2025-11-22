@@ -2,6 +2,7 @@
 
 using System.Text;
 using System.Text.RegularExpressions;
+using AssCS.History;
 
 namespace AssCS.IO;
 
@@ -12,7 +13,7 @@ public partial class SrtParser : FileParser
 {
     protected override Document Parse(TextReader reader)
     {
-        Document doc = new(false);
+        var doc = new Document(false);
         doc.StyleManager.LoadDefault();
         doc.ScriptInfoManager.LoadDefault();
 
@@ -125,6 +126,11 @@ public partial class SrtParser : FileParser
             throw new FormatException("Unexpected end of SRT file");
 
         @event?.Text = SrtTagParser.ToAss(text.ToString().Trim());
+
+        if (doc.EventManager.Count == 0)
+            doc.EventManager.LoadDefault();
+
+        doc.HistoryManager.Commit(ChangeType.Initial, [doc.EventManager.Head.Id]);
 
         return doc;
     }
