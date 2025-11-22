@@ -12,5 +12,5 @@ public record Commit(
     IReadOnlyDictionary<int, Event> Events,
     IReadOnlyList<Style> Styles,
     IReadOnlyList<ExtradataEntry> Extradata,
-    IReadOnlyList<Event>? Selection
+    IReadOnlyList<int>? Selection
 );

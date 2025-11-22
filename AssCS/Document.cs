@@ -53,7 +53,7 @@ public class Document
         StyleManager.LoadDefault();
         EventManager.LoadDefault();
         ScriptInfoManager.LoadDefault();
-        HistoryManager.Commit(ChangeType.Initial, [EventManager.Head]);
+        HistoryManager.Commit(ChangeType.Initial, [EventManager.Head.Id]);
     }
 
     /// <summary>

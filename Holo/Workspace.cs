@@ -158,17 +158,19 @@ public class Workspace : BindableBase
             amend
         );
 
+        var selectionIds = !amend ? selection.Select(e => e.Id).ToList() : null;
+
         if (changeType is ChangeType.ModifyEventText or ChangeType.ModifyEventMeta)
         {
             foreach (var @event in selection)
             {
-                Document.HistoryManager.Commit(changeType, @event, amend);
+                Document.HistoryManager.Commit(changeType, @event, amend, selectionIds);
                 amend = true;
             }
         }
         else
         {
-            Document.HistoryManager.Commit(changeType);
+            Document.HistoryManager.Commit(changeType, selectionIds);
         }
 
         IsSaved = false;
@@ -180,7 +182,15 @@ public class Workspace : BindableBase
             return;
         SelectionManager.BeginSelectionChange();
         _logger.LogTrace("Undoing");
-        Document.HistoryManager.Undo();
+        var commit = Document.HistoryManager.Undo();
+
+        // Re-select
+        var selection = commit
+            ?.Selection?.Where(id => commit.Events.TryGetValue(id, out _))
+            .Select(id => commit.Events[id])
+            .ToList();
+        if (selection?.Count > 0)
+            SelectionManager.ForceSelect(selection[0], selection);
     }
 
     public void Redo()
@@ -189,7 +199,15 @@ public class Workspace : BindableBase
             return;
         SelectionManager.BeginSelectionChange();
         _logger.LogTrace("Redoing");
-        Document.HistoryManager.Redo();
+        var commit = Document.HistoryManager.Redo();
+
+        // Re-select
+        var selection = commit
+            ?.Selection?.Where(id => commit.Events.TryGetValue(id, out _))
+            .Select(id => commit.Events[id])
+            .ToList();
+        if (selection?.Count > 0)
+            SelectionManager.ForceSelect(selection[0], selection);
     }
 
     /// <summary>

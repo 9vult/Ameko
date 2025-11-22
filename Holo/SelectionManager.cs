@@ -97,9 +97,11 @@ public class SelectionManager : BindableBase
     /// <param name="selection">Collection of all selected events</param>
     internal void ForceSelect(Event active, IList<Event> selection)
     {
-        ActiveEvent = active;
+        BeginSelectionChange();
+        _activeEvent = active;
         _selectedEventCollection.ReplaceRange(selection);
         SelectionChanged?.Invoke(this, EventArgs.Empty);
+        RaisePropertyChanged(nameof(ActiveEvent));
     }
 
     public SelectionManager(Event initialSelection)

@@ -44,9 +44,9 @@ public class HistoryManager(
     /// Side effect: Clears future stack
     /// </remarks>
     /// <param name="type">Change type</param>
-    /// <param name="selection">Selected events</param>
+    /// <param name="selection">Selected event IDs</param>
     /// <returns>ID of the commit</returns>
-    public int Commit(ChangeType type, IReadOnlyList<Event>? selection = null)
+    public int Commit(ChangeType type, IReadOnlyList<int>? selection = null)
     {
         var commit = CreateCommit(type, selection);
         _history.Push(commit);
@@ -67,14 +67,14 @@ public class HistoryManager(
     /// <param name="type">Change type</param>
     /// <param name="target">The new state of the modified event</param>
     /// <param name="coalesce">Whether to amend the previous commit or not</param>
-    /// <param name="selection">Selected events</param>
+    /// <param name="selection">Selected event IDs</param>
     /// <returns>ID of the commit</returns>
     /// <exception cref="InvalidOperationException">If an amend is attempted where disallowed</exception>
     public int Commit(
         ChangeType type,
         Event target,
         bool coalesce = false,
-        IReadOnlyList<Event>? selection = null
+        IReadOnlyList<int>? selection = null
     )
     {
         Commit commit;
@@ -216,7 +216,7 @@ public class HistoryManager(
     /// <param name="type"></param>
     /// <param name="selection">Selected events</param>
     /// <returns>Commit containing the current state</returns>
-    private Commit CreateCommit(ChangeType type, IReadOnlyList<Event>? selection)
+    private Commit CreateCommit(ChangeType type, IReadOnlyList<int>? selection)
     {
         var (chain, events) = eventManager.GetState();
 

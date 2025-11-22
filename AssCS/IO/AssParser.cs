@@ -52,7 +52,7 @@ public partial class AssParser : FileParser
         if (doc.EventManager.Count == 0)
             doc.EventManager.LoadDefault();
 
-        doc.HistoryManager.Commit(ChangeType.Initial, [doc.EventManager.Head]);
+        doc.HistoryManager.Commit(ChangeType.Initial, [doc.EventManager.Head.Id]);
 
         return doc;
     }
