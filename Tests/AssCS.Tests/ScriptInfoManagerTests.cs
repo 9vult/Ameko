@@ -37,6 +37,17 @@ public class ScriptInfoManagerTests
     }
 
     [Fact]
+    public void Set_BangHeader()
+    {
+        var sim = new ScriptInfoManager();
+        sim.Set("!", "testvalue");
+        sim.Set("!", "testvalue2");
+
+        sim.GetAll().ShouldContain(new KeyValuePair<string, string>("!", "testvalue"));
+        sim.GetAll().ShouldContain(new KeyValuePair<string, string>("!", "testvalue2"));
+    }
+
+    [Fact]
     public void Remove()
     {
         var sim = new ScriptInfoManager();
