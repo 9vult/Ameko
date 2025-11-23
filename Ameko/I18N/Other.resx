@@ -39,6 +39,12 @@
     <data name="MsgBox_NameDirectory_Body" xml:space="preserve">
         <value>Please choose a name for the directory:</value>
     </data>
+    <data name="MsgBox_RemoveDirectory_Disclaimer" xml:space="preserve">
+        <value>No directories will be deleted from your computer.</value>
+    </data>
+    <data name="MsgBox_RemoveDocument_Disclaimer" xml:space="preserve">
+        <value>No files will be deleted from your computer.</value>
+    </data>
     <data name="MsgBox_NameItem_Label" xml:space="preserve">
         <value>Name:</value>
     </data>

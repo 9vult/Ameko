@@ -87,6 +87,18 @@ namespace Ameko.I18N {
             }
         }
         
+        public static string MsgBox_RemoveDirectory_Disclaimer {
+            get {
+                return ResourceManager.GetString("MsgBox_RemoveDirectory_Disclaimer", resourceCulture);
+            }
+        }
+        
+        public static string MsgBox_RemoveDocument_Disclaimer {
+            get {
+                return ResourceManager.GetString("MsgBox_RemoveDocument_Disclaimer", resourceCulture);
+            }
+        }
+        
         public static string MsgBox_NameItem_Label {
             get {
                 return ResourceManager.GetString("MsgBox_NameItem_Label", resourceCulture);
