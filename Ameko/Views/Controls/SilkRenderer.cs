@@ -117,7 +117,6 @@ public class SilkRenderer : OpenGlControlBase
             _gl.ClearColor(0.2f, 0.3f, 0.3f, 1.0f);
             _gl.Clear(ClearBufferMask.ColorBufferBit);
             _gl.Viewport(0, 0, (uint)Bounds.Width, (uint)Bounds.Height);
-            Dispatcher.UIThread.Post(RequestNextFrameRendering, DispatcherPriority.Background);
             return;
         }
 
@@ -152,6 +151,22 @@ public class SilkRenderer : OpenGlControlBase
             DrawElementsType.UnsignedInt,
             null
         );
-        Dispatcher.UIThread.Post(RequestNextFrameRendering, DispatcherPriority.Background);
+    }
+
+    protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        base.OnAttachedToVisualTree(e);
+        MediaController?.FrameReady += OnFrameReady;
+    }
+
+    protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        base.OnDetachedFromVisualTree(e);
+        MediaController?.FrameReady -= OnFrameReady;
+    }
+
+    private void OnFrameReady()
+    {
+        Dispatcher.UIThread.Post(RequestNextFrameRendering);
     }
 }

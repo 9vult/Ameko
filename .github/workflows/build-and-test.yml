@@ -162,6 +162,10 @@ jobs:
                   <true/>
                   <key>NSQuitAlwaysKeepsWindows</key>
                   <false/>
+                  <key>CFBundleSupportedPlatforms</key>
+                  <array>
+                      <string>MacOSX</string>
+                  </array>
               </dict>
           </plist>
           EOF

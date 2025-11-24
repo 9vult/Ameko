@@ -1,20 +1,20 @@
 ﻿// SPDX-License-Identifier: MPL-2.0
 
 using System.Collections.Concurrent;
-using System.Collections.ObjectModel;
 
 namespace AssCS.History;
 
 /// <summary>
 /// Manage history operations for a document
 /// </summary>
-public class HistoryManager : BindableBase
+public class HistoryManager(
+    EventManager eventManager,
+    StyleManager styleManager,
+    ExtradataManager extradataManager
+) : BindableBase
 {
-    private readonly ConcurrentStack<ICommit> _history = [];
-    private readonly ConcurrentStack<ICommit> _future = [];
-
-    private readonly List<Event> _initialState = [];
-    private Style? _initialStyleState = null;
+    private readonly ConcurrentStack<Commit> _history = [];
+    private readonly ConcurrentStack<Commit> _future = [];
 
     /// <summary>
     /// Next commit ID
@@ -24,17 +24,12 @@ public class HistoryManager : BindableBase
     /// <summary>
     /// If there is history to undo
     /// </summary>
-    public bool CanUndo => _history.Count > 0;
+    public bool CanUndo => _history.Count >= 2;
 
     /// <summary>
     /// If there is future to redo
     /// </summary>
-    public bool CanRedo => _future.Count > 0;
-
-    /// <summary>
-    /// The ID of the most recent commit, used for coalescing
-    /// </summary>
-    public int LastId { get; private set; } = -1;
+    public bool CanRedo => !_future.IsEmpty;
 
     /// <summary>
     /// The type of the most recent commit, used for coalescing
@@ -43,134 +38,131 @@ public class HistoryManager : BindableBase
     public DateTimeOffset LastCommitTime { get; private set; }
 
     /// <summary>
-    /// Signal that modifications may be starting
-    /// </summary>
-    /// <param name="events">List of events to track</param>
-    public void BeginTransaction(IEnumerable<Event> events)
-    {
-        _initialState.Clear();
-        _initialState.AddRange(events.Select(e => e.Clone()));
-    }
-
-    /// <summary>
-    /// Signal that modifications may be starting
-    /// </summary>
-    /// <param name="event">Event to track</param>
-    public void BeginTransaction(Event @event)
-    {
-        _initialState.Clear();
-        _initialState.Add(@event.Clone());
-    }
-
-    public void BeginTransaction(Style style)
-    {
-        _initialStyleState = style;
-    }
-
-    /// <summary>
-    /// Get the initial event state, useful for performing diff checks
-    /// </summary>
-    public ReadOnlyCollection<Event> InitialState => _initialState.AsReadOnly();
-
-    /// <summary>
-    /// Commit an event change to history
+    /// Commit the current state to history
     /// </summary>
     /// <remarks>
     /// Side effect: Clears future stack
     /// </remarks>
-    /// <param name="type">Type of change</param>
-    /// <param name="event">Target line</param>
-    /// <param name="parentId">ID of the parent of the target</param>
-    /// <param name="coalesce">Whether to amend the previous commit or not</param>
+    /// <param name="type">Change type</param>
+    /// <param name="selection">Selected event IDs</param>
     /// <returns>ID of the commit</returns>
-    /// <exception cref="InvalidOperationException">If an amend is attempted to a non-Event commit</exception>
-    public int Commit(ChangeType type, Event @event, int? parentId, bool coalesce = false)
+    public int Commit(ChangeType type, IReadOnlyList<int>? selection = null)
     {
-        EventCommit commit;
-        if (coalesce)
-        {
-            if (!CanUndo)
-                throw new InvalidOperationException("Cannot amend, no commits in the undo stack!");
-            if (!_history.TryPeek(out var latest) || latest is not EventCommit eventCommit)
-                throw new InvalidOperationException("Cannot amend to a non-Event commit");
-            commit = eventCommit;
-        }
-        else
-            commit = new EventCommit(NextId);
-
-        switch (type)
-        {
-            case ChangeType.Add:
-                commit.Deltas.Add(new EventDelta(type, null, @event, parentId));
-                break;
-            case ChangeType.Remove:
-                commit.Deltas.Add(new EventDelta(type, @event, null, parentId));
-                break;
-            case ChangeType.Modify:
-                commit.Deltas.Add(
-                    new EventDelta(
-                        type,
-                        _initialState.FirstOrDefault(e => e.Id == @event.Id),
-                        @event,
-                        parentId
-                    )
-                );
-                break;
-        }
-        if (!coalesce)
-            _history.Push(commit);
+        var commit = CreateCommit(type, selection);
+        _history.Push(commit);
 
         LastCommitTime = DateTimeOffset.Now;
         LastCommitType = type;
-        LastId = commit.Id;
         _future.Clear();
         NotifyAbilitiesChanged();
         return commit.Id;
     }
 
     /// <summary>
-    /// Commit a style change to history
+    /// Commit an event modification to history
     /// </summary>
     /// <remarks>
     /// Side effect: Clears future stack
     /// </remarks>
-    /// <param name="type">Type of change</param>
-    /// <param name="target">Target style</param>
+    /// <param name="type">Change type</param>
+    /// <param name="target">The new state of the modified event</param>
+    /// <param name="coalesce">Whether to amend the previous commit or not</param>
+    /// <param name="selection">Selected event IDs</param>
     /// <returns>ID of the commit</returns>
-    public int Commit(ChangeType type, Style target)
+    /// <exception cref="InvalidOperationException">If an amend is attempted where disallowed</exception>
+    public int Commit(
+        ChangeType type,
+        Event target,
+        bool coalesce = false,
+        IReadOnlyList<int>? selection = null
+    )
     {
-        var id = NextId;
-        _history.Push(
-            new StyleCommit
-            {
-                Id = id,
-                Target = target,
-                Type = type,
-            }
-        );
+        Commit commit;
+        if (coalesce)
+        {
+            if (!CanUndo || !_history.TryPeek(out var latest))
+                throw new InvalidOperationException("Cannot amend, no commits in the undo stack!");
+            if (type != ChangeType.ModifyEventText && type != ChangeType.ModifyEventMeta)
+                throw new InvalidOperationException("Cannot amend non-Modify changes!");
+            if (latest.Type != type)
+                throw new InvalidOperationException("Cannot amend to a different change type!");
+            commit = latest;
+        }
+        else
+            commit = CreateCommit(type, selection);
+
+        // Perform the coalescing
+        if (coalesce && commit.Events.TryGetValue(target.Id, out var modEvent))
+        {
+            modEvent.SetFields(EventField.All, target);
+        }
+        else
+            _history.Push(commit);
 
         LastCommitTime = DateTimeOffset.Now;
         LastCommitType = type;
         _future.Clear();
         NotifyAbilitiesChanged();
-        return id;
+        return commit.Id;
     }
 
     /// <summary>
-    /// Retrieve the latest commit from the Undo stack
-    /// and add it to the Redo stack
+    /// Commit a style modification to history
     /// </summary>
     /// <remarks>
-    /// It is the duty of the calling member to act on the commit.
+    /// Side effect: Clears future stack
     /// </remarks>
-    /// <returns>The commit</returns>
-    /// <exception cref="InvalidOperationException">If the Undo stack is empty</exception>
-    public ICommit Undo()
+    /// <param name="target">The new state of the modified style</param>
+    /// <param name="coalesce">Whether to amend the previous commit or not</param>
+    /// <returns>ID of the commit</returns>
+    /// <exception cref="InvalidOperationException">If an amend is attempted where disallowed</exception>
+    public int Commit(Style target, bool coalesce = false)
     {
-        if (!CanUndo || !_history.TryPop(out var commit))
-            throw new InvalidOperationException("Cannot undo, no commits in the undo stack!");
+        Commit commit;
+        if (coalesce)
+        {
+            if (!CanUndo || !_history.TryPeek(out var latest))
+                throw new InvalidOperationException("Cannot amend, no commits in the undo stack!");
+            if (latest.Type != ChangeType.ModifyStyle)
+                throw new InvalidOperationException("Cannot amend to a different change type!");
+            commit = latest;
+        }
+        else
+            commit = CreateCommit(ChangeType.ModifyStyle, null);
 
-        _future.Push(commit);
+        // Perform the coalescing
+        if (coalesce && commit.Styles.Any(s => s.Id == target.Id))
+        {
+            var modStyle = commit.Styles.First(s => s.Id == target.Id);
+            modStyle.SetFields(StyleField.All, target);
+        }
+        else
+            _history.Push(commit);
+
+        LastCommitTime = DateTimeOffset.Now;
+        LastCommitType = ChangeType.ModifyStyle;
+        _future.Clear();
+        NotifyAbilitiesChanged();
+        return commit.Id;
+    }
+
+    /// <summary>
+    /// Retrieve the latest commit from the Undo stack,
+    /// apply its state, and add it to the Redo stack
+    /// </summary>
+    /// <returns>The commit, or <see langword="null"/> on failure</returns>
+    public Commit? Undo()
+    {
+        if (!CanUndo || !_history.TryPop(out var top))
+            return null;
+
+        _future.Push(top);
+        if (!_history.TryPeek(out var commit))
+            throw new InvalidOperationException("Undo failed, no commits in the undo stack!");
+
+        eventManager.RestoreState(commit);
+        styleManager.RestoreState(commit);
+        extradataManager.RestoreState(commit);
 
         LastCommitTime = DateTimeOffset.Now;
         LastCommitType = ChangeType.TimeMachine;
@@ -179,43 +171,64 @@ public class HistoryManager : BindableBase
     }
 
     /// <summary>
-    /// Retrieve the latest commit from the Redo stack
-    /// and add it to the Undo stack
+    /// Retrieve the latest commit from the Redo stack,
+    /// apply its state, and add it to the Undo stack
     /// </summary>
-    /// <remarks>
-    /// It is the duty of the calling member to act on the commit.
-    /// </remarks>
-    /// <returns>The commit</returns>
-    /// <exception cref="InvalidOperationException">If the Redo stack is empty</exception>
-    public ICommit Redo()
+    /// <returns>The commit, or <see langword="null"/> on failure</returns>
+    public Commit? Redo()
     {
         if (!CanRedo || !_future.TryPop(out var commit))
-            throw new InvalidOperationException("Cannot redo, no commits in the redo stack!");
+            return null;
 
         _history.Push(commit);
 
+        eventManager.RestoreState(commit);
+        styleManager.RestoreState(commit);
+        extradataManager.RestoreState(commit);
+
         LastCommitTime = DateTimeOffset.Now;
         LastCommitType = ChangeType.TimeMachine;
         NotifyAbilitiesChanged();
         return commit;
     }
 
-    public ICommit PeekHistory()
+    public Commit PeekHistory()
     {
-        if (!CanUndo || !_history.TryPeek(out var commit))
+        if (_history.IsEmpty || !_history.TryPeek(out var commit))
             throw new InvalidOperationException(
                 "Cannot peek history, no commits in the undo stack!"
             );
         return commit;
     }
 
-    public ICommit PeekFuture()
+    public Commit PeekFuture()
     {
-        if (!CanRedo || !_future.TryPeek(out var commit))
+        if (_future.IsEmpty || !_future.TryPeek(out var commit))
             throw new InvalidOperationException(
                 "Cannot peek future, no commits in the redo stack!"
             );
         return commit;
+    }
+
+    /// <summary>
+    /// Create a commit with the current state
+    /// </summary>
+    /// <param name="type"></param>
+    /// <param name="selection">Selected events</param>
+    /// <returns>Commit containing the current state</returns>
+    private Commit CreateCommit(ChangeType type, IReadOnlyList<int>? selection)
+    {
+        var (chain, events) = eventManager.GetState();
+
+        return new Commit(
+            Id: NextId,
+            Type: type,
+            Chain: chain,
+            Events: events,
+            Styles: styleManager.GetState(),
+            Extradata: extradataManager.Get().Select(e => e.Clone()).ToList(),
+            Selection: selection
+        );
     }
 
     /// <summary>
