@@ -80,8 +80,16 @@ components working in tandem.
 
 <h2 align="center">Contributing</h2>
 
-Thank you for your interest in contributing to Ameko! Whether you're reporting bugs, fixing bugs, adding features, or
-starting a discussion, all contributions are welcome and appreciated.
+Thank you for your interest in contributing to Ameko! Whether you're reporting or fixing bugs, adding a translation,
+implementing features, or starting a discussion, all contributions are welcome and appreciated.
+
+### Localization
+
+[![es-419](https://img.shields.io/badge/dynamic/json?color=green&label=es-419&style=flat&logo=crowdin&query=%24.progress.0.data.approvalProgress&url=https%3A%2F%2Fbadges.awesome-crowdin.com%2Fstats-17157354-799340.json)](https://crowdin.com/project/ameko)
+
+If you are interested in localizing Ameko into your language (Thank you!), please see
+the [Crowdin project](https://crowdin.com/project/ameko). Note: Ameko is localized via the ResX format,
+which is quite limited, such as lacking support for plurals.
 
 ### Code
 
@@ -95,12 +103,6 @@ Additionally, there are some testing guidelines:
 
 - Unit tests are required for contributions to the Holo and AssCS projects.
 - Tests are optional, but highly appreciated, for Ameko's ViewModels and for Mizuki.
-
-### Localization
-
-If you are interested in localizing Ameko into your language (Thank you!), please see
-the [Crowdin project](https://crowdin.com/project/ameko). Note: Ameko is localized via the ResX format,
-which is quite limited, such as lacking support for plurals.
 
 <h2 align="center">Licensing</h2>
 
