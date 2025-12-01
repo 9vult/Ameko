@@ -83,6 +83,8 @@ public class SelectionManager : BindableBase
         if (active == ActiveEvent && selection.Count == SelectedEventCollection.Count)
             return;
 
+        BeginSelectionChange();
+
         _activeEvent = active;
         _selectedEventCollection.ReplaceRange(selection);
         RaisePropertyChanged(nameof(ActiveEvent));
