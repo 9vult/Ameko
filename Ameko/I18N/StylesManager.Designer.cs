@@ -75,9 +75,9 @@ namespace Ameko.I18N {
             }
         }
         
-        public static string StylesManager_Button_Copy {
+        public static string StylesManager_Button_Duplicate {
             get {
-                return ResourceManager.GetString("StylesManager_Button_Copy", resourceCulture);
+                return ResourceManager.GetString("StylesManager_Button_Duplicate", resourceCulture);
             }
         }
         
@@ -117,9 +117,9 @@ namespace Ameko.I18N {
             }
         }
         
-        public static string StylesManager_Button_Copy_ToolTip {
+        public static string StylesManager_Button_Duplicate_ToolTip {
             get {
-                return ResourceManager.GetString("StylesManager_Button_Copy_ToolTip", resourceCulture);
+                return ResourceManager.GetString("StylesManager_Button_Duplicate_ToolTip", resourceCulture);
             }
         }
         
