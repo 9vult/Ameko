@@ -140,22 +140,11 @@ public class Workspace : BindableBase
         // See: SubsEditBox::SetSelectedRows
         // https://github.com/arch1t3cht/Aegisub/blob/b2a0b098215d7028ba26f1bf728731fc585f2b99/src/subs_edit_box.cpp#L476
 
-        amend =
-            Document.HistoryManager.CanUndo
-            && (
-                amend
-                || (
-                    changeType is ChangeType.ModifyEventText or ChangeType.ModifyEventMeta
-                    && Document.HistoryManager.LastCommitTime.AddSeconds(30) > DateTimeOffset.Now // TODO: Add an option for this
-                    && Document.HistoryManager.PeekHistory().Type == changeType
-                )
-            );
-
         _logger.LogTrace(
             "Commiting {Count} events under change {Type} (amend={Amend})",
             selection.Count,
             changeType,
-            amend
+            ShouldAmend()
         );
 
         var selectionIds = !amend ? selection.Select(e => e.Id).ToList() : null;
@@ -174,6 +163,28 @@ public class Workspace : BindableBase
         }
 
         IsSaved = false;
+        return;
+
+        bool ShouldAmend()
+        {
+            if (!Document.HistoryManager.CanUndo)
+                return false;
+            if (amend)
+                return true;
+            if (changeType is not (ChangeType.ModifyEventText or ChangeType.ModifyEventMeta))
+                return false;
+            if (Document.HistoryManager.LastCommitTime.AddSeconds(15) < DateTimeOffset.Now)
+                return false;
+
+            var peek = Document.HistoryManager.PeekHistory();
+
+            if (peek.Type != changeType)
+                return false;
+            if (peek.Selection?.Count != selection.Count)
+                return false;
+
+            return peek.Selection.Count <= 0 || peek.Selection[0] == selection[0].Id;
+        }
     }
 
     public void Undo()
