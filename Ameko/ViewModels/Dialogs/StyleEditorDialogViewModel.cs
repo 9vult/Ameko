@@ -2,24 +2,23 @@
 
 using System.Reactive.Linq;
 using System.Windows.Input;
-using Ameko.ViewModels.Dialogs;
 using AssCS;
 using Holo.Configuration;
 using ReactiveUI;
 
-namespace Ameko.ViewModels.Windows;
+namespace Ameko.ViewModels.Dialogs;
 
-public partial class StyleEditorWindowViewModel : ViewModelBase
+public partial class StyleEditorDialogViewModel : ViewModelBase
 {
     private readonly Style _backupStyle;
     private readonly StyleManager _styleManager;
-    private readonly Document? _document;
     private string _styleName;
 
     public Interaction<ColorDialogViewModel, Color?> ShowColorDialog { get; }
     public ICommand EditColorCommand { get; }
 
-    public Style Style { get; init; }
+    public Style Style { get; }
+    public Document? Document { get; }
 
     public Color PrimaryColor => Style.PrimaryColor;
     public Color SecondaryColor => Style.SecondaryColor;
@@ -46,7 +45,7 @@ public partial class StyleEditorWindowViewModel : ViewModelBase
     /// Commit a style name change
     /// </summary>
     /// <remarks>
-    /// If the style is from a <see cref="Document"/>,
+    /// If the style is from a <see cref="AssCS.Document"/>,
     /// <see cref="EventManager.ChangeStyle(string, string)"/> will be called.
     /// </remarks>
     /// <returns><see langword="true"/> if we are good to go</returns>
@@ -58,7 +57,7 @@ public partial class StyleEditorWindowViewModel : ViewModelBase
             return true;
 
         Style.Name = StyleName;
-        _document?.EventManager.ChangeStyle(_backupStyle.Name, StyleName);
+        Document?.EventManager.ChangeStyle(_backupStyle.Name, StyleName);
 
         return true;
     }
@@ -70,7 +69,7 @@ public partial class StyleEditorWindowViewModel : ViewModelBase
     /// <param name="style">Style being edited</param>
     /// <param name="manager">Manager the <paramref name="style"/> belongs to</param>
     /// <param name="document">Document the manager belongs to, if applicable</param>
-    public StyleEditorWindowViewModel(
+    public StyleEditorDialogViewModel(
         IPersistence persistence,
         Style style,
         StyleManager manager,
@@ -81,7 +80,7 @@ public partial class StyleEditorWindowViewModel : ViewModelBase
         _styleName = Style.Name;
         _backupStyle = Style.Clone();
         _styleManager = manager;
-        _document = document;
+        Document = document;
 
         ShowColorDialog = new Interaction<ColorDialogViewModel, Color?>();
 

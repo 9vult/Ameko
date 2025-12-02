@@ -2,6 +2,7 @@
 
 using System.Reactive;
 using System.Windows.Input;
+using Ameko.ViewModels.Dialogs;
 using AssCS;
 using Holo;
 using Holo.Configuration;
@@ -51,7 +52,7 @@ public partial class StylesManagerWindowViewModel : ViewModelBase
     public bool ProjectButtonsEnabled => SelectedProjectStyle is not null;
     public bool DocumentButtonsEnabled => SelectedDocumentStyle is not null;
 
-    public Interaction<StyleEditorWindowViewModel, Unit> ShowStyleEditorWindow { get; }
+    public Interaction<StyleEditorDialogViewModel, Unit> ShowStyleEditorWindow { get; }
 
     #region Commands
     public ICommand CopyToCommand { get; }
@@ -78,6 +79,6 @@ public partial class StylesManagerWindowViewModel : ViewModelBase
         CopyToCommand = CreateCopyToCommand();
         EditStyleCommand = CreateEditStyleCommand();
 
-        ShowStyleEditorWindow = new Interaction<StyleEditorWindowViewModel, Unit>();
+        ShowStyleEditorWindow = new Interaction<StyleEditorDialogViewModel, Unit>();
     }
 }

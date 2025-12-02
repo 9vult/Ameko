@@ -3,15 +3,13 @@
 using System.Reactive.Disposables;
 using System.Threading.Tasks;
 using Ameko.ViewModels.Dialogs;
-using Ameko.ViewModels.Windows;
-using Ameko.Views.Dialogs;
 using AssCS;
 using Avalonia.ReactiveUI;
 using ReactiveUI;
 
-namespace Ameko.Views.Windows;
+namespace Ameko.Views.Dialogs;
 
-public partial class StyleEditorWindow : ReactiveWindow<StyleEditorWindowViewModel>
+public partial class StyleEditorDialog : ReactiveWindow<StyleEditorDialogViewModel>
 {
     private async Task DoShowColorDialogAsync(
         IInteractionContext<ColorDialogViewModel, Color?> interaction
@@ -22,7 +20,7 @@ public partial class StyleEditorWindow : ReactiveWindow<StyleEditorWindowViewMod
         interaction.SetOutput(result);
     }
 
-    public StyleEditorWindow()
+    public StyleEditorDialog()
     {
         InitializeComponent();
 

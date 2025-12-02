@@ -2,7 +2,9 @@
 
 using System.Reactive;
 using System.Reactive.Disposables;
+using Ameko.ViewModels.Dialogs;
 using Ameko.ViewModels.Windows;
+using Ameko.Views.Dialogs;
 using AssCS;
 using Avalonia.Controls;
 using Avalonia.Input;
@@ -13,12 +15,12 @@ namespace Ameko.Views.Windows;
 
 public partial class StylesManagerWindow : ReactiveWindow<StylesManagerWindowViewModel>
 {
-    private static void DoShowStyleEditor(
-        IInteractionContext<StyleEditorWindowViewModel, Unit> interaction
+    private void DoShowStyleEditor(
+        IInteractionContext<StyleEditorDialogViewModel, Unit> interaction
     )
     {
-        var editor = new StyleEditorWindow { DataContext = interaction.Input };
-        editor.Show();
+        var editor = new StyleEditorDialog { DataContext = interaction.Input };
+        editor.ShowDialog(this);
         interaction.SetOutput(Unit.Default);
     }
 

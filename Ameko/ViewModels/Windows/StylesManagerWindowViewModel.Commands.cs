@@ -3,7 +3,9 @@
 using System;
 using System.Reactive;
 using System.Reactive.Linq;
+using Ameko.ViewModels.Dialogs;
 using AssCS;
+using AssCS.History;
 using ReactiveUI;
 
 namespace Ameko.ViewModels.Windows;
@@ -34,6 +36,9 @@ public partial class StylesManagerWindowViewModel : ViewModelBase
                     newStyle.Name += $" ({I18N.StylesManager.StylesManager_CopyAppendage})";
 
                 manager.Add(newStyle);
+
+                if (input == "document")
+                    Document.HistoryManager.Commit(ChangeType.AddStyle);
             }
         );
     }
@@ -62,6 +67,9 @@ public partial class StylesManagerWindowViewModel : ViewModelBase
                 // Ensure documents always have at least one style
                 if (input == "document" && manager.Styles.Count == 0)
                     manager.Add(new Style(manager.NextId));
+
+                if (input == "document")
+                    Document.HistoryManager.Commit(ChangeType.RemoveStyle);
             }
         );
     }
@@ -101,6 +109,9 @@ public partial class StylesManagerWindowViewModel : ViewModelBase
                 };
 
                 manager.AddOrReplace(Style.FromStyle(manager.NextId, style));
+
+                if (dest == "document")
+                    Document.HistoryManager.Commit(ChangeType.AddStyle);
             }
         );
     }
@@ -124,8 +135,10 @@ public partial class StylesManagerWindowViewModel : ViewModelBase
                 if (style is null)
                     return;
 
-                var vm = new StyleEditorWindowViewModel(_persistence, style, manager, document);
-                await ShowStyleEditorWindow.Handle(vm);
+                var clone = style.Clone();
+
+                var vm = new StyleEditorDialogViewModel(_persistence, style, manager, document);
+                _ = await ShowStyleEditorWindow.Handle(vm);
             }
         );
     }

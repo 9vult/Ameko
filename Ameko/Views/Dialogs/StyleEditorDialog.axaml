@@ -10,10 +10,10 @@
 
         xmlns:converters="clr-namespace:Ameko.Converters"
         xmlns:i18n="clr-namespace:Ameko.I18N"
-        xmlns:vm="clr-namespace:Ameko.ViewModels.Windows"
+        xmlns:vm="clr-namespace:Ameko.ViewModels.Dialogs"
 
-        x:Class="Ameko.Views.Windows.StyleEditorWindow"
-        x:DataType="vm:StyleEditorWindowViewModel"
+        x:Class="Ameko.Views.Dialogs.StyleEditorDialog"
+        x:DataType="vm:StyleEditorDialogViewModel"
         
         Width="400"
         Topmost="True"

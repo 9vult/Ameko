@@ -180,6 +180,10 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Playground.resx</DependentUpon>
     </Compile>
+    <Compile Update="Views\Dialogs\StyleEditorDialog.axaml.cs">
+      <DependentUpon>StyleEditorDialog.axaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Update="I18N\Resources.resx">
