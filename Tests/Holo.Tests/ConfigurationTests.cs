@@ -111,7 +111,8 @@ public class ConfigurationTests
             "Theme": "light",
             "PropagateFields": "NonText",
             "GridPadding": 2,
-            "RepositoryUrls": []
+            "RepositoryUrls": [],
+            "ScriptMenuOverrides": []
         }
         """;
 }
