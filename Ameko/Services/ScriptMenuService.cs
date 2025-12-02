@@ -18,6 +18,7 @@ public static class ScriptMenuService
 {
     public static List<MenuItem> GenerateMenuItemSource(
         IList<IHoloExecutable> scripts,
+        IDictionary<string, string> overrides,
         ICommand executeScriptCommand
     )
     {
@@ -40,11 +41,14 @@ public static class ScriptMenuService
 
             if (!headless) // Only add if not headless
             {
-                if (script.Info.Submenu is not null)
+                if (!overrides.TryGetValue(script.Info.QualifiedName, out var submenu))
+                    submenu = script.Info.Submenu;
+
+                if (submenu is not null and not "") // Empty override = root
                 {
-                    if (!subItemsMap.ContainsKey(script.Info.Submenu))
-                        subItemsMap[script.Info.Submenu] = [];
-                    subItemsMap[script.Info.Submenu].Add(menu);
+                    if (!subItemsMap.ContainsKey(submenu))
+                        subItemsMap[submenu] = [];
+                    subItemsMap[submenu].Add(menu);
                 }
                 else
                 {
@@ -63,11 +67,14 @@ public static class ScriptMenuService
                     Icon = new MaterialIcon { Kind = MaterialIconKind.CodeBlockParentheses },
                 };
 
-                if (methodInfo.Submenu is not null)
+                if (!overrides.TryGetValue(fullQualifiedName, out var submenu))
+                    submenu = methodInfo.Submenu;
+
+                if (submenu is not null and not "") // Empty override = root
                 {
-                    if (!subItemsMap.ContainsKey(methodInfo.Submenu))
-                        subItemsMap[methodInfo.Submenu] = [];
-                    subItemsMap[methodInfo.Submenu].Add(methodMenu);
+                    if (!subItemsMap.ContainsKey(submenu))
+                        subItemsMap[submenu] = [];
+                    subItemsMap[submenu].Add(methodMenu);
                 }
                 else
                 {
@@ -87,6 +94,7 @@ public static class ScriptMenuService
 
     public static List<NativeMenuItem> GenerateNativeMenuItemSource(
         IList<IHoloExecutable> scripts,
+        IDictionary<string, string> overrides,
         ICommand executeScriptCommand
     )
     {
@@ -108,11 +116,14 @@ public static class ScriptMenuService
 
             if (!headless) // Only add if not headless
             {
-                if (script.Info.Submenu is not null)
+                if (!overrides.TryGetValue(script.Info.QualifiedName, out var submenu))
+                    submenu = script.Info.Submenu;
+
+                if (submenu is not null and not "") // Empty override = root
                 {
-                    if (!subItemsMap.ContainsKey(script.Info.Submenu))
-                        subItemsMap[script.Info.Submenu] = [];
-                    subItemsMap[script.Info.Submenu].Add(menu);
+                    if (!subItemsMap.ContainsKey(submenu))
+                        subItemsMap[submenu] = [];
+                    subItemsMap[submenu].Add(menu);
                 }
                 else
                 {
@@ -130,11 +141,14 @@ public static class ScriptMenuService
                     CommandParameter = fullQualifiedName,
                 };
 
-                if (methodInfo.Submenu is not null)
+                if (!overrides.TryGetValue(fullQualifiedName, out var submenu))
+                    submenu = methodInfo.Submenu;
+
+                if (submenu is not null and not "") // Empty override = root
                 {
-                    if (!subItemsMap.ContainsKey(methodInfo.Submenu))
-                        subItemsMap[methodInfo.Submenu] = [];
-                    subItemsMap[methodInfo.Submenu].Add(methodMenu);
+                    if (!subItemsMap.ContainsKey(submenu))
+                        subItemsMap[submenu] = [];
+                    subItemsMap[submenu].Add(methodMenu);
                 }
                 else
                 {

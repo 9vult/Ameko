@@ -57,6 +57,7 @@ public partial class Configuration : BindableBase, IConfiguration
     private uint _gridPadding;
     private PropagateFields _propagateFields;
     private RangeObservableCollection<string> _repositoryUrls;
+    private Dictionary<string, string> _scriptMenuOverrides;
 
     /// <inheritdoc />
     public uint Cps
@@ -174,6 +175,9 @@ public partial class Configuration : BindableBase, IConfiguration
     public ReadOnlyObservableCollection<string> RepositoryUrls { get; }
 
     /// <inheritdoc />
+    public ReadOnlyDictionary<string, string> ScriptMenuOverrides { get; }
+
+    /// <inheritdoc />
     public void AddRepositoryUrl(string url)
     {
         _logger.LogDebug("Adding repository url {Url}", url);
@@ -188,6 +192,18 @@ public partial class Configuration : BindableBase, IConfiguration
         var result = _repositoryUrls.Remove(url);
         Save();
         return result;
+    }
+
+    /// <inheritdoc />
+    public void SetScriptMenuOverride(string qualifiedName, string @override)
+    {
+        _scriptMenuOverrides[qualifiedName] = @override;
+    }
+
+    /// <inheritdoc />
+    public bool RemoveScriptMenuOverride(string qualifiedName)
+    {
+        return _scriptMenuOverrides.Remove(qualifiedName);
     }
 
     /// <inheritdoc />
@@ -228,6 +244,7 @@ public partial class Configuration : BindableBase, IConfiguration
                 GridPadding = _gridPadding,
                 PropagateFields = _propagateFields,
                 RepositoryUrls = RepositoryUrls.ToArray(),
+                ScriptMenuOverrides = ScriptMenuOverrides.ToDictionary(),
             };
 
             var content = JsonSerializer.Serialize(model, JsonOptions);
@@ -294,6 +311,7 @@ public partial class Configuration : BindableBase, IConfiguration
                 _gridPadding = model.GridPadding,
                 _propagateFields = model.PropagateFields,
                 _repositoryUrls = new RangeObservableCollection<string>(model.RepositoryUrls),
+                _scriptMenuOverrides = new Dictionary<string, string>(model.ScriptMenuOverrides),
             };
             logger.LogInformation("Done!");
             return result;
@@ -320,14 +338,16 @@ public partial class Configuration : BindableBase, IConfiguration
         _saveFrames = SaveFrames.WithSubtitles;
         _autosaveEnabled = true;
         _autosaveInterval = 60;
-        _repositoryUrls = [];
         _culture = "es-419";
         _spellcheckCulture = "en_US";
         _theme = Theme.Default;
         _gridPadding = 2;
         _propagateFields = PropagateFields.NonText;
+        _repositoryUrls = [];
+        _scriptMenuOverrides = [];
 
         RepositoryUrls = new ReadOnlyObservableCollection<string>(_repositoryUrls);
+        ScriptMenuOverrides = new ReadOnlyDictionary<string, string>(_scriptMenuOverrides);
     }
 
     /// <inheritdoc />

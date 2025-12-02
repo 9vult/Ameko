@@ -102,6 +102,11 @@ public interface IConfiguration
     ReadOnlyObservableCollection<string> RepositoryUrls { get; }
 
     /// <summary>
+    /// Map between script/method qualified names and user-specified overrides
+    /// </summary>
+    ReadOnlyDictionary<string, string> ScriptMenuOverrides { get; }
+
+    /// <summary>
     /// Add a repository
     /// </summary>
     /// <param name="url">Repository to add</param>
@@ -113,6 +118,20 @@ public interface IConfiguration
     /// <param name="url">Repository to remove</param>
     /// <returns><see langword="true"/> if successful</returns>
     bool RemoveRepositoryUrl(string url);
+
+    /// <summary>
+    /// Override a script or method's location in the scripts menu
+    /// </summary>
+    /// <param name="qualifiedName">Qualified name of the script or method</param>
+    /// <param name="override">New submenu, or empty for root</param>
+    void SetScriptMenuOverride(string qualifiedName, string @override);
+
+    /// <summary>
+    /// Remove a script menu override
+    /// </summary>
+    /// <param name="qualifiedName">Qualified name of the script or method</param>
+    /// <returns><see langword="true"/> if successful</returns>
+    bool RemoveScriptMenuOverride(string qualifiedName);
 
     /// <summary>
     /// Write the configuration to file

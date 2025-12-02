@@ -28,4 +28,5 @@ internal record ConfigurationModel
     public required uint GridPadding;
     public required PropagateFields PropagateFields;
     public required string[] RepositoryUrls;
+    public required Dictionary<string, string> ScriptMenuOverrides;
 }

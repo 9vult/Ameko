@@ -793,7 +793,7 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         return ReactiveCommand.CreateFromTask(async () =>
         {
-            var culture = _configuration.SpellcheckCulture;
+            var culture = Configuration.SpellcheckCulture;
             if (!_spellcheckService.IsDictionaryInstalled(culture)) // Not installed
             {
                 _logger.LogInformation(
