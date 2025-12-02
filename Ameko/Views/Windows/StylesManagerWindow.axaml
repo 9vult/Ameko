@@ -72,6 +72,8 @@
                         Classes="Small"
                         HorizontalAlignment="Stretch"
                         Content="{x:Static i18n:StylesManager.StylesManager_Button_New}"
+                        Command="{Binding NewStyleCommand}"
+                        CommandParameter="global"
                         ToolTip.Tip="{x:Static i18n:StylesManager.StylesManager_Button_New_ToolTip}" />
                 <Button Grid.Column="1"
                         Grid.Row="1"
@@ -154,6 +156,8 @@
                         Classes="Small"
                         HorizontalAlignment="Stretch"
                         Content="{x:Static i18n:StylesManager.StylesManager_Button_New}"
+                        Command="{Binding NewStyleCommand}"
+                        CommandParameter="project"
                         ToolTip.Tip="{x:Static i18n:StylesManager.StylesManager_Button_New_ToolTip}" />
                 <Button Grid.Column="1"
                         Grid.Row="1"
@@ -234,6 +238,8 @@
                         Classes="Small"
                         HorizontalAlignment="Stretch"
                         Content="{x:Static i18n:StylesManager.StylesManager_Button_New}"
+                        Command="{Binding NewStyleCommand}"
+                        CommandParameter="document"
                         ToolTip.Tip="{x:Static i18n:StylesManager.StylesManager_Button_New_ToolTip}" />
                 <Button Grid.Column="1"
                         Grid.Row="1"

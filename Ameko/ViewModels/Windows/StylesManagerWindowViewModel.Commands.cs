@@ -152,4 +152,37 @@ public partial class StylesManagerWindowViewModel : ViewModelBase
             }
         );
     }
+
+    /// <summary>
+    /// Create a style
+    /// </summary>
+    private ReactiveCommand<string, Unit> CreateNewStyleCommand()
+    {
+        return ReactiveCommand.CreateFromTask(
+            async (string input) =>
+            {
+                var (manager, document) = input switch
+                {
+                    "global" => (Globals.StyleManager, null),
+                    "project" => (Project.StyleManager, null),
+                    "document" => (Document.StyleManager, Document),
+                    _ => throw new ArgumentOutOfRangeException(nameof(input), input, null),
+                };
+
+                var style = new Style(manager.NextId) { Name = string.Empty };
+
+                var vm = new StyleEditorDialogViewModel(_persistence, style, manager, document);
+                var result = await ShowStyleEditorWindow.Handle(vm);
+
+                // Abort if aborted
+                if (result is null)
+                    return;
+
+                manager.Add(style);
+
+                if (input == "document")
+                    Document.HistoryManager.Commit(ChangeType.AddStyle);
+            }
+        );
+    }
 }

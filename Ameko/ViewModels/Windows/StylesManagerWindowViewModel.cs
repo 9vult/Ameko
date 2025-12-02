@@ -63,7 +63,7 @@ public partial class StylesManagerWindowViewModel : ViewModelBase
     public ICommand DuplicateCommand { get; }
     public ICommand EditStyleCommand { get; }
     public ICommand DeleteCommand { get; }
-    // public ICommand NewStyleCommand { get; } TODO: New Style command
+    public ICommand NewStyleCommand { get; }
     #endregion
 
     public StylesManagerWindowViewModel(
@@ -82,6 +82,7 @@ public partial class StylesManagerWindowViewModel : ViewModelBase
         DeleteCommand = CreateDeleteCommand();
         CopyToCommand = CreateCopyToCommand();
         EditStyleCommand = CreateEditStyleCommand();
+        NewStyleCommand = CreateNewStyleCommand();
 
         ShowStyleEditorWindow =
             new Interaction<StyleEditorDialogViewModel, StyleEditorDialogClosedMessage?>();

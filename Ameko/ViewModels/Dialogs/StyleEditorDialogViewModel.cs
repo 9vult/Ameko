@@ -42,8 +42,11 @@ public partial class StyleEditorDialogViewModel : ViewModelBase
     /// Determines if the <see cref="StyleName"/> is invalid
     /// </summary>
     public bool IsNameInvalid =>
-        _styleName != _backupStyle.Name
-        && (string.IsNullOrWhiteSpace(_styleName) || _styleManager.TryGet(_styleName, out _));
+        string.IsNullOrWhiteSpace(_styleName)
+        || (
+            _styleName != _backupStyle.Name
+            && (string.IsNullOrWhiteSpace(_styleName) || _styleManager.TryGet(_styleName, out _))
+        );
 
     /// <summary>
     /// Commit a style name change
