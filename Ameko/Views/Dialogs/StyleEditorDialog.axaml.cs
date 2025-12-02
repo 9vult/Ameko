@@ -1,11 +1,13 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
+using System;
 using System.Reactive.Disposables;
 using System.Threading.Tasks;
 using Ameko.ViewModels.Dialogs;
-using AssCS;
+using Avalonia.Media;
 using Avalonia.ReactiveUI;
 using ReactiveUI;
+using Color = AssCS.Color;
 
 namespace Ameko.Views.Dialogs;
 
@@ -28,6 +30,7 @@ public partial class StyleEditorDialog : ReactiveWindow<StyleEditorDialogViewMod
         {
             if (ViewModel is not null)
             {
+                ViewModel.SaveCommand.Subscribe(Close);
                 ViewModel.ShowColorDialog.RegisterHandler(DoShowColorDialogAsync);
 
                 Closing += (_, e) =>

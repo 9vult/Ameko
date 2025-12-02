@@ -1,12 +1,11 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-using System.Reactive;
 using System.Reactive.Disposables;
+using System.Threading.Tasks;
+using Ameko.Messages;
 using Ameko.ViewModels.Dialogs;
 using Ameko.ViewModels.Windows;
 using Ameko.Views.Dialogs;
-using AssCS;
-using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.ReactiveUI;
 using ReactiveUI;
@@ -15,13 +14,13 @@ namespace Ameko.Views.Windows;
 
 public partial class StylesManagerWindow : ReactiveWindow<StylesManagerWindowViewModel>
 {
-    private void DoShowStyleEditor(
-        IInteractionContext<StyleEditorDialogViewModel, Unit> interaction
+    private async Task DoShowStyleEditor(
+        IInteractionContext<StyleEditorDialogViewModel, StyleEditorDialogClosedMessage?> interaction
     )
     {
         var editor = new StyleEditorDialog { DataContext = interaction.Input };
-        editor.ShowDialog(this);
-        interaction.SetOutput(Unit.Default);
+        var result = await editor.ShowDialog<StyleEditorDialogClosedMessage?>(this);
+        interaction.SetOutput(result);
     }
 
     private void ListBox_DoubleTapped(object? sender, TappedEventArgs e)

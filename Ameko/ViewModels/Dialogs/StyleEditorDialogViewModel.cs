@@ -1,10 +1,13 @@
 ﻿// SPDX-License-Identifier: GPL-3.0-only
 
+using System.Reactive;
 using System.Reactive.Linq;
 using System.Windows.Input;
+using Ameko.Messages;
 using AssCS;
 using Holo.Configuration;
 using ReactiveUI;
+using Color = AssCS.Color;
 
 namespace Ameko.ViewModels.Dialogs;
 
@@ -14,6 +17,7 @@ public partial class StyleEditorDialogViewModel : ViewModelBase
     private readonly StyleManager _styleManager;
     private string _styleName;
 
+    public ReactiveCommand<Unit, StyleEditorDialogClosedMessage> SaveCommand { get; }
     public Interaction<ColorDialogViewModel, Color?> ShowColorDialog { get; }
     public ICommand EditColorCommand { get; }
 
@@ -52,7 +56,10 @@ public partial class StyleEditorDialogViewModel : ViewModelBase
     public bool CommitNameChange()
     {
         if (IsNameInvalid)
+        {
+            this.RaisePropertyChanged(nameof(IsNameInvalid));
             return false;
+        }
         if (StyleName == _backupStyle.Name)
             return true;
 
@@ -83,6 +90,9 @@ public partial class StyleEditorDialogViewModel : ViewModelBase
         Document = document;
 
         ShowColorDialog = new Interaction<ColorDialogViewModel, Color?>();
+        SaveCommand = ReactiveCommand.Create(() =>
+            new StyleEditorDialogClosedMessage(style != _backupStyle ? style : null) // Modified style or null
+        );
 
         EditColorCommand = ReactiveCommand.CreateFromTask(
             async (Color color) =>

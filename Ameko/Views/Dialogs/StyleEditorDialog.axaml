@@ -425,6 +425,12 @@
                                Value="{Binding Style.Spacing}" />
             </Grid>
         </HeaderedContentControl>
+        <Button HorizontalAlignment="Right"
+                Margin="0 4 0 0"
+                IsDefault="True"
+                Classes="Primary"
+                Content="{x:Static i18n:StyleEditor.StyleEditor_Button_Save}"
+                Command="{Binding SaveCommand}" />
     </StackPanel>
     <Window.Styles>
         <Style Selector="HeaderedContentControl">

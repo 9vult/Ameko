@@ -138,7 +138,17 @@ public partial class StylesManagerWindowViewModel : ViewModelBase
                 var clone = style.Clone();
 
                 var vm = new StyleEditorDialogViewModel(_persistence, style, manager, document);
-                _ = await ShowStyleEditorWindow.Handle(vm);
+                var result = await ShowStyleEditorWindow.Handle(vm);
+
+                // Revert if aborted
+                if (result is null)
+                {
+                    style.SetFields(StyleField.All, clone);
+                    return;
+                }
+
+                if (input == "document")
+                    Document.HistoryManager.Commit(ChangeType.ModifyStyle);
             }
         );
     }

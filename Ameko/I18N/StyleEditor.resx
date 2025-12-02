@@ -171,4 +171,7 @@
     <data name="ColorDialog_Button_Select" xml:space="preserve">
         <value>Select</value>
     </data>
+    <data name="StyleEditor_Button_Save" xml:space="preserve">
+        <value>Save</value>
+    </data>
 </root>
