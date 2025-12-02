@@ -28,6 +28,10 @@
             <Setter Property="MaxHeight" Value="800"/> <!-- Max height of menu -->
         </Style>
         
+        <Style Selector="TextBox:modified">
+            <Setter Property="FontStyle" Value="Normal"/>
+        </Style>
+        
         <!-- Dummy styles to stop the "style not found" warnings -->
         <Style Selector="Button.Small" />
         <Style Selector="Button.Large" />
