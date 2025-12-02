@@ -112,7 +112,7 @@ public class ConfigurationTests
             "PropagateFields": "NonText",
             "GridPadding": 2,
             "RepositoryUrls": [],
-            "ScriptMenuOverrides": []
+            "ScriptMenuOverrides": {}
         }
         """;
 }
