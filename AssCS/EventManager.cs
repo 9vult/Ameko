@@ -980,7 +980,7 @@ public class EventManager : BindableBase
         foreach (var id in commit.Chain)
         {
             var link = _chain.AddLast(id);
-            var @event = commit.Events[id];
+            var @event = commit.Events[id].Clone();
             _events[id] = new Link(link, @event);
         }
 

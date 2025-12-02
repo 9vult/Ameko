@@ -192,7 +192,7 @@ public class ExtradataManager
     internal void RestoreState(Commit commit)
     {
         _extradata.Clear();
-        _extradata.AddRange(commit.Extradata);
+        _extradata.AddRange(commit.Extradata.Select(e => e.Clone()));
     }
 
     #endregion History

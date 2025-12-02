@@ -167,7 +167,7 @@ public class StyleManager : BindableBase
     /// <param name="commit">Commit to restore from</param>
     internal void RestoreState(Commit commit)
     {
-        _styles.ReplaceRange(commit.Styles);
+        _styles.ReplaceRange(commit.Styles.Select(s => s.Clone()));
     }
 
     #endregion History
