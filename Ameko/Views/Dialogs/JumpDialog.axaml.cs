@@ -19,13 +19,6 @@ public partial class JumpDialog : ReactiveWindow<JumpDialogViewModel>
         this.WhenActivated(disposables =>
         {
             ViewModel?.ConfirmCommand.Subscribe(Close);
-
-            TimeBox.AddHandler(
-                KeyDownEvent,
-                Extras.PreKeyDownEventHandler,
-                RoutingStrategies.Tunnel
-            );
-
             Disposable.Create(() => { }).DisposeWith(disposables);
         });
     }

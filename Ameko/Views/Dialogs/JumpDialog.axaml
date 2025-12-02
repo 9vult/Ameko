@@ -6,6 +6,7 @@
         d:DesignWidth="200"
         d:DesignHeight="150"
 
+        xmlns:c="clr-namespace:Ameko.Views.Controls"
         xmlns:i18n="clr-namespace:Ameko.I18N"
         xmlns:vm="clr-namespace:Ameko.ViewModels.Dialogs"
 
@@ -46,14 +47,14 @@
                        ShowButtonSpinner="False"
                        Value="{Binding Frame}"
                        IsEnabled="{Binding VideoLoaded}" />
-        <TextBox Name="TimeBox"
-                   Grid.Column="1"
-                   Grid.Row="1"
-                   Margin="2"
-                   AcceptsReturn="False"
-                   AcceptsTab="False"
-                   Text="{Binding Time.UpdatableText}"
-                   IsEnabled="{Binding VideoLoaded}" />
+        <c:TimeTextBox Name="TimeBox"
+                       Grid.Column="1"
+                       Grid.Row="1"
+                       Margin="2"
+                       AcceptsReturn="False"
+                       AcceptsTab="False"
+                       Text="{Binding Time.UpdatableText}"
+                       IsEnabled="{Binding VideoLoaded}" />
         <NumericUpDown Grid.Column="1"
                        Grid.Row="2"
                        Padding="0"
