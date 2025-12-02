@@ -223,7 +223,7 @@ public class WorkspaceTests
         e1.Text = "Hello!";
         wsp.Commit(e1, ChangeType.ModifyEventText);
         e1.Text = "Hello! World!";
-        wsp.Commit(e1, ChangeType.ModifyEventText);
+        wsp.Commit(e1, ChangeType.ModifyEventText, true);
 
         wsp.Undo();
         wsp.Document.EventManager.Head.Text.ShouldBe(string.Empty);
