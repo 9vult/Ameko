@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Input;
@@ -16,15 +17,20 @@ namespace Ameko.Services;
 /// </summary>
 public static class ScriptMenuService
 {
+    /// <summary>
+    /// Generate menu items
+    /// </summary>
+    /// <param name="scripts">List of scripts</param>
+    /// <param name="overrides">Map of submenu overrides</param>
+    /// <param name="executeScriptCommand">Command for executing scripts</param>
+    /// <returns>List of top-level menu items</returns>
     public static List<MenuItem> GenerateMenuItemSource(
         IList<IHoloExecutable> scripts,
+        IDictionary<string, string> overrides,
         ICommand executeScriptCommand
     )
     {
-        var congregation = new List<MenuItem>();
-
-        var subItemsMap = new Dictionary<string, List<MenuItem>>();
-        var rootItems = new List<MenuItem>();
+        var root = new MenuNode<MenuItem>("ROOT");
 
         foreach (var script in scripts)
         {
@@ -37,19 +43,12 @@ public static class ScriptMenuService
             };
 
             var headless = script.Info.Headless && script.Info.Exports.Length != 0;
-
             if (!headless) // Only add if not headless
             {
-                if (script.Info.Submenu is not null)
-                {
-                    if (!subItemsMap.ContainsKey(script.Info.Submenu))
-                        subItemsMap[script.Info.Submenu] = [];
-                    subItemsMap[script.Info.Submenu].Add(menu);
-                }
-                else
-                {
-                    rootItems.Add(menu);
-                }
+                if (!overrides.TryGetValue(script.Info.QualifiedName, out var submenu))
+                    submenu = script.Info.Submenu;
+
+                AddToTree(root, submenu, menu);
             }
 
             foreach (var methodInfo in script.Info.Exports)
@@ -63,37 +62,30 @@ public static class ScriptMenuService
                     Icon = new MaterialIcon { Kind = MaterialIconKind.CodeBlockParentheses },
                 };
 
-                if (methodInfo.Submenu is not null)
-                {
-                    if (!subItemsMap.ContainsKey(methodInfo.Submenu))
-                        subItemsMap[methodInfo.Submenu] = [];
-                    subItemsMap[methodInfo.Submenu].Add(methodMenu);
-                }
-                else
-                {
-                    rootItems.Add(methodMenu);
-                }
+                if (!overrides.TryGetValue(fullQualifiedName, out var submenu))
+                    submenu = methodInfo.Submenu;
+
+                AddToTree(root, submenu, methodMenu);
             }
         }
 
-        var groups = subItemsMap
-            .Select(sub => new MenuItem { Header = sub.Key, ItemsSource = sub.Value })
-            .ToList();
-
-        congregation.AddRange(groups);
-        congregation.AddRange(rootItems);
-        return congregation;
+        return BuildMenu(root);
     }
 
+    /// <summary>
+    /// Generate native menu items
+    /// </summary>
+    /// <param name="scripts">List of scripts</param>
+    /// <param name="overrides">Map of submenu overrides</param>
+    /// <param name="executeScriptCommand">Command for executing scripts</param>
+    /// <returns>List of top-level menu items</returns>
     public static List<NativeMenuItem> GenerateNativeMenuItemSource(
         IList<IHoloExecutable> scripts,
+        IDictionary<string, string> overrides,
         ICommand executeScriptCommand
     )
     {
-        var congregation = new List<NativeMenuItem>();
-
-        var subItemsMap = new Dictionary<string, List<NativeMenuItem>>();
-        var rootItems = new List<NativeMenuItem>();
+        var root = new MenuNode<NativeMenuItem>("ROOT");
 
         foreach (var script in scripts)
         {
@@ -105,19 +97,12 @@ public static class ScriptMenuService
             };
 
             var headless = script.Info.Headless && script.Info.Exports.Length != 0;
-
             if (!headless) // Only add if not headless
             {
-                if (script.Info.Submenu is not null)
-                {
-                    if (!subItemsMap.ContainsKey(script.Info.Submenu))
-                        subItemsMap[script.Info.Submenu] = [];
-                    subItemsMap[script.Info.Submenu].Add(menu);
-                }
-                else
-                {
-                    rootItems.Add(menu);
-                }
+                if (!overrides.TryGetValue(script.Info.QualifiedName, out var submenu))
+                    submenu = script.Info.Submenu;
+
+                AddToTree(root, submenu, menu);
             }
 
             foreach (var methodInfo in script.Info.Exports)
@@ -130,31 +115,14 @@ public static class ScriptMenuService
                     CommandParameter = fullQualifiedName,
                 };
 
-                if (methodInfo.Submenu is not null)
-                {
-                    if (!subItemsMap.ContainsKey(methodInfo.Submenu))
-                        subItemsMap[methodInfo.Submenu] = [];
-                    subItemsMap[methodInfo.Submenu].Add(methodMenu);
-                }
-                else
-                {
-                    rootItems.Add(methodMenu);
-                }
+                if (!overrides.TryGetValue(fullQualifiedName, out var submenu))
+                    submenu = methodInfo.Submenu;
+
+                AddToTree(root, submenu, methodMenu);
             }
         }
 
-        var groups = subItemsMap
-            .Select(sub =>
-            {
-                var menu = new NativeMenu();
-                menu.Items.AddRange(sub.Value);
-                return new NativeMenuItem { Header = sub.Key, Menu = menu };
-            })
-            .ToList();
-
-        congregation.AddRange(groups);
-        congregation.AddRange(rootItems);
-        return congregation;
+        return BuildNativeMenu(root);
     }
 
     public static MenuItem GenerateReloadMenuItem(ICommand reloadCommand)
@@ -215,4 +183,75 @@ public static class ScriptMenuService
             Command = playgroundCommand,
         };
     }
+
+    #region Recursive menu stuff
+
+    private static void AddToTree<T>(MenuNode<T> root, string? submenu, T item)
+    {
+        if (string.IsNullOrWhiteSpace(submenu))
+        {
+            root.Items.Add(item);
+            return;
+        }
+
+        var hierarchy = submenu.Split(
+            '/',
+            StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries
+        );
+
+        var dest = root;
+        foreach (var level in hierarchy)
+        {
+            if (!dest.Children.TryGetValue(level, out var child))
+            {
+                child = new MenuNode<T>(level);
+                dest.Children[level] = child;
+            }
+            dest = child;
+        }
+        dest.Items.Add(item);
+    }
+
+    private static List<MenuItem> BuildMenu(MenuNode<MenuItem> root)
+    {
+        var congregation = root
+            .Children.Values.OrderByDescending(c => c.Children.Count > 0)
+            .ThenBy(c => c.Header)
+            .Select(child => new MenuItem { Header = child.Header, ItemsSource = BuildMenu(child) })
+            .ToList();
+
+        congregation.AddRange(root.Items);
+
+        return congregation;
+    }
+
+    private static List<NativeMenuItem> BuildNativeMenu(MenuNode<NativeMenuItem> root)
+    {
+        var congregation = new List<NativeMenuItem>();
+
+        foreach (
+            var child in root
+                .Children.Values.OrderByDescending(c => c.Children.Count > 0)
+                .ThenBy(c => c.Header)
+        )
+        {
+            var menu = new NativeMenu();
+            menu.Items.AddRange(BuildNativeMenu(child));
+
+            congregation.Add(new NativeMenuItem { Header = child.Header, Menu = menu });
+        }
+
+        congregation.AddRange(root.Items);
+
+        return congregation;
+    }
+
+    private class MenuNode<T>(string header)
+    {
+        public string Header { get; } = header;
+        public List<T> Items { get; } = [];
+        public Dictionary<string, MenuNode<T>> Children { get; } = [];
+    }
+
+    #endregion
 }

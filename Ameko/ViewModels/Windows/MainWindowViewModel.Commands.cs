@@ -649,7 +649,7 @@ public partial class MainWindowViewModel : ViewModelBase
 
                 var boxResult = await _messageBoxService.ShowAsync(
                     I18N.Other.MsgBox_RemoveDocument_Title,
-                    I18N.Other.MsgBox_RemoveDocument_Body,
+                    $"{I18N.Other.MsgBox_RemoveDocument_Body}\n\n{I18N.Other.MsgBox_RemoveDocument_Disclaimer}",
                     MsgBoxButtonSet.YesNo,
                     MsgBoxButton.Yes,
                     MaterialIconKind.QuestionMark
@@ -678,7 +678,7 @@ public partial class MainWindowViewModel : ViewModelBase
 
                 var boxResult = await _messageBoxService.ShowAsync(
                     I18N.Other.MsgBox_RemoveDirectory_Title,
-                    I18N.Other.MsgBox_RemoveDirectory_Body,
+                    $"{I18N.Other.MsgBox_RemoveDirectory_Body}\n\n{I18N.Other.MsgBox_RemoveDirectory_Disclaimer}",
                     MsgBoxButtonSet.YesNo,
                     MsgBoxButton.Yes,
                     MaterialIconKind.QuestionMark
@@ -793,7 +793,7 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         return ReactiveCommand.CreateFromTask(async () =>
         {
-            var culture = _configuration.SpellcheckCulture;
+            var culture = Configuration.SpellcheckCulture;
             if (!_spellcheckService.IsDictionaryInstalled(culture)) // Not installed
             {
                 _logger.LogInformation(

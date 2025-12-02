@@ -32,10 +32,10 @@ public partial class MainWindowViewModel : ViewModelBase
     private readonly IMessageBoxService _messageBoxService;
     private readonly ISpellcheckService _spellcheckService;
     private readonly IDictionaryService _dictionaryService;
-    private readonly IConfiguration _configuration;
     private readonly IFileSystem _fileSystem;
     private readonly ILogger _logger;
 
+    public IConfiguration Configuration { get; }
     public IScriptService ScriptService { get; }
     public ILayoutProvider LayoutProvider { get; }
 
@@ -233,6 +233,7 @@ public partial class MainWindowViewModel : ViewModelBase
         _logger.LogDebug("Regenerating scripts menu...");
         var menuItems = ScriptMenuService.GenerateMenuItemSource(
             ScriptService.Scripts,
+            Configuration.ScriptMenuOverrides,
             ExecuteScriptCommand
         );
         ScriptMenuItems.Clear();
@@ -294,7 +295,7 @@ public partial class MainWindowViewModel : ViewModelBase
         _messageBoxService = messageBoxService;
         _spellcheckService = spellCheckService;
         _dictionaryService = dictionaryService;
-        _configuration = configuration;
+        Configuration = configuration;
         GitToolboxViewModel = gitToolboxViewModel;
 
         #region Interactions

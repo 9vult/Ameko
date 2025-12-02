@@ -531,6 +531,7 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         _logger.LogDebug("Regenerating scripts native menu...");
         var menuItems = ScriptMenuService.GenerateNativeMenuItemSource(
             ViewModel.ScriptService.Scripts,
+            ViewModel.Configuration.ScriptMenuOverrides,
             ViewModel.ExecuteScriptCommand
         );
         var reloadItem = ScriptMenuService.GenerateReloadNativeMenuItem(
