@@ -40,15 +40,14 @@
             <ListBox Grid.Row="0"
                      Margin="2"
                      SelectedItem="{Binding SelectedGlobalStyle}"
-                     ItemsSource="{Binding Globals.StyleManager.Styles}"
-                     DoubleTapped="ListBox_DoubleTapped">
+                     ItemsSource="{Binding Globals.StyleManager.Styles}">
                 <ListBox.ItemTemplate>
                     <DataTemplate x:DataType="ass:Style">
                         <TextBlock Text="{Binding Name}"
                                    HorizontalAlignment="Stretch"
                                    VerticalAlignment="Stretch"
                                    Background="Transparent"
-                                   DoubleTapped="ListBox_DoubleTapped">
+                                   DoubleTapped="GlobalStyle_DoubleTapped">
                             <TextBlock.ContextMenu>
                                 <ContextMenu>
                                     <MenuItem Header="{x:Static i18n:StylesManager.StylesManager_Button_Edit}"
@@ -129,15 +128,14 @@
                      Classes="Small"
                      HorizontalAlignment="Stretch"
                      SelectedItem="{Binding SelectedProjectStyle}"
-                     ItemsSource="{Binding Project.StyleManager.Styles}"
-                     DoubleTapped="ListBox_DoubleTapped">
+                     ItemsSource="{Binding Project.StyleManager.Styles}">
                 <ListBox.ItemTemplate>
                     <DataTemplate x:DataType="ass:Style">
                         <TextBlock Text="{Binding Name}"
                                    HorizontalAlignment="Stretch"
                                    VerticalAlignment="Stretch"
                                    Background="Transparent"
-                                   DoubleTapped="ListBox_DoubleTapped">
+                                   DoubleTapped="ProjectStyle_DoubleTapped">
                             <TextBlock.ContextMenu>
                                 <ContextMenu>
                                     <MenuItem Header="{x:Static i18n:StylesManager.StylesManager_Button_Edit}"
@@ -224,7 +222,7 @@
                                    HorizontalAlignment="Stretch"
                                    VerticalAlignment="Stretch"
                                    Background="Transparent"
-                                   DoubleTapped="ListBox_DoubleTapped">
+                                   DoubleTapped="DocumentStyle_DoubleTapped">
                             <TextBlock.ContextMenu>
                                 <ContextMenu>
                                     <MenuItem Header="{x:Static i18n:StylesManager.StylesManager_Button_Edit}"

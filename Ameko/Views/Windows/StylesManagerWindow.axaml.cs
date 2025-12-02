@@ -6,6 +6,8 @@ using Ameko.Messages;
 using Ameko.ViewModels.Dialogs;
 using Ameko.ViewModels.Windows;
 using Ameko.Views.Dialogs;
+using AssCS;
+using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.ReactiveUI;
 using ReactiveUI;
@@ -23,15 +25,34 @@ public partial class StylesManagerWindow : ReactiveWindow<StylesManagerWindowVie
         interaction.SetOutput(result);
     }
 
-    private void ListBox_DoubleTapped(object? sender, TappedEventArgs e)
+    private void DocumentStyle_DoubleTapped(object? sender, TappedEventArgs e)
     {
-        // TODO: Implement this
-        // if (sender is not ListBox listBox)
-        //     return;
-        // if (listBox.SelectedItem is not Style style)
-        //     return;
-        //
-        // ViewModel?.EditStyleCommand.Execute(style);
+        if (sender is not TextBlock)
+            return;
+        if (ViewModel?.SelectedDocumentStyle is null)
+            return;
+
+        ViewModel?.EditStyleCommand.Execute("document");
+    }
+
+    private void ProjectStyle_DoubleTapped(object? sender, TappedEventArgs e)
+    {
+        if (sender is not TextBlock)
+            return;
+        if (ViewModel?.SelectedProjectStyle is null)
+            return;
+
+        ViewModel?.EditStyleCommand.Execute("project");
+    }
+
+    private void GlobalStyle_DoubleTapped(object? sender, TappedEventArgs e)
+    {
+        if (sender is not TextBlock)
+            return;
+        if (ViewModel?.SelectedGlobalStyle is null)
+            return;
+
+        ViewModel?.EditStyleCommand.Execute("global");
     }
 
     public StylesManagerWindow()
