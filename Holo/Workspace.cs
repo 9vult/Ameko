@@ -148,11 +148,12 @@ public class Workspace : BindableBase
         // See: SubsEditBox::SetSelectedRows
         // https://github.com/arch1t3cht/Aegisub/blob/b2a0b098215d7028ba26f1bf728731fc585f2b99/src/subs_edit_box.cpp#L476
 
+        amend = ShouldAmend();
         _logger.LogTrace(
             "Commiting {Count} events under change {Type} (amend={Amend})",
             selection.Count,
             changeType,
-            ShouldAmend()
+            amend
         );
 
         var selectionIds = !amend ? selection.Select(e => e.Id).ToList() : null;
