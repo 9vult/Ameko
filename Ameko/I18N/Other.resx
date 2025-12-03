@@ -162,4 +162,7 @@
     <data name="MsgBox_MediaDisabled_Title" xml:space="preserve">
         <value>Media Playback</value>
     </data>
+    <data name="Message_AutosaveComplete" xml:space="preserve">
+        <value>Autosave complete!</value>
+    </data>
 </root>

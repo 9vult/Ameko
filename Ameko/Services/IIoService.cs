@@ -23,6 +23,14 @@ public interface IIoService
     Task<bool> SaveSubtitle(Interaction<string, Uri?> interaction, Workspace wsp);
 
     /// <summary>
+    /// Save a subtitle file to a specific location
+    /// </summary>
+    /// <param name="wsp">Workspace containing the document being saved</param>
+    /// <param name="path">Path to save the <paramref name="wsp"/> to</param>
+    /// <returns><see langword="true"/> if successful</returns>
+    bool SaveSubtitle(Workspace wsp, Uri path);
+
+    /// <summary>
     /// Save a subtitle file with a new name
     /// </summary>
     /// <param name="interaction">Interaction to use for displaying the dialog</param>

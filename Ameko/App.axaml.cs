@@ -79,6 +79,7 @@ public partial class App : Application
             provider.GetRequiredService<IConfiguration>()
         );
 
+        // Create main window
         var vm = provider.GetRequiredService<MainWindowViewModel>();
         desktop.MainWindow = provider.GetRequiredService<MainWindow>();
         DataContext = vm;
@@ -97,6 +98,7 @@ public partial class App : Application
             InitializeScriptService(provider);
             InitializePackageManager(provider);
             InitializeDiscordRpcService(provider);
+            InitializeAutosaveService(provider);
 #if !DEBUG // Skip update checking on debug builds
             await InitializeUpdateService(provider);
 #endif
@@ -146,6 +148,15 @@ public partial class App : Application
     private static void InitializeDiscordRpcService(IServiceProvider provider)
     {
         _ = provider.GetRequiredService<DiscordRpcService>();
+    }
+
+    /// <summary>
+    /// Initialize the Autosave service
+    /// </summary>
+    /// <param name="provider">Service Provider</param>
+    private static void InitializeAutosaveService(IServiceProvider provider)
+    {
+        _ = provider.GetRequiredService<AutosaveService>();
     }
 
     /// <summary>

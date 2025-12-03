@@ -88,10 +88,18 @@ public class Workspace : BindableBase
         {
             SetProperty(ref field, value);
             RaisePropertyChanged(nameof(DisplayTitle));
+
+            IsAutosaved = value; // Reset the autosave flag if a manual save or change was made
+
             if (value)
                 _lastWriteTime = DateTimeOffset.Now;
         }
     }
+
+    /// <summary>
+    /// <see langword="true"/> if the <see cref="Document"/> has been autosaved
+    /// </summary>
+    public bool IsAutosaved { get; set; }
 
     /// <summary>
     /// Title of this workspace

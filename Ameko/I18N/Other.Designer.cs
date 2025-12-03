@@ -332,5 +332,11 @@ namespace Ameko.I18N {
                 return ResourceManager.GetString("MsgBox_MediaDisabled_Title", resourceCulture);
             }
         }
+        
+        public static string Message_AutosaveComplete {
+            get {
+                return ResourceManager.GetString("Message_AutosaveComplete", resourceCulture);
+            }
+        }
     }
 }

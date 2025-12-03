@@ -74,6 +74,27 @@ public class IoService(
     }
 
     /// <inheritdoc />
+    public bool SaveSubtitle(Workspace wsp, Uri path)
+    {
+        var origin = wsp.SavePath;
+
+        // Set the audio/video path, if applicable
+        if (origin is not null && wsp.MediaController.IsVideoLoaded)
+        {
+            var dir = Path.GetDirectoryName(origin.LocalPath) ?? "/";
+            var relPath = PathExtensions.GetRelativePath(dir, wsp.MediaController.VideoInfo.Path);
+            wsp.Document.GarbageManager.Set("Video File", relPath);
+            wsp.Document.GarbageManager.Set("Audio File", relPath);
+            wsp.Document.GarbageManager.Set("Video Position", wsp.MediaController.CurrentFrame);
+        }
+        wsp.Document.GarbageManager.Set("Active Line", wsp.SelectionManager.ActiveEvent.Index - 1);
+
+        var writer = new AssWriter(wsp.Document, ConsumerService.AmekoInfo);
+        writer.Write(fileSystem, path);
+        return true;
+    }
+
+    /// <inheritdoc />
     public async Task<bool> SaveSubtitleAs(Interaction<string, Uri?> interaction, Workspace wsp)
     {
         logger.LogDebug("Preparing to save subtitle file {WspTitle}", wsp.Title);
