@@ -16,7 +16,6 @@ using Avalonia.Input;
 using Avalonia.Platform.Storage;
 using Avalonia.ReactiveUI;
 using DynamicData;
-using Holo.Configuration.Keybinds;
 using Holo.Models;
 using Microsoft.Extensions.Logging;
 using ReactiveUI;
@@ -31,8 +30,8 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
 
     private readonly ILogger _logger;
     private readonly SearchDialog _searchDialog;
-    private bool _isSearching = false;
-    private bool _canClose = false;
+    private bool _isSearching;
+    private bool _canClose;
 
     private async Task DoShowOpenSubtitleDialogAsync(IInteractionContext<Unit, Uri[]?> interaction)
     {
@@ -433,13 +432,6 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
                     DoShowinstallDictionaryDialogAsync
                 );
 
-                // Register keybinds
-                AttachKeybinds();
-                ViewModel.KeybindService.KeybindRegistrar.OnKeybindsChanged += (_, _) =>
-                {
-                    AttachKeybinds();
-                };
-
                 // Generate layouts menu and apply current layout
                 ApplyLayout(ViewModel, ViewModel.LayoutProvider.Current);
                 GenerateLayoutsMenu();
@@ -562,18 +554,6 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         menu.Items.Add(reloadItem);
         menu.Items.Add(pkgManItem);
         _logger.LogDebug("Done...");
-    }
-
-    private void AttachKeybinds()
-    {
-        if (ViewModel is null)
-            return;
-        ViewModel.KeybindService.AttachKeybinds(ViewModel, KeybindContext.Global, this);
-        ViewModel.KeybindService.AttachScriptKeybinds(
-            ViewModel.ExecuteScriptCommand,
-            KeybindContext.Global,
-            this
-        );
     }
 
     private void DoDragAndDrop(object? sender, DragEventArgs e)

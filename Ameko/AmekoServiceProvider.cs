@@ -56,6 +56,7 @@ public class AmekoServiceProvider
                 p.GetRequiredService<ILogger<Globals>>()
             )
         );
+        services.AddSingleton<ICommandRegistrar, CommandRegistrar>();
         services.AddSingleton<IKeybindRegistrar, KeybindRegistrar>();
         services.AddSingleton<IKeybindService, KeybindService>();
         services.AddSingleton<AssOptionsBinder>();

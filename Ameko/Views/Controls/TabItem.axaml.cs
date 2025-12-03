@@ -321,10 +321,13 @@ public partial class TabItem : ReactiveUserControl<TabItemViewModel>
     {
         if (vm is null)
             return;
-        vm.KeybindService.AttachKeybinds(vm, KeybindContext.Grid, TabItemEventsArea);
-        vm.KeybindService.AttachKeybinds(vm, KeybindContext.Editor, TabItemEditorArea);
-        vm.KeybindService.AttachKeybinds(vm, KeybindContext.Video, TabItemVideoArea);
-        vm.KeybindService.AttachKeybinds(vm, KeybindContext.Audio, TabItemAudioArea);
+
+        vm.KeybindService.RegisterCommands(vm, vm.Workspace.Id);
+
+        vm.KeybindService.AttachKeybinds(KeybindContext.Grid, TabItemEventsArea, vm.Workspace.Id);
+        vm.KeybindService.AttachKeybinds(KeybindContext.Editor, TabItemEditorArea, vm.Workspace.Id);
+        vm.KeybindService.AttachKeybinds(KeybindContext.Video, TabItemVideoArea, vm.Workspace.Id);
+        vm.KeybindService.AttachKeybinds(KeybindContext.Audio, TabItemAudioArea, vm.Workspace.Id);
 
         vm.KeybindService.AttachScriptKeybinds(
             vm.ExecuteScriptCommand,

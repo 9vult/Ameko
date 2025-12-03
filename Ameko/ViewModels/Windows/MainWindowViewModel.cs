@@ -23,7 +23,6 @@ using ReactiveUI;
 
 namespace Ameko.ViewModels.Windows;
 
-[KeybindContext(KeybindContext.Global)]
 public partial class MainWindowViewModel : ViewModelBase
 {
     private readonly IServiceProvider _serviceProvider;
@@ -82,56 +81,56 @@ public partial class MainWindowViewModel : ViewModelBase
 
     #region Commands
     // File
-    [KeybindTarget("ameko.document.new", "Ctrl+N")]
+    [KeybindTarget("ameko.document.new", "Ctrl+N", KeybindContext.Global)]
     public ICommand NewCommand { get; }
 
-    [KeybindTarget("ameko.document.open", "Ctrl+O")]
+    [KeybindTarget("ameko.document.open", "Ctrl+O", KeybindContext.Global)]
     public ICommand OpenSubtitleCommand { get; }
     public ICommand OpenSubtitleNoGuiCommand { get; }
 
-    [KeybindTarget("ameko.document.save", "Ctrl+S")]
+    [KeybindTarget("ameko.document.save", "Ctrl+S", KeybindContext.Global)]
     public ICommand SaveSubtitleCommand { get; }
 
-    [KeybindTarget("ameko.document.saveAs", "Ctrl+Shift+S")]
+    [KeybindTarget("ameko.document.saveAs", "Ctrl+Shift+S", KeybindContext.Global)]
     public ICommand SaveSubtitleAsCommand { get; }
 
-    [KeybindTarget("ameko.document.export")]
+    [KeybindTarget("ameko.document.export", KeybindContext.Global)]
     public ICommand ExportSubtitleCommand { get; }
 
-    [KeybindTarget("ameko.project.open")]
+    [KeybindTarget("ameko.project.open", KeybindContext.Global)]
     public ICommand OpenProjectCommand { get; }
     public ICommand OpenProjectNoGuiCommand { get; }
 
-    [KeybindTarget("ameko.project.openFolder")]
+    [KeybindTarget("ameko.project.openFolder", KeybindContext.Global)]
     public ICommand OpenFolderAsProjectCommand { get; }
 
-    [KeybindTarget("ameko.project.save")]
+    [KeybindTarget("ameko.project.save", KeybindContext.Global)]
     public ICommand SaveProjectCommand { get; }
 
-    [KeybindTarget("ameko.workspace.close", "Ctrl+W")]
+    [KeybindTarget("ameko.workspace.close", "Ctrl+W", KeybindContext.Global)]
     public ICommand CloseTabCommand { get; }
 
-    [KeybindTarget("ameko.project.close")]
+    [KeybindTarget("ameko.project.close", KeybindContext.Global)]
     public ICommand CloseProjectCommand { get; }
 
-    [KeybindTarget("ameko.application.quit", "Ctrl+Q")]
+    [KeybindTarget("ameko.application.quit", "Ctrl+Q", KeybindContext.Global)]
     public ICommand QuitCommand { get; }
 
     // Edit
-    [KeybindTarget("ameko.document.undo", "Ctrl+Z")]
+    [KeybindTarget("ameko.document.undo", "Ctrl+Z", KeybindContext.Global)]
     public ICommand UndoCommand { get; }
 
-    [KeybindTarget("ameko.document.redo", "Ctrl+Y")]
+    [KeybindTarget("ameko.document.redo", "Ctrl+Y", KeybindContext.Global)]
     public ICommand RedoCommand { get; }
 
-    [KeybindTarget("ameko.document.search", "Ctrl+F")]
+    [KeybindTarget("ameko.document.search", "Ctrl+F", KeybindContext.Global)]
     public ICommand ShowSearchDialogCommand { get; }
 
-    [KeybindTarget("ameko.document.spellcheck", "F7")]
+    [KeybindTarget("ameko.document.spellcheck", "F7", KeybindContext.Global)]
     public ICommand ShowSpellcheckDialogCommand { get; }
 
     // Subtitle
-    [KeybindTarget("ameko.stylesManager.show")]
+    [KeybindTarget("ameko.stylesManager.show", KeybindContext.Global)]
     public ICommand ShowStylesManagerCommand { get; }
 
     [KeybindTarget("ameko.reference.attach", KeybindContext.Global)]
@@ -142,28 +141,28 @@ public partial class MainWindowViewModel : ViewModelBase
 
     // Project
     // Timing
-    [KeybindTarget("ameko.document.shiftTimes", "Ctrl+I")]
+    [KeybindTarget("ameko.document.shiftTimes", "Ctrl+I", KeybindContext.Global)]
     public ICommand ShowShiftTimesDialogCommand { get; }
 
     // Video
-    [KeybindTarget("ameko.video.open")]
+    [KeybindTarget("ameko.video.open", KeybindContext.Global)]
     public ICommand OpenVideoCommand { get; }
     public ICommand OpenVideoNoGuiCommand { get; }
 
-    [KeybindTarget("ameko.video.jump", "Ctrl+G")]
+    [KeybindTarget("ameko.video.jump", "Ctrl+G", KeybindContext.Global)]
     public ICommand ShowJumpDialogCommand { get; }
 
     // Scripts
     // Command execution doesn't get a keybind. So sad :(
     public ICommand ExecuteScriptCommand { get; }
 
-    [KeybindTarget("ameko.scripts.reload")]
+    [KeybindTarget("ameko.scripts.reload", KeybindContext.Global)]
     public ICommand ReloadScriptsCommand { get; }
 
-    [KeybindTarget("ameko.pkgMan.show")]
+    [KeybindTarget("ameko.pkgMan.show", KeybindContext.Global)]
     public ICommand ShowPackageManagerCommand { get; }
 
-    [KeybindTarget("ameko.playground.show")]
+    [KeybindTarget("ameko.playground.show", KeybindContext.Global)]
     public ICommand ShowPlaygroundWindowCommand { get; }
 
     // Layouts
@@ -171,16 +170,16 @@ public partial class MainWindowViewModel : ViewModelBase
     public ICommand RefreshLayoutsCommand { get; }
 
     // Help
-    [KeybindTarget("ameko.help.show", "F1")]
+    [KeybindTarget("ameko.help.show", "F1", KeybindContext.Global)]
     public ICommand ShowHelpWindowCommand { get; }
 
-    [KeybindTarget("ameko.logs.show", "Ctrl+L")]
+    [KeybindTarget("ameko.logs.show", "Ctrl+L", KeybindContext.Global)]
     public ICommand ShowLogWindowCommand { get; }
 
-    [KeybindTarget("ameko.about.show", "Shift+F1")]
+    [KeybindTarget("ameko.about.show", "Shift+F1", KeybindContext.Global)]
     public ICommand ShowAboutWindowCommand { get; }
 
-    [KeybindTarget("ameko.keybinds.show")]
+    [KeybindTarget("ameko.keybinds.show", KeybindContext.Global)]
     public ICommand ShowKeybindsWindowCommand { get; }
 
     // Other
@@ -194,7 +193,6 @@ public partial class MainWindowViewModel : ViewModelBase
     #endregion
 
     public IProjectProvider ProjectProvider { get; }
-    public IKeybindService KeybindService { get; }
     public IIoService IoService { get; }
     public GitToolboxViewModel GitToolboxViewModel { get; }
 
@@ -273,7 +271,6 @@ public partial class MainWindowViewModel : ViewModelBase
         IProjectProvider projectProvider,
         IStylesManagerFactory stylesManagerFactory,
         IScriptService scriptService,
-        IKeybindService keybindService,
         IMessageService messageService,
         IMessageBoxService messageBoxService,
         ISpellcheckService spellCheckService,
@@ -290,7 +287,6 @@ public partial class MainWindowViewModel : ViewModelBase
         ProjectProvider = projectProvider;
         _stylesManagerFactory = stylesManagerFactory;
         ScriptService = scriptService;
-        KeybindService = keybindService;
         _messageService = messageService;
         _messageBoxService = messageBoxService;
         _spellcheckService = spellCheckService;

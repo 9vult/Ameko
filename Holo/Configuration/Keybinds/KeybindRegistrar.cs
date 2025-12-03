@@ -45,11 +45,13 @@ public class KeybindRegistrar(IFileSystem fileSystem, ILogger<KeybindRegistrar> 
             if (_keybinds.TryAdd(keybind.QualifiedName, keybind))
                 changed = true;
         }
-        OnKeybindsChanged?.Invoke(this, EventArgs.Empty);
+
+        if (changed)
+            OnKeybindsChanged?.Invoke(this, EventArgs.Empty);
 
         if (save && changed)
             Save();
-        return true;
+        return changed;
     }
 
     /// <inheritdoc />

@@ -1,14 +1,15 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 using System;
-using System.Collections.Frozen;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Input;
 using Ameko.ViewModels;
+using Ameko.ViewModels.Windows;
 using Avalonia.Input;
 using Holo.Configuration.Keybinds;
+using Holo.Providers;
 using Microsoft.Extensions.Logging;
 
 namespace Ameko.Services;
@@ -20,45 +21,58 @@ namespace Ameko.Services;
 public class KeybindService : IKeybindService
 {
     private readonly ILogger _logger;
-    private readonly FrozenDictionary<string, (Type, string)> _commandMap;
 
     /// <inheritdoc />
     public IKeybindRegistrar KeybindRegistrar { get; }
 
+    private readonly ICommandRegistrar _commandRegistrar;
+    private readonly MainWindowViewModel _mainWindowViewModel;
+
     /// <inheritdoc />
-    public void AttachKeybinds(
-        ViewModelBase viewModel,
-        KeybindContext context,
-        IInputElement target
-    )
+    public void RegisterCommands(ViewModelBase viewModel, int contextId)
     {
-        var viewModelType = viewModel.GetType();
+        _commandRegistrar.CreateContext(contextId);
+
+        var infos = ScanForCommands(viewModel)
+            .Concat(ScanForCommands(_mainWindowViewModel))
+            .ToList();
+        foreach (var info in infos)
+        {
+            _commandRegistrar.RegisterCommand(contextId, info.QualifiedName, info.Command);
+        }
+
+        // Try registering these defaults
+        var newBinds = KeybindRegistrar.RegisterKeybinds(
+            infos
+                .Select(m => new Keybind(m.QualifiedName, m.DefaultKey, m.DefaultContext))
+                .ToList(),
+            false
+        );
+
+        // If the defaults were accepted, load in the user's preferences
+        if (!newBinds)
+            return;
+
+        _logger.LogDebug("Registered {Count} keybind targets", infos.Count);
+        KeybindRegistrar.Parse();
+    }
+
+    /// <inheritdoc />
+    public void AttachKeybinds(KeybindContext context, IInputElement target, int cmdContextId)
+    {
         target.KeyBindings.Clear();
 
         var applicableKeybinds = KeybindRegistrar.GetKeybinds(context).ToList();
+        var commands = _commandRegistrar.GetCommandsForContext(cmdContextId);
 
-        foreach (var (qualifiedName, (declaringType, memberName)) in _commandMap)
+        foreach (var keybind in applicableKeybinds)
         {
-            if (!declaringType.IsAssignableFrom(viewModelType))
+            if (keybind.Key is null)
                 continue;
 
-            // Get command from ViewModel instance
-
-            if (
-                declaringType
-                    .GetProperty(
-                        memberName,
-                        BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic
-                    )
-                    ?.GetValue(viewModel)
-                is not ICommand command
-            )
-                continue;
-
-            // Find keybind associated with this qualified name
-            var keybind = applicableKeybinds.FirstOrDefault(k => k.QualifiedName == qualifiedName);
-
-            if (keybind?.Key is null)
+            // Try to find the associated command
+            var command = commands.GetValueOrDefault(keybind.QualifiedName);
+            if (command is null)
                 continue;
 
             try
@@ -113,99 +127,61 @@ public class KeybindService : IKeybindService
         }
     }
 
-    /// <summary>
-    /// Uses reflection to find all key-bound commands in the <paramref name="assembly"/>
-    /// </summary>
-    /// <param name="assembly">Assembly to scan</param>
-    /// <returns>Keybind metadata</returns>
-    private static IEnumerable<KeybindMetadata> ScanAllViewModelsInAssembly(Assembly assembly)
+    private static IEnumerable<CommandMetadata> ScanForCommands(ViewModelBase viewModel)
     {
-        // ReSharper disable once InconsistentNaming
-        var isMacOS = OperatingSystem.IsMacOS();
-        const string cmd = "Cmd";
-        const string ctrl = "Ctrl";
+        var type = viewModel.GetType();
+        var props = type.GetProperties(
+            BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance
+        );
 
-        foreach (var type in assembly.GetTypes())
+        foreach (var prop in props)
         {
-            if (!typeof(ViewModelBase).IsAssignableFrom(type))
+            if (!typeof(ICommand).IsAssignableFrom(prop.PropertyType))
                 continue;
 
-            var classContext =
-                type.GetCustomAttribute<KeybindContextAttribute>()?.DefaultContext
-                ?? KeybindContext.None;
+            var attrib = prop.GetCustomAttribute<KeybindTargetAttribute>();
+            if (attrib is null)
+                continue;
 
-            foreach (
-                var member in type.GetMembers(
-                    BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic
-                )
-            )
+            if (prop.GetValue(viewModel) is not ICommand command)
+                continue;
+
+            yield return new CommandMetadata
             {
-                var attr = member.GetCustomAttribute<KeybindTargetAttribute>();
-                if (attr is null)
-                    continue;
-
-                var context = attr.DefaultContext ?? classContext;
-
-                // Replace Ctrl with Cmd if running on a Mac
-                var defaultKey =
-                    isMacOS && attr.DefaultKey is not null
-                        ? attr.DefaultKey.Replace(ctrl, cmd)
-                        : attr.DefaultKey;
-
-                yield return new KeybindMetadata
-                {
-                    QualifiedName = attr.QualifiedName,
-                    DefaultKey = defaultKey,
-                    DefaultContext = context,
-                    DeclaringType = type,
-                    MemberName = member.Name,
-                };
-            }
+                Command = command,
+                QualifiedName = attrib.QualifiedName,
+                DefaultKey = attrib.DefaultKey,
+                DefaultContext = attrib.DefaultContext,
+            };
         }
     }
 
     /// <summary>
     /// Initialize the keybind scanner service
     /// </summary>
-    /// <param name="registrar">Keybind Registrar to use</param>
+    /// <param name="keybindRegistrar">Keybind Registrar to use</param>
+    /// <param name="commandRegistrar">Command Registrar to use</param>
+    /// <param name="mainWindowViewModel">Main Window's ViewModel</param>
     /// <param name="logger">Logger to use</param>
     /// <remarks>Initial scanning will commence automatically upon initialization</remarks>
-    public KeybindService(IKeybindRegistrar registrar, ILogger<KeybindService> logger)
+    public KeybindService(
+        IKeybindRegistrar keybindRegistrar,
+        ICommandRegistrar commandRegistrar,
+        MainWindowViewModel mainWindowViewModel,
+        ILogger<KeybindService> logger
+    )
     {
-        KeybindRegistrar = registrar;
+        KeybindRegistrar = keybindRegistrar;
+        _commandRegistrar = commandRegistrar;
+        _mainWindowViewModel = mainWindowViewModel;
         _logger = logger;
-
-        // Discover the keybinds
-        _logger.LogInformation("Searching for keybind targets...");
-        var metadata = ScanAllViewModelsInAssembly(typeof(App).Assembly)
-            .Where(m => m.DeclaringType is not null && m.MemberName is not null)
-            .ToList();
-        _logger.LogInformation("Found {MetadataCount} targets", metadata.Count);
-
-        // Register the keybinds
-        KeybindRegistrar.RegisterKeybinds(
-            metadata
-                .Select(m => new Keybind(m.QualifiedName, m.DefaultKey, m.DefaultContext))
-                .ToList(),
-            false
-        );
-
-        // Load in user keybinds
-        KeybindRegistrar.Parse();
-
-        // Index the commands
-        _commandMap = metadata.ToFrozenDictionary(
-            m => m.QualifiedName,
-            m => (m.DeclaringType!, m.MemberName!)
-        );
     }
 
-    private class KeybindMetadata
+    private class CommandMetadata
     {
+        public required ICommand Command { get; init; }
         public required string QualifiedName { get; init; }
-        public string? DefaultKey { get; init; }
-        public KeybindContext DefaultContext { get; init; }
-        public Type? DeclaringType { get; init; }
-        public string? MemberName { get; init; }
+        public required string? DefaultKey { get; init; }
+        public required KeybindContext DefaultContext { get; init; }
     }
 }

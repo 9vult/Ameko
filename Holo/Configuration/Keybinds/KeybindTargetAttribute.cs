@@ -7,19 +7,7 @@ public sealed class KeybindTargetAttribute : Attribute
 {
     public string QualifiedName { get; }
     public string? DefaultKey { get; }
-    public KeybindContext? DefaultContext { get; }
-
-    /// <summary>
-    /// Denotes a keybind target with a default keybind assigned
-    /// </summary>
-    /// <param name="qualifiedName">Keybind identifier</param>
-    /// <param name="defaultKey">Default keybind</param>
-    /// <remarks>This constructor uses the class-level context, if applicable</remarks>
-    public KeybindTargetAttribute(string qualifiedName, string defaultKey)
-    {
-        QualifiedName = qualifiedName;
-        DefaultKey = defaultKey;
-    }
+    public KeybindContext DefaultContext { get; }
 
     /// <summary>
     /// Denotes a keybind target with a default keybind assigned
@@ -47,16 +35,5 @@ public sealed class KeybindTargetAttribute : Attribute
     {
         QualifiedName = qualifiedName;
         DefaultContext = defaultContext;
-    }
-
-    /// <summary>
-    /// Denotes a keybind target without a default keybind assigned
-    /// </summary>
-    /// <param name="qualifiedName">Keybind identifier</param>
-    /// <remarks>This constructor uses the class-level context, if applicable</remarks>
-    public KeybindTargetAttribute(string qualifiedName)
-    {
-        QualifiedName = qualifiedName;
-        DefaultKey = null;
     }
 }

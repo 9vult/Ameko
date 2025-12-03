@@ -15,7 +15,7 @@ public interface IKeybindRegistrar
     bool RegisterKeybind(Keybind keybind);
 
     /// <summary>
-    /// Registers new keybinds or replaces existing ones with the same name
+    /// Registers new keybinds
     /// </summary>
     /// <param name="keybinds">The <see cref="Keybind"/>s to register</param>
     /// <param name="save">Whether to save after adding</param>

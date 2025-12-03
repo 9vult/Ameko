@@ -9,7 +9,6 @@ using Ameko.Messages;
 using Ameko.Services;
 using Ameko.ViewModels.Dialogs;
 using AssCS;
-using Avalonia.Input;
 using Holo;
 using Holo.Configuration;
 using Holo.Configuration.Keybinds;
@@ -18,7 +17,6 @@ using ReactiveUI;
 
 namespace Ameko.ViewModels.Controls;
 
-[KeybindContext(KeybindContext.Grid)]
 public partial class TabItemViewModel : ViewModelBase
 {
     #region Interactions
@@ -43,47 +41,47 @@ public partial class TabItemViewModel : ViewModelBase
 
     #region Commands
 
-    [KeybindTarget("ameko.event.copy", "Ctrl+C")]
+    [KeybindTarget("ameko.event.copy", "Ctrl+C", KeybindContext.Grid)]
     public ICommand CopyEventsCommand { get; }
 
-    [KeybindTarget("ameko.event.cut", "Ctrl+X")]
+    [KeybindTarget("ameko.event.cut", "Ctrl+X", KeybindContext.Grid)]
     public ICommand CutEventsCommand { get; }
 
-    [KeybindTarget("ameko.event.paste", "Ctrl+V")]
+    [KeybindTarget("ameko.event.paste", "Ctrl+V", KeybindContext.Grid)]
     public ICommand PasteEventsCommand { get; }
 
-    [KeybindTarget("ameko.event.pasteOver", "Ctrl+Shift+V")]
+    [KeybindTarget("ameko.event.pasteOver", "Ctrl+Shift+V", KeybindContext.Grid)]
     public ICommand PasteOverEventsCommand { get; }
 
-    [KeybindTarget("ameko.event.copyPlaintext", "Ctrl+C")]
+    [KeybindTarget("ameko.event.copyPlaintext", "Ctrl+C", KeybindContext.Grid)]
     public ICommand CopyPlaintextEventsCommand { get; }
 
-    [KeybindTarget("ameko.event.duplicate", "Ctrl+D")]
+    [KeybindTarget("ameko.event.duplicate", "Ctrl+D", KeybindContext.Grid)]
     public ICommand DuplicateEventsCommand { get; }
 
-    [KeybindTarget("ameko.event.insertBefore")]
+    [KeybindTarget("ameko.event.insertBefore", KeybindContext.Grid)]
     public ICommand InsertEventBeforeCommand { get; }
 
-    [KeybindTarget("ameko.event.insertAfter")]
+    [KeybindTarget("ameko.event.insertAfter", KeybindContext.Grid)]
     public ICommand InsertEventAfterCommand { get; }
 
-    [KeybindTarget("ameko.event.merge")]
+    [KeybindTarget("ameko.event.merge", KeybindContext.Grid)]
     public ICommand MergeEventsCommand { get; }
 
-    [KeybindTarget("ameko.event.split")]
+    [KeybindTarget("ameko.event.split", KeybindContext.Grid)]
     public ICommand SplitEventsCommand { get; }
 
-    [KeybindTarget("ameko.event.split.keepTimes")]
+    [KeybindTarget("ameko.event.split.keepTimes", KeybindContext.Grid)]
     public ICommand SplitEventsKeepTimesCommand { get; }
 
-    [KeybindTarget("ameko.event.delete", "Shift+Delete")]
+    [KeybindTarget("ameko.event.delete", "Shift+Delete", KeybindContext.Grid)]
     public ICommand DeleteEventsCommand { get; }
 
     // I don't think this needs a binding?
     public ICommand GetOrCreateAfterCommand { get; }
     public ICommand ToggleTagCommand { get; }
 
-    [KeybindTarget("ameko.event.toggleComment")]
+    [KeybindTarget("ameko.event.toggleComment", KeybindContext.Grid)]
     public ICommand ToggleCommentCommand { get; }
     public ICommand ExecuteScriptCommand { get; }
 
