@@ -1,6 +1,7 @@
 ﻿// SPDX-License-Identifier: MPL-2.0
 
 using System.Text.RegularExpressions;
+using AssCS.History;
 
 namespace AssCS.IO;
 
@@ -51,6 +52,12 @@ public class TxtParser(char commentDelim = '#', char actorDelim = ':') : FilePar
             };
             doc.EventManager.AddLast(e);
         }
+
+        if (doc.EventManager.Count == 0)
+            doc.EventManager.LoadDefault();
+
+        doc.HistoryManager.Commit(ChangeType.Initial, [doc.EventManager.Head.Id]);
+
         return doc;
     }
 }

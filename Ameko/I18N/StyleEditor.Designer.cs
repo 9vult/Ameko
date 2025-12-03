@@ -350,5 +350,11 @@ namespace Ameko.I18N {
                 return ResourceManager.GetString("ColorDialog_Button_Select", resourceCulture);
             }
         }
+        
+        public static string StyleEditor_Button_Save {
+            get {
+                return ResourceManager.GetString("StyleEditor_Button_Save", resourceCulture);
+            }
+        }
     }
 }

@@ -64,7 +64,7 @@ public partial class TabItemEditorArea : ReactiveUserControl<TabItemViewModel>
 
         ViewModel?.Workspace.Commit(
             ViewModel.Workspace.SelectionManager.SelectedEventCollection,
-            ChangeType.Modify
+            ChangeType.ModifyEventText
         );
     }
 
@@ -75,7 +75,7 @@ public partial class TabItemEditorArea : ReactiveUserControl<TabItemViewModel>
 
         ViewModel?.Workspace.Commit(
             ViewModel.Workspace.SelectionManager.SelectedEventCollection,
-            ChangeType.Modify
+            ChangeType.ModifyEventMeta
         );
     }
 
@@ -86,7 +86,7 @@ public partial class TabItemEditorArea : ReactiveUserControl<TabItemViewModel>
 
         ViewModel?.Workspace.Commit(
             ViewModel.Workspace.SelectionManager.SelectedEventCollection,
-            ChangeType.Modify
+            ChangeType.ModifyEventMeta
         );
     }
 
@@ -102,26 +102,12 @@ public partial class TabItemEditorArea : ReactiveUserControl<TabItemViewModel>
                 {
                     // TODO: Keybinds
 
-                    StartBox.AddHandler(
-                        TextBox.KeyDownEvent,
-                        Extras.PreKeyDownEventHandler,
-                        RoutingStrategies.Tunnel
-                    );
-                    EndBox.AddHandler(
-                        TextBox.KeyDownEvent,
-                        Extras.PreKeyDownEventHandler,
-                        RoutingStrategies.Tunnel
-                    );
                     EditBox.AddHandler(
                         TextBox.TextChangedEvent,
                         EditBox_OnTextChanged,
                         RoutingStrategies.Bubble
                     );
-                    EditBox.AddHandler(
-                        TextBox.KeyDownEvent,
-                        EditBox_OnKeyDown,
-                        RoutingStrategies.Bubble
-                    );
+                    EditBox.AddHandler(KeyDownEvent, EditBox_OnKeyDown, RoutingStrategies.Bubble);
                     EditBox.AddHandler(
                         TextBox.PastingFromClipboardEvent,
                         EditBoxOnPastingFromClipboard,

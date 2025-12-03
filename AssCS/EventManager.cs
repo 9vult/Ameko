@@ -3,6 +3,7 @@
 using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
+using AssCS.History;
 using AssCS.Utilities;
 
 namespace AssCS;
@@ -953,6 +954,40 @@ public class EventManager : BindableBase
     }
 
     #endregion Advanced Actions
+    #region History
+
+    /// <summary>
+    /// Get the current state of the manager for history operations
+    /// </summary>
+    /// <returns>Manager state</returns>
+    internal (IReadOnlyList<int>, IReadOnlyDictionary<int, Event>) GetState()
+    {
+        var chain = _chain.ToList();
+        var events = _events.ToDictionary(kvp => kvp.Key, kvp => kvp.Value.Event.Clone());
+
+        return (chain, events);
+    }
+
+    /// <summary>
+    /// Restore state from a history operation
+    /// </summary>
+    /// <param name="commit">Commit to restore from</param>
+    internal void RestoreState(Commit commit)
+    {
+        _chain.Clear();
+        _events.Clear();
+
+        foreach (var id in commit.Chain)
+        {
+            var link = _chain.AddLast(id);
+            var @event = commit.Events[id].Clone();
+            _events[id] = new Link(link, @event);
+        }
+
+        _currentIds.ReplaceRange(commit.Chain);
+        Notify();
+    }
+    #endregion History
 
     /// <summary>
     /// Clear everything and load in a default event

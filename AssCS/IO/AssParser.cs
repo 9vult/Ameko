@@ -1,6 +1,7 @@
 ﻿// SPDX-License-Identifier: MPL-2.0
 
 using System.Text.RegularExpressions;
+using AssCS.History;
 using AssCS.Utilities;
 
 namespace AssCS.IO;
@@ -13,7 +14,7 @@ public partial class AssParser : FileParser
     /// <inheritdoc/>
     protected override Document Parse(TextReader reader)
     {
-        Document doc = new(false);
+        var doc = new Document(false);
         doc.ScriptInfoManager.LoadDefault();
 
         ParseFunc parseState = ParseUnknown;
@@ -50,6 +51,8 @@ public partial class AssParser : FileParser
             doc.StyleManager.LoadDefault();
         if (doc.EventManager.Count == 0)
             doc.EventManager.LoadDefault();
+
+        doc.HistoryManager.Commit(ChangeType.Initial, [doc.EventManager.Head.Id]);
 
         return doc;
     }

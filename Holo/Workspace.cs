@@ -140,32 +140,51 @@ public class Workspace : BindableBase
         // See: SubsEditBox::SetSelectedRows
         // https://github.com/arch1t3cht/Aegisub/blob/b2a0b098215d7028ba26f1bf728731fc585f2b99/src/subs_edit_box.cpp#L476
 
-        amend =
-            Document.HistoryManager.CanUndo
-            && (
-                amend
-                || (
-                    Document.HistoryManager.LastCommitType == changeType
-                    && Document.HistoryManager.LastCommitTime.AddSeconds(30) > DateTimeOffset.Now // TODO: Add an option for this
-                    && Document.HistoryManager.PeekHistory() is EventCommit eventCommit
-                    && selection.Any(e => e.Id == eventCommit.Deltas.Last().NewEvent?.Id)
-                )
-            );
-
         _logger.LogTrace(
             "Commiting {Count} events under change {Type} (amend={Amend})",
             selection.Count,
             changeType,
-            amend
+            ShouldAmend()
         );
 
-        foreach (var e in selection)
+        var selectionIds = !amend ? selection.Select(e => e.Id).ToList() : null;
+
+        if (changeType is ChangeType.ModifyEventText or ChangeType.ModifyEventMeta)
         {
-            var parent = Document.EventManager.GetBefore(e.Id);
-            Document.HistoryManager.Commit(changeType, e, parent?.Id, amend);
-            amend = true;
+            foreach (var @event in selection)
+            {
+                Document.HistoryManager.Commit(changeType, @event, amend, selectionIds);
+                amend = true;
+            }
         }
+        else
+        {
+            Document.HistoryManager.Commit(changeType, selectionIds);
+        }
+
         IsSaved = false;
+        return;
+
+        bool ShouldAmend()
+        {
+            if (!Document.HistoryManager.CanUndo)
+                return false;
+            if (amend)
+                return true;
+            if (changeType is not (ChangeType.ModifyEventText or ChangeType.ModifyEventMeta))
+                return false;
+            if (Document.HistoryManager.LastCommitTime.AddSeconds(15) < DateTimeOffset.Now)
+                return false;
+
+            var peek = Document.HistoryManager.PeekHistory();
+
+            if (peek.Type != changeType)
+                return false;
+            if (peek.Selection?.Count != selection.Count)
+                return false;
+
+            return peek.Selection.Count <= 0 || peek.Selection[0] == selection[0].Id;
+        }
     }
 
     public void Undo()
@@ -176,44 +195,13 @@ public class Workspace : BindableBase
         _logger.LogTrace("Undoing");
         var commit = Document.HistoryManager.Undo();
 
-        if (commit is EventCommit eventCommit)
-        {
-            for (int i = eventCommit.Deltas.Count - 1; i >= 0; i--)
-            {
-                var delta = eventCommit.Deltas[i];
-
-                switch (delta.Type)
-                {
-                    case ChangeType.Add:
-                        if (delta.NewEvent is not null)
-                            Document.EventManager.Remove(delta.NewEvent.Id);
-                        else
-                            _logger.LogWarning(
-                                "Cannot undo event addition because newEvent is null"
-                            );
-                        break;
-                    case ChangeType.Remove:
-                        if (delta.OldEvent is not null)
-                        {
-                            if (delta.ParentId is null)
-                                Document.EventManager.AddFirst(delta.OldEvent);
-                            else
-                                Document.EventManager.AddAfter(
-                                    delta.ParentId.Value,
-                                    delta.OldEvent
-                                );
-                        }
-                        else
-                            _logger.LogWarning(
-                                "Cannot undo event removal because oldEvent is null"
-                            );
-                        break;
-                    case ChangeType.Modify:
-                        Document.EventManager.ReplaceInPlace(delta.OldEvent!);
-                        break;
-                }
-            }
-        }
+        // Re-select
+        var selection = commit
+            ?.Selection?.Where(id => commit.Events.TryGetValue(id, out _))
+            .Select(id => commit.Events[id])
+            .ToList();
+        if (selection?.Count > 0)
+            SelectionManager.ForceSelect(selection[0], selection);
     }
 
     public void Redo()
@@ -224,45 +212,13 @@ public class Workspace : BindableBase
         _logger.LogTrace("Redoing");
         var commit = Document.HistoryManager.Redo();
 
-        if (commit is EventCommit eventCommit)
-        {
-            for (int i = 0; i <= eventCommit.Deltas.Count - 1; i++)
-            {
-                var delta = eventCommit.Deltas[i];
-
-                switch (delta.Type)
-                {
-                    case ChangeType.Add:
-                        if (delta.NewEvent is not null)
-                        {
-                            if (delta.ParentId is null)
-                                Document.EventManager.AddFirst(delta.NewEvent);
-                            else
-                                Document.EventManager.AddAfter(
-                                    delta.ParentId.Value,
-                                    delta.NewEvent
-                                );
-                        }
-                        else
-                            _logger.LogWarning(
-                                "Cannot redo event addition because newEvent is null"
-                            );
-
-                        break;
-                    case ChangeType.Remove:
-                        if (delta.OldEvent is not null)
-                            Document.EventManager.Remove(delta.OldEvent.Id);
-                        else
-                            _logger.LogWarning(
-                                "Cannot redo event removal because oldEvent is null"
-                            );
-                        break;
-                    case ChangeType.Modify:
-                        Document.EventManager.ReplaceInPlace(delta.NewEvent!);
-                        break;
-                }
-            }
-        }
+        // Re-select
+        var selection = commit
+            ?.Selection?.Where(id => commit.Events.TryGetValue(id, out _))
+            .Select(id => commit.Events[id])
+            .ToList();
+        if (selection?.Count > 0)
+            SelectionManager.ForceSelect(selection[0], selection);
     }
 
     /// <summary>
@@ -372,8 +328,6 @@ public class Workspace : BindableBase
             RaisePropertyChanged(nameof(DisplayActorsColumn));
             RaisePropertyChanged(nameof(DisplayEffectsColumn));
         };
-
-        Document.HistoryManager.BeginTransaction([Document.EventManager.Head]);
 
         // TODO: make this cleaner
         var mp = new MizukiSourceProvider();

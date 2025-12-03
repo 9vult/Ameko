@@ -1,8 +1,11 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-using System.Reactive;
 using System.Reactive.Disposables;
+using System.Threading.Tasks;
+using Ameko.Messages;
+using Ameko.ViewModels.Dialogs;
 using Ameko.ViewModels.Windows;
+using Ameko.Views.Dialogs;
 using AssCS;
 using Avalonia.Controls;
 using Avalonia.Input;
@@ -13,24 +16,43 @@ namespace Ameko.Views.Windows;
 
 public partial class StylesManagerWindow : ReactiveWindow<StylesManagerWindowViewModel>
 {
-    private static void DoShowStyleEditor(
-        IInteractionContext<StyleEditorWindowViewModel, Unit> interaction
+    private async Task DoShowStyleEditor(
+        IInteractionContext<StyleEditorDialogViewModel, StyleEditorDialogClosedMessage?> interaction
     )
     {
-        var editor = new StyleEditorWindow { DataContext = interaction.Input };
-        editor.Show();
-        interaction.SetOutput(Unit.Default);
+        var editor = new StyleEditorDialog { DataContext = interaction.Input };
+        var result = await editor.ShowDialog<StyleEditorDialogClosedMessage?>(this);
+        interaction.SetOutput(result);
     }
 
-    private void ListBox_DoubleTapped(object? sender, TappedEventArgs e)
+    private void DocumentStyle_DoubleTapped(object? sender, TappedEventArgs e)
     {
-        // TODO: Implement this
-        // if (sender is not ListBox listBox)
-        //     return;
-        // if (listBox.SelectedItem is not Style style)
-        //     return;
-        //
-        // ViewModel?.EditStyleCommand.Execute(style);
+        if (sender is not TextBlock)
+            return;
+        if (ViewModel?.SelectedDocumentStyle is null)
+            return;
+
+        ViewModel?.EditStyleCommand.Execute("document");
+    }
+
+    private void ProjectStyle_DoubleTapped(object? sender, TappedEventArgs e)
+    {
+        if (sender is not TextBlock)
+            return;
+        if (ViewModel?.SelectedProjectStyle is null)
+            return;
+
+        ViewModel?.EditStyleCommand.Execute("project");
+    }
+
+    private void GlobalStyle_DoubleTapped(object? sender, TappedEventArgs e)
+    {
+        if (sender is not TextBlock)
+            return;
+        if (ViewModel?.SelectedGlobalStyle is null)
+            return;
+
+        ViewModel?.EditStyleCommand.Execute("global");
     }
 
     public StylesManagerWindow()

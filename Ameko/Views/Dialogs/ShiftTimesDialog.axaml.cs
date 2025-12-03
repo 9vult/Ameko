@@ -19,13 +19,6 @@ public partial class ShiftTimesDialog : ReactiveWindow<ShiftTimesDialogViewModel
         this.WhenActivated(disposables =>
         {
             ViewModel?.ConfirmCommand.Subscribe(Close);
-
-            TimeBox.AddHandler(
-                KeyDownEvent,
-                Extras.PreKeyDownEventHandler,
-                RoutingStrategies.Tunnel
-            );
-
             Disposable.Create(() => { }).DisposeWith(disposables);
         });
     }

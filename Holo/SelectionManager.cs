@@ -83,9 +83,27 @@ public class SelectionManager : BindableBase
         if (active == ActiveEvent && selection.Count == SelectedEventCollection.Count)
             return;
 
-        ActiveEvent = active;
+        BeginSelectionChange();
+
+        _activeEvent = active;
+        _selectedEventCollection.ReplaceRange(selection);
+        RaisePropertyChanged(nameof(ActiveEvent));
+        SelectionChanged?.Invoke(this, EventArgs.Empty);
+    }
+
+    /// <summary>
+    /// Forcefully set the active and currently-selected events. (Bypass no-op check)
+    /// Calling this method sets <see cref="IsSelectionChanging"/> to <see langword="true"/>.
+    /// </summary>
+    /// <param name="active">Event to set as active</param>
+    /// <param name="selection">Collection of all selected events</param>
+    internal void ForceSelect(Event active, IList<Event> selection)
+    {
+        BeginSelectionChange();
+        _activeEvent = active;
         _selectedEventCollection.ReplaceRange(selection);
         SelectionChanged?.Invoke(this, EventArgs.Empty);
+        RaisePropertyChanged(nameof(ActiveEvent));
     }
 
     public SelectionManager(Event initialSelection)

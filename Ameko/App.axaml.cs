@@ -41,6 +41,23 @@ public partial class App : Application
 
     public override void OnFrameworkInitializationCompleted()
     {
+        if (ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop)
+            return;
+
+        DisableAvaloniaDataAnnotationValidation();
+
+        if (Program.Args.Length == 2 && Program.Args[0] == "--display-crash-report")
+            InitializeAmekoForCrashReport(desktop);
+        else
+            InitializeAmekoForNormalOperation(desktop);
+    }
+
+    /// <summary>
+    /// Prepare to run Ameko normally
+    /// </summary>
+    /// <param name="desktop">Application lifetime</param>
+    private void InitializeAmekoForNormalOperation(IClassicDesktopStyleApplicationLifetime desktop)
+    {
         var provider = AmekoServiceProvider.Build();
 
         // Activate some key services
@@ -62,27 +79,10 @@ public partial class App : Application
             provider.GetRequiredService<IConfiguration>()
         );
 
-        if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
-        {
-            // Avoid duplicate validations from both Avalonia and the CommunityToolkit.
-            // More info: https://docs.avaloniaui.net/docs/guides/development-guides/data-validation#manage-validationplugins
-            DisableAvaloniaDataAnnotationValidation();
-
-            if (Program.Args.Length == 2 && Program.Args[0] == "--display-crash-report")
-            {
-                var vm = new CrashReporterWindowViewModel(
-                    StringEncoder.Base64Decode(Program.Args[1])
-                );
-                desktop.MainWindow = new CrashReporterWindow { DataContext = vm };
-            }
-            else // Normal operation
-            {
-                var vm = provider.GetRequiredService<MainWindowViewModel>();
-                desktop.MainWindow = provider.GetRequiredService<MainWindow>();
-                DataContext = vm;
-                desktop.MainWindow.DataContext = vm;
-            }
-        }
+        var vm = provider.GetRequiredService<MainWindowViewModel>();
+        desktop.MainWindow = provider.GetRequiredService<MainWindow>();
+        DataContext = vm;
+        desktop.MainWindow.DataContext = vm;
 
         base.OnFrameworkInitializationCompleted();
 
@@ -101,6 +101,18 @@ public partial class App : Application
             await InitializeUpdateService(provider);
 #endif
         });
+    }
+
+    /// <summary>
+    /// Prepare to display the crash report window
+    /// </summary>
+    /// <param name="desktop">Application lifetime</param>
+    private void InitializeAmekoForCrashReport(IClassicDesktopStyleApplicationLifetime desktop)
+    {
+        var vm = new CrashReporterWindowViewModel(StringEncoder.Base64Decode(Program.Args[1]));
+        desktop.MainWindow = new CrashReporterWindow { DataContext = vm };
+
+        base.OnFrameworkInitializationCompleted();
     }
 
     private void DisableAvaloniaDataAnnotationValidation()

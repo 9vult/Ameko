@@ -3,7 +3,9 @@
 using System;
 using System.Reactive;
 using System.Reactive.Linq;
+using Ameko.ViewModels.Dialogs;
 using AssCS;
+using AssCS.History;
 using ReactiveUI;
 
 namespace Ameko.ViewModels.Windows;
@@ -34,6 +36,9 @@ public partial class StylesManagerWindowViewModel : ViewModelBase
                     newStyle.Name += $" ({I18N.StylesManager.StylesManager_CopyAppendage})";
 
                 manager.Add(newStyle);
+
+                if (input == "document")
+                    Document.HistoryManager.Commit(ChangeType.AddStyle);
             }
         );
     }
@@ -62,6 +67,9 @@ public partial class StylesManagerWindowViewModel : ViewModelBase
                 // Ensure documents always have at least one style
                 if (input == "document" && manager.Styles.Count == 0)
                     manager.Add(new Style(manager.NextId));
+
+                if (input == "document")
+                    Document.HistoryManager.Commit(ChangeType.RemoveStyle);
             }
         );
     }
@@ -101,6 +109,9 @@ public partial class StylesManagerWindowViewModel : ViewModelBase
                 };
 
                 manager.AddOrReplace(Style.FromStyle(manager.NextId, style));
+
+                if (dest == "document")
+                    Document.HistoryManager.Commit(ChangeType.AddStyle);
             }
         );
     }
@@ -124,8 +135,53 @@ public partial class StylesManagerWindowViewModel : ViewModelBase
                 if (style is null)
                     return;
 
-                var vm = new StyleEditorWindowViewModel(_persistence, style, manager, document);
-                await ShowStyleEditorWindow.Handle(vm);
+                var clone = style.Clone();
+
+                var vm = new StyleEditorDialogViewModel(_persistence, style, manager, document);
+                var result = await ShowStyleEditorWindow.Handle(vm);
+
+                // Revert if aborted
+                if (result is null)
+                {
+                    style.SetFields(StyleField.All, clone);
+                    return;
+                }
+
+                if (input == "document")
+                    Document.HistoryManager.Commit(ChangeType.ModifyStyle);
+            }
+        );
+    }
+
+    /// <summary>
+    /// Create a style
+    /// </summary>
+    private ReactiveCommand<string, Unit> CreateNewStyleCommand()
+    {
+        return ReactiveCommand.CreateFromTask(
+            async (string input) =>
+            {
+                var (manager, document) = input switch
+                {
+                    "global" => (Globals.StyleManager, null),
+                    "project" => (Project.StyleManager, null),
+                    "document" => (Document.StyleManager, Document),
+                    _ => throw new ArgumentOutOfRangeException(nameof(input), input, null),
+                };
+
+                var style = new Style(manager.NextId) { Name = string.Empty };
+
+                var vm = new StyleEditorDialogViewModel(_persistence, style, manager, document);
+                var result = await ShowStyleEditorWindow.Handle(vm);
+
+                // Abort if aborted
+                if (result is null)
+                    return;
+
+                manager.Add(style);
+
+                if (input == "document")
+                    Document.HistoryManager.Commit(ChangeType.AddStyle);
             }
         );
     }

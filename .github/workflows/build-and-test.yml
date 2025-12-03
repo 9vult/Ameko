@@ -49,7 +49,7 @@ jobs:
       - name: Download dependencies
         shell: pwsh
         run: |
-          $url = "https://files.catbox.moe/k555t7.zip"
+          $url = "https://files.catbox.moe/s2oifh.zip"
           $zip = "$env:RUNNER_TEMP/mizuki-deps.zip"
           $lib = "Mizuki/lib"
           New-Item -ItemType Directory -Path $lib -Force | Out-Null
@@ -162,6 +162,10 @@ jobs:
                   <true/>
                   <key>NSQuitAlwaysKeepsWindows</key>
                   <false/>
+                  <key>CFBundleSupportedPlatforms</key>
+                  <array>
+                      <string>MacOSX</string>
+                  </array>
               </dict>
           </plist>
           EOF

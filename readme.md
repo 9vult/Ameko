@@ -4,7 +4,7 @@
 
 <div align="center">
 
-![.NET 9.0](https://img.shields.io/badge/.NET-9.0-blueviolet?logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAxMjggMTI4Jz48cGF0aCBmaWxsPScjOUI0Rjk2JyBkPSdNMTE1LjQgMzAuN0w2Ny4xIDIuOWMtLjgtLjUtMS45LS43LTMuMS0uNy0xLjIgMC0yLjMuMy0zLjEuN2wtNDggMjcuOWMtMS43IDEtMi45IDMuNS0yLjkgNS40djU1LjdjMCAxLjEuMiAyLjQgMSAzLjVsMTA2LjgtNjJjLS42LTEuMi0xLjUtMi4xLTIuNC0yLjd6Jy8+PHBhdGggZmlsbD0nIzY4MjE3QScgZD0nTTEwLjcgOTUuM2MuNS44IDEuMiAxLjUgMS45IDEuOWw0OC4yIDI3LjljLjguNSAxLjkuNyAzLjEuNyAxLjIgMCAyLjMtLjMgMy4xLS43bDQ4LTI3LjljMS43LTEgMi45LTMuNSAyLjktNS40VjM2LjFjMC0uOS0uMS0xLjktLjYtMi44bC0xMDYuNiA2MnonLz48cGF0aCBmaWxsPScjZmZmJyBkPSdNODUuMyA3Ni4xQzgxLjEgODMuNSA3My4xIDg4LjUgNjQgODguNWMtMTMuNSAwLTI0LjUtMTEtMjQuNS0yNC41czExLTI0LjUgMjQuNS0yNC41YzkuMSAwIDE3LjEgNSAyMS4zIDEyLjVsMTMtNy41Yy02LjgtMTEuOS0xOS42LTIwLTM0LjMtMjAtMjEuOCAwLTM5LjUgMTcuNy0zOS41IDM5LjVzMTcuNyAzOS41IDM5LjUgMzkuNWMxNC42IDAgMjcuNC04IDM0LjItMTkuOGwtMTIuOS03LjZ6TTk3IDY2LjJsLjktNC4zaC00LjJ2LTQuN2g1LjFMMTAwIDUxaDQuOWwtMS4yIDYuMWgzLjhsMS4yLTYuMWg0LjhsLTEuMiA2LjFoMi40djQuN2gtMy4zbC0uOSA0LjNoNC4ydjQuN2gtNS4xbC0xLjIgNmgtNC45bDEuMi02aC0zLjhsLTEuMiA2aC00LjhsMS4yLTZoLTIuNHYtNC43SDk3em00LjggMGgzLjhsLjktNC4zaC0zLjhsLS45IDQuM3onLz48L3N2Zz4=&logoColor=white)
+![.NET 10.0](https://img.shields.io/badge/.NET-10.0-blueviolet?logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAxMjggMTI4Jz48cGF0aCBmaWxsPScjOUI0Rjk2JyBkPSdNMTE1LjQgMzAuN0w2Ny4xIDIuOWMtLjgtLjUtMS45LS43LTMuMS0uNy0xLjIgMC0yLjMuMy0zLjEuN2wtNDggMjcuOWMtMS43IDEtMi45IDMuNS0yLjkgNS40djU1LjdjMCAxLjEuMiAyLjQgMSAzLjVsMTA2LjgtNjJjLS42LTEuMi0xLjUtMi4xLTIuNC0yLjd6Jy8+PHBhdGggZmlsbD0nIzY4MjE3QScgZD0nTTEwLjcgOTUuM2MuNS44IDEuMiAxLjUgMS45IDEuOWw0OC4yIDI3LjljLjguNSAxLjkuNyAzLjEuNyAxLjIgMCAyLjMtLjMgMy4xLS43bDQ4LTI3LjljMS43LTEgMi45LTMuNSAyLjktNS40VjM2LjFjMC0uOS0uMS0xLjktLjYtMi44bC0xMDYuNiA2MnonLz48cGF0aCBmaWxsPScjZmZmJyBkPSdNODUuMyA3Ni4xQzgxLjEgODMuNSA3My4xIDg4LjUgNjQgODguNWMtMTMuNSAwLTI0LjUtMTEtMjQuNS0yNC41czExLTI0LjUgMjQuNS0yNC41YzkuMSAwIDE3LjEgNSAyMS4zIDEyLjVsMTMtNy41Yy02LjgtMTEuOS0xOS42LTIwLTM0LjMtMjAtMjEuOCAwLTM5LjUgMTcuNy0zOS41IDM5LjVzMTcuNyAzOS41IDM5LjUgMzkuNWMxNC42IDAgMjcuNC04IDM0LjItMTkuOGwtMTIuOS03LjZ6TTk3IDY2LjJsLjktNC4zaC00LjJ2LTQuN2g1LjFMMTAwIDUxaDQuOWwtMS4yIDYuMWgzLjhsMS4yLTYuMWg0LjhsLTEuMiA2LjFoMi40djQuN2gtMy4zbC0uOSA0LjNoNC4ydjQuN2gtNS4xbC0xLjIgNmgtNC45bDEuMi02aC0zLjhsLTEuMiA2aC00LjhsMS4yLTZoLTIuNHYtNC43SDk3em00LjggMGgzLjhsLjktNC4zaC0zLjhsLS45IDQuM3onLz48L3N2Zz4=&logoColor=white)
 ![Zig 0.15.1](https://img.shields.io/badge/Zig-0.15.1-f7a41d?logo=zig&logoColor=white)
 
 </div>
@@ -80,8 +80,16 @@ components working in tandem.
 
 <h2 align="center">Contributing</h2>
 
-Thank you for your interest in contributing to Ameko! Whether you're reporting bugs, fixing bugs, adding features, or
-starting a discussion, all contributions are welcome and appreciated.
+Thank you for your interest in contributing to Ameko! Whether you're reporting or fixing bugs, adding a translation,
+implementing features, or starting a discussion, all contributions are welcome and appreciated.
+
+### Localization
+
+[![es-419](https://img.shields.io/badge/dynamic/json?color=green&label=es-419&style=flat&logo=crowdin&query=%24.progress.0.data.approvalProgress&url=https%3A%2F%2Fbadges.awesome-crowdin.com%2Fstats-17157354-799340.json)](https://crowdin.com/project/ameko)
+
+If you are interested in localizing Ameko into your language (Thank you!), please see
+the [Crowdin project](https://crowdin.com/project/ameko). Note: Ameko is localized via the ResX format,
+which is quite limited, such as lacking support for plurals.
 
 ### Code
 
@@ -95,12 +103,6 @@ Additionally, there are some testing guidelines:
 
 - Unit tests are required for contributions to the Holo and AssCS projects.
 - Tests are optional, but highly appreciated, for Ameko's ViewModels and for Mizuki.
-
-### Localization
-
-If you are interested in localizing Ameko into your language (Thank you!), please see
-the [Crowdin project](https://crowdin.com/project/ameko). Note: Ameko is localized via the ResX format,
-which is quite limited, such as lacking support for plurals.
 
 <h2 align="center">Licensing</h2>
 

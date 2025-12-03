@@ -234,6 +234,93 @@ public partial class Style(int id) : BindableBase
     }
 
     /// <summary>
+    /// Set fields in this style to the fields from another style
+    /// </summary>
+    /// <param name="fields">Fields to set</param>
+    /// <param name="other">Source of new fields</param>
+    public void SetFields(StyleField fields, Style other)
+    {
+        foreach (StyleField field in fields.GetSetFlags())
+        {
+            switch (field)
+            {
+                case StyleField.Name:
+                    Name = other.Name;
+                    break;
+                case StyleField.FontFamily:
+                    FontFamily = other.FontFamily;
+                    break;
+                case StyleField.FontSize:
+                    FontSize = other.FontSize;
+                    break;
+                case StyleField.PrimaryColor:
+                    PrimaryColor = other.PrimaryColor;
+                    break;
+                case StyleField.SecondaryColor:
+                    SecondaryColor = other.SecondaryColor;
+                    break;
+                case StyleField.OutlineColor:
+                    OutlineColor = other.OutlineColor;
+                    break;
+                case StyleField.ShadowColor:
+                    ShadowColor = other.ShadowColor;
+                    break;
+                case StyleField.IsBold:
+                    IsBold = other.IsBold;
+                    break;
+                case StyleField.IsItalic:
+                    IsItalic = other.IsItalic;
+                    break;
+                case StyleField.IsUnderline:
+                    IsUnderline = other.IsUnderline;
+                    break;
+                case StyleField.IsStrikethrough:
+                    IsStrikethrough = other.IsStrikethrough;
+                    break;
+                case StyleField.ScaleX:
+                    ScaleX = other.ScaleX;
+                    break;
+                case StyleField.ScaleY:
+                    ScaleY = other.ScaleY;
+                    break;
+                case StyleField.Spacing:
+                    Spacing = other.Spacing;
+                    break;
+                case StyleField.Angle:
+                    Angle = other.Angle;
+                    break;
+                case StyleField.BorderStyle:
+                    BorderStyle = other.BorderStyle;
+                    break;
+                case StyleField.BorderThickness:
+                    BorderThickness = other.BorderThickness;
+                    break;
+                case StyleField.ShadowDistance:
+                    ShadowDistance = other.ShadowDistance;
+                    break;
+                case StyleField.Alignment:
+                    Alignment = other.Alignment;
+                    break;
+                case StyleField.MarginLeft:
+                    Margins.Left = other.Margins.Left;
+                    break;
+                case StyleField.MarginRight:
+                    Margins.Right = other.Margins.Right;
+                    break;
+                case StyleField.MarginVertical:
+                    Margins.Vertical = other.Margins.Vertical;
+                    break;
+                case StyleField.Encoding:
+                    Encoding = other.Encoding;
+                    break;
+                case StyleField.None:
+                default:
+                    break;
+            }
+        }
+    }
+
+    /// <summary>
     /// Get the ass representation of this style
     /// </summary>
     /// <returns>Ass-formatted string</returns>

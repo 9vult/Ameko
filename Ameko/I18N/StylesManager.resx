@@ -33,8 +33,8 @@
     <data name="StylesManager_Button_Delete" xml:space="preserve">
         <value>Delete</value>
     </data>
-    <data name="StylesManager_Button_Copy" xml:space="preserve">
-        <value>Copy</value>
+    <data name="StylesManager_Button_Duplicate" xml:space="preserve">
+        <value>Duplicate</value>
     </data>
     <data name="StylesManager_Button_Edit" xml:space="preserve">
         <value>Edit</value>
@@ -54,7 +54,7 @@
     <data name="StylesManager_CopyAppendage" xml:space="preserve">
         <value>Copy</value>
     </data>
-    <data name="StylesManager_Button_Copy_ToolTip" xml:space="preserve">
+    <data name="StylesManager_Button_Duplicate_ToolTip" xml:space="preserve">
         <value>Make a copy of the selected style</value>
     </data>
     <data name="StylesManager_Button_Delete_ToolTip" xml:space="preserve">
