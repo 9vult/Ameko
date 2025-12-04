@@ -79,7 +79,7 @@ public class KeybindRegistrar(IFileSystem fileSystem, ILogger<KeybindRegistrar> 
 
         var changed = false;
 
-        if (keybind != target.OverrideKey)
+        if (keybind is not null && keybind != target.Key)
         {
             changed = true;
             target.OverrideKey = keybind;
@@ -88,7 +88,7 @@ public class KeybindRegistrar(IFileSystem fileSystem, ILogger<KeybindRegistrar> 
         if (context is not null && context != target.Context)
         {
             changed = true;
-            target.Context = context.Value;
+            target.OverrideContext = context.Value;
         }
 
         if (isEnabled.HasValue && isEnabled.Value != target.IsEnabled)
@@ -112,6 +112,7 @@ public class KeybindRegistrar(IFileSystem fileSystem, ILogger<KeybindRegistrar> 
         }
 
         target.OverrideKey = null;
+        target.OverrideContext = null;
         OnKeybindsChanged?.Invoke(this, EventArgs.Empty);
         return true;
     }
@@ -153,7 +154,9 @@ public class KeybindRegistrar(IFileSystem fileSystem, ILogger<KeybindRegistrar> 
     public IEnumerable<Keybind> GetOverridenKeybinds()
     {
         return _keybinds.Values.Where(keybind =>
-            !keybind.IsActive || keybind.OverrideKey is not null
+            !keybind.IsActive
+            || keybind.OverrideKey is not null
+            || keybind.OverrideContext is not null
         );
     }
 
@@ -229,7 +232,8 @@ public class KeybindRegistrar(IFileSystem fileSystem, ILogger<KeybindRegistrar> 
                 {
                     if (import.Value.OverrideKey is not null)
                         target.OverrideKey = import.Value.OverrideKey;
-                    target.Context = import.Value.Context;
+                    if (import.Value.OverrideContext is not null)
+                        target.OverrideContext = import.Value.OverrideContext;
                 }
                 else
                 {

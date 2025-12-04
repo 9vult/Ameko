@@ -8,9 +8,9 @@ namespace Holo.Configuration.Keybinds;
 /// Represents a registered keybind
 /// </summary>
 /// <param name="qualifiedName">Unique accessor for the action the keybind is assigned to</param>
-/// <param name="defaultKey">Key combination</param>
-/// <param name="context">Contexts the keybind is registered to</param>
-public class Keybind(string qualifiedName, string? defaultKey, KeybindContext context)
+/// <param name="defaultKey">Default Key combination</param>
+/// <param name="defaultContext">Contexts the keybind is registered to by default</param>
+public class Keybind(string qualifiedName, string? defaultKey, KeybindContext defaultContext)
 {
     /// <summary>
     /// Unique accessor for the action the keybind is assigned to
@@ -46,10 +46,25 @@ public class Keybind(string qualifiedName, string? defaultKey, KeybindContext co
     public string? Key => OverrideKey ?? DefaultKey;
 
     /// <summary>
-    /// The contexts the keybind is registered to
+    /// The contexts the keybind is registered to by default
     /// </summary>
     /// <example><c>var contexts = KeybindContext.Editor | KeybindContext.Grid;</c></example>
-    public KeybindContext Context { get; set; } = context;
+    public KeybindContext DefaultContext { get; set; } = defaultContext;
+
+    /// <summary>
+    /// User-set contexts
+    /// </summary>
+    /// <example><c>var contexts = KeybindContext.Editor | KeybindContext.Grid;</c></example>
+    public KeybindContext? OverrideContext { get; set; }
+
+    /// <summary>
+    /// Effective context
+    /// </summary>
+    /// <returns>
+    /// <see cref="OverrideContext"/> if set, otherwise <see cref="DefaultContext"/>
+    /// </returns>
+    [JsonIgnore]
+    public KeybindContext Context => OverrideContext ?? DefaultContext;
 
     /// <summary>
     /// If the keybind is currently enabled
@@ -61,7 +76,7 @@ public class Keybind(string qualifiedName, string? defaultKey, KeybindContext co
     /// </summary>
     [JsonIgnore]
     public bool IsActive =>
-        !IsEnabled || Context != KeybindContext.None || string.IsNullOrEmpty(Key);
+        !IsEnabled || DefaultContext != KeybindContext.None || string.IsNullOrEmpty(Key);
 
     /// <summary>
     /// If the keybind is for a builtin command

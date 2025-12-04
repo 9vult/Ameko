@@ -50,14 +50,11 @@
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <StackPanel>
-                                <ComboBox IsVisible="{Binding !IsBuiltin}"
-                                          ItemsSource="{Binding Contexts, FallbackValue=.}"
-                                          SelectedItem="{Binding Context}"
+                                <ComboBox ItemsSource="{Binding Contexts, FallbackValue=.}"
+                                          SelectedItem="{Binding OverrideContext}"
                                           Margin="1"
-                                          Padding="0" />
-                                    <TextBlock IsVisible="{Binding IsBuiltin}"
-                                               Text="{Binding Context.Display, FallbackValue=''}"
-                                               VerticalAlignment="Center" />
+                                          Padding="0"
+                                          HorizontalAlignment="Stretch" />
                                 </StackPanel>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>

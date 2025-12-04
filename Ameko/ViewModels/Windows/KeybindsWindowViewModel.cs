@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reactive;
 using System.Windows.Input;
@@ -31,7 +30,7 @@ public partial class KeybindsWindowViewModel : ViewModelBase
             _registrar.ApplyOverride(
                 keybind.QualifiedName,
                 keybind.OverrideKey,
-                keybind.Context.Context,
+                keybind.OverrideContext.Context,
                 keybind.IsEnabled
             );
         }
@@ -59,9 +58,10 @@ public partial class KeybindsWindowViewModel : ViewModelBase
                     QualifiedName = k.QualifiedName,
                     DefaultKey = k.DefaultKey ?? string.Empty,
                     OverrideKey = k.OverrideKey,
-                    Context = new EditableKeybindContext(k.Context),
+                    DefaultContext = k.DefaultContext,
+                    OverrideContext = new EditableKeybindContext(k.Context),
                 })
-                .OrderByDescending(k => k.Context.Context) // Places Global first and None last
+                .OrderByDescending(k => k.OverrideContext.Context) // Places Global first and None last
                 .ThenBy(k => k.QualifiedName)
                 .ToList()
         );

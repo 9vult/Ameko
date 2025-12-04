@@ -13,7 +13,8 @@ public class EditableKeybind
     public required string QualifiedName { get; init; }
     public required string DefaultKey { get; init; }
     public required string? OverrideKey { get; set; }
-    public required EditableKeybindContext Context { get; set; }
+    public required KeybindContext DefaultContext { get; init; }
+    public required EditableKeybindContext OverrideContext { get; set; }
 
     public static ReadOnlyCollection<EditableKeybindContext> Contexts { get; } =
         new([
