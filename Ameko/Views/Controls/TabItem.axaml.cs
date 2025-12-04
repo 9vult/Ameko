@@ -1,12 +1,10 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables;
-using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Ameko.Messages;
 using Ameko.ViewModels.Controls;
@@ -18,7 +16,6 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Input.Platform;
-using Avalonia.Media;
 using Avalonia.Platform.Storage;
 using Avalonia.ReactiveUI;
 using Avalonia.Threading;
@@ -226,8 +223,9 @@ public partial class TabItem : ReactiveUserControl<TabItemViewModel>
                     MessageBus.Current.SendMessage(new WorkingSpaceChangedMessage());
                     // Listen for scroll messages (?)
 
-                    AttachKeybinds(vm);
                     ApplyLayout(vm, vm.LayoutProvider.Current);
+                    AttachKeybinds(vm);
+                    TabItemEditorArea.EditBox.Focus();
 
                     Dispatcher.UIThread.Post(
                         () =>
