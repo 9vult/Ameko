@@ -129,6 +129,11 @@ public class KeybindService : IKeybindService
 
     private static IEnumerable<CommandMetadata> ScanForCommands(ViewModelBase viewModel)
     {
+        // ReSharper disable once InconsistentNaming
+        var isMacOS = OperatingSystem.IsMacOS();
+        const string cmd = "Cmd";
+        const string ctrl = "Ctrl";
+
         var type = viewModel.GetType();
         var props = type.GetProperties(
             BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance
@@ -146,11 +151,16 @@ public class KeybindService : IKeybindService
             if (prop.GetValue(viewModel) is not ICommand command)
                 continue;
 
+            var defaultKey =
+                isMacOS && attrib.DefaultKey is not null
+                    ? attrib.DefaultKey.Replace(ctrl, cmd)
+                    : attrib.DefaultKey;
+
             yield return new CommandMetadata
             {
                 Command = command,
                 QualifiedName = attrib.QualifiedName,
-                DefaultKey = attrib.DefaultKey,
+                DefaultKey = defaultKey,
                 DefaultContext = attrib.DefaultContext,
             };
         }
