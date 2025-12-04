@@ -27,6 +27,8 @@
               Margin="0"
               Padding="0"
               Classes="Small"
+              Focusable="True"
+              Background="Transparent"
               CanUserResizeColumns="True"
               CanUserReorderColumns="False"
               SelectionMode="Extended"
