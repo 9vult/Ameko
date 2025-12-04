@@ -433,6 +433,10 @@ public class MediaController : BindableBase
         if (!IsVideoLoaded)
             return true;
 
+        Stop();
+
+        _logger.LogInformation("Closing video {FilePath}", _videoInfo?.Path);
+
         IsVideoLoaded = false;
         return _provider.CloseVideo() == 0; // == _provider == 0;
     }
