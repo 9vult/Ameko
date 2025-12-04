@@ -296,6 +296,7 @@ public class KeybindRegistrarTests
         k.Parse();
 
         k.GetKeybind("ameko.document.open")?.OverrideKey.ShouldNotBeNull();
+        k.GetKeybind("ameko.document.open")?.OverrideContext.ShouldNotBeNull();
         k.ClearOverride("ameko.document.open");
 
         k.Save();
@@ -321,7 +322,8 @@ public class KeybindRegistrarTests
             "ameko.document.open": {
                 "DefaultKey": "Ctrl\u002BO",
                 "OverrideKey": null,
-                "Context": "global",
+                "DefaultContext": "global",
+                "OverrideContext": null,
                 "IsEnabled": true
             }
         }
@@ -332,7 +334,8 @@ public class KeybindRegistrarTests
             "ameko.document.open": {
                 "DefaultKey": "Ctrl\u002BO",
                 "OverrideKey": "Ctrl\u002BOJ",
-                "Context": "global",
+                "DefaultContext": "global",
+                "OverrideContext": "grid",
                 "IsEnabled": true
             }
         }
