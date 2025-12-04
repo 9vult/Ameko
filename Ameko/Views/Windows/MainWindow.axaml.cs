@@ -355,13 +355,13 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         interaction.SetOutput(Unit.Default);
     }
 
-    private void DoShowKeybindsWindow(
-        IInteractionContext<KeybindsWindowViewModel, Unit> interaction
+    private void DoShowKeybindsDialog(
+        IInteractionContext<KeybindsDialogViewModel, Unit> interaction
     )
     {
-        _logger.LogDebug("Displaying Keybinds Window");
-        var window = new KeybindsWindow() { DataContext = interaction.Input };
-        window.Show();
+        _logger.LogDebug("Displaying Keybinds Dialog");
+        var dialog = new KeybindsDialog { DataContext = interaction.Input };
+        dialog.ShowDialog(this);
         interaction.SetOutput(Unit.Default);
     }
 
@@ -426,7 +426,7 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
                 ViewModel.ShowHelpWindow.RegisterHandler(DoShowHelpWindow);
                 ViewModel.ShowLogWindow.RegisterHandler(DoShowLogWindow);
                 ViewModel.ShowAboutWindow.RegisterHandler(DoShowAboutWindowAsync);
-                ViewModel.ShowKeybindsWindow.RegisterHandler(DoShowKeybindsWindow);
+                ViewModel.ShowKeybindsDialog.RegisterHandler(DoShowKeybindsDialog);
                 // Other
                 ViewModel.ShowInstallDictionaryDialog.RegisterHandler(
                     DoShowinstallDictionaryDialogAsync

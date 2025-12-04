@@ -9,10 +9,10 @@
         xmlns:c="using:Ameko.Views.Controls"
         xmlns:i18n="clr-namespace:Ameko.I18N"
         xmlns:icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
-        xmlns:vm="clr-namespace:Ameko.ViewModels.Windows"
+        xmlns:vm="clr-namespace:Ameko.ViewModels.Dialogs"
         
-        x:Class="Ameko.Views.Windows.KeybindsWindow"
-        x:DataType="vm:KeybindsWindowViewModel"
+        x:Class="Ameko.Views.Dialogs.KeybindsDialog"
+        x:DataType="vm:KeybindsDialogViewModel"
         
         CanResize="False"
         Icon="/Assets/Ameko-Simplified-BG-64.ico"
@@ -37,7 +37,7 @@
                                     Background="Transparent"
                                     Content="{icons:MaterialIconExt Kind=MinusCircle, Size=12}"
                                     ToolTip.Tip="{x:Static i18n:Keybinds.Keybinds_Button_Remove_ToolTip}"
-                                    Command="{Binding $parent[Window].((vm:KeybindsWindowViewModel)DataContext).DeleteCommand, FallbackValue=.}"
+                                    Command="{Binding $parent[Window].((vm:KeybindsDialogViewModel)DataContext).DeleteCommand, FallbackValue=.}"
                                     CommandParameter="{Binding .}" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>

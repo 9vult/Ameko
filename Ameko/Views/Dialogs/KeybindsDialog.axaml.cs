@@ -2,15 +2,15 @@
 
 using System;
 using System.Reactive.Disposables;
-using Ameko.ViewModels.Windows;
+using Ameko.ViewModels.Dialogs;
 using Avalonia.ReactiveUI;
 using ReactiveUI;
 
-namespace Ameko.Views.Windows;
+namespace Ameko.Views.Dialogs;
 
-public partial class KeybindsWindow : ReactiveWindow<KeybindsWindowViewModel>
+public partial class KeybindsDialog : ReactiveWindow<KeybindsDialogViewModel>
 {
-    public KeybindsWindow()
+    public KeybindsDialog()
     {
         InitializeComponent();
 

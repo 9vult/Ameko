@@ -62,7 +62,7 @@
             <NativeMenuItemSeparator />
             <NativeMenuItem Header="{x:Static i18n:Resources.Menu_Configuration}" />
             <NativeMenuItem Header="{x:Static i18n:Resources.Menu_Keybinds}"
-                            Command="{Binding ShowKeybindsWindowCommand}" />
+                            Command="{Binding ShowKeybindsDialogCommand}" />
             <NativeMenuItemSeparator />
             <NativeMenuItem Header="{x:Static i18n:Resources.Menu_ShowLogs}"
                             Command="{Binding ShowLogWindowCommand}" />

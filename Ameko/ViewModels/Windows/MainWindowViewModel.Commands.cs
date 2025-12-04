@@ -623,14 +623,14 @@ public partial class MainWindowViewModel : ViewModelBase
     }
 
     /// <summary>
-    /// Display the <see cref="KeybindsWindow"/>
+    /// Display the <see cref="KeybindsDialog"/>
     /// </summary>
-    private ReactiveCommand<Unit, Unit> CreateShowKeybindsWindowCommand()
+    private ReactiveCommand<Unit, Unit> CreateShowKeybindsDialogCommand()
     {
         return ReactiveCommand.CreateFromTask(async () =>
         {
-            var vm = _serviceProvider.GetRequiredService<KeybindsWindowViewModel>();
-            await ShowKeybindsWindow.Handle(vm);
+            var vm = _serviceProvider.GetRequiredService<KeybindsDialogViewModel>();
+            await ShowKeybindsDialog.Handle(vm);
         });
     }
 

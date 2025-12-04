@@ -10,9 +10,9 @@ using Ameko.Messages;
 using Holo.Configuration.Keybinds;
 using ReactiveUI;
 
-namespace Ameko.ViewModels.Windows;
+namespace Ameko.ViewModels.Dialogs;
 
-public partial class KeybindsWindowViewModel : ViewModelBase
+public partial class KeybindsDialogViewModel : ViewModelBase
 {
     private readonly IKeybindRegistrar _registrar;
     private readonly List<string> _keybindsToRemove = [];
@@ -62,7 +62,7 @@ public partial class KeybindsWindowViewModel : ViewModelBase
             .ToList();
     }
 
-    public KeybindsWindowViewModel(IKeybindRegistrar registrar)
+    public KeybindsDialogViewModel(IKeybindRegistrar registrar)
     {
         _registrar = registrar;
 

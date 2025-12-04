@@ -184,6 +184,10 @@
       <DependentUpon>StyleEditorDialog.axaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Views\Dialogs\KeybindsDialog.axaml.cs">
+      <DependentUpon>KeybindsDialog.axaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Update="I18N\Resources.resx">

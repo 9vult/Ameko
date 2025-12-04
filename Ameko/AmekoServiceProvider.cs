@@ -5,6 +5,7 @@ using System.IO.Abstractions;
 using Ameko.Services;
 using Ameko.Utilities;
 using Ameko.ViewModels.Controls;
+using Ameko.ViewModels.Dialogs;
 using Ameko.ViewModels.Windows;
 using Ameko.Views.Windows;
 using Holo.Configuration;
@@ -90,7 +91,7 @@ public class AmekoServiceProvider
         services.AddTransient<LogWindowViewModel>();
         services.AddTransient<HelpWindowViewModel>();
         services.AddTransient<PkgManWindowViewModel>();
-        services.AddTransient<KeybindsWindowViewModel>();
+        services.AddTransient<KeybindsDialogViewModel>();
         services.AddTransient<PlaygroundWindowViewModel>();
 
         // --- Scripting ---

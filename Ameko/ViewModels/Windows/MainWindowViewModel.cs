@@ -73,7 +73,7 @@ public partial class MainWindowViewModel : ViewModelBase
     public Interaction<HelpWindowViewModel, Unit> ShowHelpWindow { get; }
     public Interaction<LogWindowViewModel, Unit> ShowLogWindow { get; }
     public Interaction<AboutWindowViewModel, Unit> ShowAboutWindow { get; }
-    public Interaction<KeybindsWindowViewModel, Unit> ShowKeybindsWindow { get; }
+    public Interaction<KeybindsDialogViewModel, Unit> ShowKeybindsDialog { get; }
 
     // Other
     public Interaction<InstallDictionaryDialogViewModel, Unit> ShowInstallDictionaryDialog { get; }
@@ -180,7 +180,7 @@ public partial class MainWindowViewModel : ViewModelBase
     public ICommand ShowAboutWindowCommand { get; }
 
     [KeybindTarget("ameko.keybinds.show", KeybindContext.Global)]
-    public ICommand ShowKeybindsWindowCommand { get; }
+    public ICommand ShowKeybindsDialogCommand { get; }
 
     // Other
     public ICommand RemoveDocumentFromProjectCommand { get; }
@@ -321,7 +321,7 @@ public partial class MainWindowViewModel : ViewModelBase
         ShowHelpWindow = new Interaction<HelpWindowViewModel, Unit>();
         ShowLogWindow = new Interaction<LogWindowViewModel, Unit>();
         ShowAboutWindow = new Interaction<AboutWindowViewModel, Unit>();
-        ShowKeybindsWindow = new Interaction<KeybindsWindowViewModel, Unit>();
+        ShowKeybindsDialog = new Interaction<KeybindsDialogViewModel, Unit>();
         // Other
         ShowInstallDictionaryDialog = new Interaction<InstallDictionaryDialogViewModel, Unit>();
         #endregion
@@ -369,7 +369,7 @@ public partial class MainWindowViewModel : ViewModelBase
         ShowHelpWindowCommand = CreateShowHelpWindowCommand();
         ShowLogWindowCommand = CreateShowLogWindowCommand();
         ShowAboutWindowCommand = CreateShowAboutWindowCommand();
-        ShowKeybindsWindowCommand = CreateShowKeybindsWindowCommand();
+        ShowKeybindsDialogCommand = CreateShowKeybindsDialogCommand();
         // Other
         RemoveDocumentFromProjectCommand = CreateRemoveDocumentFromProjectCommand();
         RemoveDirectoryFromProjectCommand = CreateRemoveDirectoryFromProjectCommand();
