@@ -118,6 +118,20 @@ public class KeybindRegistrar(IFileSystem fileSystem, ILogger<KeybindRegistrar> 
     }
 
     /// <inheritdoc />
+    public bool ClearOverrides()
+    {
+        logger.LogInformation("Resetting {Count} keybinds to defaults...", _keybinds.Count);
+        foreach (var target in _keybinds.Values)
+        {
+            target.OverrideKey = null;
+            target.OverrideContext = null;
+            target.IsEnabled = true;
+        }
+        OnKeybindsChanged?.Invoke(this, EventArgs.Empty);
+        return true;
+    }
+
+    /// <inheritdoc />
     public Keybind? GetKeybind(string qualifiedName)
     {
         return _keybinds.GetValueOrDefault(qualifiedName);

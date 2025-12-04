@@ -27,6 +27,7 @@
                   CanUserReorderColumns="False"
                   CanUserResizeColumns="False"
                   VerticalScrollBarVisibility="Auto"
+                  SelectionMode="Single"
                   ItemsSource="{Binding Keybinds}">
             <DataGrid.Columns>
                 <DataGridTemplateColumn>
@@ -79,9 +80,20 @@
                 </Style>
             </DataGrid.Styles>
         </DataGrid>
-        <Button Grid.Row="1"
-                Margin="2"
-                Content="{x:Static i18n:Keybinds.Keybinds_Button_Save}"
-                Command="{Binding SaveCommand}" />
+        <Grid Grid.Column="0"
+              Grid.Row="1"
+              ColumnDefinitions="0.75*, *, 0.75*"
+              Margin="2">
+            <Button Grid.Column="0"
+                    HorizontalAlignment="Stretch"
+                    Classes="Danger"
+                    Content="{x:Static i18n:Keybinds.Keybinds_Button_Reset}"
+                    Command="{Binding ResetCommand}" />
+            <Button Grid.Column="2"
+                    HorizontalAlignment="Stretch"
+                    Classes="Primary"
+                    Content="{x:Static i18n:Keybinds.Keybinds_Button_Save}"
+                    Command="{Binding SaveCommand}" />
+        </Grid>
     </Grid>
 </Window>

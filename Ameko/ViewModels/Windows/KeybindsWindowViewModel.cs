@@ -1,6 +1,5 @@
 ﻿// SPDX-License-Identifier: GPL-3.0-only
 
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -18,10 +17,11 @@ public partial class KeybindsWindowViewModel : ViewModelBase
     private readonly IKeybindRegistrar _registrar;
     private readonly List<string> _keybindsToRemove = [];
 
-    public ObservableCollection<EditableKeybind> Keybinds { get; }
+    public RangeObservableCollection<EditableKeybind> Keybinds { get; }
 
     public ReactiveCommand<Unit, EmptyMessage> SaveCommand { get; }
     public ICommand DeleteCommand { get; }
+    public ICommand ResetCommand { get; }
 
     private EmptyMessage Save()
     {
@@ -44,26 +44,30 @@ public partial class KeybindsWindowViewModel : ViewModelBase
         return new EmptyMessage(); // Funky workaround to get the super clean commands
     }
 
+    private static IList<EditableKeybind> CreateEditableKeybinds(IEnumerable<Keybind> keybinds)
+    {
+        return keybinds
+            .Select(k => new EditableKeybind
+            {
+                IsEnabled = k.IsEnabled,
+                IsBuiltin = k.IsBuiltin,
+                QualifiedName = k.QualifiedName,
+                DefaultKey = k.DefaultKey ?? string.Empty,
+                OverrideKey = k.OverrideKey,
+                DefaultContext = k.DefaultContext,
+                OverrideContext = new EditableKeybindContext(k.Context),
+            })
+            .OrderByDescending(k => k.OverrideContext.Context) // Places Global first and None last
+            .ThenBy(k => k.QualifiedName)
+            .ToList();
+    }
+
     public KeybindsWindowViewModel(IKeybindRegistrar registrar)
     {
         _registrar = registrar;
 
-        Keybinds = new ObservableCollection<EditableKeybind>(
-            registrar
-                .GetKeybinds()
-                .Select(k => new EditableKeybind
-                {
-                    IsEnabled = k.IsEnabled,
-                    IsBuiltin = k.IsBuiltin,
-                    QualifiedName = k.QualifiedName,
-                    DefaultKey = k.DefaultKey ?? string.Empty,
-                    OverrideKey = k.OverrideKey,
-                    DefaultContext = k.DefaultContext,
-                    OverrideContext = new EditableKeybindContext(k.Context),
-                })
-                .OrderByDescending(k => k.OverrideContext.Context) // Places Global first and None last
-                .ThenBy(k => k.QualifiedName)
-                .ToList()
+        Keybinds = new RangeObservableCollection<EditableKeybind>(
+            CreateEditableKeybinds(registrar.GetKeybinds())
         );
 
         SaveCommand = ReactiveCommand.Create(Save);
@@ -74,5 +78,13 @@ public partial class KeybindsWindowViewModel : ViewModelBase
                 _keybindsToRemove.Add(keybind.QualifiedName);
             }
         );
+        ResetCommand = ReactiveCommand.Create(() =>
+        {
+            Keybinds.Clear();
+            if (registrar.ClearOverrides())
+            {
+                Keybinds.AddRange(CreateEditableKeybinds(registrar.GetKeybinds()));
+            }
+        });
     }
 }

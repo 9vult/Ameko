@@ -54,4 +54,7 @@
     <data name="Keybinds_Button_Remove_ToolTip" xml:space="preserve">
         <value>Remove</value>
     </data>
+    <data name="Keybinds_Button_Reset" xml:space="preserve">
+        <value>Reset Defaults</value>
+    </data>
 </root>

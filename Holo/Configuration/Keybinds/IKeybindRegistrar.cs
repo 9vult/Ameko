@@ -50,6 +50,12 @@ public interface IKeybindRegistrar
     bool ClearOverride(string qualifiedName);
 
     /// <summary>
+    /// Clears overrides from all keybinds, resetting to default
+    /// </summary>
+    /// <returns><see langword="true"/> if successful</returns>
+    bool ClearOverrides();
+
+    /// <summary>
     /// Retrieves the keybind registered under the specified name.
     /// </summary>
     /// <param name="qualifiedName">The keybind name to look up</param>
