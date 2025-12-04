@@ -6,9 +6,10 @@
         d:DesignWidth="550"
         d:DesignHeight="400"
         
-        xmlns:vm="clr-namespace:Ameko.ViewModels.Windows"
+        xmlns:c="using:Ameko.Views.Controls"
         xmlns:i18n="clr-namespace:Ameko.I18N"
         xmlns:icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+        xmlns:vm="clr-namespace:Ameko.ViewModels.Windows"
         
         x:Class="Ameko.Views.Windows.KeybindsWindow"
         x:DataType="vm:KeybindsWindowViewModel"
@@ -63,10 +64,10 @@
                                         Header="{x:Static i18n:Keybinds.Keybinds_Header_Keybind}">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <TextBox Text="{Binding Key}"
-                                     Watermark="{Binding DefaultKey, FallbackValue=''}"
-                                     Margin="1"
-                                     Padding="0" />
+                            <c:KeybindTextbox Text="{Binding Key}"
+                                              Watermark="{Binding DefaultKey, FallbackValue=''}"
+                                              Margin="1"
+                                              Padding="0" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
