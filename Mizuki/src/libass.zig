@@ -39,7 +39,7 @@ pub fn CheckAvailability() bool {
     }
     if (builtin.target.os.tag == .macos) {
         _ = std.DynLib.open("libffms2.dylib") catch {
-           _ = std.DynLib.open("/opt/homebrew/lib/libffms2.dylib") catch return false;
+            _ = std.DynLib.open("/opt/homebrew/lib/libffms2.dylib") catch return false;
         };
         return true;
     }
@@ -83,8 +83,8 @@ pub fn SetSubtitles(g_ctx: *context.GlobalContext, data: [*c]u8, data_len: c_int
 /// Set up renderer
 pub fn LoadVideo(g_ctx: *context.GlobalContext, frame_width: c_int, frame_height: c_int) void {
     var ctx = &g_ctx.*.libass;
-    if (ctx.renderer != null) {
-        c.ass_renderer_done(ctx.renderer);
+    if (ctx.renderer) |renderer| {
+        c.ass_renderer_done(renderer);
         ctx.renderer = null;
     }
 
@@ -94,6 +94,18 @@ pub fn LoadVideo(g_ctx: *context.GlobalContext, frame_width: c_int, frame_height
     c.ass_set_font_scale(ctx.renderer, 1.0);
 
     c.ass_set_fonts(ctx.renderer, null, "Sans", 1, null, 1);
+}
+
+pub fn CloseVideo(g_ctx: *context.GlobalContext) void {
+    var ctx = &g_ctx.*.libass;
+    if (ctx.renderer) |renderer| {
+        c.ass_renderer_done(renderer);
+        ctx.renderer = null;
+    }
+    if (ctx.track) |track| {
+        c.ass_free_track(track);
+        ctx.track = null;
+    }
 }
 
 /// Verify a frame's hash

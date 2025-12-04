@@ -16,7 +16,7 @@ public unsafe class MizukiSourceProvider : ISourceProvider
 {
     private static readonly External.LogCallback LogDelegate = Log;
 
-    private GlobalContext* _context;
+    private GlobalContext* _context = null;
 
     /// <summary>
     /// If this provider is initialized
@@ -36,7 +36,6 @@ public unsafe class MizukiSourceProvider : ISourceProvider
 
         if (result == 0) // OK
         {
-            _context = External.CreateContext();
             IsInitialized = true;
         }
         return result;
@@ -44,6 +43,10 @@ public unsafe class MizukiSourceProvider : ISourceProvider
 
     public int LoadVideo(string filename)
     {
+        if (_context != null)
+            CloseVideo();
+
+        _context = External.CreateContext();
         var status = External.LoadVideo(_context, filename, GetCachePath(filename), "bgra");
         if (status == 0)
         {
@@ -55,7 +58,10 @@ public unsafe class MizukiSourceProvider : ISourceProvider
 
     public int CloseVideo()
     {
-        return 0;
+        var result = External.CloseVideo(_context);
+        External.DestroyContext(_context);
+        _context = null;
+        return result;
     }
 
     /// <inheritdoc />
@@ -130,7 +136,8 @@ public unsafe class MizukiSourceProvider : ISourceProvider
     {
         // TODO: Re-implement once we have a proper SourceProvider factory or something
 
-        // var msg = Marshal.PtrToStringAnsi(ptr);
+        var msg = Marshal.PtrToStringAnsi(ptr);
+        Console.WriteLine(msg);
         // switch (level)
         // {
         //     case 0:
@@ -191,6 +198,9 @@ internal static unsafe partial class External
         string cacheFileName,
         string colorMatrix
     );
+
+    [LibraryImport("mizuki")]
+    internal static partial int CloseVideo(GlobalContext* context);
 
     [LibraryImport("mizuki", StringMarshalling = StringMarshalling.Utf8)]
     internal static partial int SetSubtitles(

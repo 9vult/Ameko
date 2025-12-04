@@ -61,12 +61,36 @@ pub fn GetAudio(g_ctx: *context.GlobalContext) ffms.FfmsError!*frames.AudioFrame
 pub fn Deinit(g_ctx: *context.GlobalContext) void {
     var ctx = &g_ctx.*.buffers;
     for (ctx.buffers.items) |buffer| {
+        // free video pixel buffer
+        const v_total: usize = @intCast(buffer.*.video_frame.*.height * buffer.*.video_frame.*.pitch);
+        if (v_total != 0) {
+            common.allocator.free(buffer.*.video_frame.*.data[0..v_total]);
+        }
+
+        // free subtitle pixel buffer
+        const s_total: usize = @intCast(buffer.*.subtitle_frame.*.height * buffer.*.subtitle_frame.*.pitch);
+        if (s_total != 0) {
+            common.allocator.free(buffer.*.subtitle_frame.*.data[0..s_total]);
+        }
+
         common.allocator.destroy(buffer.*.video_frame);
         common.allocator.destroy(buffer.*.subtitle_frame);
         common.allocator.destroy(buffer);
     }
+
     ctx.buffers.deinit(common.allocator);
-    common.allocator.destroy(ctx.audio_frame.?);
+
+    // free audio buffer
+    if (ctx.audio_buffer) |audio_buffer| {
+        common.allocator.free(audio_buffer);
+        ctx.audio_buffer = null;
+    }
+
+    // destroy audio_frame
+    if (ctx.audio_frame) |audio_frame| {
+        common.allocator.destroy(audio_frame);
+        ctx.audio_frame = null;
+    }
 }
 
 /// Get a frame

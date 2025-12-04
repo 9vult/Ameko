@@ -65,8 +65,10 @@ pub export fn LoadVideo(g_ctx: *context.GlobalContext, file_name: [*c]u8, cache_
 
 /// Close the open video file
 pub export fn CloseVideo(g_ctx: *context.GlobalContext) c_int {
-    _ = g_ctx;
-    return 0; // TODO: implement
+    libass.CloseVideo(g_ctx);
+    ffms.CloseVideo(g_ctx);
+    buffers.Deinit(g_ctx);
+    return 0;
 }
 
 pub export fn SetSubtitles(g_ctx: *context.GlobalContext, data: [*c]u8, data_len: c_int, code_page: [*c]u8) c_int {

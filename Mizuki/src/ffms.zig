@@ -57,7 +57,7 @@ pub fn CheckAvailability() bool {
     }
     if (builtin.target.os.tag == .macos) {
         _ = std.DynLib.open("libffms2.dylib") catch {
-           _ = std.DynLib.open("/opt/homebrew/lib/libffms2.dylib") catch return false;
+            _ = std.DynLib.open("/opt/homebrew/lib/libffms2.dylib") catch return false;
         };
         return true;
     }
@@ -295,6 +295,32 @@ pub fn LoadVideo(g_ctx: *context.GlobalContext, file_name: [*c]u8, cache_file_na
     }
     c.FFMS_DestroyIndex(index);
     logger.Debug("[FFMS2] Successfully loaded video file");
+}
+
+pub fn CloseVideo(g_ctx: *context.GlobalContext) void {
+    const ctx = &g_ctx.*.ffms;
+    if (ctx.video_source) |video_source| {
+        c.FFMS_DestroyVideoSource(video_source);
+    }
+    if (ctx.audio_source) |audio_source| {
+        c.FFMS_DestroyAudioSource(audio_source);
+    }
+    if (ctx.index) |index| {
+        c.FFMS_DestroyIndex(index);
+    }
+
+    if (ctx.keyframes.len != 0) {
+        common.allocator.free(ctx.keyframes);
+        ctx.keyframes = undefined;
+    }
+    if (ctx.timecodes.len != 0) {
+        common.allocator.free(ctx.timecodes);
+        ctx.timecodes = undefined;
+    }
+    if (ctx.frame_intervals.len != 0) {
+        common.allocator.free(ctx.frame_intervals);
+        ctx.frame_intervals = undefined;
+    }
 }
 
 pub fn GetFrame(g_ctx: *context.GlobalContext, frame_number: c_int, out: *frames.VideoFrame) FfmsError!void {

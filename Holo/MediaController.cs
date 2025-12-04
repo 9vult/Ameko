@@ -357,7 +357,7 @@ public class MediaController : BindableBase
         _logger.LogInformation("Opening video {FilePath}", filePath);
 
         if (IsVideoLoaded)
-            _provider.CloseVideo();
+            CloseVideo();
 
         if (_provider.LoadVideo(filePath) != 0)
         {
@@ -418,6 +418,23 @@ public class MediaController : BindableBase
             _lastFrame = _provider.GetFrame(0, 0, false);
         }
         return true;
+    }
+
+    /// <summary>
+    /// Close the open video
+    /// </summary>
+    /// <returns><see langword="true"/> if successful</returns>
+    /// <exception cref="InvalidOperationException">If the provider isn't initialized</exception>
+    public bool CloseVideo()
+    {
+        if (!_provider.IsInitialized)
+            throw new InvalidOperationException("Provider is not initialized");
+
+        if (!IsVideoLoaded)
+            return true;
+
+        IsVideoLoaded = false;
+        return _provider.CloseVideo() == 0; // == _provider == 0;
     }
 
     /// <summary>

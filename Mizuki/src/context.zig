@@ -33,13 +33,12 @@ pub const FFMSContext = struct {
     sample_count: i64,
 
     pub fn Init() FFMSContext {
-        const csb: [128]u8 = std.mem.zeroes([128]u8);
-        return FFMSContext{
+        var out: FFMSContext = .{
             .index = null,
             .video_source = null,
             .audio_source = null,
-            .color_space_buffer = csb,
-            .color_space = &csb[0],
+            .color_space_buffer = std.mem.zeroes([128]u8),
+            .color_space = undefined,
             .video_color_space = -1,
             .video_color_range = -1,
             .keyframes = undefined,
@@ -53,6 +52,8 @@ pub const FFMSContext = struct {
             .sample_rate = -1,
             .sample_count = -1,
         };
+        out.color_space = &out.color_space_buffer[0];
+        return out;
     }
 };
 
@@ -99,6 +100,12 @@ pub const GlobalContext = struct {
             .libass = LibassContext.Init(),
             .buffers = BuffersContext.Init(),
         };
+    }
+
+    pub fn Destroy(ctx: *GlobalContext) void {
+        FFMSContext.Destroy(ctx.ffms);
+        LibassContext.Destroy(ctx.libass);
+        BuffersContext.Destroy(ctx.buffers);
     }
 };
 

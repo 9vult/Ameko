@@ -171,6 +171,7 @@ public class IoService(
 
         if (wsp.IsSaved)
         {
+            wsp.MediaController.CloseVideo();
             prj.CloseDocument(wsp.Id, replaceIfLast);
             tabFactory.Release(wsp);
             return true;
@@ -200,6 +201,7 @@ public class IoService(
                 }
                 goto case MsgBoxButton.No; // lol
             case MsgBoxButton.No:
+                wsp.MediaController.CloseVideo();
                 prj.CloseDocument(wsp.Id, replaceIfLast);
                 tabFactory.Release(wsp);
                 return true;
