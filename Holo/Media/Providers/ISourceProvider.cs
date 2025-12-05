@@ -81,8 +81,9 @@ public interface ISourceProvider
     /// <summary>
     /// Get the audio frame buffer
     /// </summary>
+    /// <param name="progressCallback">Indexing progress callback</param>
     /// <returns>Audio frame</returns>
-    unsafe AudioFrame* GetAudio();
+    unsafe AudioFrame* GetAudio(IndexingProgressCallback? progressCallback = null);
 
     /// <summary>
     /// Release a frame

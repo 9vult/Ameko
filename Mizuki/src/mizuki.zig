@@ -129,8 +129,8 @@ pub export fn GetFrame(g_ctx: *context.GlobalContext, frame_number: c_int, times
 }
 
 /// Get the audio
-pub export fn GetAudio(g_ctx: *context.GlobalContext) ?*frames.AudioFrame {
-    return buffers.GetAudio(g_ctx) catch {
+pub export fn GetAudio(g_ctx: *context.GlobalContext, progress_cb: common.ProgressCallback) ?*frames.AudioFrame {
+    return buffers.GetAudio(g_ctx, progress_cb) catch {
         return null;
     };
 }

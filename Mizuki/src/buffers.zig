@@ -42,7 +42,7 @@ pub fn InitAudio(g_ctx: *context.GlobalContext) ffms.FfmsError!void {
 }
 
 /// Get the audio buffer
-pub fn GetAudio(g_ctx: *context.GlobalContext) ffms.FfmsError!*frames.AudioFrame {
+pub fn GetAudio(g_ctx: *context.GlobalContext, progress_cb: common.ProgressCallback) ffms.FfmsError!*frames.AudioFrame {
     const ctx = &g_ctx.*.buffers;
     const ffms_ctx = &g_ctx.*.ffms;
 
@@ -50,7 +50,13 @@ pub fn GetAudio(g_ctx: *context.GlobalContext) ffms.FfmsError!*frames.AudioFrame
         return ffms.FfmsError.NoAudioTracks;
     }
     if (ctx.audio_frame.?.*.valid == 0) {
-        try ffms.GetAudio(g_ctx, @ptrCast(ctx.audio_buffer.?.ptr), 0, ffms_ctx.sample_count);
+        try ffms.GetAudio(
+            g_ctx,
+            @ptrCast(ctx.audio_buffer.?.ptr),
+            0,
+            ffms_ctx.sample_count,
+            progress_cb,
+        );
         ctx.audio_frame.?.*.valid = 1;
     }
 

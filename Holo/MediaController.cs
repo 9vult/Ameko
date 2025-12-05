@@ -409,7 +409,7 @@ public class MediaController : BindableBase
 
             unsafe
             {
-                _audioFrame = _provider.GetAudio();
+                _audioFrame = _provider.GetAudio(progressCallback);
                 if (_audioFrame->Valid != 1)
                 {
                     return false; // ??

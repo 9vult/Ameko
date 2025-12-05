@@ -122,9 +122,22 @@ public unsafe class MizukiSourceProvider : ISourceProvider
     }
 
     /// <inheritdoc />
-    public AudioFrame* GetAudio()
+    public AudioFrame* GetAudio(ISourceProvider.IndexingProgressCallback? progressCallback = null)
     {
-        return External.GetAudio(_context);
+        External.IndexingProgressCallback? nativeCb = null;
+        if (progressCallback != null)
+        {
+            nativeCb = (current, total, _) =>
+            {
+                progressCallback(current, total);
+                return 0;
+            };
+            _progressHandle = GCHandle.Alloc(nativeCb);
+        }
+
+        var result = External.GetAudio(_context, nativeCb);
+        _progressHandle?.Free();
+        return result;
     }
 
     /// <inheritdoc />
@@ -260,7 +273,10 @@ internal static unsafe partial class External
     );
 
     [LibraryImport("mizuki")]
-    internal static unsafe partial AudioFrame* GetAudio(GlobalContext* context);
+    internal static unsafe partial AudioFrame* GetAudio(
+        GlobalContext* context,
+        IndexingProgressCallback? progressCallback
+    );
 
     [LibraryImport("mizuki")]
     internal static unsafe partial int ReleaseFrame(FrameGroup* frame);

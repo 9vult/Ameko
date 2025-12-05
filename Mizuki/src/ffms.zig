@@ -357,11 +357,41 @@ pub fn GetFrame(g_ctx: *context.GlobalContext, frame_number: c_int, out: *frames
     out.*.valid = 1;
 }
 
-pub fn GetAudio(g_ctx: *context.GlobalContext, buffer: *i16, start: i64, count: i64) FfmsError!void {
+pub fn GetAudio(
+    g_ctx: *context.GlobalContext,
+    buffer: *i16,
+    start: i64,
+    count: i64,
+    progress_cb: common.ProgressCallback,
+) FfmsError!void {
     const ctx = &g_ctx.*.ffms;
-    const result = c.FFMS_GetAudio(ctx.audio_source, buffer, start, count, &err_info);
-    if (result != 0) {
-        return FfmsError.DecodingAudioFailed;
+
+    const max_chunk_size: i64 = 4096;
+    var current_chunk_size: i64 = 0;
+    var decoded: i64 = 0;
+
+    const buff_ptr: [*]i16 = @ptrCast(buffer);
+
+    while (decoded < count) : (decoded += current_chunk_size) {
+        current_chunk_size = if (count - decoded > max_chunk_size) max_chunk_size else count - decoded;
+        const offset: usize = @intCast(decoded);
+
+        const result = c.FFMS_GetAudio(
+            ctx.audio_source,
+            buff_ptr + offset,
+            start + decoded,
+            current_chunk_size,
+            &err_info,
+        );
+
+        if (result != 0) {
+            return FfmsError.DecodingAudioFailed;
+        }
+
+        // Call progress callback, if provided
+        if (progress_cb) |cb| {
+            _ = cb(start + decoded, start + count, null);
+        }
     }
 }
 
