@@ -98,10 +98,7 @@ pub fn LoadVideo(
     }
 
     if (progress_cb) |cb| {
-        logger.Info("SET PROGRESS CALLBACK!");
         c.FFMS_SetProgressCallback(indexer, cb, null);
-    } else {
-        logger.Error("NO PROGRESS CALLBACK!");
     }
 
     // Get tracks
@@ -374,7 +371,7 @@ pub fn GetAudio(
 
     while (decoded < count) : (decoded += current_chunk_size) {
         current_chunk_size = if (count - decoded > max_chunk_size) max_chunk_size else count - decoded;
-        const offset: usize = @intCast(decoded);
+        const offset: usize = @intCast(decoded * ctx.channel_count);
 
         const result = c.FFMS_GetAudio(
             ctx.audio_source,
