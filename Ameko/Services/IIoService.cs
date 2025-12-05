@@ -121,21 +121,21 @@ public interface IIoService
     /// <param name="interaction">Open File Dialog interaction</param>
     /// <param name="workspace">Workspace to open the video in</param>
     /// <returns><see langword="true"/> if successful</returns>
-    Task<bool> OpenVideoFile(Interaction<Unit, Uri?> interaction, Workspace workspace);
+    Task<bool> OpenVideoFileAsync(Interaction<Unit, Uri?> interaction, Workspace workspace);
 
     /// <summary>
     /// Open a linked video file (From the <see cref="Document"/>), if it exists
     /// </summary>
     /// <param name="workspace">Workspace to open the video in</param>
     /// <returns><see langword="true"/> if successful</returns>
-    Task<bool> OpenVideoFile(Workspace workspace);
+    Task<bool> OpenVideoFileAsync(Workspace workspace);
 
     /// <summary>
     /// Open a video file and attach it to the <paramref name="workspace"/>
     /// </summary>
     /// <param name="uri">URI of the video file</param>
     /// <param name="workspace">Workspace to open the video in</param>
-    bool OpenVideoFile(Uri uri, Workspace workspace);
+    Task<bool> OpenVideoFileAsync(Uri uri, Workspace workspace);
 
     /// <summary>
     /// Save a frame to file

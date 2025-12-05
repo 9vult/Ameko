@@ -349,7 +349,7 @@ public class MediaController : BindableBase
     /// <param name="filePath">Path to the video to open</param>
     /// <returns><see langword="true"/> if successful</returns>
     /// <exception cref="InvalidOperationException">If the provider isn't initialized</exception>
-    public bool OpenVideo(string filePath)
+    public async Task<bool> OpenVideoAsync(string filePath)
     {
         if (!_provider.IsInitialized)
             throw new InvalidOperationException("Provider is not initialized");
@@ -359,65 +359,69 @@ public class MediaController : BindableBase
         if (IsVideoLoaded)
             CloseVideo();
 
-        if (_provider.LoadVideo(filePath) != 0)
+        return await Task.Run(() =>
         {
-            // TODO: Handle error
-            return false;
-        }
-
-        if (_provider.AllocateBuffers(64, 32) != 0)
-        {
-            return false;
-        }
-
-        unsafe
-        {
-            var testFrame = _provider.GetFrame(0, 0, true);
-            if (testFrame is null)
+            if (_provider.LoadVideo(filePath) != 0)
             {
                 // TODO: Handle error
+                return false;
             }
 
-            VideoInfo = new VideoInfo(
-                path: filePath,
-                frameCount: _provider.FrameCount,
-                sar: new Rational { Numerator = 1, Denominator = 1 },
-                frameTimes: _provider.GetTimecodes(),
-                frameIntervals: _provider.GetFrameIntervals(),
-                keyframes: _provider.GetKeyframes(),
-                testFrame->VideoFrame->Width,
-                testFrame->VideoFrame->Height
-            );
+            if (_provider.AllocateBuffers(64, 32) != 0)
+            {
+                return false;
+            }
 
-            _playback.Intervals = VideoInfo.FrameIntervals;
-        }
+            unsafe
+            {
+                var testFrame = _provider.GetFrame(0, 0, true);
+                if (testFrame is null)
+                {
+                    // TODO: Handle error
+                }
 
-        DisplayWidth = VideoInfo.Width / _screenScaleFactor;
-        DisplayHeight = VideoInfo.Height / _screenScaleFactor;
+                VideoInfo = new VideoInfo(
+                    path: filePath,
+                    frameCount: _provider.FrameCount,
+                    sar: new Rational { Numerator = 1, Denominator = 1 },
+                    frameTimes: _provider.GetTimecodes(),
+                    frameIntervals: _provider.GetFrameIntervals(),
+                    keyframes: _provider.GetKeyframes(),
+                    testFrame->VideoFrame->Width,
+                    testFrame->VideoFrame->Height
+                );
 
-        // Audio time
-        if (_provider.AllocateAudioBuffer() != 0)
-        {
-            return false; // ??
-        }
+                _playback.Intervals = VideoInfo.FrameIntervals;
+            }
 
-        unsafe
-        {
-            _audioFrame = _provider.GetAudio();
-            if (_audioFrame->Valid != 1)
+            DisplayWidth = VideoInfo.Width / _screenScaleFactor;
+            DisplayHeight = VideoInfo.Height / _screenScaleFactor;
+
+            // Audio time
+            if (_provider.AllocateAudioBuffer() != 0)
             {
                 return false; // ??
             }
-        }
 
-        IsVideoLoaded = true;
+            unsafe
+            {
+                _audioFrame = _provider.GetAudio();
+                if (_audioFrame->Valid != 1)
+                {
+                    return false; // ??
+                }
+            }
 
-        // Re-fetch frame 0 with subtitles
-        unsafe
-        {
-            _lastFrame = _provider.GetFrame(0, 0, false);
-        }
-        return true;
+            IsVideoLoaded = true;
+
+            // Re-fetch frame 0 with subtitles
+            unsafe
+            {
+                _lastFrame = _provider.GetFrame(0, 0, false);
+            }
+
+            return true;
+        });
     }
 
     /// <summary>

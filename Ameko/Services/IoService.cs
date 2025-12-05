@@ -279,7 +279,7 @@ public class IoService(
                         wsp.SelectionManager.Select(line);
                 }
 
-                await OpenVideoFile(wsp);
+                await OpenVideoFileAsync(wsp);
             }
             else
             {
@@ -392,17 +392,20 @@ public class IoService(
     }
 
     /// <inheritdoc />
-    public async Task<bool> OpenVideoFile(Interaction<Unit, Uri?> interaction, Workspace workspace)
+    public async Task<bool> OpenVideoFileAsync(
+        Interaction<Unit, Uri?> interaction,
+        Workspace workspace
+    )
     {
         var uri = await interaction.Handle(Unit.Default);
         if (uri is null)
             return false;
 
-        return OpenVideoFile(uri, workspace);
+        return await OpenVideoFileAsync(uri, workspace);
     }
 
     /// <inheritdoc />
-    public async Task<bool> OpenVideoFile(Workspace workspace)
+    public async Task<bool> OpenVideoFileAsync(Workspace workspace)
     {
         var doc = workspace.Document;
         if (!doc.GarbageManager.TryGetString("Video File", out var relVideoPath))
@@ -433,7 +436,7 @@ public class IoService(
             );
             if (result != MsgBoxButton.Yes)
                 return true;
-            workspace.MediaController.OpenVideo(videoPath);
+            await workspace.MediaController.OpenVideoAsync(videoPath);
             workspace.MediaController.SetSubtitles(workspace.Document);
             if (doc.GarbageManager.TryGetInt("Video Position", out var frame))
                 workspace.MediaController.SeekTo(frame.Value); // Seek for clamp safety
@@ -449,11 +452,11 @@ public class IoService(
     }
 
     /// <inheritdoc />
-    public bool OpenVideoFile(Uri uri, Workspace workspace)
+    public async Task<bool> OpenVideoFileAsync(Uri uri, Workspace workspace)
     {
         if (!workspace.MediaController.IsEnabled)
         {
-            _ = messageBoxService.ShowAsync(
+            await messageBoxService.ShowAsync(
                 I18N.Other.MsgBox_MediaDisabled_Title,
                 I18N.Other.MsgBox_MediaDisabled_Body,
                 MsgBoxButtonSet.Ok,
@@ -465,7 +468,7 @@ public class IoService(
 
         try
         {
-            workspace.MediaController.OpenVideo(uri.LocalPath);
+            await workspace.MediaController.OpenVideoAsync(uri.LocalPath);
             workspace.MediaController.SetSubtitles(workspace.Document);
             return true;
         }

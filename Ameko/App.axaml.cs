@@ -311,7 +311,7 @@ public partial class App : Application
                 );
                 if (result != MsgBoxButton.Yes)
                     continue;
-                wsp.MediaController.OpenVideo(videoPath);
+                wsp.MediaController.OpenVideoAsync(videoPath);
                 wsp.MediaController.SetSubtitles(wsp.Document);
                 if (doc.GarbageManager.TryGetInt("Video Position", out var frame))
                     wsp.MediaController.SeekTo(frame.Value); // Seek for clamp safety

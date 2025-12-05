@@ -385,7 +385,7 @@ public partial class MainWindowViewModel : ViewModelBase
             if (wsp is null)
                 return;
 
-            _ = await IoService.AttachReferenceFile(AttachReferenceFile, wsp);
+            await IoService.AttachReferenceFile(AttachReferenceFile, wsp);
         });
     }
 
@@ -415,7 +415,7 @@ public partial class MainWindowViewModel : ViewModelBase
                 var wsp = ProjectProvider.Current.WorkingSpace;
                 if (wsp is null)
                     return;
-                _ = await IoService.AttachReferenceFile(uri, wsp);
+                await IoService.AttachReferenceFile(uri, wsp);
             }
         );
     }
@@ -448,7 +448,7 @@ public partial class MainWindowViewModel : ViewModelBase
                 ProjectProvider.Current.WorkingSpace = wsp = ProjectProvider.Current.AddWorkspace();
             }
 
-            _ = await IoService.OpenVideoFile(OpenVideo, wsp);
+            await IoService.OpenVideoFileAsync(OpenVideo, wsp);
         });
     }
 
@@ -457,8 +457,8 @@ public partial class MainWindowViewModel : ViewModelBase
     /// </summary>
     private ReactiveCommand<Uri, Unit> CreateOpenVideoNoGuiCommand()
     {
-        return ReactiveCommand.Create(
-            (Uri uri) =>
+        return ReactiveCommand.CreateFromTask(
+            async (Uri uri) =>
             {
                 var wsp = ProjectProvider.Current.WorkingSpace;
                 if (wsp is null)
@@ -467,7 +467,7 @@ public partial class MainWindowViewModel : ViewModelBase
                         ProjectProvider.Current.AddWorkspace();
                 }
 
-                _ = IoService.OpenVideoFile(uri, wsp);
+                await IoService.OpenVideoFileAsync(uri, wsp);
             }
         );
     }
