@@ -14,7 +14,6 @@ public class MediaController : BindableBase
     private readonly ISourceProvider _provider;
     private readonly ILogger _logger;
     private readonly HighResolutionTimer _playback;
-    private VideoInfo? _videoInfo;
 
     private unsafe FrameGroup* _lastFrame;
     private unsafe FrameGroup* _nextFrame;
@@ -43,8 +42,8 @@ public class MediaController : BindableBase
     /// </summary>
     public VideoInfo? VideoInfo
     {
-        get => _videoInfo;
-        private set => SetProperty(ref _videoInfo, value);
+        get;
+        private set => SetProperty(ref field, value);
     }
 
     [MemberNotNullWhen(true, nameof(VideoInfo))]
@@ -137,7 +136,7 @@ public class MediaController : BindableBase
     /// <summary>
     /// The current frame time
     /// </summary>
-    public Time? CurrentTime => _videoInfo?.TimeFromFrame(CurrentFrame);
+    public Time? CurrentTime => VideoInfo?.TimeFromFrame(CurrentFrame);
 
     /// <summary>
     /// If video is currently playing
@@ -190,17 +189,17 @@ public class MediaController : BindableBase
     /// </summary>
     public void PlayToEnd()
     {
-        if (_videoInfo is null)
+        if (!IsVideoLoaded)
             throw new InvalidOperationException("Video is not loaded");
 
         Stop();
         _logger.LogDebug("Playing to end");
-        _destinationFrame = _videoInfo.FrameCount - 1;
+        _destinationFrame = VideoInfo.FrameCount - 1;
         _playback.IntervalIndex = _currentFrame;
 
         var e = new PlaybackStartEventArgs(
-            _videoInfo.MillisecondsFromFrame(_currentFrame),
-            _videoInfo.MillisecondsFromFrame(_destinationFrame)
+            VideoInfo.MillisecondsFromFrame(_currentFrame),
+            VideoInfo.MillisecondsFromFrame(_destinationFrame)
         );
         OnPlaybackStart?.Invoke(this, e);
 
@@ -215,7 +214,7 @@ public class MediaController : BindableBase
     /// <param name="selection"></param>
     public void PlaySelection(IList<Event> selection)
     {
-        if (_videoInfo is null)
+        if (!IsVideoLoaded)
             throw new InvalidOperationException("Video is not loaded");
 
         var startTime = selection.Min(e => e.Start);
@@ -225,16 +224,16 @@ public class MediaController : BindableBase
         if (startTime is null || endTime is null)
             return;
 
-        var startFrame = _videoInfo.FrameFromTime(startTime);
-        var endFrame = _videoInfo.FrameFromTime(endTime) - 1; // Stop on the last frame including the selection
+        var startFrame = VideoInfo.FrameFromTime(startTime);
+        var endFrame = VideoInfo.FrameFromTime(endTime) - 1; // Stop on the last frame including the selection
 
         CurrentFrame = startFrame;
         _destinationFrame = endFrame;
         _playback.IntervalIndex = _currentFrame;
 
         var e = new PlaybackStartEventArgs(
-            _videoInfo.MillisecondsFromFrame(_currentFrame),
-            _videoInfo.MillisecondsFromFrame(_destinationFrame)
+            VideoInfo.MillisecondsFromFrame(_currentFrame),
+            VideoInfo.MillisecondsFromFrame(_destinationFrame)
         );
         OnPlaybackStart?.Invoke(this, e);
 
@@ -248,7 +247,7 @@ public class MediaController : BindableBase
     /// </summary>
     public void Resume()
     {
-        if (_videoInfo is null)
+        if (!IsVideoLoaded)
             throw new InvalidOperationException("Video is not loaded");
 
         _logger.LogDebug("Resuming playback");
@@ -257,8 +256,8 @@ public class MediaController : BindableBase
         OnPlaybackStart?.Invoke(
             this,
             new PlaybackStartEventArgs(
-                _videoInfo.MillisecondsFromFrame(_currentFrame),
-                _videoInfo.MillisecondsFromFrame(_destinationFrame)
+                VideoInfo.MillisecondsFromFrame(_currentFrame),
+                VideoInfo.MillisecondsFromFrame(_destinationFrame)
             )
         );
 
@@ -273,11 +272,11 @@ public class MediaController : BindableBase
     /// <param name="frameNumber">Frame number to seek to</param>
     public void SeekTo(int frameNumber)
     {
-        if (_videoInfo is null)
+        if (!IsVideoLoaded)
             return;
         if (_isPlaying)
             Pause();
-        CurrentFrame = Math.Clamp(frameNumber, 0, _videoInfo.FrameCount - 1);
+        CurrentFrame = Math.Clamp(frameNumber, 0, VideoInfo.FrameCount - 1);
         if (_isPaused)
             Resume();
     }
@@ -288,11 +287,11 @@ public class MediaController : BindableBase
     /// <param name="time">Time to seek to</param>
     public void SeekTo(Time time)
     {
-        if (_videoInfo is null)
+        if (!IsVideoLoaded)
             return;
         if (_isPlaying)
             Pause();
-        CurrentFrame = _videoInfo.FrameFromTime(time);
+        CurrentFrame = VideoInfo.FrameFromTime(time);
         if (_isPaused)
             Resume();
     }
@@ -303,11 +302,11 @@ public class MediaController : BindableBase
     /// <param name="event">Event to seek to the start of</param>
     public void SeekTo(Event @event)
     {
-        if (_videoInfo is null)
+        if (!IsVideoLoaded)
             return;
         if (_isPlaying)
             Pause();
-        CurrentFrame = _videoInfo.FrameFromTime(@event.Start);
+        CurrentFrame = VideoInfo.FrameFromTime(@event.Start);
         if (_isPaused)
             Resume();
     }
@@ -318,11 +317,11 @@ public class MediaController : BindableBase
     /// <param name="event">Event to seek to the end of</param>
     public void SeekToEnd(Event @event)
     {
-        if (_videoInfo is null)
+        if (!IsVideoLoaded)
             return;
         if (_isPlaying)
             Pause();
-        CurrentFrame = _videoInfo.FrameFromTime(@event.End) - 1;
+        CurrentFrame = VideoInfo.FrameFromTime(@event.End) - 1;
         if (_isPaused)
             Resume();
     }
@@ -333,14 +332,13 @@ public class MediaController : BindableBase
     /// <param name="event">Event to seek to the start of</param>
     public void AutoSeekTo(Event @event)
     {
-        if (_videoInfo is not null && IsAutoSeekEnabled)
-        {
-            if (_isPlaying)
-                Pause();
-            CurrentFrame = _videoInfo.FrameFromTime(@event.Start);
-            if (_isPaused)
-                Resume();
-        }
+        if (!IsVideoLoaded || !IsAutoSeekEnabled)
+            return;
+        if (_isPlaying)
+            Pause();
+        CurrentFrame = VideoInfo.FrameFromTime(@event.Start);
+        if (_isPaused)
+            Resume();
     }
 
     /// <summary>
@@ -442,11 +440,22 @@ public class MediaController : BindableBase
             return true;
 
         Stop();
-
-        _logger.LogInformation("Closing video {FilePath}", _videoInfo?.Path);
-
         IsVideoLoaded = false;
-        return _provider.CloseVideo() == 0; // == _provider == 0;
+
+        // Close
+        _logger.LogInformation("Closing video {FilePath}", VideoInfo?.Path);
+        var result = _provider.CloseVideo() == 0;
+
+        // Reset
+        ScaleFactor = ScaleFactor.Default;
+        RotationalFactor = RotationalFactor.Default;
+
+        // Reset the slider without triggering frame fetch
+        _currentFrame = 0;
+        RaisePropertyChanged(nameof(CurrentFrame));
+        RaisePropertyChanged(nameof(CurrentTime));
+
+        return result;
     }
 
     /// <summary>
@@ -471,7 +480,7 @@ public class MediaController : BindableBase
     {
         if (!_provider.IsInitialized)
             throw new InvalidOperationException("Provider is not initialized");
-        if (_videoInfo is null)
+        if (!IsVideoLoaded)
             throw new InvalidOperationException("Video is not loaded");
 
         lock (_frameLock)
@@ -493,7 +502,7 @@ public class MediaController : BindableBase
     {
         if (!_provider.IsInitialized)
             throw new InvalidOperationException("Provider is not initialized");
-        if (_videoInfo is null)
+        if (!IsVideoLoaded)
             throw new InvalidOperationException("Video is not loaded");
         return _audioFrame;
     }
@@ -507,7 +516,7 @@ public class MediaController : BindableBase
     {
         if (!_provider.IsInitialized)
             throw new InvalidOperationException("Provider is not initialized");
-        if (_videoInfo is null)
+        if (!IsVideoLoaded)
             return;
 
         // TODO: preferably not create a new writer on each change
@@ -550,7 +559,7 @@ public class MediaController : BindableBase
             _subtitlesChanged = false;
         }
 
-        var time = _videoInfo?.MillisecondsFromFrame(frameToFetch) ?? 0;
+        var time = VideoInfo?.MillisecondsFromFrame(frameToFetch) ?? 0;
 
         var frame = _provider.GetFrame(frameToFetch, time, false);
         lock (_frameLock)
