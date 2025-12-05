@@ -493,6 +493,18 @@ public partial class MainWindowViewModel : ViewModelBase
     }
 
     /// <summary>
+    /// Close the open video
+    /// </summary>
+    private ReactiveCommand<Unit, Unit> CreateCloseVideoCommand()
+    {
+        return ReactiveCommand.Create(() =>
+        {
+            var wsp = ProjectProvider.Current.WorkingSpace;
+            wsp?.MediaController.CloseVideo();
+        });
+    }
+
+    /// <summary>
     /// Display the Jump dialog
     /// </summary>
     private ReactiveCommand<Unit, Unit> CreateShowJumpDialogCommand()

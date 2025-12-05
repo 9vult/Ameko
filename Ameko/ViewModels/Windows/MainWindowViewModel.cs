@@ -149,6 +149,9 @@ public partial class MainWindowViewModel : ViewModelBase
     public ICommand OpenVideoCommand { get; }
     public ICommand OpenVideoNoGuiCommand { get; }
 
+    [KeybindTarget("ameko.video.close", KeybindContext.Global)]
+    public ICommand CloseVideoCommand { get; }
+
     [KeybindTarget("ameko.video.jump", "Ctrl+G", KeybindContext.Global)]
     public ICommand ShowJumpDialogCommand { get; }
 
@@ -356,6 +359,7 @@ public partial class MainWindowViewModel : ViewModelBase
         // Video
         OpenVideoCommand = CreateOpenVideoCommand();
         OpenVideoNoGuiCommand = CreateOpenVideoNoGuiCommand();
+        CloseVideoCommand = CreateCloseVideoCommand();
         ShowJumpDialogCommand = CreateShowJumpDialogCommand();
         // Scripts
         ExecuteScriptCommand = CreateExecuteScriptCommand();

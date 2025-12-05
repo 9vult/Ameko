@@ -339,4 +339,7 @@
     <data name="Video_Indexing" xml:space="preserve">
         <value>Indexing...</value>
     </data>
+    <data name="Menu_CloseVideo" xml:space="preserve">
+        <value>_Close Video</value>
+    </data>
 </root>

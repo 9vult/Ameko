@@ -104,6 +104,7 @@
             </StackPanel>
             <StackPanel Grid.Column="2"
                         Grid.Row="1"
+                        IsEnabled="{Binding Workspace.MediaController.IsVideoLoaded}" 
                         Spacing="2"
                         Orientation="Horizontal">
                 <TextBlock Text="{x:Static i18n:Resources.Video_Angle}"
@@ -136,7 +137,7 @@
             </StackPanel>
         </Grid>
         <ScrollViewer IsEnabled="{Binding Workspace.MediaController.IsVideoLoaded}"
-                      IsVisible="{Binding !IsIndexing}"
+                      IsVisible="{Binding Workspace.MediaController.IsVideoLoaded}"
                       HorizontalScrollBarVisibility="Auto"
                       VerticalScrollBarVisibility="Auto"
                       IsScrollChainingEnabled="False"

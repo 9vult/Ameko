@@ -105,6 +105,11 @@
             <MenuItem Header="{x:Static i18n:Resources.Menu_OpenVideo}"
                       Icon="{icons:MaterialIconExt Kind=MovieOpenPlus}"
                       Command="{Binding OpenVideoCommand}" />
+            <MenuItem Header="{x:Static i18n:Resources.Menu_CloseVideo}"
+                      Icon="{icons:MaterialIconExt Kind=MovieOpenOff}"
+                      IsEnabled="{Binding ProjectProvider.Current.WorkingSpace.MediaController.IsVideoLoaded,
+                                          FallbackValue=false}"
+                      Command="{Binding CloseVideoCommand}" />
             <Separator />
             <MenuItem Header="{x:Static i18n:Resources.Menu_JumpTo}"
                       Icon="{icons:MaterialIconExt Kind=BullseyeArrow}"
