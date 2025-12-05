@@ -13,6 +13,7 @@ using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Threading;
 using Holo;
+using Holo.Media.Providers;
 using Holo.Models;
 using Material.Icons;
 using Microsoft.Extensions.DependencyInjection;
@@ -448,7 +449,26 @@ public partial class MainWindowViewModel : ViewModelBase
                 ProjectProvider.Current.WorkingSpace = wsp = ProjectProvider.Current.AddWorkspace();
             }
 
-            await IoService.OpenVideoFileAsync(OpenVideo, wsp);
+            ISourceProvider.IndexingProgressCallback? callback = null;
+            var tabFactory = _serviceProvider.GetRequiredService<ITabFactory>();
+            if (tabFactory.TryGetViewModel(wsp, out var tabVm))
+            {
+                callback = (current, total) =>
+                {
+                    var progress = (double)current / total;
+                    Dispatcher.UIThread.Post(() => tabVm.IndexingProgress = progress);
+                };
+            }
+
+            try
+            {
+                Dispatcher.UIThread.Post(() => tabVm?.IsIndexing = true);
+                await IoService.OpenVideoFileAsync(OpenVideo, wsp, callback);
+            }
+            finally
+            {
+                Dispatcher.UIThread.Post(() => tabVm?.IsIndexing = false);
+            }
         });
     }
 

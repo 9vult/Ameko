@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 
+using System.Runtime.InteropServices;
+
 namespace Holo.Media.Providers;
 
 public interface ISourceProvider
@@ -29,8 +31,9 @@ public interface ISourceProvider
     /// Load a video
     /// </summary>
     /// <param name="filename">Path to the video to load</param>
+    /// <param name="progressCallback">Indexing progress callback</param>
     /// <returns>0 on success</returns>
-    int LoadVideo(string filename);
+    int LoadVideo(string filename, IndexingProgressCallback? progressCallback = null);
 
     /// <summary>
     /// Close the open video
@@ -105,4 +108,12 @@ public interface ISourceProvider
     /// </summary>
     /// <returns></returns>
     long[] GetFrameIntervals();
+
+    /// <summary>
+    /// Indexing progress
+    /// </summary>
+    /// <param name="current">Current progress</param>
+    /// <param name="total">Goal progress</param>
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    delegate void IndexingProgressCallback(long current, long total);
 }

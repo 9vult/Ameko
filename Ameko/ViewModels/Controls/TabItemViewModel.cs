@@ -172,6 +172,18 @@ public partial class TabItemViewModel : ViewModelBase
     public IKeybindService KeybindService { get; }
     public ILayoutProvider LayoutProvider { get; }
 
+    public bool IsIndexing
+    {
+        get;
+        set => this.RaiseAndSetIfChanged(ref field, value);
+    }
+
+    public double IndexingProgress
+    {
+        get;
+        set => this.RaiseAndSetIfChanged(ref field, value);
+    }
+
     public int EditBoxSelectionStart
     {
         get;

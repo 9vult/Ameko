@@ -77,7 +77,13 @@ pub fn Initialize() void {
 }
 
 /// Load a video
-pub fn LoadVideo(g_ctx: *context.GlobalContext, file_name: [*c]u8, cache_file_name: [*c]u8, color_matrix: [*c]u8) FfmsError!void {
+pub fn LoadVideo(
+    g_ctx: *context.GlobalContext,
+    file_name: [*c]u8,
+    cache_file_name: [*c]u8,
+    color_matrix: [*c]u8,
+    progress_cb: common.ProgressCallback,
+) FfmsError!void {
     var ctx = &g_ctx.*.ffms;
     var index = ctx.index;
 
@@ -89,6 +95,13 @@ pub fn LoadVideo(g_ctx: *context.GlobalContext, file_name: [*c]u8, cache_file_na
         } else {
             return FfmsError.VideoNotSupported;
         }
+    }
+
+    if (progress_cb) |cb| {
+        logger.Info("SET PROGRESS CALLBACK!");
+        c.FFMS_SetProgressCallback(indexer, cb, null);
+    } else {
+        logger.Error("NO PROGRESS CALLBACK!");
     }
 
     // Get tracks

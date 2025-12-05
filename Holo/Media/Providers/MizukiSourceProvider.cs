@@ -17,6 +17,7 @@ public unsafe class MizukiSourceProvider : ISourceProvider
     private static readonly External.LogCallback LogDelegate = Log;
 
     private GlobalContext* _context = null;
+    private GCHandle? _progressHandle;
 
     /// <summary>
     /// If this provider is initialized
@@ -29,6 +30,7 @@ public unsafe class MizukiSourceProvider : ISourceProvider
     /// <inheritdoc />
     public Rational Sar { get; }
 
+    /// <inheritdoc />
     public int Initialize()
     {
         External.SetLoggerCallback(LogDelegate);
@@ -41,21 +43,45 @@ public unsafe class MizukiSourceProvider : ISourceProvider
         return result;
     }
 
-    public int LoadVideo(string filename)
+    /// <inheritdoc />
+    public int LoadVideo(
+        string filename,
+        ISourceProvider.IndexingProgressCallback? progressCallback
+    )
     {
         if (_context != null)
             CloseVideo();
 
         _context = External.CreateContext();
-        var status = External.LoadVideo(_context, filename, GetCachePath(filename), "bgra");
+
+        External.IndexingProgressCallback? nativeCb = null;
+        if (progressCallback != null)
+        {
+            nativeCb = (current, total, _) =>
+            {
+                progressCallback(current, total);
+                return 0;
+            };
+            _progressHandle = GCHandle.Alloc(nativeCb);
+        }
+
+        var status = External.LoadVideo(
+            _context,
+            filename,
+            GetCachePath(filename),
+            "bgra",
+            nativeCb
+        );
         if (status == 0)
         {
             FrameCount = External.GetFrameCount(_context);
         }
 
+        _progressHandle?.Free();
         return status;
     }
 
+    /// <inheritdoc />
     public int CloseVideo()
     {
         var result = External.CloseVideo(_context);
@@ -71,6 +97,7 @@ public unsafe class MizukiSourceProvider : ISourceProvider
         return External.SetSubtitles(_context, bytes, bytes.Length, codePage);
     }
 
+    /// <inheritdoc />
     public int AllocateBuffers(int numBuffers, int maxCacheSize)
     {
         return External.AllocateBuffers(_context, numBuffers, maxCacheSize);
@@ -196,7 +223,8 @@ internal static unsafe partial class External
         GlobalContext* context,
         string fileName,
         string cacheFileName,
-        string colorMatrix
+        string colorMatrix,
+        IndexingProgressCallback? progressCallback
     );
 
     [LibraryImport("mizuki")]
@@ -254,6 +282,9 @@ internal static unsafe partial class External
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     public delegate void LogCallback(int level, nint message);
+
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    public delegate int IndexingProgressCallback(long current, long total, void* unused);
 }
 
 /// <summary>

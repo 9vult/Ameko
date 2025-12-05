@@ -394,18 +394,22 @@ public class IoService(
     /// <inheritdoc />
     public async Task<bool> OpenVideoFileAsync(
         Interaction<Unit, Uri?> interaction,
-        Workspace workspace
+        Workspace workspace,
+        ISourceProvider.IndexingProgressCallback? progressCallback = null
     )
     {
         var uri = await interaction.Handle(Unit.Default);
         if (uri is null)
             return false;
 
-        return await OpenVideoFileAsync(uri, workspace);
+        return await OpenVideoFileAsync(uri, workspace, progressCallback);
     }
 
     /// <inheritdoc />
-    public async Task<bool> OpenVideoFileAsync(Workspace workspace)
+    public async Task<bool> OpenVideoFileAsync(
+        Workspace workspace,
+        ISourceProvider.IndexingProgressCallback? progressCallback = null
+    )
     {
         var doc = workspace.Document;
         if (!doc.GarbageManager.TryGetString("Video File", out var relVideoPath))
@@ -452,7 +456,11 @@ public class IoService(
     }
 
     /// <inheritdoc />
-    public async Task<bool> OpenVideoFileAsync(Uri uri, Workspace workspace)
+    public async Task<bool> OpenVideoFileAsync(
+        Uri uri,
+        Workspace workspace,
+        ISourceProvider.IndexingProgressCallback? progressCallback = null
+    )
     {
         if (!workspace.MediaController.IsEnabled)
         {
@@ -468,7 +476,7 @@ public class IoService(
 
         try
         {
-            await workspace.MediaController.OpenVideoAsync(uri.LocalPath);
+            await workspace.MediaController.OpenVideoAsync(uri.LocalPath, progressCallback);
             workspace.MediaController.SetSubtitles(workspace.Document);
             return true;
         }

@@ -32,3 +32,10 @@ pub const LongArray = extern struct {
     ptr: [*c]c_longlong,
     len: usize,
 };
+
+/// Indexing progress callback
+pub const ProgressCallback = ?*const fn (
+    current: i64,
+    total: i64,
+    userdata: ?*anyopaque,
+) callconv(.c) c_int;

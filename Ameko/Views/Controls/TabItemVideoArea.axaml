@@ -113,7 +113,22 @@
                 </ComboBox>
             </StackPanel>
         </Grid>
-        <ScrollViewer HorizontalScrollBarVisibility="Auto"
+        <Grid IsVisible="{Binding IsIndexing}"
+              ColumnDefinitions="*, *, *"
+              RowDefinitions="*, Auto, Auto, *"
+              HorizontalAlignment="Stretch"
+              VerticalAlignment="Stretch">
+            <TextBlock Grid.Column="1"
+                       Grid.Row="1"
+                       Text="Indexing..." />
+            <ProgressBar Grid.Column="1"
+                         Grid.Row="2"
+                         Minimum="0"
+                         Maximum="1"
+                         Value="{Binding IndexingProgress}" />
+        </Grid>
+        <ScrollViewer IsVisible="{Binding !IsIndexing}"
+                      HorizontalScrollBarVisibility="Auto"
                       VerticalScrollBarVisibility="Auto"
                       IsScrollChainingEnabled="False"
                       AllowAutoHide="False"

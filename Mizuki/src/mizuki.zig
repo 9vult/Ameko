@@ -54,12 +54,28 @@ pub export fn DestroyContext(g_ctx: *context.GlobalContext) void {
 }
 
 /// Open a video file
-pub export fn LoadVideo(g_ctx: *context.GlobalContext, file_name: [*c]u8, cache_file_name: [*c]u8, color_matrix: [*c]u8) c_int {
+pub export fn LoadVideo(
+    g_ctx: *context.GlobalContext,
+    file_name: [*c]u8,
+    cache_file_name: [*c]u8,
+    color_matrix: [*c]u8,
+    progress_cb: common.ProgressCallback,
+) c_int {
     const ffms_ctx = g_ctx.*.ffms;
-    ffms.LoadVideo(g_ctx, file_name, cache_file_name, color_matrix) catch |err| {
+    ffms.LoadVideo(
+        g_ctx,
+        file_name,
+        cache_file_name,
+        color_matrix,
+        progress_cb,
+    ) catch |err| {
         return errors.IntFromFfmsError(err);
     };
-    libass.LoadVideo(g_ctx, @intCast(ffms_ctx.frame_width), @intCast(ffms_ctx.frame_height));
+    libass.LoadVideo(
+        g_ctx,
+        @intCast(ffms_ctx.frame_width),
+        @intCast(ffms_ctx.frame_height),
+    );
     return 0;
 }
 
@@ -79,7 +95,14 @@ pub export fn SetSubtitles(g_ctx: *context.GlobalContext, data: [*c]u8, data_len
 /// Allocate frame buffers
 pub export fn AllocateBuffers(g_ctx: *context.GlobalContext, num_buffers: c_int, max_cache_mb: c_int) c_int {
     const ffms_ctx = g_ctx.*.ffms;
-    buffers.Init(g_ctx, @intCast(num_buffers), max_cache_mb, ffms_ctx.frame_width, ffms_ctx.frame_height, ffms_ctx.frame_pitch) catch |err| {
+    buffers.Init(
+        g_ctx,
+        @intCast(num_buffers),
+        max_cache_mb,
+        ffms_ctx.frame_width,
+        ffms_ctx.frame_height,
+        ffms_ctx.frame_pitch,
+    ) catch |err| {
         return errors.IntFromFfmsError(err);
     };
     return 0;

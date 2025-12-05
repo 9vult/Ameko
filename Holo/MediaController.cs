@@ -347,9 +347,13 @@ public class MediaController : BindableBase
     /// Open a video
     /// </summary>
     /// <param name="filePath">Path to the video to open</param>
+    /// <param name="progressCallback">Indexing progress callback (optional)</param>
     /// <returns><see langword="true"/> if successful</returns>
     /// <exception cref="InvalidOperationException">If the provider isn't initialized</exception>
-    public async Task<bool> OpenVideoAsync(string filePath)
+    public async Task<bool> OpenVideoAsync(
+        string filePath,
+        ISourceProvider.IndexingProgressCallback? progressCallback = null
+    )
     {
         if (!_provider.IsInitialized)
             throw new InvalidOperationException("Provider is not initialized");
@@ -361,7 +365,7 @@ public class MediaController : BindableBase
 
         return await Task.Run(() =>
         {
-            if (_provider.LoadVideo(filePath) != 0)
+            if (_provider.LoadVideo(filePath, progressCallback) != 0)
             {
                 // TODO: Handle error
                 return false;
@@ -582,7 +586,6 @@ public class MediaController : BindableBase
     }
 
     public event Action? FrameReady;
-
     public event EventHandler<PlaybackStartEventArgs>? OnPlaybackStart;
     public event EventHandler<EventArgs>? OnPlaybackStop;
 }
