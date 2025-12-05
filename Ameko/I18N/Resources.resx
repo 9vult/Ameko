@@ -336,4 +336,7 @@
     <data name="Video_ContextMenu_Save_SubsOnly" xml:space="preserve">
         <value>Save Frame (Subtitles Only)</value>
     </data>
+    <data name="Video_Indexing" xml:space="preserve">
+        <value>Indexing...</value>
+    </data>
 </root>

@@ -20,14 +20,35 @@
     <Control.Resources>
         <converters:SeekSliderMaxConverter x:Key="MaxConverter" />
     </Control.Resources>
-    <DockPanel IsEnabled="{Binding Workspace.MediaController.IsVideoLoaded}"
-               Margin="2">
+    <DockPanel Margin="2">
         <Grid DockPanel.Dock="Bottom"
               ColumnDefinitions="Auto, *, Auto"
               RowDefinitions="Auto, Auto">
+            <Grid Grid.Column="0"
+                  Grid.Row="0"
+                  Grid.ColumnSpan="3"
+                  Margin="2"
+                  IsVisible="{Binding IsIndexing}"
+                  Name="IndexingInfo"
+                  ColumnDefinitions="Auto, *">
+                <TextBlock Grid.Column="0"
+                           Text="{x:Static i18n:Resources.Video_Indexing}"
+                           VerticalAlignment="Center"
+                           Margin="0 0 5 0" />
+                <ProgressBar Grid.Column="1"
+                             Minimum="0"
+                             Maximum="1"
+                             Classes="Success"
+                             ShowProgressText="True"
+                             Value="{Binding IndexingProgress}"
+                             VerticalAlignment="Center"
+                             HorizontalAlignment="Stretch" />
+            </Grid>
             <c:SeekSlider Grid.Column="0"
                           Grid.Row="0"
                           Grid.ColumnSpan="3"
+                          IsVisible="{Binding !IsIndexing}"
+                          IsEnabled="{Binding Workspace.MediaController.IsVideoLoaded}" 
                           Name="SeekBar"
                           VerticalAlignment="Center"
                           SmallChange="1"
@@ -41,6 +62,7 @@
                           Value="{Binding Workspace.MediaController.CurrentFrame}" />
             <StackPanel Grid.Column="0"
                         Grid.Row="1"
+                        IsEnabled="{Binding Workspace.MediaController.IsVideoLoaded}"
                         Orientation="Horizontal"
                         Spacing="2">
                 <Button ToolTip.Tip="{x:Static i18n:Resources.Video_Button_PlayPause_ToolTip}"
@@ -113,21 +135,8 @@
                 </ComboBox>
             </StackPanel>
         </Grid>
-        <Grid IsVisible="{Binding IsIndexing}"
-              ColumnDefinitions="*, *, *"
-              RowDefinitions="*, Auto, Auto, *"
-              HorizontalAlignment="Stretch"
-              VerticalAlignment="Stretch">
-            <TextBlock Grid.Column="1"
-                       Grid.Row="1"
-                       Text="Indexing..." />
-            <ProgressBar Grid.Column="1"
-                         Grid.Row="2"
-                         Minimum="0"
-                         Maximum="1"
-                         Value="{Binding IndexingProgress}" />
-        </Grid>
-        <ScrollViewer IsVisible="{Binding !IsIndexing}"
+        <ScrollViewer IsEnabled="{Binding Workspace.MediaController.IsVideoLoaded}"
+                      IsVisible="{Binding !IsIndexing}"
                       HorizontalScrollBarVisibility="Auto"
                       VerticalScrollBarVisibility="Auto"
                       IsScrollChainingEnabled="False"

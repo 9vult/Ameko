@@ -680,5 +680,11 @@ namespace Ameko.I18N {
                 return ResourceManager.GetString("Video_ContextMenu_Save_SubsOnly", resourceCulture);
             }
         }
+        
+        public static string Video_Indexing {
+            get {
+                return ResourceManager.GetString("Video_Indexing", resourceCulture);
+            }
+        }
     }
 }
