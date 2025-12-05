@@ -20,7 +20,7 @@ public partial class PkgManWindowViewModel : ViewModelBase
     private readonly IConfiguration _configuration;
     private readonly IMessageBoxService _messageBoxService;
 
-    private readonly ObservableCollection<Module> _updateCandidates;
+    private readonly ObservableCollection<Package> _updateCandidates;
     private string _repoUrlInput;
 
     public ICommand InstallCommand { get; }
@@ -33,7 +33,7 @@ public partial class PkgManWindowViewModel : ViewModelBase
 
     public IPackageManager PackageManager { get; }
 
-    public Module? SelectedStoreModule
+    public Package? SelectedStorePackage
     {
         get;
         set
@@ -43,7 +43,7 @@ public partial class PkgManWindowViewModel : ViewModelBase
         }
     }
 
-    public Module? SelectedInstalledModule
+    public Package? SelectedInstalledPackage
     {
         get;
         set
@@ -75,13 +75,14 @@ public partial class PkgManWindowViewModel : ViewModelBase
     }
 
     public bool InstallButtonEnabled =>
-        SelectedStoreModule is not null
-        && !PackageManager.InstalledModules.Contains(SelectedStoreModule);
+        SelectedStorePackage is not null
+        && !PackageManager.InstalledPackages.Contains(SelectedStorePackage);
 
-    public bool UninstallButtonEnabled => SelectedInstalledModule is not null;
+    public bool UninstallButtonEnabled => SelectedInstalledPackage is not null;
 
     public bool UpdateButtonEnabled =>
-        SelectedInstalledModule is not null && _updateCandidates.Contains(SelectedInstalledModule);
+        SelectedInstalledPackage is not null
+        && _updateCandidates.Contains(SelectedInstalledPackage);
 
     public bool UpdateAllButtonEnabled => _updateCandidates.Count > 0;
 
@@ -110,7 +111,7 @@ public partial class PkgManWindowViewModel : ViewModelBase
 
         _repoUrlInput = string.Empty;
 
-        _updateCandidates = new ObservableCollection<Module>(PackageManager.GetUpdateCandidates());
+        _updateCandidates = new ObservableCollection<Package>(PackageManager.GetUpdateCandidates());
 
         InstallCommand = CreateInstallCommand();
         UninstallCommand = CreateUninstallCommand();

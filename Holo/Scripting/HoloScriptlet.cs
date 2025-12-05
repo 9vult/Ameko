@@ -8,7 +8,7 @@ namespace Holo.Scripting;
 
 public class HoloScriptlet : IHoloExecutable
 {
-    public required ModuleInfo Info { get; init; }
+    public required PackageInfo Info { get; init; }
 
     public Prepared<Script> CompiledScript { get; init; }
 }

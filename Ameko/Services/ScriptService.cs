@@ -199,7 +199,7 @@ public class ScriptService : IScriptService
                 loadedScriptlets.Add(
                     new HoloScriptlet
                     {
-                        Info = new ModuleInfo
+                        Info = new PackageInfo
                         {
                             DisplayName = scriptletInfo.Get("displayName").ToString(),
                             QualifiedName = scriptletInfo.Get("qualifiedName").ToString(),

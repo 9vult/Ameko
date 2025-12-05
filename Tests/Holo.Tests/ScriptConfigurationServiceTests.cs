@@ -293,7 +293,7 @@ public class ScriptConfigurationServiceTests
     private class Sut1 : IHoloExecutable
     {
         /// <inheritdoc />
-        public ModuleInfo Info =>
-            new ModuleInfo { DisplayName = "SUT 1", QualifiedName = "sut1.script" };
+        public PackageInfo Info =>
+            new PackageInfo { DisplayName = "SUT 1", QualifiedName = "sut1.script" };
     }
 }

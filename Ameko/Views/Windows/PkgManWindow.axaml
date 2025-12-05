@@ -22,8 +22,8 @@
         Icon="/Assets/Ameko-Simplified-BG-64.ico"
         Title="{x:Static i18n:PkgMan.PkgManWindow_Title}">
     <TabControl>
-        <TabItem Header="{x:Static i18n:PkgMan.PkgMan_ModulesTab}">
-            <controls:PkgManModulesTab />
+        <TabItem Header="{x:Static i18n:PkgMan.PkgMan_PackagesTab}">
+            <controls:PkgManPackagesTab />
         </TabItem>
         <TabItem Header="{x:Static i18n:PkgMan.PkgMan_RepositoriesTab}">
             <controls:PkgManRepositoriesTab />

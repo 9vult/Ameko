@@ -9,5 +9,5 @@ public interface IHoloExecutable
     /// <summary>
     /// Basic script information
     /// </summary>
-    public ModuleInfo Info { get; }
+    public PackageInfo Info { get; }
 }

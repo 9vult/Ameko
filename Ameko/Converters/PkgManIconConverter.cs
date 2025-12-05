@@ -13,12 +13,12 @@ public class PkgManIconConverter : IValueConverter
 {
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        if (value is not ModuleType type)
+        if (value is not PackageType type)
             return null;
         return type switch
         {
-            ModuleType.Script => new MaterialIcon { Kind = MaterialIconKind.CodeBlockBraces },
-            ModuleType.Library => new MaterialIcon { Kind = MaterialIconKind.Bookshelf },
+            PackageType.Script => new MaterialIcon { Kind = MaterialIconKind.CodeBlockBraces },
+            PackageType.Library => new MaterialIcon { Kind = MaterialIconKind.Bookshelf },
             _ => null,
         };
     }

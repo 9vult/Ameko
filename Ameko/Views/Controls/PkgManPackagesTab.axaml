@@ -12,7 +12,7 @@
              xmlns:controls="clr-namespace:Ameko.Views.Controls"
              xmlns:holo="clr-namespace:Holo.Scripting.Models;assembly=Holo"
              xmlns:icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
-             x:Class="Ameko.Views.Controls.PkgManModulesTab"
+             x:Class="Ameko.Views.Controls.PkgManPackagesTab"
              x:DataType="vm:PkgManWindowViewModel">
     <UserControl.Resources>
         <converters:PkgManIconConverter x:Key="IconConverter" />
@@ -20,21 +20,21 @@
     </UserControl.Resources>
     <Grid ColumnDefinitions="*, *"
           RowDefinitions="*, 200, Auto">
-        <!-- Module store -->
+        <!-- Package store -->
         <DockPanel Grid.Column="0"
                    Grid.Row="0">
             <TextBlock DockPanel.Dock="Top"
                        Margin="2"
                        HorizontalAlignment="Center"
                        FontSize="16"
-                       Text="{x:Static i18n:PkgMan.PkgMan_ModuleStore}" />
+                       Text="{x:Static i18n:PkgMan.PkgMan_PackageStore}" />
             <ListBox Margin="2"
                      VerticalAlignment="Stretch"
                      SelectionMode="Single"
-                     SelectedItem="{Binding SelectedStoreModule}"
-                     ItemsSource="{Binding PackageManager.ModuleStore, Mode=TwoWay}">
+                     SelectedItem="{Binding SelectedStorePackage}"
+                     ItemsSource="{Binding PackageManager.PackageStore, Mode=TwoWay}">
                 <ListBox.ItemTemplate>
-                    <DataTemplate x:DataType="holo:Module">
+                    <DataTemplate x:DataType="holo:Package">
                         <Grid ColumnDefinitions="Auto, *, Auto"
                               ToolTip.Tip="{Binding QualifiedName}">
                             <Image Grid.Column="0"
@@ -49,24 +49,24 @@
             </ListBox>
         </DockPanel>
         <!-- Store selection information -->
-        <controls:ModuleInformation Grid.Column="0"
+        <controls:PackageInformation Grid.Column="0"
                                     Grid.Row="1"
-                                    DataContext="{Binding SelectedStoreModule}" />
-        <!-- Installed modules -->
+                                    DataContext="{Binding SelectedStorePackage}" />
+        <!-- Installed packages -->
         <DockPanel Grid.Column="1"
                    Grid.Row="0">
             <TextBlock DockPanel.Dock="Top"
                        Margin="2"
                        HorizontalAlignment="Center"
                        FontSize="16"
-                       Text="{x:Static i18n:PkgMan.PkgMan_InstalledModules}" />
+                       Text="{x:Static i18n:PkgMan.PkgMan_InstalledPackages}" />
             <ListBox Margin="2"
                      VerticalAlignment="Stretch"
                      SelectionMode="Single"
-                     SelectedItem="{Binding SelectedInstalledModule}"
-                     ItemsSource="{Binding PackageManager.InstalledModules}">
+                     SelectedItem="{Binding SelectedInstalledPackage}"
+                     ItemsSource="{Binding PackageManager.InstalledPackages}">
                 <ListBox.ItemTemplate>
-                    <DataTemplate x:DataType="holo:Module">
+                    <DataTemplate x:DataType="holo:Package">
                         <Grid ColumnDefinitions="Auto, *, Auto, Auto"
                               ToolTip.Tip="{Binding QualifiedName}">
                             <Image Grid.Column="0"
@@ -86,9 +86,9 @@
             </ListBox>
         </DockPanel>
         <!-- Installed selection information -->
-        <controls:ModuleInformation Grid.Column="1"
+        <controls:PackageInformation Grid.Column="1"
                                     Grid.Row="1"
-                                    DataContext="{Binding SelectedInstalledModule}" />
+                                    DataContext="{Binding SelectedInstalledPackage}" />
         <!-- Store buttons -->
         <Grid Grid.Column="0"
               Grid.Row="2"

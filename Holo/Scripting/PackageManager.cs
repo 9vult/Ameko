@@ -12,7 +12,7 @@ using Microsoft.Extensions.Logging;
 namespace Holo.Scripting;
 
 /// <summary>
-/// Package Manager manages <see cref="Repository"/>s and <see cref="Module"/>s
+/// Package Manager manages <see cref="Repository"/>s and <see cref="Package"/>s
 /// </summary>
 public partial class PackageManager : IPackageManager
 {
@@ -22,9 +22,7 @@ public partial class PackageManager : IPackageManager
         Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) },
     };
 
-    private static readonly Uri ModulesRoot = new Uri(
-        Path.Combine(Directories.DataHome, "scripts")
-    );
+    private static readonly Uri ScriptingRoot = new(Path.Combine(Directories.DataHome, "scripts"));
 
     /// <summary>
     /// The filesystem being used
@@ -41,11 +39,11 @@ public partial class PackageManager : IPackageManager
 
     private Repository? _baseRepository;
     private readonly Dictionary<string, Repository> _repositoryMap;
-    private readonly Dictionary<string, Module> _moduleMap;
+    private readonly Dictionary<string, Package> _packageMap;
     private readonly ObservableCollection<Repository> _repositories;
-    private readonly ObservableCollection<Module> _moduleStore;
+    private readonly ObservableCollection<Package> _packageStore;
 
-    private readonly ObservableCollection<Module> _installedModules;
+    private readonly ObservableCollection<Package> _installedPackages;
 
     /// <summary>
     /// Base repository URL
@@ -58,75 +56,72 @@ public partial class PackageManager : IPackageManager
     public ReadOnlyObservableCollection<Repository> Repositories { get; }
 
     /// <summary>
-    /// List of available modules
+    /// List of available packages
     /// </summary>
-    public ReadOnlyObservableCollection<Module> ModuleStore { get; }
+    public ReadOnlyObservableCollection<Package> PackageStore { get; }
 
     /// <summary>
-    /// List of installed modules
+    /// List of installed packages
     /// </summary>
-    public ReadOnlyObservableCollection<Module> InstalledModules { get; }
+    public ReadOnlyObservableCollection<Package> InstalledPackages { get; }
 
-    #region Modules
+    #region Packages
 
     /// <summary>
-    /// Determine if a module is installed
+    /// Determine if a package is installed
     /// </summary>
-    /// <param name="module">Module to check</param>
-    /// <returns><see langword="true"/> if the module is installed</returns>
-    public bool IsModuleInstalled(Module module)
+    /// <param name="package">Package to check</param>
+    /// <returns><see langword="true"/> if the package is installed</returns>
+    public bool IsPackageInstalled(Package package)
     {
-        return _fileSystem.File.Exists(ModulePath(module));
+        return _fileSystem.File.Exists(PackagePath(package));
     }
 
     /// <summary>
-    /// Recursively install a <see cref="Module"/> and its dependencies
+    /// Recursively install a <see cref="Package"/> and its dependencies
     /// </summary>
-    /// <param name="module">Module to install</param>
+    /// <param name="package">Package to install</param>
     /// <returns><see cref="InstallationResult.Success"/> on success</returns>
-    public async Task<InstallationResult> InstallModule(Module module)
+    public async Task<InstallationResult> InstallPackage(Package package)
     {
-        if (IsModuleInstalled(module))
+        if (IsPackageInstalled(package))
             return InstallationResult.AlreadyInstalled;
-        _logger.LogInformation(
-            "Attempting to install module {ModuleQualifiedName}",
-            module.QualifiedName
-        );
+        _logger.LogInformation("Attempting to install package {Package}", package.QualifiedName);
 
-        if (!ValidateQualifiedName(module.QualifiedName))
+        if (!ValidateQualifiedName(package.QualifiedName))
             return InstallationResult.InvalidName;
 
         foreach (
-            var dependencyName in module.Dependencies.Where(dependencyName =>
-                dependencyName != module.QualifiedName
+            var dependencyName in package.Dependencies.Where(dependencyName =>
+                dependencyName != package.QualifiedName
             ) // Prevent recursion
         )
         {
-            if (!_moduleMap.TryGetValue(dependencyName, out var dependency))
+            if (!_packageMap.TryGetValue(dependencyName, out var dependency))
             {
                 _logger.LogError(
-                    "Failed to find dependency {DependencyName} for module {ModuleQualifiedName}",
+                    "Failed to find dependency {Dependency} for package {Package}",
                     dependencyName,
-                    module.QualifiedName
+                    package.QualifiedName
                 );
                 return InstallationResult.DependencyNotFound;
             }
 
             // Skip already-installed dependencies
-            if (IsModuleInstalled(dependency))
+            if (IsPackageInstalled(dependency))
                 continue;
 
-            var depResult = await InstallModule(dependency);
+            var depResult = await InstallPackage(dependency);
             if (depResult != InstallationResult.Success)
                 return depResult; // Cascade failures
         }
 
         try
         {
-            var path = ModulePath(module);
-            var sidecar = SidecarPath(module);
-            var help = HelpPath(module);
-            // Create module directories if they don't exist
+            var path = PackagePath(package);
+            var sidecar = SidecarPath(package);
+            var help = HelpPath(package);
+            // Create package directories if they don't exist
             if (!_fileSystem.Directory.Exists(Path.GetDirectoryName(path)))
                 _fileSystem.Directory.CreateDirectory(Path.GetDirectoryName(path) ?? "/");
             if (!_fileSystem.Directory.Exists(Path.GetDirectoryName(sidecar)))
@@ -134,14 +129,14 @@ public partial class PackageManager : IPackageManager
             if (!_fileSystem.Directory.Exists(Path.GetDirectoryName(help)))
                 _fileSystem.Directory.CreateDirectory(Path.GetDirectoryName(help) ?? "/");
 
-            await using var dlStream = await _httpClient.GetStreamAsync(module.Url);
-            await using var moduleFs = _fileSystem.FileStream.New(
+            await using var dlStream = await _httpClient.GetStreamAsync(package.Url);
+            await using var packageFs = _fileSystem.FileStream.New(
                 path,
                 FileMode.Create,
                 FileAccess.Write,
                 FileShare.None
             );
-            await dlStream.CopyToAsync(moduleFs);
+            await dlStream.CopyToAsync(packageFs);
 
             await using var sidecarFs = _fileSystem.FileStream.New(
                 sidecar,
@@ -149,13 +144,13 @@ public partial class PackageManager : IPackageManager
                 FileAccess.Write,
                 FileShare.None
             );
-            await JsonSerializer.SerializeAsync(sidecarFs, module, JsonOptions);
+            await JsonSerializer.SerializeAsync(sidecarFs, package, JsonOptions);
 
-            if (!string.IsNullOrEmpty(module.HelpUrl))
+            if (!string.IsNullOrEmpty(package.HelpUrl))
             {
                 try
                 {
-                    await using var helpStream = await _httpClient.GetStreamAsync(module.HelpUrl);
+                    await using var helpStream = await _httpClient.GetStreamAsync(package.HelpUrl);
                     await using var helpFs = _fileSystem.FileStream.New(
                         help,
                         FileMode.Create,
@@ -170,179 +165,171 @@ public partial class PackageManager : IPackageManager
                 }
             }
 
-            _installedModules.Add(module);
+            _installedPackages.Add(package);
             _logger.LogInformation(
-                "Successfully installed module {ModuleQualifiedName}",
-                module.QualifiedName
+                "Successfully installed package {Package}",
+                package.QualifiedName
             );
             return InstallationResult.Success;
         }
         catch (IOException e)
         {
-            _logger.LogError(
-                e,
-                "Failed to write module {ModuleQualifiedName} to disk",
-                module.QualifiedName
-            );
+            _logger.LogError(e, "Failed to write package {Package} to disk", package.QualifiedName);
             return InstallationResult.FilesystemFailure;
         }
         catch (Exception e)
         {
-            _logger.LogError(
-                e,
-                "Failed to install module {ModuleQualifiedName}",
-                module.QualifiedName
-            );
+            _logger.LogError(e, "Failed to install package {Package}", package.QualifiedName);
             return InstallationResult.Failure;
         }
     }
 
     /// <summary>
-    /// Uninstall a <see cref="Module"/>
+    /// Uninstall a <see cref="Package"/>
     /// </summary>
-    /// <param name="module">Module to uninstall</param>
+    /// <param name="package">Package to uninstall</param>
     /// <param name="isUpdate">Bypass dependency checking for update purposes</param>
     /// <returns><see cref="InstallationResult.Success"/> on success</returns>
     /// <remarks>Does not uninstall dependencies</remarks>
-    public InstallationResult UninstallModule(Module module, bool isUpdate = false)
+    public InstallationResult UninstallPackage(Package package, bool isUpdate = false)
     {
-        if (!IsModuleInstalled(module))
+        if (!IsPackageInstalled(package))
             return InstallationResult.NotInstalled;
-        if (!isUpdate && _installedModules.Any(m => m.Dependencies.Contains(module.QualifiedName)))
+        if (
+            !isUpdate && _installedPackages.Any(m => m.Dependencies.Contains(package.QualifiedName))
+        )
             return InstallationResult.IsRequiredDependency;
-        _logger.LogInformation(
-            "Attempting to uninstall module {ModuleQualifiedName}",
-            module.QualifiedName
-        );
+        _logger.LogInformation("Attempting to uninstall package {Package}", package.QualifiedName);
 
         try
         {
-            _fileSystem.File.Delete(ModulePath(module));
-            _fileSystem.File.Delete(SidecarPath(module));
-            if (!string.IsNullOrEmpty(module.HelpUrl))
-                _fileSystem.File.Delete(HelpPath(module));
+            _fileSystem.File.Delete(PackagePath(package));
+            _fileSystem.File.Delete(SidecarPath(package));
+            if (!string.IsNullOrEmpty(package.HelpUrl))
+                _fileSystem.File.Delete(HelpPath(package));
             _logger.LogInformation(
-                "Successfully uninstalled module {ModuleQualifiedName}",
-                module.QualifiedName
+                "Successfully uninstalled package {Package}",
+                package.QualifiedName
             );
-            _installedModules.Remove(module);
+            _installedPackages.Remove(package);
             return InstallationResult.Success;
         }
         catch (Exception e)
         {
-            _logger.LogError(
-                e,
-                "Failed to uninstall module {ModuleQualifiedName}",
-                module.QualifiedName
-            );
+            _logger.LogError(e, "Failed to uninstall package {Package}", package.QualifiedName);
             return InstallationResult.Failure;
         }
     }
 
     /// <summary>
-    /// Update a module to the latest version
+    /// Update a package to the latest version
     /// </summary>
-    /// <param name="module">Module to update</param>
+    /// <param name="package">Package to update</param>
     /// <returns><see cref="InstallationResult.Success"/> on success</returns>
-    public async Task<InstallationResult> UpdateModule(Module module)
+    public async Task<InstallationResult> UpdatePackage(Package package)
     {
-        _logger.LogInformation(
-            "Update for module {ModuleQualifiedName} requested...",
-            module.QualifiedName
-        );
-        var uninstallResult = UninstallModule(module, true);
+        _logger.LogInformation("Update for package {Package} requested...", package.QualifiedName);
+        var uninstallResult = UninstallPackage(package, true);
         if (uninstallResult == InstallationResult.Success)
-            return await InstallModule(module);
+            return await InstallPackage(package);
         return uninstallResult;
     }
 
     /// <summary>
-    /// Get a list of installed modules with available updates
+    /// Get a list of installed packages with available updates
     /// </summary>
-    /// <returns>List of updatable modules</returns>
-    public List<Module> GetUpdateCandidates()
+    /// <returns>List of updatable packages</returns>
+    public List<Package> GetUpdateCandidates()
     {
-        var updatable = new List<Module>();
+        var updatable = new List<Package>();
 
-        foreach (var module in _installedModules)
+        foreach (var pkg in _installedPackages)
         {
-            var match = _moduleStore.FirstOrDefault(m => m.QualifiedName == module.QualifiedName);
+            var match = _packageStore.FirstOrDefault(m => m.QualifiedName == pkg.QualifiedName);
             if (match is null)
                 continue;
 
-            if (match.Version > module.Version)
+            if (match.Version > pkg.Version)
                 updatable.Add(match);
         }
         return updatable;
     }
 
     /// <summary>
-    /// Check if a module is up to date
+    /// Check if a package is up to date
     /// </summary>
-    /// <param name="module">Module to check</param>
-    /// <returns><see langword="true"/> if the module is up to date</returns>
-    /// <remarks>If the module isn't found in the <see cref="ModuleStore"/>, returns <see langword="true"/></remarks>
-    public bool IsModuleUpToDate(Module module)
+    /// <param name="package">Package to check</param>
+    /// <returns><see langword="true"/> if the package is up to date</returns>
+    /// <remarks>If the package isn't found in the <see cref="PackageStore"/>, returns <see langword="true"/></remarks>
+    public bool IsPackageUpToDate(Package package)
     {
-        var match = _moduleStore.FirstOrDefault(m => m.QualifiedName == module.QualifiedName);
+        var match = _packageStore.FirstOrDefault(m => m.QualifiedName == package.QualifiedName);
         if (match is null)
             return true;
 
-        return match.Version <= module.Version;
+        return match.Version <= package.Version;
     }
 
     /// <summary>
-    /// Get the filepath for a module
+    /// Get the filepath for a package
     /// </summary>
-    /// <param name="module">Module</param>
+    /// <param name="package">Package</param>
     /// <returns>The filepath, ending in <c>.cs</c></returns>
-    public static string ModulePath(Module module)
+    public static string PackagePath(Package package)
     {
-        var qName = module.QualifiedName;
-        return module.Type switch
+        var qName = package.QualifiedName;
+        return package.Type switch
         {
-            ModuleType.Script => Path.Combine(ModulesRoot.LocalPath, $"{qName}.cs"),
-            ModuleType.Library => Path.Combine(ModulesRoot.LocalPath, $"{qName}.lib.cs"),
-            ModuleType.Scriptlet => Path.Combine(ModulesRoot.LocalPath, $"{qName}.js"),
-            _ => throw new ArgumentOutOfRangeException(nameof(module)),
+            PackageType.Script => Path.Combine(ScriptingRoot.LocalPath, $"{qName}.cs"),
+            PackageType.Library => Path.Combine(ScriptingRoot.LocalPath, $"{qName}.lib.cs"),
+            PackageType.Scriptlet => Path.Combine(ScriptingRoot.LocalPath, $"{qName}.js"),
+            _ => throw new ArgumentOutOfRangeException(nameof(package)),
         };
     }
 
     /// <summary>
-    /// Get the filepath for a module sidecar
+    /// Get the filepath for a package sidecar
     /// </summary>
-    /// <param name="module">Module</param>
+    /// <param name="package">Package</param>
     /// <returns>The filepath, ending in <c>.json</c></returns>
-    public static string SidecarPath(Module module)
+    public static string SidecarPath(Package package)
     {
-        var qName = module.QualifiedName;
-        return module.Type switch
+        var qName = package.QualifiedName;
+        return package.Type switch
         {
-            ModuleType.Script => Path.Combine(ModulesRoot.LocalPath, "modules", $"{qName}.json"),
-            ModuleType.Library => Path.Combine(
-                ModulesRoot.LocalPath,
-                "modules",
+            PackageType.Script => Path.Combine(
+                ScriptingRoot.LocalPath,
+                "packages",
+                $"{qName}.json"
+            ),
+            PackageType.Library => Path.Combine(
+                ScriptingRoot.LocalPath,
+                "packages",
                 $"{qName}.lib.json"
             ),
-            ModuleType.Scriptlet => Path.Combine(ModulesRoot.LocalPath, "modules", $"{qName}.json"),
-            _ => throw new ArgumentOutOfRangeException(nameof(module)),
+            PackageType.Scriptlet => Path.Combine(
+                ScriptingRoot.LocalPath,
+                "packages",
+                $"{qName}.json"
+            ),
+            _ => throw new ArgumentOutOfRangeException(nameof(package)),
         };
     }
 
     /// <summary>
-    /// Get the filepath for a module help doc
+    /// Get the filepath for a package help doc
     /// </summary>
-    /// <param name="module">Module</param>
+    /// <param name="package">Package</param>
     /// <returns>The filepath, ending in <c>.md</c></returns>
-    public static string HelpPath(Module module)
+    public static string HelpPath(Package package)
     {
-        var qName = module.QualifiedName;
-        return module.Type switch
+        var qName = package.QualifiedName;
+        return package.Type switch
         {
-            ModuleType.Script => Path.Combine(ModulesRoot.LocalPath, "help", $"{qName}.md"),
-            ModuleType.Library => Path.Combine(ModulesRoot.LocalPath, "help", $"{qName}.lib.md"),
-            ModuleType.Scriptlet => Path.Combine(ModulesRoot.LocalPath, "help", $"{qName}.md"),
-            _ => throw new ArgumentOutOfRangeException(nameof(module)),
+            PackageType.Script => Path.Combine(ScriptingRoot.LocalPath, "help", $"{qName}.md"),
+            PackageType.Library => Path.Combine(ScriptingRoot.LocalPath, "help", $"{qName}.lib.md"),
+            PackageType.Scriptlet => Path.Combine(ScriptingRoot.LocalPath, "help", $"{qName}.md"),
+            _ => throw new ArgumentOutOfRangeException(nameof(package)),
         };
     }
 
@@ -356,7 +343,7 @@ public partial class PackageManager : IPackageManager
         return QualifiedNameRegex().IsMatch(qualifiedName);
     }
 
-    #endregion Modules
+    #endregion Packages
 
     #region Repositories
 
@@ -396,44 +383,44 @@ public partial class PackageManager : IPackageManager
     }
 
     /// <summary>
-    /// Populate the <see cref="ModuleStore"/> and the <see cref="InstalledModules"/> list
+    /// Populate the <see cref="PackageStore"/> and the <see cref="InstalledPackages"/> list
     /// </summary>
     /// <param name="repository">Repository to gather for</param>
-    private void GatherModules(Repository repository)
+    private void GatherPackages(Repository repository)
     {
-        GatherModules([repository]);
+        GatherPackages([repository]);
     }
 
     /// <summary>
-    /// Populate the <see cref="ModuleStore"/> and the <see cref="InstalledModules"/> list
+    /// Populate the <see cref="PackageStore"/> and the <see cref="InstalledPackages"/> list
     /// </summary>
     /// <param name="repositories">Repositories to gather for. Defaults to <see cref="Repositories"/></param>
-    private void GatherModules(IList<Repository>? repositories = null)
+    private void GatherPackages(IList<Repository>? repositories = null)
     {
-        _logger.LogTrace("Gathering modules...");
+        _logger.LogTrace("Gathering packages...");
         foreach (var repo in repositories ?? _repositories)
         {
-            _logger.LogTrace("Gathering modules in repository '{RepoName}'...", repo.Name);
-            foreach (var module in repo.Modules)
+            _logger.LogTrace("Gathering packages in repository '{RepoName}'...", repo.Name);
+            foreach (var package in repo.Packages)
             {
-                module.Repository = repo.Name;
-                if (_moduleMap.TryGetValue(module.QualifiedName, out var conflict))
+                package.Repository = repo.Name;
+                if (_packageMap.TryGetValue(package.QualifiedName, out var conflict))
                 {
                     _logger.LogWarning(
-                        "Conflict between {ModuleQualifiedName} from '{ConflictRepository}' and '{ModuleRepository}'!",
-                        module.QualifiedName,
+                        "Conflict between {PackageName} from '{ConflictRepository}' and '{PackageRepository}'!",
+                        package.QualifiedName,
                         conflict.Repository,
-                        module.Repository
+                        package.Repository
                     );
                     continue;
                 }
-                _moduleMap.Add(module.QualifiedName, module);
-                _moduleStore.Add(module);
+                _packageMap.Add(package.QualifiedName, package);
+                _packageStore.Add(package);
 
-                if (!IsModuleInstalled(module))
+                if (!IsPackageInstalled(package))
                     continue;
 
-                var sidecarPath = SidecarPath(module);
+                var sidecarPath = SidecarPath(package);
                 if (_fileSystem.File.Exists(sidecarPath))
                 {
                     try
@@ -442,10 +429,10 @@ public partial class PackageManager : IPackageManager
                             sidecarPath,
                             FileMode.Open
                         );
-                        var sidecar = JsonSerializer.Deserialize<Module>(sidecarFs, JsonOptions);
+                        var sidecar = JsonSerializer.Deserialize<Package>(sidecarFs, JsonOptions);
                         if (sidecar is null)
                             _logger.LogWarning("Failed to read sidecar {S}", sidecarPath);
-                        _installedModules.Add(sidecar ?? module);
+                        _installedPackages.Add(sidecar ?? package);
                     }
                     catch (Exception e)
                     {
@@ -454,12 +441,12 @@ public partial class PackageManager : IPackageManager
                             sidecarPath,
                             e
                         );
-                        _installedModules.Add(module);
+                        _installedPackages.Add(package);
                     }
                 }
                 else
                 {
-                    _installedModules.Add(module);
+                    _installedPackages.Add(package);
                 }
             }
         }
@@ -467,7 +454,7 @@ public partial class PackageManager : IPackageManager
     }
 
     /// <summary>
-    /// Load repositories from a list of URLs and populate the <see cref="ModuleStore"/>
+    /// Load repositories from a list of URLs and populate the <see cref="PackageStore"/>
     /// </summary>
     /// <param name="repoUrls">List of <see cref="Repository"/> URLs</param>
     public async Task AddAdditionalRepositories(IList<string> repoUrls)
@@ -491,7 +478,7 @@ public partial class PackageManager : IPackageManager
             }
         }
         if (repoUrls.Count > 1)
-            GatherModules(newRepos);
+            GatherPackages(newRepos);
         _logger.LogInformation("Done!");
     }
 
@@ -507,7 +494,7 @@ public partial class PackageManager : IPackageManager
             _logger.LogInformation("Adding repository '{RepoName}'", repo.Name);
             _repositories.Add(repo);
             _repositoryMap.Add(repo.Name, repo);
-            GatherModules(repo);
+            GatherPackages(repo);
             return InstallationResult.Success;
         }
         catch (Exception e)
@@ -525,9 +512,9 @@ public partial class PackageManager : IPackageManager
 
         _logger.LogInformation("Removing repository '{RepositoryName}'", repositoryName);
         _repositories.Remove(repo);
-        _moduleMap.Clear();
-        _moduleStore.Clear();
-        GatherModules(_repositories);
+        _packageMap.Clear();
+        _packageStore.Clear();
+        GatherPackages(_repositories);
         return InstallationResult.Success;
     }
 
@@ -540,15 +527,15 @@ public partial class PackageManager : IPackageManager
         _logger.LogInformation("Setting up base repository...");
         _repositories.Clear();
         _repositoryMap.Clear();
-        _installedModules.Clear();
-        _moduleStore.Clear();
-        _moduleMap.Clear();
+        _installedPackages.Clear();
+        _packageStore.Clear();
+        _packageMap.Clear();
 
         try
         {
             _baseRepository = await Repository.Build(BaseRepositoryUrl, _httpClient);
             await GatherRepositories(_baseRepository);
-            GatherModules();
+            GatherPackages();
         }
         catch (Exception e)
         {
@@ -579,16 +566,16 @@ public partial class PackageManager : IPackageManager
         _logger = logger;
         _httpClient = httpClient;
         _repositoryMap = [];
-        _moduleMap = [];
+        _packageMap = [];
         _repositories = [];
-        _moduleStore = [];
+        _packageStore = [];
 
-        _installedModules = [];
+        _installedPackages = [];
 
         Repositories = new ReadOnlyObservableCollection<Repository>(_repositories);
-        ModuleStore = new ReadOnlyObservableCollection<Module>(_moduleStore);
+        PackageStore = new ReadOnlyObservableCollection<Package>(_packageStore);
 
-        InstalledModules = new ReadOnlyObservableCollection<Module>(_installedModules);
+        InstalledPackages = new ReadOnlyObservableCollection<Package>(_installedPackages);
 
         _logger.LogInformation("Initialized Dependency Control");
     }

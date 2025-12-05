@@ -6,15 +6,15 @@ using System.Text.Json.Serialization;
 namespace Holo.Scripting.Models;
 
 /// <summary>
-/// A Module is an entry in a <see cref="Repository"/>
+/// A Package is an entry in a <see cref="Repository"/>
 /// for a <see cref="Scripting.HoloScript"/> or <see cref="Scripting.HoloLibrary"/>
 /// </summary>
-public record Module
+public record Package
 {
     /// <summary>
-    /// Type of module
+    /// Type of package
     /// </summary>
-    public required ModuleType Type { get; init; }
+    public required PackageType Type { get; init; }
 
     /// <summary>
     /// Name used for display purposes
@@ -27,14 +27,14 @@ public record Module
     /// </summary>
     /// <remarks>
     /// The most common format is <c>author.scriptName</c>, but this isn't a requirement.
-    /// Must match the <see cref="ModuleInfo.QualifiedName"/>
-    /// defined in the module's <see cref="ModuleInfo"/>.
+    /// Must match the <see cref="PackageInfo.QualifiedName"/>
+    /// defined in the package's <see cref="PackageInfo"/>.
     /// </remarks>
     /// <example><c>petzku.encodeClip</c></example>
     public required string QualifiedName { get; init; }
 
     /// <summary>
-    /// Short description of the module
+    /// Short description of the package
     /// </summary>
     /// <example>"Encode a hardsubbed clip encompassing the current selection"</example>
     public required string Description { get; init; }
@@ -46,21 +46,17 @@ public record Module
     public required string Author { get; init; }
 
     /// <summary>
-    /// Current module version. (Major.Minor)
+    /// Current package version. (Major.Minor)
     /// </summary>
-    /// <remarks>
-    /// Must match the <see cref="ModuleInfo.Version"/>
-    /// defined in the module's <see cref="ModuleInfo"/>.
-    /// </remarks>
     public required decimal Version { get; init; }
 
     /// <summary>
-    /// <see langword="true"/> if this is a beta module
+    /// <see langword="true"/> if this is a beta package
     /// </summary>
     public required bool IsBetaChannel { get; init; }
 
     /// <summary>
-    /// List of qualified module names this module depends on
+    /// List of qualified package names this package depends on
     /// </summary>
     [JsonIgnore]
     public required FrozenSet<string> Dependencies { get; init; }
@@ -75,20 +71,20 @@ public record Module
     /// URL to download
     /// </summary>
     /// <example>https://dc.ameko.moe/scripts/9volt/9volt.example1.cs</example>
-    public required string Url { get; set; }
+    public required string Url { get; init; }
 
     /// <summary>
-    /// Optional URL to the module's markdown help page
+    /// Optional URL to the package's Markdown help page
     /// </summary>
     /// <example>https://dc.ameko.moe/scripts/9volt/9volt.example1.md</example>
-    public string? HelpUrl { get; set; }
+    public string? HelpUrl { get; init; }
 
     /// <summary>
     /// Name of repository (automatic)
     /// </summary>
     public string? Repository { get; set; }
 
-    public virtual bool Equals(Module? other)
+    public virtual bool Equals(Package? other)
     {
         if (other is null)
             return false;

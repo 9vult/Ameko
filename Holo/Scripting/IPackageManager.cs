@@ -18,74 +18,74 @@ public interface IPackageManager
     ReadOnlyObservableCollection<Repository> Repositories { get; }
 
     /// <summary>
-    /// List of available modules
+    /// List of available packages
     /// </summary>
-    ReadOnlyObservableCollection<Module> ModuleStore { get; }
+    ReadOnlyObservableCollection<Package> PackageStore { get; }
 
     /// <summary>
-    /// List of installed modules
+    /// List of installed packages
     /// </summary>
-    ReadOnlyObservableCollection<Module> InstalledModules { get; }
+    ReadOnlyObservableCollection<Package> InstalledPackages { get; }
 
     /// <summary>
-    /// Determine if a module is installed
+    /// Determine if a package is installed
     /// </summary>
-    /// <param name="module">Module to check</param>
-    /// <returns><see langword="true"/> if the module is installed</returns>
-    bool IsModuleInstalled(Module module);
+    /// <param name="package">Package to check</param>
+    /// <returns><see langword="true"/> if the package is installed</returns>
+    bool IsPackageInstalled(Package package);
 
     /// <summary>
-    /// Recursively install a <see cref="Module"/> and its dependencies
+    /// Recursively install a <see cref="Package"/> and its dependencies
     /// </summary>
-    /// <param name="module">Module to install</param>
+    /// <param name="package">Package to install</param>
     /// <returns><see cref="InstallationResult.Success"/> on success</returns>
-    Task<InstallationResult> InstallModule(Module module);
+    Task<InstallationResult> InstallPackage(Package package);
 
     /// <summary>
-    /// Uninstall a <see cref="Module"/>
+    /// Uninstall a <see cref="Package"/>
     /// </summary>
-    /// <param name="module">Module to uninstall</param>
+    /// <param name="package">Package to uninstall</param>
     /// <param name="isUpdate">Bypass dependency checking for update purposes</param>
     /// <returns><see cref="InstallationResult.Success"/> on success</returns>
     /// <remarks>Does not uninstall dependencies</remarks>
-    InstallationResult UninstallModule(Module module, bool isUpdate = false);
+    InstallationResult UninstallPackage(Package package, bool isUpdate = false);
 
     /// <summary>
-    /// Update a module to the latest version
+    /// Update a package to the latest version
     /// </summary>
-    /// <param name="module">Module to update</param>
+    /// <param name="package">Package to update</param>
     /// <returns><see cref="InstallationResult.Success"/> on success</returns>
-    Task<InstallationResult> UpdateModule(Module module);
+    Task<InstallationResult> UpdatePackage(Package package);
 
     /// <summary>
-    /// Get a list of installed modules with available updates
+    /// Get a list of installed packages with available updates
     /// </summary>
-    /// <returns>List of updatable modules</returns>
-    List<Module> GetUpdateCandidates();
+    /// <returns>List of updatable packages</returns>
+    List<Package> GetUpdateCandidates();
 
     /// <summary>
-    /// Check if a module is up to date
+    /// Check if a package is up to date
     /// </summary>
-    /// <param name="module">Module to check</param>
-    /// <returns><see langword="true"/> if the module is up to date</returns>
-    /// <remarks>If the module isn't found in the <see cref="ModuleStore"/>, returns <see langword="true"/></remarks>
-    bool IsModuleUpToDate(Module module);
+    /// <param name="package">Package to check</param>
+    /// <returns><see langword="true"/> if the package is up to date</returns>
+    /// <remarks>If the package isn't found in the <see cref="PackageStore"/>, returns <see langword="true"/></remarks>
+    bool IsPackageUpToDate(Package package);
 
     /// <summary>
-    /// Load repositories from a list of URLs and populate the <see cref="ModuleStore"/>
+    /// Load repositories from a list of URLs and populate the <see cref="PackageStore"/>
     /// </summary>
     /// <param name="repoUrls">List of <see cref="Repository"/> URLs</param>
     Task AddAdditionalRepositories(IList<string> repoUrls);
 
     /// <summary>
-    /// Add a repository and populate the <see cref="ModuleStore"/>
+    /// Add a repository and populate the <see cref="PackageStore"/>
     /// </summary>
     /// <param name="repoUrl"><see cref="Repository"/> URL</param>
     /// <returns><see langword="true"/> if the addition was successful</returns>
     Task<InstallationResult> AddRepository(string repoUrl);
 
     /// <summary>
-    /// Remove a repository and update the <see cref="ModuleStore"/>
+    /// Remove a repository and update the <see cref="PackageStore"/>
     /// </summary>
     /// <param name="repoName">Name of the repository to remove</param>
     /// <returns><see langword="true"/> if the removal was successful</returns>

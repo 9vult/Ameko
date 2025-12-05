@@ -7,7 +7,7 @@ using System.Text.Json.Serialization;
 namespace Holo.Scripting.Models;
 
 /// <summary>
-/// A repository is a collection of <see cref="Module"/>s
+/// A repository is a collection of <see cref="Package"/>s
 /// and <see cref="Repositories"/> for use in Dependency Control
 /// </summary>
 public record Repository
@@ -34,15 +34,15 @@ public record Repository
     public required string Maintainer { get; init; }
 
     /// <summary>
-    /// <see langword="true"/> if this repository is for beta modules
+    /// <see langword="true"/> if this repository is for beta package
     /// </summary>
     public required bool IsBetaChannel { get; init; }
 
     /// <summary>
-    /// Modules hosted by this repository
+    /// Packages hosted by this repository
     /// </summary>
     [JsonIgnore]
-    public required FrozenSet<Module> Modules { get; init; }
+    public required FrozenSet<Package> Packages { get; init; }
 
     /// <summary>
     /// Repositories hoisted by this repository
@@ -96,11 +96,11 @@ public record Repository
         init => Repositories = value.ToFrozenSet();
     }
 
-    [JsonPropertyName("Modules")]
-    public HashSet<Module> SerializationModules
+    [JsonPropertyName("Packages")]
+    public HashSet<Package> SerializationPackages
     {
-        get => Modules.ToHashSet();
-        init => Modules = value.ToFrozenSet();
+        get => Packages.ToHashSet();
+        init => Packages = value.ToFrozenSet();
     }
 
     #endregion Serialization fields

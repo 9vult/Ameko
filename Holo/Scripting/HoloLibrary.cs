@@ -23,13 +23,13 @@ public abstract class HoloLibrary : IHoloExecutable
     /// <summary>
     /// Basic script information
     /// </summary>
-    public virtual ModuleInfo Info { get; }
+    public virtual PackageInfo Info { get; }
 
     /// <summary>
     /// Initialize the library
     /// </summary>
     /// <param name="info">Library information</param>
-    protected HoloLibrary(ModuleInfo info)
+    protected HoloLibrary(PackageInfo info)
     {
         Info = info;
         Logger = ScriptServiceLocator.GetLogger(info.QualifiedName ?? GetType().Name);

@@ -14,7 +14,7 @@ public abstract class HoloScript : IHoloExecutable
     /// <summary>
     /// Basic script information
     /// </summary>
-    public ModuleInfo Info { get; }
+    public PackageInfo Info { get; }
 
     /// <summary>
     /// Script entry point
@@ -30,7 +30,7 @@ public abstract class HoloScript : IHoloExecutable
     /// Initialize the script
     /// </summary>
     /// <param name="info">Script information</param>
-    protected HoloScript(ModuleInfo info)
+    protected HoloScript(PackageInfo info)
     {
         Info = info;
         Logger = ScriptServiceLocator.GetLogger(info.QualifiedName ?? GetType().Name);

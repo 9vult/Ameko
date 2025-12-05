@@ -15,28 +15,28 @@ namespace Holo.Tests;
 public class PackageManagerTests
 {
     [Fact]
-    public void IsModuleInstalled_True()
+    public void IsPackageInstalled_True()
     {
         var fileSystem = new MockFileSystem(
             new Dictionary<string, MockFileData>
             {
-                { PackageManager.ModulePath(TestScriptModule), new MockFileData(string.Empty) },
+                { PackageManager.PackagePath(TestScriptPackage), new MockFileData(string.Empty) },
             }
         );
         var lg = NullLogger<PackageManager>.Instance;
         var dc = new PackageManager(fileSystem, lg, new HttpClient());
 
-        dc.IsModuleInstalled(TestScriptModule).ShouldBeTrue();
+        dc.IsPackageInstalled(TestScriptPackage).ShouldBeTrue();
     }
 
     [Fact]
-    public void IsModuleInstalled_False()
+    public void IsPackageInstalled_False()
     {
         var fileSystem = new MockFileSystem();
         var lg = NullLogger<PackageManager>.Instance;
         var dc = new PackageManager(fileSystem, lg, new HttpClient());
 
-        dc.IsModuleInstalled(TestScriptModule).ShouldBeFalse();
+        dc.IsPackageInstalled(TestScriptPackage).ShouldBeFalse();
     }
 
     [Fact]
@@ -58,45 +58,45 @@ public class PackageManagerTests
     }
 
     [Fact]
-    public void ModulePath_Script()
+    public void PackagePath_Script()
     {
-        var path = PackageManager.ModulePath(TestScriptModule);
-        path.ShouldEndWith($"{TestScriptModule.QualifiedName}.cs");
+        var path = PackageManager.PackagePath(TestScriptPackage);
+        path.ShouldEndWith($"{TestScriptPackage.QualifiedName}.cs");
     }
 
     [Fact]
-    public void ModulePath_Library()
+    public void PackagePath_Library()
     {
-        var path = PackageManager.ModulePath(TestLibraryModule);
-        path.ShouldEndWith($"{TestLibraryModule.QualifiedName}.lib.cs");
+        var path = PackageManager.PackagePath(TestLibraryPackage);
+        path.ShouldEndWith($"{TestLibraryPackage.QualifiedName}.lib.cs");
     }
 
     [Fact]
-    public void ModulePath_Scriptlet()
+    public void PackagePath_Scriptlet()
     {
-        var path = PackageManager.ModulePath(TestScriptletModule);
-        path.ShouldEndWith($"{TestLibraryModule.QualifiedName}.js");
+        var path = PackageManager.PackagePath(TestScriptletPackage);
+        path.ShouldEndWith($"{TestLibraryPackage.QualifiedName}.js");
     }
 
     [Fact]
     public void SidecarPath_Script()
     {
-        var path = PackageManager.SidecarPath(TestScriptModule);
-        path.ShouldEndWith($"{TestScriptModule.QualifiedName}.json");
+        var path = PackageManager.SidecarPath(TestScriptPackage);
+        path.ShouldEndWith($"{TestScriptPackage.QualifiedName}.json");
     }
 
     [Fact]
     public void SidecarPath_Library()
     {
-        var path = PackageManager.SidecarPath(TestLibraryModule);
-        path.ShouldEndWith($"{TestLibraryModule.QualifiedName}.lib.json");
+        var path = PackageManager.SidecarPath(TestLibraryPackage);
+        path.ShouldEndWith($"{TestLibraryPackage.QualifiedName}.lib.json");
     }
 
     [Fact]
     public void SidecarPath_Scriptlet()
     {
-        var path = PackageManager.SidecarPath(TestScriptletModule);
-        path.ShouldEndWith($"{TestLibraryModule.QualifiedName}.json");
+        var path = PackageManager.SidecarPath(TestScriptletPackage);
+        path.ShouldEndWith($"{TestLibraryPackage.QualifiedName}.json");
     }
 
     [Fact]
@@ -111,7 +111,7 @@ public class PackageManagerTests
         await dc.SetUpBaseRepository();
 
         dc.Repositories.Count.ShouldBe(0);
-        dc.ModuleStore.Count.ShouldBe(0);
+        dc.PackageStore.Count.ShouldBe(0);
     }
 
     [Fact]
@@ -128,7 +128,7 @@ public class PackageManagerTests
         await dc.SetUpBaseRepository();
 
         dc.Repositories.Count.ShouldBe(1);
-        dc.ModuleStore.Count.ShouldBe(1);
+        dc.PackageStore.Count.ShouldBe(1);
     }
 
     [Fact]
@@ -145,11 +145,11 @@ public class PackageManagerTests
         await dc.SetUpBaseRepository();
 
         dc.Repositories.Count.ShouldBe(0);
-        dc.ModuleStore.Count.ShouldBe(0);
+        dc.PackageStore.Count.ShouldBe(0);
     }
 
     [Fact]
-    public async Task InstallModule_NoInternetConnection()
+    public async Task InstallPackage_NoInternetConnection()
     {
         var fileSystem = new MockFileSystem();
         var lg = NullLogger<PackageManager>.Instance;
@@ -165,20 +165,20 @@ public class PackageManagerTests
 
         await dc.SetUpBaseRepository();
 
-        var result = await dc.InstallModule(
-            dc.ModuleStore.First(m => m.QualifiedName == Script1.QualifiedName)
+        var result = await dc.InstallPackage(
+            dc.PackageStore.First(m => m.QualifiedName == Script1.QualifiedName)
         );
 
         result.ShouldBe(InstallationResult.Failure);
     }
 
     [Fact]
-    public async Task InstallModule_AlreadyInstalled()
+    public async Task InstallPackage_AlreadyInstalled()
     {
         var fileSystem = new MockFileSystem(
             new Dictionary<string, MockFileData>
             {
-                { PackageManager.ModulePath(Script1), new MockFileData(string.Empty) },
+                { PackageManager.PackagePath(Script1), new MockFileData(string.Empty) },
                 { PackageManager.SidecarPath(Script1), new MockFileData(string.Empty) },
             }
         );
@@ -192,15 +192,15 @@ public class PackageManagerTests
 
         await dc.SetUpBaseRepository();
 
-        var result = await dc.InstallModule(
-            dc.ModuleStore.First(m => m.QualifiedName == Script1.QualifiedName)
+        var result = await dc.InstallPackage(
+            dc.PackageStore.First(m => m.QualifiedName == Script1.QualifiedName)
         );
 
         result.ShouldBe(InstallationResult.AlreadyInstalled);
     }
 
     [Fact]
-    public async Task InstallModule_NoDependencies()
+    public async Task InstallPackage_NoDependencies()
     {
         var fileSystem = new MockFileSystem();
         var lg = NullLogger<PackageManager>.Instance;
@@ -216,16 +216,16 @@ public class PackageManagerTests
 
         await dc.SetUpBaseRepository();
 
-        var result = await dc.InstallModule(
-            dc.ModuleStore.First(m => m.QualifiedName == Script1.QualifiedName)
+        var result = await dc.InstallPackage(
+            dc.PackageStore.First(m => m.QualifiedName == Script1.QualifiedName)
         );
 
         result.ShouldBe(InstallationResult.Success);
-        fileSystem.FileExists(PackageManager.ModulePath(Script1)).ShouldBeTrue();
+        fileSystem.FileExists(PackageManager.PackagePath(Script1)).ShouldBeTrue();
     }
 
     [Fact]
-    public async Task UninstallModule_NotInstalled()
+    public async Task UninstallPackage_NotInstalled()
     {
         var fileSystem = new MockFileSystem();
         var lg = NullLogger<PackageManager>.Instance;
@@ -238,20 +238,20 @@ public class PackageManagerTests
 
         await dc.SetUpBaseRepository();
 
-        var result = dc.UninstallModule(
-            dc.ModuleStore.First(m => m.QualifiedName == Script1.QualifiedName)
+        var result = dc.UninstallPackage(
+            dc.PackageStore.First(m => m.QualifiedName == Script1.QualifiedName)
         );
 
         result.ShouldBe(InstallationResult.NotInstalled);
     }
 
     [Fact]
-    public async Task UninstallModule()
+    public async Task UninstallPackage()
     {
         var fileSystem = new MockFileSystem(
             new Dictionary<string, MockFileData>
             {
-                { PackageManager.ModulePath(Script1), new MockFileData(string.Empty) },
+                { PackageManager.PackagePath(Script1), new MockFileData(string.Empty) },
                 { PackageManager.SidecarPath(Script1), new MockFileData(string.Empty) },
             }
         );
@@ -265,23 +265,23 @@ public class PackageManagerTests
 
         await dc.SetUpBaseRepository();
 
-        var result = dc.UninstallModule(
-            dc.ModuleStore.First(m => m.QualifiedName == Script1.QualifiedName)
+        var result = dc.UninstallPackage(
+            dc.PackageStore.First(m => m.QualifiedName == Script1.QualifiedName)
         );
 
         result.ShouldBe(InstallationResult.Success);
-        fileSystem.FileExists(PackageManager.ModulePath(Script1)).ShouldBeFalse();
+        fileSystem.FileExists(PackageManager.PackagePath(Script1)).ShouldBeFalse();
     }
 
     [Fact]
-    public async Task UninstallModule_IsDependent()
+    public async Task UninstallPackage_IsDependent()
     {
         var fileSystem = new MockFileSystem(
             new Dictionary<string, MockFileData>
             {
-                { PackageManager.ModulePath(Script2), new MockFileData(string.Empty) },
+                { PackageManager.PackagePath(Script2), new MockFileData(string.Empty) },
                 { PackageManager.SidecarPath(Script2), new MockFileData(string.Empty) },
-                { PackageManager.ModulePath(Lib1), new MockFileData(string.Empty) },
+                { PackageManager.PackagePath(Lib1), new MockFileData(string.Empty) },
                 { PackageManager.SidecarPath(Lib1), new MockFileData(string.Empty) },
             }
         );
@@ -295,24 +295,24 @@ public class PackageManagerTests
 
         await dc.SetUpBaseRepository();
 
-        var result = dc.UninstallModule(
-            dc.ModuleStore.First(m => m.QualifiedName == Lib1.QualifiedName)
+        var result = dc.UninstallPackage(
+            dc.PackageStore.First(m => m.QualifiedName == Lib1.QualifiedName)
         );
 
         result.ShouldBe(InstallationResult.IsRequiredDependency);
-        fileSystem.FileExists(PackageManager.ModulePath(Lib1)).ShouldBeTrue();
+        fileSystem.FileExists(PackageManager.PackagePath(Lib1)).ShouldBeTrue();
         fileSystem.FileExists(PackageManager.SidecarPath(Lib1)).ShouldBeTrue();
     }
 
     [Fact]
-    public async Task UninstallModule_IsDependent_IsUpdate()
+    public async Task UninstallPackage_IsDependent_IsUpdate()
     {
         var fileSystem = new MockFileSystem(
             new Dictionary<string, MockFileData>
             {
-                { PackageManager.ModulePath(Script2), new MockFileData(string.Empty) },
+                { PackageManager.PackagePath(Script2), new MockFileData(string.Empty) },
                 { PackageManager.SidecarPath(Script2), new MockFileData(string.Empty) },
-                { PackageManager.ModulePath(Lib1), new MockFileData(string.Empty) },
+                { PackageManager.PackagePath(Lib1), new MockFileData(string.Empty) },
                 { PackageManager.SidecarPath(Lib1), new MockFileData(string.Empty) },
             }
         );
@@ -326,23 +326,23 @@ public class PackageManagerTests
 
         await dc.SetUpBaseRepository();
 
-        var result = dc.UninstallModule(
-            dc.ModuleStore.First(m => m.QualifiedName == Lib1.QualifiedName),
+        var result = dc.UninstallPackage(
+            dc.PackageStore.First(m => m.QualifiedName == Lib1.QualifiedName),
             true
         );
 
         result.ShouldBe(InstallationResult.Success);
-        fileSystem.FileExists(PackageManager.ModulePath(Lib1)).ShouldBeFalse();
+        fileSystem.FileExists(PackageManager.PackagePath(Lib1)).ShouldBeFalse();
         fileSystem.FileExists(PackageManager.SidecarPath(Lib1)).ShouldBeFalse();
     }
 
     [Fact]
-    public async Task IsModuleUpToDate_True()
+    public async Task IsPackageUpToDate_True()
     {
         var fileSystem = new MockFileSystem(
             new Dictionary<string, MockFileData>
             {
-                { PackageManager.ModulePath(Script1), new MockFileData(string.Empty) },
+                { PackageManager.PackagePath(Script1), new MockFileData(string.Empty) },
                 { PackageManager.SidecarPath(Script1), new MockFileData(ScriptExample1Json) },
             }
         );
@@ -357,16 +357,16 @@ public class PackageManagerTests
         await dc.SetUpBaseRepository();
 
         // Check if up to date
-        dc.IsModuleUpToDate(Script1).ShouldBeTrue();
+        dc.IsPackageUpToDate(Script1).ShouldBeTrue();
     }
 
     [Fact]
-    public async Task IsModuleUpToDate_False()
+    public async Task IsPackageUpToDate_False()
     {
         var fileSystem = new MockFileSystem(
             new Dictionary<string, MockFileData>
             {
-                { PackageManager.ModulePath(Script1), new MockFileData(string.Empty) },
+                { PackageManager.PackagePath(Script1), new MockFileData(string.Empty) },
                 { PackageManager.SidecarPath(Script1), new MockFileData(ScriptExample1Json) },
             }
         );
@@ -381,7 +381,7 @@ public class PackageManagerTests
         await dc.SetUpBaseRepository();
 
         // Check if up to date
-        dc.IsModuleUpToDate(Script1).ShouldBeFalse();
+        dc.IsPackageUpToDate(Script1).ShouldBeFalse();
     }
 
     [Fact]
@@ -390,7 +390,7 @@ public class PackageManagerTests
         var fileSystem = new MockFileSystem(
             new Dictionary<string, MockFileData>
             {
-                { PackageManager.ModulePath(Script1), new MockFileData(string.Empty) },
+                { PackageManager.PackagePath(Script1), new MockFileData(string.Empty) },
                 { PackageManager.SidecarPath(Script1), new MockFileData(ScriptExample1Json) },
             }
         );
@@ -414,7 +414,7 @@ public class PackageManagerTests
         var fileSystem = new MockFileSystem(
             new Dictionary<string, MockFileData>
             {
-                { PackageManager.ModulePath(Script1), new MockFileData(string.Empty) },
+                { PackageManager.PackagePath(Script1), new MockFileData(string.Empty) },
                 { PackageManager.SidecarPath(Script1), new MockFileData(ScriptExample1Json) },
             }
         );
@@ -535,9 +535,9 @@ public class PackageManagerTests
         result.ShouldBe(InstallationResult.Success);
     }
 
-    private static readonly Module TestScriptModule = new Module
+    private static readonly Package TestScriptPackage = new Package
     {
-        Type = ModuleType.Script,
+        Type = PackageType.Script,
         DisplayName = "Test",
         QualifiedName = "author.test",
         Description = string.Empty,
@@ -549,9 +549,9 @@ public class PackageManagerTests
         Url = string.Empty,
     };
 
-    private static readonly Module TestLibraryModule = new Module
+    private static readonly Package TestLibraryPackage = new Package
     {
-        Type = ModuleType.Library,
+        Type = PackageType.Library,
         DisplayName = "Test",
         QualifiedName = "author.test",
         Description = string.Empty,
@@ -563,9 +563,9 @@ public class PackageManagerTests
         Url = string.Empty,
     };
 
-    private static readonly Module TestScriptletModule = new Module
+    private static readonly Package TestScriptletPackage = new Package
     {
-        Type = ModuleType.Scriptlet,
+        Type = PackageType.Scriptlet,
         DisplayName = "Test",
         QualifiedName = "author.test",
         Description = string.Empty,
@@ -577,9 +577,9 @@ public class PackageManagerTests
         Url = string.Empty,
     };
 
-    private static readonly Module Script1 = new Module
+    private static readonly Package Script1 = new Package
     {
-        Type = ModuleType.Script,
+        Type = PackageType.Script,
         DisplayName = "Example Script 1",
         QualifiedName = "9volt.example1",
         Description = "An example script for testing purposes",
@@ -591,9 +591,9 @@ public class PackageManagerTests
         Url = "https://dc.ameko.moe/scripts/9volt/9volt.example1.cs",
     };
 
-    private static readonly Module Script2 = new Module
+    private static readonly Package Script2 = new Package
     {
-        Type = ModuleType.Script,
+        Type = PackageType.Script,
         DisplayName = "Example Script 2",
         QualifiedName = "9volt.example2",
         Description = "An example script for testing purposes",
@@ -605,9 +605,9 @@ public class PackageManagerTests
         Url = "https://dc.ameko.moe/scripts/9volt/9volt.example2.cs",
     };
 
-    private static readonly Module Lib1 = new Module
+    private static readonly Package Lib1 = new Package
     {
-        Type = ModuleType.Library,
+        Type = PackageType.Library,
         DisplayName = "CalculatorLib",
         QualifiedName = "9volt.calculator",
         Description = "A basic library for testing",
@@ -625,7 +625,7 @@ public class PackageManagerTests
           "Description": "Default Dependency Control repository included with Ameko",
           "Maintainer": "9volt",
           "IsBetaChannel": false,
-          "Modules": [
+          "Packages": [
             {
               "Type": "Script",
               "DisplayName": "Example Script 1",
@@ -649,7 +649,7 @@ public class PackageManagerTests
           "Description": "Default Dependency Control repository included with Ameko",
           "Maintainer": "9volt",
           "IsBetaChannel": false,
-          "Modules": [
+          "Packages": [
             {
               "Type": "Script",
               "DisplayName": "Example Script 1",
@@ -673,7 +673,7 @@ public class PackageManagerTests
           "Description": "Default Dependency Control repository included with Ameko",
           "Maintainer": "9volt",
           "IsBetaChannel": false,
-          "Modules": [
+          "Packages": [
             {
               "Type": "Script",
               "DisplayName": "Example Script 2",
@@ -721,7 +721,7 @@ public class PackageManagerTests
             
             public Example1()
                 : base(
-                    new ModuleInfo
+                    new PackageInfo
                     {
                         DisplayName = "Example Script 1",
                         QualifiedName = "9volt.example1",

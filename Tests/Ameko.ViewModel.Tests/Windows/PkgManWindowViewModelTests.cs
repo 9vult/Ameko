@@ -26,8 +26,8 @@ public class PkgManWindowViewModelTests
     )
     {
         // Arrange
-        packageManager.ModuleStore.Returns(
-            new AssCS.Utilities.ReadOnlyObservableCollection<Module>([])
+        packageManager.PackageStore.Returns(
+            new AssCS.Utilities.ReadOnlyObservableCollection<Package>([])
         );
 
         var vm = new PkgManWindowViewModel(
@@ -43,7 +43,7 @@ public class PkgManWindowViewModelTests
     }
 
     [Theory, AutoNSubstituteData]
-    public void InstalledButtons_ShouldBeDisabled_WhenNoModulesInstalled(
+    public void InstalledButtons_ShouldBeDisabled_WhenNoPackagesInstalled(
         [Frozen] IPackageManager packageManager,
         [Frozen] IScriptService scriptService,
         [Frozen] IConfiguration configuration,
@@ -51,8 +51,8 @@ public class PkgManWindowViewModelTests
     )
     {
         // Arrange
-        packageManager.InstalledModules.Returns(
-            new AssCS.Utilities.ReadOnlyObservableCollection<Module>([])
+        packageManager.InstalledPackages.Returns(
+            new AssCS.Utilities.ReadOnlyObservableCollection<Package>([])
         );
         packageManager.GetUpdateCandidates().Returns([]);
 
@@ -71,23 +71,23 @@ public class PkgManWindowViewModelTests
     }
 
     [Theory, AutoNSubstituteData]
-    public async Task InstallCommand_ShouldInstallModule_AndReloadScripts_WhenSuccessful(
+    public async Task InstallCommand_ShouldInstallPackage_AndReloadScripts_WhenSuccessful(
         IFixture fixture,
-        Module module
+        Package package
     )
     {
         // Arrange
         var pkgMan = fixture.Freeze<IPackageManager>();
         var scriptService = fixture.Freeze<IScriptService>();
 
-        pkgMan.InstalledModules.Returns(
-            new AssCS.Utilities.ReadOnlyObservableCollection<Module>([module])
+        pkgMan.InstalledPackages.Returns(
+            new AssCS.Utilities.ReadOnlyObservableCollection<Package>([package])
         );
-        pkgMan.InstallModule(module).Returns(InstallationResult.Success);
+        pkgMan.InstallPackage(package).Returns(InstallationResult.Success);
         pkgMan.GetUpdateCandidates().Returns([]);
 
         var vm = fixture.Create<PkgManWindowViewModel>();
-        vm.SelectedStoreModule = module;
+        vm.SelectedStorePackage = package;
 
         // Act
         await ((ReactiveCommand<Unit, Unit>)vm.InstallCommand).Execute();
@@ -98,18 +98,18 @@ public class PkgManWindowViewModelTests
     }
 
     [Theory, AutoNSubstituteData]
-    public async Task UninstallCommand_ShouldUninstallModule_AndReloadScripts_WhenSuccessful(
+    public async Task UninstallCommand_ShouldUninstallPackage_AndReloadScripts_WhenSuccessful(
         [Frozen] IPackageManager packageManager,
         [Frozen] IScriptService scriptService,
         [Frozen] IConfiguration configuration,
         [Frozen] IMessageBoxService messageBoxService,
-        Module module
+        Package package
     )
     {
         // Arrange
-        packageManager.UninstallModule(module).Returns(InstallationResult.Success);
-        packageManager.InstalledModules.Returns(
-            new AssCS.Utilities.ReadOnlyObservableCollection<Module>([])
+        packageManager.UninstallPackage(package).Returns(InstallationResult.Success);
+        packageManager.InstalledPackages.Returns(
+            new AssCS.Utilities.ReadOnlyObservableCollection<Package>([])
         );
         packageManager.GetUpdateCandidates().Returns([]);
 
@@ -121,7 +121,7 @@ public class PkgManWindowViewModelTests
             messageBoxService
         )
         {
-            SelectedInstalledModule = module,
+            SelectedInstalledPackage = package,
         };
 
         // Act
@@ -135,19 +135,19 @@ public class PkgManWindowViewModelTests
     }
 
     [Theory, AutoNSubstituteData]
-    public async Task UpdateCommand_ShouldUpdateModule_AndReloadScripts_WhenSuccessful(
+    public async Task UpdateCommand_ShouldUpdatePackage_AndReloadScripts_WhenSuccessful(
         [Frozen] IPackageManager packageManager,
         [Frozen] IScriptService scriptService,
         [Frozen] IConfiguration configuration,
         [Frozen] IMessageBoxService messageBoxService,
-        Module module
+        Package package
     )
     {
         // Arrange
-        packageManager.UpdateModule(module).Returns(InstallationResult.Success);
+        packageManager.UpdatePackage(package).Returns(InstallationResult.Success);
         packageManager.GetUpdateCandidates().Returns([]);
-        packageManager.InstalledModules.Returns(
-            new AssCS.Utilities.ReadOnlyObservableCollection<Module>([module])
+        packageManager.InstalledPackages.Returns(
+            new AssCS.Utilities.ReadOnlyObservableCollection<Package>([package])
         );
 
         var vm = new PkgManWindowViewModel(
@@ -158,7 +158,7 @@ public class PkgManWindowViewModelTests
             messageBoxService
         )
         {
-            SelectedInstalledModule = module,
+            SelectedInstalledPackage = package,
         };
 
         // Act
@@ -170,21 +170,21 @@ public class PkgManWindowViewModelTests
     }
 
     [Theory, AutoNSubstituteData]
-    public async Task UpdateAllCommand_ShouldUpdateModules_AndReloadScripts_WhenSuccessful(
+    public async Task UpdateAllCommand_ShouldUpdatePackages_AndReloadScripts_WhenSuccessful(
         [Frozen] IPackageManager packageManager,
         [Frozen] IScriptService scriptService,
         [Frozen] IConfiguration configuration,
         [Frozen] IMessageBoxService messageBoxService,
-        Module module1,
-        Module module2
+        Package package1,
+        Package package2
     )
     {
         // Arrange
-        packageManager.UpdateModule(module1).Returns(InstallationResult.Success);
-        packageManager.UpdateModule(module2).Returns(InstallationResult.Success);
-        packageManager.GetUpdateCandidates().Returns(x => [module1, module2], x => []);
-        packageManager.InstalledModules.Returns(
-            new AssCS.Utilities.ReadOnlyObservableCollection<Module>([module1, module2])
+        packageManager.UpdatePackage(package1).Returns(InstallationResult.Success);
+        packageManager.UpdatePackage(package2).Returns(InstallationResult.Success);
+        packageManager.GetUpdateCandidates().Returns(x => [package1, package2], x => []);
+        packageManager.InstalledPackages.Returns(
+            new AssCS.Utilities.ReadOnlyObservableCollection<Package>([package1, package2])
         );
 
         var vm = new PkgManWindowViewModel(
@@ -195,7 +195,7 @@ public class PkgManWindowViewModelTests
             messageBoxService
         )
         {
-            SelectedInstalledModule = module1,
+            SelectedInstalledPackage = package1,
         };
 
         // Act

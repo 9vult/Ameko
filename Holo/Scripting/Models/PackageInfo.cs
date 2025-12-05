@@ -6,19 +6,19 @@ namespace Holo.Scripting.Models;
 /// Basic information about a <see cref="HoloScript"/> or <see cref="HoloLibrary"/>
 /// </summary>
 /// <remarks>
-/// This contains different information than <see cref="Module"/> does.
+/// This contains different information than <see cref="Package"/> does.
 /// <para>
-/// <see cref="Module"/> contains display information (<see cref="Module.Description"/>, etc.)
-/// as well as <see cref="PackageManager"/> data (<see cref="Module.Version"/>, etc.)
+/// <see cref="Package"/> contains display information (<see cref="Package.Description"/>, etc.)
+/// as well as <see cref="PackageManager"/> data (<see cref="Package.Version"/>, etc.)
 /// </para><para>
-/// Meanwhile, <see cref="ModuleInfo"/> contains run-time information,
+/// Meanwhile, <see cref="PackageInfo"/> contains run-time information,
 /// like which <see cref="Submenu"/> to use.
 /// </para>
 /// </remarks>
-public class ModuleInfo
+public class PackageInfo
 {
     /// <summary>
-    /// Name of the script
+    /// Name of the package
     /// </summary>
     public required string DisplayName { get; init; }
 
@@ -26,8 +26,8 @@ public class ModuleInfo
     /// Uniquely identifying name
     /// </summary>
     /// <remarks>
-    /// The most common format is <c>author.scriptName</c>, but this isn't a requirement.
-    /// The script's filename should match the qualified name -
+    /// The most common format is <c>author.packageName</c>, but this isn't a requirement.
+    /// The package's filename should match the qualified name -
     /// either <c>author.scriptName.cs</c> for <see cref="HoloScript"/>s
     /// or <c>author.libraryName.lib.cs</c> for libraries
     /// </remarks>

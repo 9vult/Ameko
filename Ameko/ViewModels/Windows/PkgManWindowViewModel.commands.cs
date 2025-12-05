@@ -14,16 +14,16 @@ namespace Ameko.ViewModels.Windows;
 public partial class PkgManWindowViewModel
 {
     /// <summary>
-    /// Install a module
+    /// Install a package
     /// </summary>
     private ReactiveCommand<Unit, Unit> CreateInstallCommand()
     {
         return ReactiveCommand.CreateFromTask(async () =>
         {
-            if (SelectedStoreModule is null)
+            if (SelectedStorePackage is null)
                 return;
 
-            var result = await PackageManager.InstallModule(SelectedStoreModule);
+            var result = await PackageManager.InstallPackage(SelectedStorePackage);
 
             await _messageBoxService.ShowAsync(result);
 
@@ -38,22 +38,22 @@ public partial class PkgManWindowViewModel
     }
 
     /// <summary>
-    /// Uninstall a module
+    /// Uninstall a package
     /// </summary>
     private ReactiveCommand<Unit, Unit> CreateUninstallCommand()
     {
         return ReactiveCommand.CreateFromTask(async () =>
         {
-            if (SelectedInstalledModule is null)
+            if (SelectedInstalledPackage is null)
                 return;
 
-            var result = PackageManager.UninstallModule(SelectedInstalledModule);
+            var result = PackageManager.UninstallPackage(SelectedInstalledPackage);
 
             await _messageBoxService.ShowAsync(result);
 
             if (result == InstallationResult.Success)
             {
-                SelectedInstalledModule = null;
+                SelectedInstalledPackage = null;
                 this.RaisePropertyChanged(nameof(InstallButtonEnabled));
                 this.RaisePropertyChanged(nameof(UninstallButtonEnabled));
 
@@ -63,16 +63,16 @@ public partial class PkgManWindowViewModel
     }
 
     /// <summary>
-    /// Update a module
+    /// Update a package
     /// </summary>
     private ReactiveCommand<Unit, Unit> CreateUpdateCommand()
     {
         return ReactiveCommand.CreateFromTask(async () =>
         {
-            if (SelectedInstalledModule is null)
+            if (SelectedInstalledPackage is null)
                 return;
 
-            var result = await PackageManager.UpdateModule(SelectedInstalledModule);
+            var result = await PackageManager.UpdatePackage(SelectedInstalledPackage);
             _updateCandidates.Clear();
             _updateCandidates.AddRange(PackageManager.GetUpdateCandidates());
 
@@ -92,7 +92,7 @@ public partial class PkgManWindowViewModel
     }
 
     /// <summary>
-    /// Update all modules
+    /// Update all packages
     /// </summary>
     private ReactiveCommand<Unit, Unit> CreateUpdateAllCommand()
     {
@@ -103,9 +103,9 @@ public partial class PkgManWindowViewModel
 
             var finalResult = InstallationResult.Success;
 
-            foreach (var module in _updateCandidates)
+            foreach (var package in _updateCandidates)
             {
-                var result = await PackageManager.UpdateModule(module);
+                var result = await PackageManager.UpdatePackage(package);
                 // Pick a failure, any failure
                 if (
                     finalResult == InstallationResult.Success
@@ -132,7 +132,7 @@ public partial class PkgManWindowViewModel
     }
 
     /// <summary>
-    /// Refresh the Module Store
+    /// Refresh the Package Store
     /// </summary>
     private ReactiveCommand<Unit, Unit> CreateRefreshCommand()
     {
@@ -145,8 +145,8 @@ public partial class PkgManWindowViewModel
             _updateCandidates.AddRange(PackageManager.GetUpdateCandidates());
 
             // Clear out
-            SelectedInstalledModule = null;
-            SelectedStoreModule = null;
+            SelectedInstalledPackage = null;
+            SelectedStorePackage = null;
 
             // Raise all the properties
             this.RaisePropertyChanged(nameof(InstallButtonEnabled));

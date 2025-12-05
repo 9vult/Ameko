@@ -21,8 +21,8 @@
     <data name="PkgManWindow_Title" xml:space="preserve">
         <value>Ameko Package Manager</value>
     </data>
-    <data name="PkgMan_ModuleStore" xml:space="preserve">
-        <value>Module Store</value>
+    <data name="PkgMan_PackageStore" xml:space="preserve">
+        <value>Package Store</value>
     </data>
     <data name="PkgMan_Info_Name" xml:space="preserve">
         <value>Name</value>
@@ -48,8 +48,8 @@
     <data name="PkgMan_Info_NoSelection" xml:space="preserve">
         <value>No Selection</value>
     </data>
-    <data name="PkgMan_InstalledModules" xml:space="preserve">
-        <value>Installed Modules</value>
+    <data name="PkgMan_InstalledPackages" xml:space="preserve">
+        <value>Installed Packages</value>
     </data>
     <data name="PkgMan_Info_Repository" xml:space="preserve">
         <value>Repository</value>
@@ -70,16 +70,16 @@
         <value>Uninstall</value>
     </data>
     <data name="PkgMan_Button_Install_ToolTip" xml:space="preserve">
-        <value>Install the selected module</value>
+        <value>Install the selected package</value>
     </data>
     <data name="PkgMan_Button_UpdateAll_ToolTip" xml:space="preserve">
-        <value>Update all modules to their latest version</value>
+        <value>Update all packages to their latest versions</value>
     </data>
     <data name="PkgMan_Button_Update_ToolTip" xml:space="preserve">
-        <value>Update the selected module to its latest version</value>
+        <value>Update the selected package to its latest version</value>
     </data>
     <data name="PkgMan_Button_Uninstall_ToolTip" xml:space="preserve">
-        <value>Uninstall the selected module</value>
+        <value>Uninstall the selected package</value>
     </data>
     <data name="PkgMan_Result_Success" xml:space="preserve">
         <value>Success!</value>
@@ -91,28 +91,28 @@
         <value>Could not find a required dependency</value>
     </data>
     <data name="PkgMan_Result_AlreadyInstalled" xml:space="preserve">
-        <value>The module is already installed!</value>
+        <value>The package is already installed!</value>
     </data>
     <data name="PkgMan_Result_NotInstalled" xml:space="preserve">
-        <value>The module is not installed</value>
+        <value>The package is not installed</value>
     </data>
     <data name="PkgMan_Result_FS_Failure" xml:space="preserve">
         <value>A filesystem error occured</value>
     </data>
     <data name="PkgMan_Result_IsRequiredDep" xml:space="preserve">
-        <value>This module is required by other modules</value>
+        <value>This package is required by other packages</value>
     </data>
     <data name="PkgMan_Update_Available_ToolTip" xml:space="preserve">
-        <value>An update is available for this module</value>
+        <value>An update is available for this package</value>
     </data>
     <data name="PkgMan_Button_Refresh_ToolTip" xml:space="preserve">
-        <value>Refresh the Module Store</value>
+        <value>Refresh the Package Store</value>
     </data>
     <data name="PkgMan_MsgBox_Refreshed" xml:space="preserve">
         <value>Refresh successful</value>
     </data>
-    <data name="PkgMan_ModulesTab" xml:space="preserve">
-        <value>Modules</value>
+    <data name="PkgMan_PackagesTab" xml:space="preserve">
+        <value>Packages</value>
     </data>
     <data name="PkgMan_Button_RemoveRepo" xml:space="preserve">
         <value>Remove</value>
@@ -135,8 +135,8 @@
     <data name="PkgMan_Info_SubRepoCount" xml:space="preserve">
         <value>Sub-Repositories</value>
     </data>
-    <data name="PkgMan_Info_ModuleCount" xml:space="preserve">
-        <value>Modules</value>
+    <data name="PkgMan_Info_PackageCount" xml:space="preserve">
+        <value>Packages</value>
     </data>
     <data name="PkgMan_Info_Url" xml:space="preserve">
         <value>Url</value>
@@ -148,6 +148,6 @@
         <value>The repository is already installed!</value>
     </data>
     <data name="PkgMan_Result_InvalidName" xml:space="preserve">
-        <value>The module has an invalid name</value>
+        <value>The package has an invalid name</value>
     </data>
 </root>

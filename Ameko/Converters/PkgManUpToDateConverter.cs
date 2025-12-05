@@ -14,15 +14,15 @@ namespace Ameko.Converters;
 public class PkgManUpToDateConverter : IValueConverter
 {
     /// <summary>
-    /// Returns <see langword="true"/> if the module is NOT up to date
+    /// Returns <see langword="true"/> if the package is NOT up to date
     /// </summary>
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        if (value is not Module module)
+        if (value is not Package package)
             return false;
         return !AmekoServiceProvider
                 .Provider?.GetRequiredService<IPackageManager>()
-                .IsModuleUpToDate(module) ?? true;
+                .IsPackageUpToDate(package) ?? true;
     }
 
     public object? ConvertBack(

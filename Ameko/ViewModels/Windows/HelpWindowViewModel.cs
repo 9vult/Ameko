@@ -28,7 +28,7 @@ public partial class HelpWindowViewModel(IPackageManager packageManager, IFileSy
 
     public List<ScriptHelp> ScriptHelps =>
         packageManager
-            .InstalledModules.Where(m => !string.IsNullOrEmpty(m.HelpUrl))
+            .InstalledPackages.Where(m => !string.IsNullOrEmpty(m.HelpUrl))
             .Select(m => new ScriptHelp
             {
                 DisplayName = m.DisplayName,

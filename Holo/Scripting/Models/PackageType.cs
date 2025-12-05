@@ -3,22 +3,22 @@
 namespace Holo.Scripting.Models;
 
 /// <summary>
-/// Type of <see cref="Module"/>
+/// Type of <see cref="Package"/>
 /// </summary>
-public enum ModuleType
+public enum PackageType
 {
     /// <summary>
-    /// The <see cref="Module"/> is an executable <see cref="HoloScript"/>
+    /// The <see cref="Package"/> is an executable <see cref="HoloScript"/>
     /// </summary>
     Script = 0,
 
     /// <summary>
-    /// The <see cref="Module"/> is a <see cref="HoloLibrary"/>
+    /// The <see cref="Package"/> is a <see cref="HoloLibrary"/>
     /// </summary>
     Library = 1,
 
     /// <summary>
-    /// The <see cref="Module"/> is a <see cref="HoloScriptlet"/>
+    /// The <see cref="Package"/> is a <see cref="HoloScriptlet"/>
     /// </summary>
     Scriptlet = 2,
 }

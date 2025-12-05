@@ -19,7 +19,7 @@ public class ScriptConfigurationService(
         IncludeFields = true,
         Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) },
     };
-    private static readonly Uri ModulesRoot = new(Path.Combine(Directories.DataHome, "scripts"));
+    private static readonly Uri ScriptingRoot = new(Path.Combine(Directories.DataHome, "scripts"));
 
     private readonly Dictionary<string, Dictionary<string, JsonElement>> _cache = [];
 
@@ -85,13 +85,13 @@ public class ScriptConfigurationService(
     }
 
     /// <summary>
-    /// Read a module's configuration from disk
+    /// Read a package's configuration from disk
     /// </summary>
-    /// <param name="qualifiedName">Module's qualified name</param>
+    /// <param name="qualifiedName">Package's qualified name</param>
     /// <returns>Configuration data if found, else empty</returns>
     private Dictionary<string, JsonElement> Read(string qualifiedName)
     {
-        logger.LogTrace($"Reading configuration file for module {qualifiedName}");
+        logger.LogTrace("Reading configuration file for package {Package}", qualifiedName);
         var path = ConfigPath(qualifiedName);
         try
         {
@@ -127,15 +127,15 @@ public class ScriptConfigurationService(
     }
 
     /// <summary>
-    /// Write a module's configuration data to disk
+    /// Write a package's configuration data to disk
     /// </summary>
-    /// <param name="qualifiedName">Module's qualified name</param>
+    /// <param name="qualifiedName">Package's qualified name</param>
     /// <returns>
     /// <see langword="true"/> if successful or skipped, <see langword="false"/> if failed
     /// </returns>
     private bool Write(string qualifiedName)
     {
-        logger.LogTrace($"Writing configuration file for module {qualifiedName}");
+        logger.LogTrace("Writing configuration file for package {Package}", qualifiedName);
         var path = ConfigPath(qualifiedName);
         try
         {
@@ -144,10 +144,7 @@ public class ScriptConfigurationService(
 
             if (!_cache.TryGetValue(qualifiedName, out var data))
             {
-                logger.LogTrace(
-                    "No data found for module {QualifiedName}, skipping...",
-                    qualifiedName
-                );
+                logger.LogTrace("No data found for package {package}, skipping...", qualifiedName);
                 return true;
             }
 
@@ -172,12 +169,12 @@ public class ScriptConfigurationService(
     }
 
     /// <summary>
-    /// Get the filepath for a module
+    /// Get the filepath for a package
     /// </summary>
-    /// <param name="qualifiedName">Module's qualified name</param>
+    /// <param name="qualifiedName">Package's qualified name</param>
     /// <returns>The filepath, ending in <c>.json</c></returns>
     public static string ConfigPath(string qualifiedName)
     {
-        return Path.Combine(ModulesRoot.LocalPath, "configuration", $"{qualifiedName}.json");
+        return Path.Combine(ScriptingRoot.LocalPath, "configuration", $"{qualifiedName}.json");
     }
 }

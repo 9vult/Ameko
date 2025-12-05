@@ -11,8 +11,8 @@
              xmlns:i18n="clr-namespace:Ameko.I18N"
              xmlns:icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
 
-             x:Class="Ameko.Views.Controls.ModuleInformation"
-             x:DataType="holo:Module">
+             x:Class="Ameko.Views.Controls.PackageInformation"
+             x:DataType="holo:Package">
     <UserControl.Resources>
         <converters:PkgManIconConverter x:Key="IconConverter" />
         <converters:PkgManDependencyConverter x:Key="DependencyConverter" />

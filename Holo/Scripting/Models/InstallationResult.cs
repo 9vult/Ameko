@@ -8,7 +8,7 @@ namespace Holo.Scripting.Models;
 public enum InstallationResult
 {
     /// <summary>
-    /// The module was installed successfully
+    /// The package was installed successfully
     /// </summary>
     Success,
 
@@ -23,12 +23,12 @@ public enum InstallationResult
     DependencyNotFound,
 
     /// <summary>
-    /// The module is already installed
+    /// The package is already installed
     /// </summary>
     AlreadyInstalled,
 
     /// <summary>
-    /// The module is not installed
+    /// The package is not installed
     /// </summary>
     NotInstalled,
 
@@ -38,12 +38,12 @@ public enum InstallationResult
     FilesystemFailure,
 
     /// <summary>
-    /// The module is a dependency of another installed module
+    /// The package is a dependency of another installed package
     /// </summary>
     IsRequiredDependency,
 
     /// <summary>
-    /// The module's Qualified Name is invalid
+    /// The package's Qualified Name is invalid
     /// </summary>
     InvalidName,
 }
