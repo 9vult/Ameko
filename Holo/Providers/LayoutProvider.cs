@@ -152,8 +152,8 @@ public class LayoutProvider : BindableBase, ILayoutProvider
         {
             Name = "Default",
             Author = "9volt",
-            ColumnDefinitions = "*, 2, *",
-            RowDefinitions = "0.5*, 2, *, 2, *",
+            ColumnDefinitions = "1.2*, 2, *",
+            RowDefinitions = "0.7*, 2, *, 2, *",
             Window = new WindowSection { IsProjectExplorerOnLeft = true },
             Video = new TabSection
             {
@@ -210,8 +210,8 @@ public class LayoutProvider : BindableBase, ILayoutProvider
         {
             Name = "Default (Project Explorer on Right)",
             Author = "9volt",
-            ColumnDefinitions = "*, 2, *",
-            RowDefinitions = "0.5*, 2, *, 2, *",
+            ColumnDefinitions = "1.2*, 2, *",
+            RowDefinitions = "0.7*, 2, *, 2, *",
             Window = new WindowSection { IsProjectExplorerOnLeft = false },
             Video = new TabSection
             {
