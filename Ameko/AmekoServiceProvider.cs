@@ -28,7 +28,7 @@ public class AmekoServiceProvider
         var services = new ServiceCollection();
 
         // --- Infrastructure ---
-        services.AddHttpClient("default");
+        services.AddHttpClient("default").RemoveAllLoggers();
         services.AddSingleton<IFileSystem, FileSystem>();
         services.AddSingleton<ILogProvider, LogProvider>();
         services.AddLogging(p =>
