@@ -211,7 +211,7 @@
                      SelectionStart="{Binding EditBoxSelectionStart, Mode=TwoWay}"
                      SelectionEnd="{Binding EditBoxSelectionEnd, Mode=TwoWay}"
                      Margin="2"
-                     FontSize="14"
+                     FontSize="16"
                      MinLines="1"
                      FontFamily="{StaticResource ZenKakuGothicNew}"
                      TextWrapping="Wrap"
