@@ -320,22 +320,25 @@ internal struct UnmanagedArray
 
 internal static class UnmanagedArrayExtensions
 {
-    /// <summary>
-    /// Copy an unmanaged <see cref="UnmanagedArray"/> to a managed <c>int[]</c>
-    /// </summary>
     /// <param name="array">Unmanaged array</param>
-    /// <returns>Managed array</returns>
-    public static int[] ToIntArray(this UnmanagedArray array)
+    extension(UnmanagedArray array)
     {
-        var managed = new int[array.Length];
-        Marshal.Copy(array.Pointer, managed, 0, managed.Length);
-        return managed;
-    }
+        /// <summary>
+        /// Copy an unmanaged <see cref="UnmanagedArray"/> to a managed <c>int[]</c>
+        /// </summary>
+        /// <returns>Managed array</returns>
+        public int[] ToIntArray()
+        {
+            var managed = new int[array.Length];
+            Marshal.Copy(array.Pointer, managed, 0, managed.Length);
+            return managed;
+        }
 
-    public static long[] ToLongArray(this UnmanagedArray array)
-    {
-        var managed = new long[array.Length];
-        Marshal.Copy(array.Pointer, managed, 0, managed.Length);
-        return managed;
+        public long[] ToLongArray()
+        {
+            var managed = new long[array.Length];
+            Marshal.Copy(array.Pointer, managed, 0, managed.Length);
+            return managed;
+        }
     }
 }
