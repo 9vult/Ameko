@@ -28,7 +28,7 @@ public class AmekoServiceProvider
         var services = new ServiceCollection();
 
         // --- Infrastructure ---
-        services.AddHttpClient("default").RemoveAllLoggers();
+        services.AddHttpClient("default");
         services.AddSingleton<IFileSystem, FileSystem>();
         services.AddSingleton<ILogProvider, LogProvider>();
         services.AddLogging(p =>
@@ -36,6 +36,9 @@ public class AmekoServiceProvider
             p.ClearProviders();
             p.SetMinimumLevel(LogLevel.Debug);
             p.AddNLog();
+
+            // Filter out HttpClient debug logs
+            p.AddFilter("Microsoft.Extensions.Http.DefaultHttpClientFactory", LogLevel.Warning);
         });
 
         // --- Configuration ---
