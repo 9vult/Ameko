@@ -2,6 +2,7 @@
 
 using System.IO.Abstractions;
 using System.Text.RegularExpressions;
+using AssCS.Utilities;
 using Holo.Configuration;
 using Holo.Models;
 using Microsoft.Extensions.Logging;
@@ -50,9 +51,14 @@ public partial class SpellcheckService(
                 !e.Text.Contains(TypesettingHeuristic, StringComparison.CurrentCultureIgnoreCase)
             );
 
+        const string space = " ";
+        string[] newlines = ["\\N", "\\n"];
+
         foreach (var @event in candidates)
         {
-            var wordMatches = WordRegex().Matches(@event.Text.Trim());
+            var cleanText = @event.GetStrippedText().ReplaceMany(newlines, space).Trim();
+            var wordMatches = WordRegex().Matches(cleanText);
+
             foreach (Match match in wordMatches)
             {
                 var word = match.Value;
