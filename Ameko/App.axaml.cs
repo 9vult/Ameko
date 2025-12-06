@@ -27,7 +27,6 @@ using Holo.Scripting;
 using Material.Icons;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NLog;
 
 namespace Ameko;
 
@@ -43,6 +42,8 @@ public partial class App : Application
     {
         if (ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop)
             return;
+
+        desktop.Exit += (_, _) => Environment.Exit(0);
 
         DisableAvaloniaDataAnnotationValidation();
 
