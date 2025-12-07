@@ -7,4 +7,17 @@ namespace Holo.Models;
 /// </summary>
 /// <param name="Name">Name of the language</param>
 /// <param name="Locale">Language's locale code</param>
-public readonly record struct DisplayLanguage(string Name, string Locale);
+public readonly record struct DisplayLanguage(string Name, string Locale)
+{
+    /// <inheritdoc />
+    public bool Equals(DisplayLanguage other)
+    {
+        return Locale == other.Locale;
+    }
+
+    /// <inheritdoc />
+    public override int GetHashCode()
+    {
+        return Locale.GetHashCode();
+    }
+}

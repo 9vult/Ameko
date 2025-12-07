@@ -125,7 +125,8 @@
                       Command="{Binding ShowHelpWindowCommand}" />
             <Separator />
             <MenuItem Header="{x:Static i18n:Resources.Menu_Configuration}"
-                      Icon="{icons:MaterialIconExt Kind=CogOutline}" />
+                      Icon="{icons:MaterialIconExt Kind=CogOutline}"
+                      Command="{Binding ShowConfigDialogCommand}" />
             <MenuItem Header="{x:Static i18n:Resources.Menu_Keybinds}"
                       Icon="{icons:MaterialIconExt Kind=Keyboard}"
                       Command="{Binding ShowKeybindsDialogCommand}" />

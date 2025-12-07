@@ -108,7 +108,7 @@
                           Grid.Row="0"
                           Width="175"
                           ItemsSource="{Binding CultureService.AvailableLanguages}"
-                          SelectedItem="{Binding Config.Culture}"
+                          SelectedValue="{Binding Config.Culture}"
                           DisplayMemberBinding="{Binding Name}"
                           SelectedValueBinding="{Binding Locale}" />
                 <Label Grid.Column="2"
@@ -124,7 +124,7 @@
                           Grid.Row="1"
                           Width="175"
                           ItemsSource="{Binding DictionaryService.InstalledDictionaries}"
-                          SelectedItem="{Binding Config.SpellcheckCulture}"
+                          SelectedValue="{Binding Config.SpellcheckCulture}"
                           DisplayMemberBinding="{Binding Lang.Name}"
                           SelectedValueBinding="{Binding Lang.Locale}" />
                 <Label Grid.Column="0"
@@ -135,7 +135,7 @@
                           Grid.Row="2"
                           Width="175"
                           ItemsSource="{Binding RichPresenceLevelChoices}"
-                          SelectedItem="{Binding Config.RichPresenceLevel}"
+                          SelectedValue="{Binding Config.RichPresenceLevel}"
                           DisplayMemberBinding="{Binding Item2}"
                           SelectedValueBinding="{Binding Item1}" />
                 <Label Grid.Column="0"
@@ -147,7 +147,7 @@
                           Grid.Row="3"
                           Width="175"
                           ItemsSource="{Binding PropagateFieldsChoices}"
-                          SelectedItem="{Binding Config.PropagateFields}"
+                          SelectedValue="{Binding Config.PropagateFields}"
                           DisplayMemberBinding="{Binding Item2}"
                           SelectedValueBinding="{Binding Item1}" />
                 <Label Grid.Column="0"
@@ -158,7 +158,7 @@
                           Grid.Row="4"
                           Width="175"
                           ItemsSource="{Binding SaveFramesChoices}"
-                          SelectedItem="{Binding Config.SaveFrames}"
+                          SelectedValue="{Binding Config.SaveFrames}"
                           DisplayMemberBinding="{Binding Item2}"
                           SelectedValueBinding="{Binding Item1}" />
                 <Label Grid.Column="0"
@@ -198,7 +198,7 @@
                           Grid.Row="0"
                           Width="175"
                           ItemsSource="{Binding ThemeChoices}"
-                          SelectedItem="{Binding Config.Theme}"
+                          SelectedValue="{Binding Config.Theme}"
                           DisplayMemberBinding="{Binding Item2}"
                           SelectedValueBinding="{Binding Item1}" />
                 <Label Grid.Column="0"

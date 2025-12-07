@@ -667,6 +667,18 @@ public partial class MainWindowViewModel : ViewModelBase
     }
 
     /// <summary>
+    /// Display the <see cref="ConfigDialog"/>
+    /// </summary>
+    private ReactiveCommand<Unit, Unit> CreateShowConfigDialogCommand()
+    {
+        return ReactiveCommand.CreateFromTask(async () =>
+        {
+            var vm = _serviceProvider.GetRequiredService<ConfigDialogViewModel>();
+            await ShowConfigDialog.Handle(vm);
+        });
+    }
+
+    /// <summary>
     /// Remove workspace from the project
     /// </summary>
     private ReactiveCommand<int, Unit> CreateRemoveDocumentFromProjectCommand()

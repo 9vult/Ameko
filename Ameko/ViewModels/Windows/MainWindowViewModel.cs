@@ -73,6 +73,7 @@ public partial class MainWindowViewModel : ViewModelBase
     public Interaction<HelpWindowViewModel, Unit> ShowHelpWindow { get; }
     public Interaction<LogWindowViewModel, Unit> ShowLogWindow { get; }
     public Interaction<AboutWindowViewModel, Unit> ShowAboutWindow { get; }
+    public Interaction<ConfigDialogViewModel, Unit> ShowConfigDialog { get; }
     public Interaction<KeybindsDialogViewModel, Unit> ShowKeybindsDialog { get; }
 
     // Other
@@ -181,6 +182,9 @@ public partial class MainWindowViewModel : ViewModelBase
 
     [KeybindTarget("ameko.about.show", "Shift+F1", KeybindContext.Global)]
     public ICommand ShowAboutWindowCommand { get; }
+
+    [KeybindTarget("ameko.config.show", "Ctrl+,", KeybindContext.Global)]
+    public ICommand ShowConfigDialogCommand { get; }
 
     [KeybindTarget("ameko.keybinds.show", KeybindContext.Global)]
     public ICommand ShowKeybindsDialogCommand { get; }
@@ -324,6 +328,7 @@ public partial class MainWindowViewModel : ViewModelBase
         ShowHelpWindow = new Interaction<HelpWindowViewModel, Unit>();
         ShowLogWindow = new Interaction<LogWindowViewModel, Unit>();
         ShowAboutWindow = new Interaction<AboutWindowViewModel, Unit>();
+        ShowConfigDialog = new Interaction<ConfigDialogViewModel, Unit>();
         ShowKeybindsDialog = new Interaction<KeybindsDialogViewModel, Unit>();
         // Other
         ShowInstallDictionaryDialog = new Interaction<InstallDictionaryDialogViewModel, Unit>();
@@ -373,6 +378,7 @@ public partial class MainWindowViewModel : ViewModelBase
         ShowHelpWindowCommand = CreateShowHelpWindowCommand();
         ShowLogWindowCommand = CreateShowLogWindowCommand();
         ShowAboutWindowCommand = CreateShowAboutWindowCommand();
+        ShowConfigDialogCommand = CreateShowConfigDialogCommand();
         ShowKeybindsDialogCommand = CreateShowKeybindsDialogCommand();
         // Other
         RemoveDocumentFromProjectCommand = CreateRemoveDocumentFromProjectCommand();

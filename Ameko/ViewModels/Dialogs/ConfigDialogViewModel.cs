@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using Holo.Configuration;
 using Holo.Models;
 using Holo.Providers;
-using ReactiveUI;
 
 namespace Ameko.ViewModels.Dialogs;
 
@@ -63,5 +62,23 @@ public partial class ConfigDialogViewModel(
         /// The second item in the tuple
         /// </summary>
         public T2 Item2 { get; } = item2;
+
+        /// <inheritdoc />
+        public override bool Equals(object? obj)
+        {
+            if (obj is not Tuple<T1, T2> other)
+                return false;
+            if (Item1 is not null)
+                return Item1.Equals(other.Item1);
+            return other.Item1 is null;
+        }
+
+        /// <inheritdoc />
+        public override int GetHashCode()
+        {
+            if (Item1 is null)
+                return 0;
+            return EqualityComparer<T1>.Default.GetHashCode(Item1);
+        }
     }
 }
