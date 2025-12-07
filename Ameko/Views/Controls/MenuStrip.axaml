@@ -138,6 +138,10 @@
             <MenuItem Header="{x:Static i18n:Resources.Menu_About}"
                       Icon="{icons:MaterialIconExt Kind=InformationVariantCircleOutline}"
                       Command="{Binding ShowAboutWindowCommand}" />
+            <Separator />
+            <MenuItem Header="{x:Static i18n:Resources.Menu_IssueTracker}"
+                      Icon="{icons:MaterialIconExt Kind=SpiderThread}"
+                      Command="{Binding OpenIssueTrackerCommand}" />
         </MenuItem>
         <Menu.Styles>
             <Style Selector="MenuItem">

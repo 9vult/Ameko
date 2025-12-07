@@ -393,6 +393,21 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         interaction.SetOutput(Unit.Default);
     }
 
+    private async Task DoOpenIssueTrackerAsync(IInteractionContext<Unit, Unit> interaction)
+    {
+        const string issuesUrl = "https://github.com/9vult/Ameko/issues";
+        _logger.LogDebug("Opening the issue tracker in the default browser");
+        try
+        {
+            await Launcher.LaunchUriAsync(new Uri(issuesUrl));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to launch default browser");
+        }
+        interaction.SetOutput(Unit.Default);
+    }
+
     public MainWindow(ILogger<MainWindow> logger)
     {
         _logger = logger;
@@ -447,6 +462,7 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
                 ViewModel.ShowConfigDialog.RegisterHandler(DoShowConfigDialog);
                 ViewModel.ShowProjectConfigDialog.RegisterHandler(DoShowProjectConfigDialog);
                 ViewModel.ShowKeybindsDialog.RegisterHandler(DoShowKeybindsDialog);
+                ViewModel.OpenIssueTracker.RegisterHandler(DoOpenIssueTrackerAsync);
                 // Other
                 ViewModel.ShowInstallDictionaryDialog.RegisterHandler(
                     DoShowinstallDictionaryDialogAsync

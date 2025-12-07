@@ -77,6 +77,7 @@ public partial class MainWindowViewModel : ViewModelBase
     public Interaction<AboutWindowViewModel, Unit> ShowAboutWindow { get; }
     public Interaction<ConfigDialogViewModel, Unit> ShowConfigDialog { get; }
     public Interaction<KeybindsDialogViewModel, Unit> ShowKeybindsDialog { get; }
+    public Interaction<Unit, Unit> OpenIssueTracker { get; }
 
     // Other
     public Interaction<InstallDictionaryDialogViewModel, Unit> ShowInstallDictionaryDialog { get; }
@@ -193,6 +194,9 @@ public partial class MainWindowViewModel : ViewModelBase
 
     [KeybindTarget("ameko.keybinds.show", KeybindContext.Global)]
     public ICommand ShowKeybindsDialogCommand { get; }
+
+    [KeybindTarget("ameko.issues.open", KeybindContext.Global)]
+    public ICommand OpenIssueTrackerCommand { get; }
 
     // Other
     public ICommand RemoveDocumentFromProjectCommand { get; }
@@ -336,6 +340,7 @@ public partial class MainWindowViewModel : ViewModelBase
         ShowAboutWindow = new Interaction<AboutWindowViewModel, Unit>();
         ShowConfigDialog = new Interaction<ConfigDialogViewModel, Unit>();
         ShowKeybindsDialog = new Interaction<KeybindsDialogViewModel, Unit>();
+        OpenIssueTracker = new Interaction<Unit, Unit>();
         // Other
         ShowInstallDictionaryDialog = new Interaction<InstallDictionaryDialogViewModel, Unit>();
         #endregion
@@ -387,6 +392,7 @@ public partial class MainWindowViewModel : ViewModelBase
         ShowAboutWindowCommand = CreateShowAboutWindowCommand();
         ShowConfigDialogCommand = CreateShowConfigDialogCommand();
         ShowKeybindsDialogCommand = CreateShowKeybindsDialogCommand();
+        OpenIssueTrackerCommand = CreateOpenIssueTrackerCommand();
         // Other
         RemoveDocumentFromProjectCommand = CreateRemoveDocumentFromProjectCommand();
         RemoveDirectoryFromProjectCommand = CreateRemoveDirectoryFromProjectCommand();

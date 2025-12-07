@@ -692,5 +692,11 @@ namespace Ameko.I18N {
                 return ResourceManager.GetString("Menu_CloseVideo", resourceCulture);
             }
         }
+        
+        public static string Menu_IssueTracker {
+            get {
+                return ResourceManager.GetString("Menu_IssueTracker", resourceCulture);
+            }
+        }
     }
 }

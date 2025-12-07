@@ -691,6 +691,17 @@ public partial class MainWindowViewModel : ViewModelBase
     }
 
     /// <summary>
+    /// Open the issue tracker in the user's default browser
+    /// </summary>
+    private ReactiveCommand<Unit, Unit> CreateOpenIssueTrackerCommand()
+    {
+        return ReactiveCommand.CreateFromTask(async () =>
+        {
+            await OpenIssueTracker.Handle(Unit.Default);
+        });
+    }
+
+    /// <summary>
     /// Remove workspace from the project
     /// </summary>
     private ReactiveCommand<int, Unit> CreateRemoveDocumentFromProjectCommand()

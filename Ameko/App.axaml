@@ -68,6 +68,9 @@
             <NativeMenuItem Header="{x:Static i18n:Resources.Menu_ShowLogs}"
                             Command="{Binding ShowLogWindowCommand}" />
             <NativeMenuItemSeparator />
+            <NativeMenuItem Header="{x:Static i18n:Resources.Menu_IssueTracker}"
+                            Command="{Binding OpenIssueTrackerCommand}" />
+            <NativeMenuItemSeparator />
             <NativeMenuItem Header="{x:Static i18n:Resources.Menu_Quit}"
                             Command="{Binding QuitCommand}" />
         </NativeMenu>

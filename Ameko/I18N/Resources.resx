@@ -342,4 +342,7 @@
     <data name="Menu_CloseVideo" xml:space="preserve">
         <value>_Close Video</value>
     </data>
+    <data name="Menu_IssueTracker" xml:space="preserve">
+        <value>_Issue Tracker</value>
+    </data>
 </root>
