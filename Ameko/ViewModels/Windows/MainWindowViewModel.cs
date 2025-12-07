@@ -58,6 +58,8 @@ public partial class MainWindowViewModel : ViewModelBase
     public Interaction<StylesManagerWindowViewModel, Unit> ShowStylesManager { get; }
 
     // Project
+    public Interaction<ProjectConfigDialogViewModel, Unit> ShowProjectConfigDialog { get; }
+
     // Timing
     public Interaction<ShiftTimesDialogViewModel, Unit> ShowShiftTimesDialog { get; }
 
@@ -141,6 +143,9 @@ public partial class MainWindowViewModel : ViewModelBase
     public ICommand DetachReferenceFileCommand { get; }
 
     // Project
+    [KeybindTarget("ameko.project.config.show", KeybindContext.Global)]
+    public ICommand ShowProjectConfigDialogCommand { get; }
+
     // Timing
     [KeybindTarget("ameko.document.shiftTimes", "Ctrl+I", KeybindContext.Global)]
     public ICommand ShowShiftTimesDialogCommand { get; }
@@ -316,6 +321,7 @@ public partial class MainWindowViewModel : ViewModelBase
         ShowStylesManager = new Interaction<StylesManagerWindowViewModel, Unit>();
         AttachReferenceFile = new Interaction<Unit, Uri?>();
         // Project
+        ShowProjectConfigDialog = new Interaction<ProjectConfigDialogViewModel, Unit>();
         // Video
         OpenVideo = new Interaction<Unit, Uri?>();
         ShowJumpDialog = new Interaction<JumpDialogViewModel, JumpDialogClosedMessage?>();
@@ -359,6 +365,7 @@ public partial class MainWindowViewModel : ViewModelBase
         AttachReferenceFileCommand = CreateAttachReferenceFileCommand();
         DetachReferenceFileCommand = CreateDetachReferenceFileCommand();
         // Project
+        ShowProjectConfigDialogCommand = CreateShowProjectConfigDialogCommand();
         // Timing
         ShowShiftTimesDialogCommand = CreateShowShiftTimesDialogCommand();
         // Video

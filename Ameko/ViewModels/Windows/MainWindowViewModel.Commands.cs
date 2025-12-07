@@ -422,6 +422,18 @@ public partial class MainWindowViewModel : ViewModelBase
     }
 
     /// <summary>
+    /// Display the <see cref="ProjectConfigDialog"/>
+    /// </summary>
+    private ReactiveCommand<Unit, Unit> CreateShowProjectConfigDialogCommand()
+    {
+        return ReactiveCommand.CreateFromTask(async () =>
+        {
+            var vm = _serviceProvider.GetRequiredService<ProjectConfigDialogViewModel>();
+            await ShowProjectConfigDialog.Handle(vm);
+        });
+    }
+
+    /// <summary>
     /// Display the <see cref="ShiftTimesDialog"/>
     /// </summary>
     private ReactiveCommand<Unit, Unit> CreateShowShiftTimesDialogCommand()

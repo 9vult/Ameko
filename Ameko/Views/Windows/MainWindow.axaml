@@ -161,7 +161,8 @@
             </NativeMenuItem>
             <NativeMenuItem Header="{x:Static i18n:Resources.Menu_Project}">
                 <NativeMenu>
-                    <NativeMenuItem Header="{x:Static i18n:Resources.Menu_ProjectConfig}" />
+                    <NativeMenuItem Header="{x:Static i18n:Resources.Menu_ProjectConfig}"
+                                    Command="{Binding ShowProjectConfigDialogCommand}" />
                 </NativeMenu>
             </NativeMenuItem>
             <NativeMenuItem Header="{x:Static i18n:Resources.Menu_Timing}">

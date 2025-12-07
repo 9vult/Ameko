@@ -129,4 +129,19 @@
     <data name="Config_Label_RestartRequired" xml:space="preserve">
         <value>Restart required</value>
     </data>
+    <data name="ProjectConfigDialog_Title" xml:space="preserve">
+        <value>Project Configuration</value>
+    </data>
+    <data name="Config_Header_Spellchecking" xml:space="preserve">
+        <value>Spellchecking</value>
+    </data>
+    <data name="Config_Button_Add" xml:space="preserve">
+        <value>Add</value>
+    </data>
+    <data name="Config_Button_Remove" xml:space="preserve">
+        <value>Remove</value>
+    </data>
+    <data name="Config_CustomWordBox_Watermark" xml:space="preserve">
+        <value>Add a word to the dictionary</value>
+    </data>
 </root>

@@ -193,6 +193,10 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Config.resx</DependentUpon>
     </Compile>
+    <Compile Update="Views\Dialogs\ProjectConfigDialog.axaml.cs">
+      <DependentUpon>ProjectConfigDialog.axaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Update="I18N\Resources.resx">

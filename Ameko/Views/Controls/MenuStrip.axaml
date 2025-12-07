@@ -94,7 +94,8 @@
         </MenuItem>
         <MenuItem Header="{x:Static i18n:Resources.Menu_Project}">
             <MenuItem Header="{x:Static i18n:Resources.Menu_ProjectConfig}"
-                      Icon="{icons:MaterialIconExt Kind=ArchiveCogOutline}" />
+                      Icon="{icons:MaterialIconExt Kind=ArchiveCogOutline}"
+                      Command="{Binding ShowProjectConfigDialogCommand}" />
         </MenuItem>
         <MenuItem Header="{x:Static i18n:Resources.Menu_Timing}">
             <MenuItem Header="{x:Static i18n:Resources.Menu_ShiftTimes}"

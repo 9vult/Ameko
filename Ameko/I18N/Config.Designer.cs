@@ -266,5 +266,35 @@ namespace Ameko.I18N {
                 return ResourceManager.GetString("Config_Label_RestartRequired", resourceCulture);
             }
         }
+        
+        public static string ProjectConfigDialog_Title {
+            get {
+                return ResourceManager.GetString("ProjectConfigDialog_Title", resourceCulture);
+            }
+        }
+        
+        public static string Config_Header_Spellchecking {
+            get {
+                return ResourceManager.GetString("Config_Header_Spellchecking", resourceCulture);
+            }
+        }
+        
+        public static string Config_Button_Add {
+            get {
+                return ResourceManager.GetString("Config_Button_Add", resourceCulture);
+            }
+        }
+        
+        public static string Config_Button_Remove {
+            get {
+                return ResourceManager.GetString("Config_Button_Remove", resourceCulture);
+            }
+        }
+        
+        public static string Config_CustomWordBox_Watermark {
+            get {
+                return ResourceManager.GetString("Config_CustomWordBox_Watermark", resourceCulture);
+            }
+        }
     }
 }

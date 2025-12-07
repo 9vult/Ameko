@@ -373,6 +373,16 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         interaction.SetOutput(Unit.Default);
     }
 
+    private void DoShowProjectConfigDialog(
+        IInteractionContext<ProjectConfigDialogViewModel, Unit> interaction
+    )
+    {
+        _logger.LogDebug("Displaying Project Config Dialog");
+        var dialog = new ProjectConfigDialog { DataContext = interaction.Input };
+        dialog.ShowDialog(this);
+        interaction.SetOutput(Unit.Default);
+    }
+
     private async Task DoShowinstallDictionaryDialogAsync(
         IInteractionContext<InstallDictionaryDialogViewModel, Unit> interaction
     )
@@ -435,6 +445,7 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
                 ViewModel.ShowLogWindow.RegisterHandler(DoShowLogWindow);
                 ViewModel.ShowAboutWindow.RegisterHandler(DoShowAboutWindowAsync);
                 ViewModel.ShowConfigDialog.RegisterHandler(DoShowConfigDialog);
+                ViewModel.ShowProjectConfigDialog.RegisterHandler(DoShowProjectConfigDialog);
                 ViewModel.ShowKeybindsDialog.RegisterHandler(DoShowKeybindsDialog);
                 // Other
                 ViewModel.ShowInstallDictionaryDialog.RegisterHandler(

@@ -58,7 +58,7 @@ public class Project : BindableBase
     private bool? _useSoftLinebreaks;
 
     private string? _spellcheckCulture;
-    private List<string> _customWords;
+    private readonly ObservableCollection<string> _customWords;
 
     /// <summary>
     /// All items referenced by the project
@@ -205,7 +205,7 @@ public class Project : BindableBase
     /// <summary>
     /// Custom spellcheck words for the project
     /// </summary>
-    public IReadOnlyList<string> CustomWords => _customWords.AsReadOnly();
+    public AssCS.Utilities.ReadOnlyObservableCollection<string> CustomWords => new(_customWords);
 
     /// <summary>
     /// Project title/name
@@ -772,7 +772,7 @@ public class Project : BindableBase
                 _cpsIncludesPunctuation = model.CpsIncludesPunctuation;
                 _useSoftLinebreaks = model.UseSoftLinebreaks;
                 _spellcheckCulture = model.SpellcheckCulture;
-                _customWords = model.CustomWords.ToList();
+                _customWords = new ObservableCollection<string>(model.CustomWords);
 
                 model
                     .Styles.Select(s => Style.FromAss(StyleManager.NextId, s))
