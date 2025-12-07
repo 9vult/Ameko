@@ -4,6 +4,7 @@ using System;
 using System.Globalization;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Data;
 using Avalonia.Input;
 using Avalonia.Input.Platform;
 using Avalonia.Interactivity;
@@ -57,7 +58,7 @@ public class NumberTextBox : TextBox
     public static readonly StyledProperty<decimal> ValueProperty = AvaloniaProperty.Register<
         NumberTextBox,
         decimal
-    >(nameof(Value), defaultValue: 0m);
+    >(nameof(Value), defaultValue: 0m, defaultBindingMode: BindingMode.TwoWay);
 
     public static readonly RoutedEvent<RoutedEventArgs> ValueChangedEvent = RoutedEvent.Register<
         NumberTextBox,
@@ -146,7 +147,12 @@ public class NumberTextBox : TextBox
         if (e.Sender is not NumberTextBox ntb)
             return;
         var newValue = (decimal?)e.NewValue ?? 0;
-        ntb.Text = newValue.ToString(ntb.FormatString, NumberFormatInfo.InvariantInfo);
+        var expected = newValue.ToString(ntb.FormatString, NumberFormatInfo.InvariantInfo);
+        if (ntb.Text != expected)
+        {
+            ntb.Text = expected;
+        }
+        ntb.RaiseEvent(new RoutedEventArgs(ValueChangedEvent));
     }
 
     /// <summary>
