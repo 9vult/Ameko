@@ -188,6 +188,11 @@
       <DependentUpon>KeybindsDialog.axaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="I18N\Config.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Config.resx</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Update="I18N\Resources.resx">
@@ -249,6 +254,10 @@
     <EmbeddedResource Update="I18N\Playground.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Playground.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="I18N\Config.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Config.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
