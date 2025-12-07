@@ -116,5 +116,155 @@ namespace Ameko.I18N {
                 return ResourceManager.GetString("Config_SaveFrames_WithSubtitles", resourceCulture);
             }
         }
+        
+        public static string Config_Label_CpsWarnThreshold {
+            get {
+                return ResourceManager.GetString("Config_Label_CpsWarnThreshold", resourceCulture);
+            }
+        }
+        
+        public static string Config_Label_CpsWhitespace {
+            get {
+                return ResourceManager.GetString("Config_Label_CpsWhitespace", resourceCulture);
+            }
+        }
+        
+        public static string Config_Label_CpsPunctuation {
+            get {
+                return ResourceManager.GetString("Config_Label_CpsPunctuation", resourceCulture);
+            }
+        }
+        
+        public static string Config_Label_SoftLinebreaks {
+            get {
+                return ResourceManager.GetString("Config_Label_SoftLinebreaks", resourceCulture);
+            }
+        }
+        
+        public static string Config_Label_SoftLinebreaks_ToolTip {
+            get {
+                return ResourceManager.GetString("Config_Label_SoftLinebreaks_ToolTip", resourceCulture);
+            }
+        }
+        
+        public static string Config_Label_DefaultLayer {
+            get {
+                return ResourceManager.GetString("Config_Label_DefaultLayer", resourceCulture);
+            }
+        }
+        
+        public static string Config_Label_DisplayLanguage {
+            get {
+                return ResourceManager.GetString("Config_Label_DisplayLanguage", resourceCulture);
+            }
+        }
+        
+        public static string Config_Label_SpellcheckLanguage {
+            get {
+                return ResourceManager.GetString("Config_Label_SpellcheckLanguage", resourceCulture);
+            }
+        }
+        
+        public static string Config_Label_RichPresence {
+            get {
+                return ResourceManager.GetString("Config_Label_RichPresence", resourceCulture);
+            }
+        }
+        
+        public static string Config_Label_PropagateChanges {
+            get {
+                return ResourceManager.GetString("Config_Label_PropagateChanges", resourceCulture);
+            }
+        }
+        
+        public static string Config_Label_PropagateChanges_ToolTip {
+            get {
+                return ResourceManager.GetString("Config_Label_PropagateChanges_ToolTip", resourceCulture);
+            }
+        }
+        
+        public static string Config_Label_AutosaveEnabled {
+            get {
+                return ResourceManager.GetString("Config_Label_AutosaveEnabled", resourceCulture);
+            }
+        }
+        
+        public static string Config_Label_SaveFrames {
+            get {
+                return ResourceManager.GetString("Config_Label_SaveFrames", resourceCulture);
+            }
+        }
+        
+        public static string Config_Label_AutosaveInterval {
+            get {
+                return ResourceManager.GetString("Config_Label_AutosaveInterval", resourceCulture);
+            }
+        }
+        
+        public static string Config_Label_Theme {
+            get {
+                return ResourceManager.GetString("Config_Label_Theme", resourceCulture);
+            }
+        }
+        
+        public static string Config_Label_EditorFs {
+            get {
+                return ResourceManager.GetString("Config_Label_EditorFs", resourceCulture);
+            }
+        }
+        
+        public static string Config_Label_GridFs {
+            get {
+                return ResourceManager.GetString("Config_Label_GridFs", resourceCulture);
+            }
+        }
+        
+        public static string Config_Label_ReferenceFs {
+            get {
+                return ResourceManager.GetString("Config_Label_ReferenceFs", resourceCulture);
+            }
+        }
+        
+        public static string Config_Label_GridPadding {
+            get {
+                return ResourceManager.GetString("Config_Label_GridPadding", resourceCulture);
+            }
+        }
+        
+        public static string Config_Header_Ssa {
+            get {
+                return ResourceManager.GetString("Config_Header_Ssa", resourceCulture);
+            }
+        }
+        
+        public static string Config_Header_Behavior {
+            get {
+                return ResourceManager.GetString("Config_Header_Behavior", resourceCulture);
+            }
+        }
+        
+        public static string Config_Header_Appearance {
+            get {
+                return ResourceManager.GetString("Config_Header_Appearance", resourceCulture);
+            }
+        }
+        
+        public static string Config_Label_LineWidthPunctuation {
+            get {
+                return ResourceManager.GetString("Config_Label_LineWidthPunctuation", resourceCulture);
+            }
+        }
+        
+        public static string Config_Label_LineWidthWhitespace {
+            get {
+                return ResourceManager.GetString("Config_Label_LineWidthWhitespace", resourceCulture);
+            }
+        }
+        
+        public static string Config_Label_RestartRequired {
+            get {
+                return ResourceManager.GetString("Config_Label_RestartRequired", resourceCulture);
+            }
+        }
     }
 }

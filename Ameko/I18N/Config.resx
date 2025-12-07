@@ -31,13 +31,13 @@
         <value>Time Only</value>
     </data>
     <data name="Config_PropFields_All" xml:space="preserve">
-        <value>All</value>
+        <value>All fields</value>
     </data>
     <data name="Config_PropFields_None" xml:space="preserve">
-        <value>None</value>
+        <value>No fields</value>
     </data>
     <data name="Config_PropFields_NonText" xml:space="preserve">
-        <value>Non-Text</value>
+        <value>Non-Text fields only</value>
     </data>
     <data name="Config_Theme_Default" xml:space="preserve">
         <value>Default</value>
@@ -53,5 +53,80 @@
     </data>
     <data name="Config_SaveFrames_WithSubtitles" xml:space="preserve">
         <value>With Video</value>
+    </data>
+    <data name="Config_Label_CpsWarnThreshold" xml:space="preserve">
+        <value>CPS warn threshold</value>
+    </data>
+    <data name="Config_Label_CpsWhitespace" xml:space="preserve">
+        <value>CPS includes whitespace?</value>
+    </data>
+    <data name="Config_Label_CpsPunctuation" xml:space="preserve">
+        <value>CPS includes punctuation?</value>
+    </data>
+    <data name="Config_Label_SoftLinebreaks" xml:space="preserve">
+        <value>Use soft linebreaks?</value>
+    </data>
+    <data name="Config_Label_SoftLinebreaks_ToolTip" xml:space="preserve">
+        <value>Use \n for linebreaks instead of \N</value>
+    </data>
+    <data name="Config_Label_DefaultLayer" xml:space="preserve">
+        <value>Default layer</value>
+    </data>
+    <data name="Config_Label_DisplayLanguage" xml:space="preserve">
+        <value>Display language</value>
+    </data>
+    <data name="Config_Label_SpellcheckLanguage" xml:space="preserve">
+        <value>Spellcheck language</value>
+    </data>
+    <data name="Config_Label_RichPresence" xml:space="preserve">
+        <value>Rich Presence</value>
+    </data>
+    <data name="Config_Label_PropagateChanges" xml:space="preserve">
+        <value>Propagate changes for</value>
+    </data>
+    <data name="Config_Label_PropagateChanges_ToolTip" xml:space="preserve">
+        <value>Propagate changes from the active event to other selected events</value>
+    </data>
+    <data name="Config_Label_AutosaveEnabled" xml:space="preserve">
+        <value>Autosave enabled?</value>
+    </data>
+    <data name="Config_Label_SaveFrames" xml:space="preserve">
+        <value>Save frames</value>
+    </data>
+    <data name="Config_Label_AutosaveInterval" xml:space="preserve">
+        <value>Autosave interval (sec)</value>
+    </data>
+    <data name="Config_Label_Theme" xml:space="preserve">
+        <value>Theme</value>
+    </data>
+    <data name="Config_Label_EditorFs" xml:space="preserve">
+        <value>Editor font size</value>
+    </data>
+    <data name="Config_Label_GridFs" xml:space="preserve">
+        <value>Grid font size</value>
+    </data>
+    <data name="Config_Label_ReferenceFs" xml:space="preserve">
+        <value>Reference file font size</value>
+    </data>
+    <data name="Config_Label_GridPadding" xml:space="preserve">
+        <value>Grid padding</value>
+    </data>
+    <data name="Config_Header_Ssa" xml:space="preserve">
+        <value>SubStation Alpha</value>
+    </data>
+    <data name="Config_Header_Behavior" xml:space="preserve">
+        <value>Behavior</value>
+    </data>
+    <data name="Config_Header_Appearance" xml:space="preserve">
+        <value>Appearance</value>
+    </data>
+    <data name="Config_Label_LineWidthPunctuation" xml:space="preserve">
+        <value>Line Width includes punctuation?</value>
+    </data>
+    <data name="Config_Label_LineWidthWhitespace" xml:space="preserve">
+        <value>Line Width includes whitespace?</value>
+    </data>
+    <data name="Config_Label_RestartRequired" xml:space="preserve">
+        <value>Restart required</value>
     </data>
 </root>
