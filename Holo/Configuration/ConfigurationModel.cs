@@ -26,6 +26,9 @@ internal record ConfigurationModel
     public required string SpellcheckCulture;
     public required Theme Theme;
     public required uint GridPadding;
+    public required decimal EditorFontSize;
+    public required decimal GridFontSize;
+    public required decimal ReferenceFontSize;
     public required PropagateFields PropagateFields;
     public required string[] RepositoryUrls;
     public required Dictionary<string, string> ScriptMenuOverrides;

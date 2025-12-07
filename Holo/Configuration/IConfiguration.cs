@@ -92,6 +92,21 @@ public interface IConfiguration
     uint GridPadding { get; set; }
 
     /// <summary>
+    /// Font size of the editor text box
+    /// </summary>
+    decimal EditorFontSize { get; set; }
+
+    /// <summary>
+    /// Font size of event grid entries
+    /// </summary>
+    decimal GridFontSize { get; set; }
+
+    /// <summary>
+    /// Font size of the reference text box
+    /// </summary>
+    decimal ReferenceFontSize { get; set; }
+
+    /// <summary>
     /// Which fields should propagate changes from the active event to other selected events
     /// </summary>
     PropagateFields PropagateFields { get; set; }

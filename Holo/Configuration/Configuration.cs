@@ -55,6 +55,9 @@ public partial class Configuration : BindableBase, IConfiguration
     private string _spellcheckCulture;
     private Theme _theme;
     private uint _gridPadding;
+    private decimal _editorFontSize;
+    private decimal _gridFontSize;
+    private decimal _referenceFontSize;
     private PropagateFields _propagateFields;
     private RangeObservableCollection<string> _repositoryUrls;
     private Dictionary<string, string> _scriptMenuOverrides;
@@ -165,6 +168,27 @@ public partial class Configuration : BindableBase, IConfiguration
     }
 
     /// <inheritdoc />
+    public decimal EditorFontSize
+    {
+        get => _editorFontSize;
+        set => SetProperty(ref _editorFontSize, value);
+    }
+
+    /// <inheritdoc />
+    public decimal GridFontSize
+    {
+        get => _gridFontSize;
+        set => SetProperty(ref _gridFontSize, value);
+    }
+
+    /// <inheritdoc />
+    public decimal ReferenceFontSize
+    {
+        get => _referenceFontSize;
+        set => SetProperty(ref _referenceFontSize, value);
+    }
+
+    /// <inheritdoc />
     public PropagateFields PropagateFields
     {
         get => _propagateFields;
@@ -242,6 +266,9 @@ public partial class Configuration : BindableBase, IConfiguration
                 SpellcheckCulture = _spellcheckCulture,
                 Theme = _theme,
                 GridPadding = _gridPadding,
+                EditorFontSize = _editorFontSize,
+                GridFontSize = _gridFontSize,
+                ReferenceFontSize = _referenceFontSize,
                 PropagateFields = _propagateFields,
                 RepositoryUrls = RepositoryUrls.ToArray(),
                 ScriptMenuOverrides = ScriptMenuOverrides.ToDictionary(),
@@ -309,6 +336,9 @@ public partial class Configuration : BindableBase, IConfiguration
                 _spellcheckCulture = model.SpellcheckCulture,
                 _theme = model.Theme,
                 _gridPadding = model.GridPadding,
+                _editorFontSize = model.EditorFontSize,
+                _gridFontSize = model.GridFontSize,
+                _referenceFontSize = model.ReferenceFontSize,
                 _propagateFields = model.PropagateFields,
                 _repositoryUrls = new RangeObservableCollection<string>(model.RepositoryUrls),
                 _scriptMenuOverrides = new Dictionary<string, string>(model.ScriptMenuOverrides),
@@ -342,6 +372,9 @@ public partial class Configuration : BindableBase, IConfiguration
         _spellcheckCulture = "en_US";
         _theme = Theme.Default;
         _gridPadding = 2;
+        _editorFontSize = 16m;
+        _gridFontSize = 14m;
+        _referenceFontSize = 12m;
         _propagateFields = PropagateFields.NonText;
         _repositoryUrls = [];
         _scriptMenuOverrides = [];

@@ -105,12 +105,15 @@ public class ConfigurationTests
             "AutosaveInterval": 120,
             "LineWidthIncludesWhitespace": true,
             "LineWidthIncludesPunctuation": true,
-            "DiscordRpcEnabled": true,
+            "RichPresenceLevel": "Enabled",
             "Culture": "en-US",
             "SpellcheckCulture": "en_US",
             "Theme": "light",
             "PropagateFields": "NonText",
             "GridPadding": 2,
+            "EditorFontSize": 0.0,
+            "GridFontSize": 0.0,
+            "ReferenceFontSize": 0.0,
             "RepositoryUrls": [],
             "ScriptMenuOverrides": {}
         }
