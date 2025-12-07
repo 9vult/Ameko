@@ -34,6 +34,7 @@
               SelectionMode="Extended"
               VerticalScrollBarVisibility="Auto"
               HorizontalScrollBarVisibility="Disabled"
+              FontSize="{Binding Configuration.GridFontSize}"
               ItemsSource="{Binding Workspace.Document.EventManager.Events}"
               SelectedItem="{Binding Workspace.SelectionManager.ActiveEvent, Mode=OneWay}">
         <DataGrid.Columns>

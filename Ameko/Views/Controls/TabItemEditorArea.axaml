@@ -21,10 +21,11 @@
         <converters:StyleNameConverter x:Key="StyleNameConverter" />
     </UserControl.Resources>
     <DockPanel>
-        <TextBox DockPanel.Dock="Bottom"
+        <TextBox Name="ReferenceBox"
+                 DockPanel.Dock="Bottom"
                  Margin="2"
                  IsReadOnly="True"
-                 FontSize="12"
+                 FontSize="{Binding Configuration.ReferenceFontSize}"
                  MaxLines="4"
                  FontFamily="{StaticResource ZenKakuGothicNew}"
                  TextWrapping="Wrap"
@@ -206,12 +207,12 @@
                      Grid.Row="2"
                      VerticalAlignment="Stretch"
                      VerticalContentAlignment="Top"
-                     Text="{Binding Workspace.SelectionManager.ActiveEvent.Text}"
                      ClearSelectionOnLostFocus="False"
+                     FontSize="{Binding Configuration.EditorFontSize}"
+                     Text="{Binding Workspace.SelectionManager.ActiveEvent.Text}"
                      SelectionStart="{Binding EditBoxSelectionStart, Mode=TwoWay}"
                      SelectionEnd="{Binding EditBoxSelectionEnd, Mode=TwoWay}"
                      Margin="2"
-                     FontSize="16"
                      MinLines="1"
                      FontFamily="{StaticResource ZenKakuGothicNew}"
                      TextWrapping="Wrap"
