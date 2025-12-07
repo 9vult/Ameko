@@ -151,7 +151,7 @@
                     <NativeMenuItem Header="{x:Static i18n:Resources.Menu_ReferenceFile_Attach}"
                                     IsVisible="{Binding !ProjectProvider.Current.WorkingSpace.ReferenceFileManager.IsReferenceLoaded}"
                                     Command="{Binding AttachReferenceFileCommand} "/>
-                    <NativeMenuItem Header="{x:Static i18n:Resources.Menu_ReferenceFile_Detatch}"
+                    <NativeMenuItem Header="{x:Static i18n:Resources.Menu_ReferenceFile_Detach}"
                                     IsVisible="{Binding ProjectProvider.Current.WorkingSpace.ReferenceFileManager.IsReferenceLoaded,
                                                         FallbackValue=false}"
                                     Command="{Binding DetachReferenceFileCommand} "/>

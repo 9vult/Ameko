@@ -579,9 +579,9 @@ namespace Ameko.I18N {
             }
         }
         
-        public static string Menu_ReferenceFile_Detatch {
+        public static string Menu_ReferenceFile_Detach {
             get {
-                return ResourceManager.GetString("Menu_ReferenceFile_Detatch", resourceCulture);
+                return ResourceManager.GetString("Menu_ReferenceFile_Detach", resourceCulture);
             }
         }
         

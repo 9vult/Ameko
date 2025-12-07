@@ -83,7 +83,7 @@
                       Icon="{icons:MaterialIconExt Kind=ClosedCaptionOutline}"
                       IsVisible="{Binding !ProjectProvider.Current.WorkingSpace.ReferenceFileManager.IsReferenceLoaded}"
                       Command="{Binding AttachReferenceFileCommand}" />
-            <MenuItem Header="{x:Static i18n:Resources.Menu_ReferenceFile_Detatch}"
+            <MenuItem Header="{x:Static i18n:Resources.Menu_ReferenceFile_Detach}"
                       Icon="{icons:MaterialIconExt Kind=ClosedCaptionOutline}"
                       IsVisible="{Binding ProjectProvider.Current.WorkingSpace.ReferenceFileManager.IsReferenceLoaded,
                                           FallbackValue=false}"

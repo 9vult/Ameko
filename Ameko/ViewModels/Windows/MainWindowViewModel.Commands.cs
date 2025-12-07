@@ -391,7 +391,7 @@ public partial class MainWindowViewModel : ViewModelBase
     }
 
     /// <summary>
-    /// Detatch the reference file
+    /// Detach the reference file
     /// </summary>
     private ReactiveCommand<Unit, Unit> CreateDetachReferenceFileCommand()
     {

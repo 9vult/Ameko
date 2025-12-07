@@ -285,8 +285,8 @@
     <data name="Menu_ReferenceFile_Attach" xml:space="preserve">
         <value>_Attach Reference File...</value>
     </data>
-    <data name="Menu_ReferenceFile_Detatch" xml:space="preserve">
-        <value>_Detatch Reference File</value>
+    <data name="Menu_ReferenceFile_Detach" xml:space="preserve">
+        <value>_Detach Reference File</value>
     </data>
     <data name="Menu_Spellcheck" xml:space="preserve">
         <value>Spell_check...</value>
