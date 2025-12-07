@@ -3,12 +3,9 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        d:DesignWidth="480"
-        d:DesignHeight="640"
 
         xmlns:c="clr-namespace:Ameko.Views.Controls"
         xmlns:converters="clr-namespace:Ameko.Converters"
-        xmlns:dm="clr-namespace:Ameko.DataModels"
         xmlns:i18n="clr-namespace:Ameko.I18N"
         xmlns:vm="clr-namespace:Ameko.ViewModels.Dialogs"
 
@@ -18,16 +15,15 @@
         Width="480"
         Topmost="True"
         CanResize="False"
-        SizeToContent="Height"
+        SizeToContent="WidthAndHeight"
         WindowStartupLocation="CenterOwner"
         Icon="/Assets/Ameko-Simplified-BG-64.ico"
         Title="{x:Static i18n:Config.ConfigDialog_Title}">
     <Window.Resources>
-        <converters:EnumConverter x:Key="EnumConverter" />
         <converters:HccBorderConverter x:Key="BorderConverter" />
     </Window.Resources>
     <StackPanel Margin="2">
-        <!-- ASS-related settings -->
+        <!-- Substation Alpha -->
         <HeaderedContentControl Header="Substation Alpha">
             <Grid ColumnDefinitions="Auto, Auto"
                   RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto"
@@ -63,10 +59,10 @@
                 <Label Grid.Column="0"
                        Grid.Row="3"
                        VerticalAlignment="Center"
-                       Content="Use soft linebreaks?" />
+                       Content="Use soft linebreaks?"
+                       ToolTip.Tip="Use \n for linebreaks instead of \N" />
                 <CheckBox Grid.Column="1"
                           Grid.Row="3"
-                          Content="Uses \n instead of \N"
                           IsChecked="{Binding Config.CpsIncludesWhitespace}" />
                 <Label Grid.Column="0"
                        Grid.Row="4"
@@ -97,13 +93,98 @@
                                  Value="{Binding Config.DefaultLayer}" />
             </Grid>
         </HeaderedContentControl>
+        
+        <!-- Ameko Behavior -->
         <HeaderedContentControl Header="Behavior">
-            <Grid ColumnDefinitions="Auto, Auto"
-                  RowDefinitions="Auto, Auto"
+            <Grid ColumnDefinitions="Auto, Auto, Auto"
+                  RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, Auto"
                   ColumnSpacing="10"
                   RowSpacing="2">
+                <Label Grid.Column="0"
+                       Grid.Row="0"
+                       VerticalAlignment="Center"
+                       Content="Display language" />
+                <ComboBox Grid.Column="1"
+                          Grid.Row="0"
+                          Width="175"
+                          ItemsSource="{Binding CultureService.AvailableLanguages}"
+                          SelectedItem="{Binding Config.Culture}"
+                          DisplayMemberBinding="{Binding Name}"
+                          SelectedValueBinding="{Binding Locale}" />
+                <Label Grid.Column="2"
+                       Grid.Row="0"
+                       VerticalAlignment="Center"
+                       Foreground="Red"
+                       Content="Restart required" />
+                <Label Grid.Column="0"
+                       Grid.Row="1"
+                       VerticalAlignment="Center"
+                       Content="Spellcheck language" />
+                <ComboBox Grid.Column="1"
+                          Grid.Row="1"
+                          Width="175"
+                          ItemsSource="{Binding DictionaryService.InstalledDictionaries}"
+                          SelectedItem="{Binding Config.SpellcheckCulture}"
+                          DisplayMemberBinding="{Binding Lang.Name}"
+                          SelectedValueBinding="{Binding Lang.Locale}" />
+                <Label Grid.Column="0"
+                       Grid.Row="2"
+                       VerticalAlignment="Center"
+                       Content="Rich Presence" />
+                <ComboBox Grid.Column="1"
+                          Grid.Row="2"
+                          Width="175"
+                          ItemsSource="{Binding RichPresenceLevelChoices}"
+                          SelectedItem="{Binding Config.RichPresenceLevel}"
+                          DisplayMemberBinding="{Binding Item2}"
+                          SelectedValueBinding="{Binding Item1}" />
+                <Label Grid.Column="0"
+                       Grid.Row="3"
+                       VerticalAlignment="Center"
+                       Content="Propagate changes"
+                       ToolTip.Tip="Propagate changes from the active event to other selected events" />
+                <ComboBox Grid.Column="1"
+                          Grid.Row="3"
+                          Width="175"
+                          ItemsSource="{Binding PropagateFieldsChoices}"
+                          SelectedItem="{Binding Config.PropagateFields}"
+                          DisplayMemberBinding="{Binding Item2}"
+                          SelectedValueBinding="{Binding Item1}" />
+                <Label Grid.Column="0"
+                       Grid.Row="4"
+                       VerticalAlignment="Center"
+                       Content="Save frames" />
+                <ComboBox Grid.Column="1"
+                          Grid.Row="4"
+                          Width="175"
+                          ItemsSource="{Binding SaveFramesChoices}"
+                          SelectedItem="{Binding Config.SaveFrames}"
+                          DisplayMemberBinding="{Binding Item2}"
+                          SelectedValueBinding="{Binding Item1}" />
+                <Label Grid.Column="0"
+                       Grid.Row="5"
+                       VerticalAlignment="Center"
+                       Content="Autosave enabled?" />
+                <CheckBox Grid.Column="1"
+                          Grid.Row="5"
+                          IsChecked="{Binding Config.AutosaveEnabled}" />
+                <Label Grid.Column="0"
+                       Grid.Row="6"
+                       VerticalAlignment="Center"
+                       Content="Autosave interval (sec)" />
+                <c:NumberTextBox Grid.Column="1"
+                                 Grid.Row="6"
+                                 Width="50"
+                                 Minimum="30"
+                                 Maximum="1800"
+                                 Increment="1"
+                                 FormatString="0"
+                                 HorizontalAlignment="Left"
+                                 Value="{Binding Config.AutosaveInterval}" />
             </Grid>
         </HeaderedContentControl>
+        
+        <!-- Ameko Appearance -->
         <HeaderedContentControl Header="Appearance">
             <Grid ColumnDefinitions="Auto, Auto"
                   RowDefinitions="Auto, Auto, Auto, Auto, Auto"
@@ -115,7 +196,7 @@
                        Content="Theme" />
                 <ComboBox Grid.Column="1"
                           Grid.Row="0"
-                          Width="100"
+                          Width="175"
                           ItemsSource="{Binding ThemeChoices}"
                           SelectedItem="{Binding Config.Theme}"
                           DisplayMemberBinding="{Binding Item2}"
@@ -149,7 +230,7 @@
                 <Label Grid.Column="0"
                        Grid.Row="3"
                        VerticalAlignment="Center"
-                       Content="Reference font size" />
+                       Content="Reference file font size" />
                 <c:NumberTextBox Grid.Column="1"
                                  Grid.Row="3"
                                  Width="50"

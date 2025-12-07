@@ -3,11 +3,16 @@
 using System.Collections.Generic;
 using Holo.Configuration;
 using Holo.Models;
+using Holo.Providers;
 using ReactiveUI;
 
 namespace Ameko.ViewModels.Dialogs;
 
-public partial class ConfigDialogViewModel(IConfiguration config) : ViewModelBase
+public partial class ConfigDialogViewModel(
+    IConfiguration config,
+    IDictionaryService dictionaryService,
+    ICultureService cultureService
+) : ViewModelBase
 {
     internal static List<Tuple<RichPresenceLevel, string>> RichPresenceLevelChoices =>
         [
@@ -36,10 +41,9 @@ public partial class ConfigDialogViewModel(IConfiguration config) : ViewModelBas
             new(SaveFrames.WithSubtitles, I18N.Config.Config_SaveFrames_WithSubtitles),
         ];
 
-    /// <summary>
-    /// Configuration instance
-    /// </summary>
     public IConfiguration Config { get; } = config;
+    public ICultureService CultureService { get; } = cultureService;
+    public IDictionaryService DictionaryService { get; } = dictionaryService;
 
     /// <summary>
     /// A janky reimplementation of a tuple since binding requires `get;` properties
