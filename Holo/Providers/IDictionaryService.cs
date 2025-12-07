@@ -1,12 +1,15 @@
 // SPDX-License-Identifier: MPL-2.0
 
 using System.Diagnostics.CodeAnalysis;
+using AssCS.Utilities;
 using Holo.Models;
 
 namespace Holo.Providers;
 
 public interface IDictionaryService
 {
+    ReadOnlyObservableCollection<SpellcheckDictionary> InstalledDictionaries { get; }
+
     /// <summary>
     /// Try to get a dictionary
     /// </summary>

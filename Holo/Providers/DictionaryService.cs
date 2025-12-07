@@ -21,7 +21,8 @@ public class DictionaryService : IDictionaryService
 
     private readonly ObservableCollection<SpellcheckDictionary> _installedDictionaries;
 
-    public ReadOnlyObservableCollection<SpellcheckDictionary> InstalledDictionaries;
+    /// <inheritdoc />
+    public AssCS.Utilities.ReadOnlyObservableCollection<SpellcheckDictionary> InstalledDictionaries { get; }
 
     /// <inheritdoc />
     public bool TryGetDictionary(
@@ -132,9 +133,10 @@ public class DictionaryService : IDictionaryService
         _httpClient = httpClient;
         _installedDictionaries = [];
 
-        InstalledDictionaries = new ReadOnlyObservableCollection<SpellcheckDictionary>(
-            _installedDictionaries
-        );
+        InstalledDictionaries =
+            new AssCS.Utilities.ReadOnlyObservableCollection<SpellcheckDictionary>(
+                _installedDictionaries
+            );
 
         PopulateInstalledDictionaries();
     }

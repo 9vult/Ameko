@@ -8,18 +8,33 @@ using System.Text.Json;
 using System.Threading;
 using Holo.Configuration;
 using Holo.IO;
+using Holo.Models;
+using Holo.Providers;
 
 namespace Ameko.Services;
 
-public static class CultureService
+public class CultureService : ICultureService
 {
-    public static IReadOnlyList<CultureInfo> AvailableCultures { get; } = [new("en-US")];
+    // Some fun stuff because this needs to be both statically-accessible (for startup)
+    // and accessible via DI (for everything else)
+
+    private static readonly List<DisplayLanguage> StaticLanguages = [new("English (US)", "en-US")];
+
+    private static readonly List<CultureInfo> StaticCultures = StaticLanguages
+        .Select(l => new CultureInfo(l.Locale))
+        .ToList();
+
+    /// <inheritdoc />
+    public IReadOnlyCollection<DisplayLanguage> AvailableLanguages => StaticLanguages;
+
+    /// <inheritdoc />
+    public IReadOnlyCollection<CultureInfo> AvailableCultures => StaticCultures;
 
     public static void SetCulture()
     {
         var cultureName = GetConfiguredCulture();
         var culture =
-            AvailableCultures.FirstOrDefault(c => c.Name == cultureName) ?? AvailableCultures[0];
+            StaticCultures.FirstOrDefault(c => c.Name == cultureName) ?? StaticCultures[0];
 
         Thread.CurrentThread.CurrentUICulture = culture;
         Thread.CurrentThread.CurrentCulture = culture;

@@ -72,16 +72,17 @@ public class AmekoServiceProvider
         services.AddSingleton<DiscordRpcService>();
         services.AddSingleton<IGitService, GitService>();
         services.AddSingleton<ILayoutProvider, LayoutProvider>();
+        services.AddSingleton<IMessageService, MessageService>();
         services.AddSingleton<IProjectProvider, ProjectProvider>();
         services.AddSingleton<IDictionaryService, DictionaryService>();
         services.AddSingleton<ISpellcheckService, SpellcheckService>();
-        services.AddSingleton<IMessageService, MessageService>();
 
         // --- Presentation ---
         services.AddSingleton<ThemeService>();
         services.AddSingleton<IIoService, IoService>();
-        services.AddSingleton<IMessageBoxService, MessageBoxService>();
         services.AddSingleton<IWindowService, WindowService>();
+        services.AddSingleton<ICultureService, CultureService>();
+        services.AddSingleton<IMessageBoxService, MessageBoxService>();
 
         // --- Factories ---
         services.AddSingleton<StaticLoggerFactory>();
