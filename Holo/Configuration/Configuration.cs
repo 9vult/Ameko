@@ -48,7 +48,7 @@ public partial class Configuration : BindableBase, IConfiguration
     private bool _useSoftLinebreaks;
     private bool _lineWidthIncludesWhitespace;
     private bool _lineWidthIncludesPunctuation;
-    private bool _discordRpcEnabled;
+    private RichPresenceLevel _richPresenceLevel;
     private SaveFrames _saveFrames;
     private int _defaultLayer;
     private string _culture;
@@ -123,10 +123,10 @@ public partial class Configuration : BindableBase, IConfiguration
     }
 
     /// <inheritdoc />
-    public bool DiscordRpcEnabled
+    public RichPresenceLevel RichPresenceLevel
     {
-        get => _discordRpcEnabled;
-        set => SetProperty(ref _discordRpcEnabled, value);
+        get => _richPresenceLevel;
+        set => SetProperty(ref _richPresenceLevel, value);
     }
 
     /// <inheritdoc />
@@ -235,7 +235,7 @@ public partial class Configuration : BindableBase, IConfiguration
                 AutosaveInterval = _autosaveInterval,
                 LineWidthIncludesWhitespace = _lineWidthIncludesWhitespace,
                 LineWidthIncludesPunctuation = _lineWidthIncludesPunctuation,
-                DiscordRpcEnabled = _discordRpcEnabled,
+                RichPresenceLevel = _richPresenceLevel,
                 SaveFrames = _saveFrames,
                 DefaultLayer = _defaultLayer,
                 Culture = _culture,
@@ -302,7 +302,7 @@ public partial class Configuration : BindableBase, IConfiguration
                 _autosaveInterval = model.AutosaveInterval,
                 _lineWidthIncludesWhitespace = model.LineWidthIncludesWhitespace,
                 _lineWidthIncludesPunctuation = model.LineWidthIncludesPunctuation,
-                _discordRpcEnabled = model.DiscordRpcEnabled,
+                _richPresenceLevel = model.RichPresenceLevel,
                 _saveFrames = model.SaveFrames,
                 _defaultLayer = model.DefaultLayer,
                 _culture = model.Culture,
@@ -334,7 +334,7 @@ public partial class Configuration : BindableBase, IConfiguration
         _logger = logger;
         _cps = 18;
         _useSoftLinebreaks = false;
-        _discordRpcEnabled = true;
+        _richPresenceLevel = RichPresenceLevel.Enabled;
         _saveFrames = SaveFrames.WithSubtitles;
         _autosaveEnabled = true;
         _autosaveInterval = 60;

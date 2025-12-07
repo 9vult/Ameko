@@ -24,7 +24,7 @@ public class DiscordRpcService
     private readonly DiscordRpcClient _client;
     private readonly Timestamps _timestamps;
 
-    public void Update(WorkingSpaceChangedMessage? _)
+    private void Update(WorkingSpaceChangedMessage? _)
     {
         var prjName = _projectProvider.Current.Title;
         var wspName = _projectProvider.Current.WorkingSpace?.SavePath is not null
@@ -33,22 +33,28 @@ public class DiscordRpcService
             )
             : _projectProvider.Current.WorkingSpace?.Title;
 
-        if (_configuration.DiscordRpcEnabled)
+        switch (_configuration.RichPresenceLevel)
         {
-            _logger.LogDebug("Setting rich presence to {PrjName}/{WspName}", prjName, wspName);
-
-            _client.SetPresence(
-                new RichPresence
-                {
-                    Details = $"Editing {wspName}.ass",
-                    State = $"in {prjName}.aproj",
-                    Timestamps = _timestamps,
-                }
-            );
-        }
-        else
-        {
-            _client.ClearPresence();
+            case RichPresenceLevel.Disabled:
+                _client.ClearPresence();
+                break;
+            case RichPresenceLevel.Enabled:
+                _logger.LogDebug("Setting rich presence to {PrjName}/{WspName}", prjName, wspName);
+                _client.SetPresence(
+                    new RichPresence
+                    {
+                        Details = $"Editing {wspName}.ass",
+                        State = $"in {prjName}.aproj",
+                        Timestamps = _timestamps,
+                    }
+                );
+                break;
+            case RichPresenceLevel.TimeOnly:
+                _logger.LogDebug("Refreshing rich presence");
+                _client.SetPresence(
+                    new RichPresence { Details = "Authoring Subtitles", Timestamps = _timestamps }
+                );
+                break;
         }
     }
 

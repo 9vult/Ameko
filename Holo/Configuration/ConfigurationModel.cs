@@ -19,7 +19,7 @@ internal record ConfigurationModel
     public required uint AutosaveInterval;
     public required bool LineWidthIncludesWhitespace;
     public required bool LineWidthIncludesPunctuation;
-    public required bool DiscordRpcEnabled;
+    public required RichPresenceLevel RichPresenceLevel;
     public required SaveFrames SaveFrames;
     public required int DefaultLayer;
     public required string Culture;

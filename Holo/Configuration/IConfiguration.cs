@@ -62,9 +62,9 @@ public interface IConfiguration
     bool LineWidthIncludesPunctuation { get; set; }
 
     /// <summary>
-    /// If current workspace/project should be announced to Discord
+    /// Amount of detail to announce to Rich Presence providers (Discord, etc.)
     /// </summary>
-    bool DiscordRpcEnabled { get; set; }
+    RichPresenceLevel RichPresenceLevel { get; set; }
 
     /// <summary>
     /// Where to save frames
