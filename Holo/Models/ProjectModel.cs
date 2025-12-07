@@ -20,6 +20,7 @@ internal record ProjectModel
     public required bool? CpsIncludesWhitespace;
     public required bool? CpsIncludesPunctuation;
     public required bool? UseSoftLinebreaks;
+    public required int? DefaultLayer;
     public required string? SpellcheckCulture;
     public required string[] CustomWords;
 }

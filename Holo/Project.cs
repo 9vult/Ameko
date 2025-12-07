@@ -56,7 +56,7 @@ public class Project : BindableBase
     private bool? _cpsIncludesWhitespace;
     private bool? _cpsIncludesPunctuation;
     private bool? _useSoftLinebreaks;
-
+    private int? _defaultLayer;
     private string? _spellcheckCulture;
     private readonly ObservableCollection<string> _customWords;
 
@@ -181,10 +181,10 @@ public class Project : BindableBase
     /// </summary>
     public int? DefaultLayer
     {
-        get;
+        get => _defaultLayer;
         set
         {
-            SetProperty(ref field, value);
+            SetProperty(ref _defaultLayer, value);
             IsSaved = false;
         }
     }
@@ -516,6 +516,7 @@ public class Project : BindableBase
                 CpsIncludesWhitespace = _cpsIncludesWhitespace,
                 CpsIncludesPunctuation = _cpsIncludesPunctuation,
                 UseSoftLinebreaks = _useSoftLinebreaks,
+                DefaultLayer = _defaultLayer,
                 SpellcheckCulture = _spellcheckCulture,
                 CustomWords = _customWords.ToArray(),
             };
@@ -770,6 +771,7 @@ public class Project : BindableBase
                 _cps = model.Cps;
                 _cpsIncludesWhitespace = model.CpsIncludesWhitespace;
                 _cpsIncludesPunctuation = model.CpsIncludesPunctuation;
+                _defaultLayer = model.DefaultLayer;
                 _useSoftLinebreaks = model.UseSoftLinebreaks;
                 _spellcheckCulture = model.SpellcheckCulture;
                 _customWords = new ObservableCollection<string>(model.CustomWords);
