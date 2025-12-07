@@ -93,6 +93,7 @@ public class LayoutProvider : BindableBase, ILayoutProvider
                 (DefaultLayout, "default"),
                 (DefaultRightPrjExplorer, "default-right"),
                 (SubsOnlyLayout, "subs-only"),
+                (VideoOnlyLayout, "video-only"),
                 (PetzkuLayout, "petzku"),
                 (VerticalLayout, "vertical"),
             }
@@ -305,6 +306,41 @@ public class LayoutProvider : BindableBase, ILayoutProvider
                     Row = 1,
                 },
             ],
+        };
+
+    private static Layout VideoOnlyLayout =>
+        new()
+        {
+            Name = "Video Only",
+            Author = "9volt",
+            ColumnDefinitions = "*",
+            RowDefinitions = "*",
+            Window = new WindowSection { IsProjectExplorerOnLeft = true },
+            Video = new TabSection
+            {
+                IsVisible = true,
+                Column = 0,
+                Row = 0,
+            },
+            Audio = new TabSection
+            {
+                IsVisible = false,
+                Column = 0,
+                Row = 0,
+            },
+            Editor = new TabSection
+            {
+                IsVisible = false,
+                Column = 0,
+                Row = 0,
+            },
+            Events = new TabSection
+            {
+                IsVisible = false,
+                Column = 0,
+                Row = 0,
+            },
+            Splitters = [],
         };
 
     private static Layout PetzkuLayout =>
