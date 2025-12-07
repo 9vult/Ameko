@@ -57,7 +57,7 @@ public class NumberTextBox : TextBox
     public static readonly StyledProperty<decimal> ValueProperty = AvaloniaProperty.Register<
         NumberTextBox,
         decimal
-    >(nameof(AllowDecimal), defaultValue: 0m);
+    >(nameof(Value), defaultValue: 0m);
 
     public static readonly RoutedEvent<RoutedEventArgs> ValueChangedEvent = RoutedEvent.Register<
         NumberTextBox,
@@ -119,11 +119,7 @@ public class NumberTextBox : TextBox
     public decimal Value
     {
         get => GetValue(ValueProperty);
-        set
-        {
-            SetValue(ValueProperty, value);
-            RaiseEvent(new RoutedEventArgs(ValueChangedEvent));
-        }
+        set => SetValue(ValueProperty, value);
     }
 
     public event EventHandler<RoutedEventArgs> ValueChanged
@@ -138,6 +134,19 @@ public class NumberTextBox : TextBox
         AddHandler(TextInputEvent, OnTextInput, RoutingStrategies.Tunnel);
         AddHandler(PointerWheelChangedEvent, OnPointerWheelChanged, RoutingStrategies.Tunnel);
         Text = Value.ToString(FormatString, NumberFormatInfo.InvariantInfo);
+    }
+
+    static NumberTextBox()
+    {
+        ValueProperty.Changed.Subscribe(OnValueChanged);
+    }
+
+    private static void OnValueChanged(AvaloniaPropertyChangedEventArgs e)
+    {
+        if (e.Sender is not NumberTextBox ntb)
+            return;
+        var newValue = (decimal?)e.NewValue ?? 0;
+        ntb.Text = newValue.ToString(ntb.FormatString, NumberFormatInfo.InvariantInfo);
     }
 
     /// <summary>
