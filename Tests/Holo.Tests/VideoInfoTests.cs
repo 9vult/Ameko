@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 
 using Holo.Media;
-using Shouldly;
 
 namespace Holo.Tests;
 
@@ -19,59 +18,59 @@ public class VideoInfoTests
             1080
         );
 
-    [Fact]
-    public void FrameFromMillis_Exact()
+    [Test]
+    public async Task FrameFromMillis_Exact()
     {
         var info = Info;
         var frame = info.FrameFromMillis(125);
-        frame.ShouldBe(3);
+        await Assert.That(frame).IsEqualTo(3);
     }
 
-    [Fact]
-    public void FrameFromMillis_Between()
+    [Test]
+    public async Task FrameFromMillis_Between()
     {
         var info = Info;
         var frame = info.FrameFromMillis(126);
-        frame.ShouldBe(4);
+        await Assert.That(frame).IsEqualTo(4);
     }
 
-    [Fact]
-    public void FrameFromMillis_OutOfRange_Small()
+    [Test]
+    public async Task FrameFromMillis_OutOfRange_Small()
     {
         var info = Info;
         var frame = info.FrameFromMillis(-5);
-        frame.ShouldBe(0);
+        await Assert.That(frame).IsEqualTo(0);
     }
 
-    [Fact]
-    public void FrameFromMillis_OutOfRange_Large()
+    [Test]
+    public async Task FrameFromMillis_OutOfRange_Large()
     {
         var info = Info;
         var frame = info.FrameFromMillis(5000);
-        frame.ShouldBe(11);
+        await Assert.That(frame).IsEqualTo(11);
     }
 
-    [Fact]
-    public void MillisecondsFromFrame()
+    [Test]
+    public async Task MillisecondsFromFrame()
     {
         var info = Info;
         var ms = info.MillisecondsFromFrame(3);
-        ms.ShouldBe(125);
+        await Assert.That(ms).IsEqualTo(125);
     }
 
-    [Fact]
-    public void MillisecondsFromFrame_OutOfRange_Small()
+    [Test]
+    public async Task MillisecondsFromFrame_OutOfRange_Small()
     {
         var info = Info;
         var ms = info.MillisecondsFromFrame(-5);
-        ms.ShouldBe(0);
+        await Assert.That(ms).IsEqualTo(0);
     }
 
-    [Fact]
-    public void MillisecondsFromFrame_OutOfRange_Large()
+    [Test]
+    public async Task MillisecondsFromFrame_OutOfRange_Large()
     {
         var info = Info;
         var ms = info.MillisecondsFromFrame(5000);
-        ms.ShouldBe(459);
+        await Assert.That(ms).IsEqualTo(459);
     }
 }

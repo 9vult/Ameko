@@ -4,23 +4,22 @@ using System.IO.Abstractions.TestingHelpers;
 using Holo.Configuration.Keybinds;
 using Holo.IO;
 using Microsoft.Extensions.Logging.Abstractions;
-using Shouldly;
 
 namespace Holo.Tests;
 
 public class KeybindRegistrarTests
 {
-    [Fact]
-    public void Constructor()
+    [Test]
+    public async Task Constructor()
     {
         var fs = new MockFileSystem();
         var lg = NullLogger<KeybindRegistrar>.Instance;
         var k = new KeybindRegistrar(fs, lg);
-        k.GetKeybinds(KeybindContext.Global).Count().ShouldBe(0);
+        await Assert.That(k.GetKeybinds(KeybindContext.Global).Count()).IsEqualTo(0);
     }
 
-    [Fact]
-    public void RegisterKeybind_NotExists()
+    [Test]
+    public async Task RegisterKeybind_NotExists()
     {
         var fs = new MockFileSystem();
         var lg = NullLogger<KeybindRegistrar>.Instance;
@@ -29,12 +28,12 @@ public class KeybindRegistrarTests
 
         var result = k.RegisterKeybind(bind);
 
-        result.ShouldBeTrue();
-        k.GetKeybinds(KeybindContext.Grid).Count().ShouldBe(1);
+        await Assert.That(result).IsTrue();
+        await Assert.That(k.GetKeybinds(KeybindContext.Grid).Count()).IsEqualTo(1);
     }
 
-    [Fact]
-    public void RegisterKeybind_Exists()
+    [Test]
+    public async Task RegisterKeybind_Exists()
     {
         var fs = new MockFileSystem();
         var lg = NullLogger<KeybindRegistrar>.Instance;
@@ -44,12 +43,12 @@ public class KeybindRegistrarTests
         k.RegisterKeybind(bind);
         var result = k.RegisterKeybind(bind);
 
-        result.ShouldBeFalse();
-        k.GetKeybinds(KeybindContext.Grid).Count().ShouldBe(1);
+        await Assert.That(result).IsFalse();
+        await Assert.That(k.GetKeybinds(KeybindContext.Grid).Count()).IsEqualTo(1);
     }
 
-    [Fact]
-    public void DeregisterKeybind_NotExists()
+    [Test]
+    public async Task DeregisterKeybind_NotExists()
     {
         var fs = new MockFileSystem();
         var lg = NullLogger<KeybindRegistrar>.Instance;
@@ -58,12 +57,12 @@ public class KeybindRegistrarTests
 
         var result = k.DeregisterKeybind(bind.QualifiedName);
 
-        result.ShouldBeFalse();
-        k.GetKeybinds(KeybindContext.Grid).ShouldBeEmpty();
+        await Assert.That(result).IsFalse();
+        await Assert.That(k.GetKeybinds(KeybindContext.Grid)).IsEmpty();
     }
 
-    [Fact]
-    public void DeregisterKeybind_Exists()
+    [Test]
+    public async Task DeregisterKeybind_Exists()
     {
         var fs = new MockFileSystem();
         var lg = NullLogger<KeybindRegistrar>.Instance;
@@ -73,12 +72,12 @@ public class KeybindRegistrarTests
         k.RegisterKeybind(bind);
         var result = k.DeregisterKeybind(bind.QualifiedName);
 
-        result.ShouldBeTrue();
-        k.GetKeybinds(KeybindContext.Grid).ShouldBeEmpty();
+        await Assert.That(result).IsTrue();
+        await Assert.That(k.GetKeybinds(KeybindContext.Grid)).IsEmpty();
     }
 
-    [Fact]
-    public void RegisterKeybinds()
+    [Test]
+    public async Task RegisterKeybinds()
     {
         var fs = new MockFileSystem();
         var lg = NullLogger<KeybindRegistrar>.Instance;
@@ -88,13 +87,13 @@ public class KeybindRegistrarTests
 
         var result = k.RegisterKeybinds([bind1, bind2], false);
 
-        result.ShouldBeTrue();
-        k.GetKeybinds(KeybindContext.Grid).Count().ShouldBe(1);
-        k.GetKeybinds(KeybindContext.Audio).Count().ShouldBe(1);
+        await Assert.That(result).IsTrue();
+        await Assert.That(k.GetKeybinds(KeybindContext.Grid).Count()).IsEqualTo(1);
+        await Assert.That(k.GetKeybinds(KeybindContext.Audio).Count()).IsEqualTo(1);
     }
 
-    [Fact]
-    public void ApplyOverride_Key_Exists()
+    [Test]
+    public async Task ApplyOverride_Key_Exists()
     {
         var fs = new MockFileSystem();
         var lg = NullLogger<KeybindRegistrar>.Instance;
@@ -104,12 +103,12 @@ public class KeybindRegistrarTests
         k.RegisterKeybind(bind);
         var result = k.ApplyOverride(bind.QualifiedName, keybind: "Ctrl+J", null, null);
 
-        result.ShouldBeTrue();
-        k.GetKeybinds(KeybindContext.Grid).First().Key.ShouldBe("Ctrl+J");
+        await Assert.That(result).IsTrue();
+        await Assert.That(k.GetKeybinds(KeybindContext.Grid).First().Key).IsEqualTo("Ctrl+J");
     }
 
-    [Fact]
-    public void ApplyOverride_NotExists()
+    [Test]
+    public async Task ApplyOverride_NotExists()
     {
         var fs = new MockFileSystem();
         var lg = NullLogger<KeybindRegistrar>.Instance;
@@ -118,11 +117,11 @@ public class KeybindRegistrarTests
 
         var result = k.ApplyOverride(bind.QualifiedName, keybind: "Ctrl+J", null, null);
 
-        result.ShouldBeFalse();
+        await Assert.That(result).IsFalse();
     }
 
-    [Fact]
-    public void ClearOverride_Exists()
+    [Test]
+    public async Task ClearOverride_Exists()
     {
         var fs = new MockFileSystem();
         var lg = NullLogger<KeybindRegistrar>.Instance;
@@ -133,12 +132,12 @@ public class KeybindRegistrarTests
         k.ApplyOverride(bind.QualifiedName, "Ctrl+J", null, null);
         var result = k.ClearOverride(bind.QualifiedName);
 
-        result.ShouldBeTrue();
-        k.GetKeybinds(KeybindContext.Grid).First().OverrideKey.ShouldBeNull();
+        await Assert.That(result).IsTrue();
+        await Assert.That(k.GetKeybinds(KeybindContext.Grid).First().OverrideKey).IsNull();
     }
 
-    [Fact]
-    public void ClearOverride_NotExists()
+    [Test]
+    public async Task ClearOverride_NotExists()
     {
         var fs = new MockFileSystem();
         var lg = NullLogger<KeybindRegistrar>.Instance;
@@ -147,11 +146,11 @@ public class KeybindRegistrarTests
 
         var result = k.ClearOverride(bind.QualifiedName);
 
-        result.ShouldBeFalse();
+        await Assert.That(result).IsFalse();
     }
 
-    [Fact]
-    public void GetKeybind_Exists()
+    [Test]
+    public async Task GetKeybind_Exists()
     {
         var fs = new MockFileSystem();
         var lg = NullLogger<KeybindRegistrar>.Instance;
@@ -162,11 +161,11 @@ public class KeybindRegistrarTests
 
         var result = k.GetKeybind(bind.QualifiedName);
 
-        result.ShouldNotBeNull();
+        await Assert.That(result).IsNotNull();
     }
 
-    [Fact]
-    public void GetKeybind_NotExists()
+    [Test]
+    public async Task GetKeybind_NotExists()
     {
         var fs = new MockFileSystem();
         var lg = NullLogger<KeybindRegistrar>.Instance;
@@ -175,11 +174,11 @@ public class KeybindRegistrarTests
 
         var result = k.GetKeybind(bind.QualifiedName);
 
-        result.ShouldBeNull();
+        await Assert.That(result).IsNull();
     }
 
-    [Fact]
-    public void TryGetKeybind_Exists()
+    [Test]
+    public async Task TryGetKeybind_Exists()
     {
         var fs = new MockFileSystem();
         var lg = NullLogger<KeybindRegistrar>.Instance;
@@ -190,12 +189,12 @@ public class KeybindRegistrarTests
 
         var result = k.TryGetKeybind(bind.QualifiedName, out var bind2);
 
-        result.ShouldBeTrue();
-        bind2.ShouldNotBeNull();
+        await Assert.That(result).IsTrue();
+        await Assert.That(bind2).IsNotNull();
     }
 
-    [Fact]
-    public void TryGetKeybind_NotExists()
+    [Test]
+    public async Task TryGetKeybind_NotExists()
     {
         var fs = new MockFileSystem();
         var lg = NullLogger<KeybindRegistrar>.Instance;
@@ -204,12 +203,12 @@ public class KeybindRegistrarTests
 
         var result = k.TryGetKeybind(bind.QualifiedName, out var bind2);
 
-        result.ShouldBeFalse();
-        bind2.ShouldBeNull();
+        await Assert.That(result).IsFalse();
+        await Assert.That(bind2).IsNull();
     }
 
-    [Fact]
-    public void IsKeybindRegistered_True()
+    [Test]
+    public async Task IsKeybindRegistered_True()
     {
         var fs = new MockFileSystem();
         var lg = NullLogger<KeybindRegistrar>.Instance;
@@ -220,11 +219,11 @@ public class KeybindRegistrarTests
 
         var result = k.IsKeybindRegistered(bind.QualifiedName);
 
-        result.ShouldBeTrue();
+        await Assert.That(result).IsTrue();
     }
 
-    [Fact]
-    public void IsKeybindRegistered_False()
+    [Test]
+    public async Task IsKeybindRegistered_False()
     {
         var fs = new MockFileSystem();
         var lg = NullLogger<KeybindRegistrar>.Instance;
@@ -233,11 +232,11 @@ public class KeybindRegistrarTests
 
         var result = k.IsKeybindRegistered(bind.QualifiedName);
 
-        result.ShouldBeFalse();
+        await Assert.That(result).IsFalse();
     }
 
-    [Fact]
-    public void GetOverridenKeybinds()
+    [Test]
+    public async Task GetOverridenKeybinds()
     {
         var fs = new MockFileSystem();
         var lg = NullLogger<KeybindRegistrar>.Instance;
@@ -250,23 +249,23 @@ public class KeybindRegistrarTests
 
         var result = k.GetOverridenKeybinds().ToList();
 
-        result.ShouldNotBeEmpty();
-        result.First().ShouldBe(bind2);
+        await Assert.That(result).IsNotEmpty();
+        await Assert.That(result.First()).IsEqualTo(bind2);
     }
 
-    [Fact]
-    public void Parse_NotExists()
+    [Test]
+    public async Task Parse_NotExists()
     {
         var fs = new MockFileSystem();
         var lg = NullLogger<KeybindRegistrar>.Instance;
         var k = new KeybindRegistrar(fs, lg);
         k.Parse();
 
-        k.GetKeybinds(KeybindContext.Global).ShouldBeEmpty();
+        await Assert.That(k.GetKeybinds(KeybindContext.Global)).IsEmpty();
     }
 
-    [Fact]
-    public void Parse_Exists()
+    [Test]
+    public async Task Parse_Exists()
     {
         var fs = new MockFileSystem(
             new Dictionary<string, MockFileData>
@@ -278,12 +277,14 @@ public class KeybindRegistrarTests
         var k = new KeybindRegistrar(fs, lg);
         k.Parse();
 
-        k.GetKeybinds(KeybindContext.Global).ShouldNotBeEmpty();
-        k.GetKeybinds(KeybindContext.Global).First().DefaultKey.ShouldBe("Ctrl+O");
+        await Assert.That(k.GetKeybinds(KeybindContext.Global)).IsNotEmpty();
+        await Assert
+            .That(k.GetKeybinds(KeybindContext.Global).First().DefaultKey)
+            .IsEqualTo("Ctrl+O");
     }
 
-    [Fact]
-    public void Save_Exists()
+    [Test]
+    public async Task Save_Exists()
     {
         var fs = new MockFileSystem(
             new Dictionary<string, MockFileData>
@@ -295,16 +296,16 @@ public class KeybindRegistrarTests
         var k = new KeybindRegistrar(fs, lg);
         k.Parse();
 
-        k.GetKeybind("ameko.document.open")?.OverrideKey.ShouldNotBeNull();
-        k.GetKeybind("ameko.document.open")?.OverrideContext.ShouldNotBeNull();
+        await Assert.That(k.GetKeybind("ameko.document.open")?.OverrideKey).IsNotNull();
+        await Assert.That(k.GetKeybind("ameko.document.open")?.OverrideContext).IsNotNull();
         k.ClearOverride("ameko.document.open");
 
         k.Save();
-        fs.FileExists(Paths.Keybinds.LocalPath).ShouldBeTrue();
+        await Assert.That(fs.FileExists(Paths.Keybinds.LocalPath)).IsTrue();
     }
 
-    [Fact]
-    public void Save_NotExists()
+    [Test]
+    public async Task Save_NotExists()
     {
         var fs = new MockFileSystem();
         var lg = NullLogger<KeybindRegistrar>.Instance;
@@ -314,7 +315,7 @@ public class KeybindRegistrarTests
         k.RegisterKeybind(bind);
 
         k.Save();
-        fs.FileExists(Paths.Keybinds.LocalPath).ShouldBeTrue();
+        await Assert.That(fs.FileExists(Paths.Keybinds.LocalPath)).IsTrue();
     }
 
     private const string ExampleKeybinds1 = """

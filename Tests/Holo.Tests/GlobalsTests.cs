@@ -5,24 +5,24 @@ using AssCS;
 using Holo.Configuration;
 using Holo.IO;
 using Microsoft.Extensions.Logging.Abstractions;
-using Shouldly;
 
 namespace Holo.Tests;
 
 public class GlobalsTests
 {
-    [Fact]
-    public void Constructor()
+    [Test]
+    public async Task Constructor()
     {
         var fs = new MockFileSystem();
         var lg = NullLogger<Globals>.Instance;
         var g = new Globals(fs, lg);
-        g.StyleManager.Count.ShouldBe(0);
-        g.Colors.Count.ShouldBe(0);
+
+        await Assert.That(g.StyleManager.Count).IsEqualTo(0);
+        await Assert.That(g.Colors.Count).IsEqualTo(0);
     }
 
-    [Fact]
-    public void AddColor_NotExists()
+    [Test]
+    public async Task AddColor_NotExists()
     {
         var fs = new MockFileSystem();
         var lg = NullLogger<Globals>.Instance;
@@ -30,12 +30,12 @@ public class GlobalsTests
 
         var result = g.AddColor(Color.FromRgb(1, 2, 3));
 
-        result.ShouldBeTrue();
-        g.Colors.Count.ShouldBe(1);
+        await Assert.That(result).IsTrue();
+        await Assert.That(g.Colors.Count).IsEqualTo(1);
     }
 
-    [Fact]
-    public void AddColor_Exists()
+    [Test]
+    public async Task AddColor_Exists()
     {
         var fs = new MockFileSystem();
         var lg = NullLogger<Globals>.Instance;
@@ -44,13 +44,13 @@ public class GlobalsTests
         var result1 = g.AddColor(Color.FromRgb(1, 2, 3));
         var result2 = g.AddColor(Color.FromRgb(1, 2, 3));
 
-        result1.ShouldBeTrue();
-        result2.ShouldBeFalse();
-        g.Colors.Count.ShouldBe(1);
+        await Assert.That(result1).IsTrue();
+        await Assert.That(result2).IsFalse();
+        await Assert.That(g.Colors.Count).IsEqualTo(1);
     }
 
-    [Fact]
-    public void RemoveColor_NotExists()
+    [Test]
+    public async Task RemoveColor_NotExists()
     {
         var fs = new MockFileSystem();
         var lg = NullLogger<Globals>.Instance;
@@ -58,12 +58,12 @@ public class GlobalsTests
 
         var result = g.RemoveColor(Color.FromRgb(1, 2, 3));
 
-        result.ShouldBeFalse();
-        g.Colors.Count.ShouldBe(0);
+        await Assert.That(result).IsFalse();
+        await Assert.That(g.Colors.Count).IsEqualTo(0);
     }
 
-    [Fact]
-    public void RemoveColor_Exists()
+    [Test]
+    public async Task RemoveColor_Exists()
     {
         var fs = new MockFileSystem();
         var lg = NullLogger<Globals>.Instance;
@@ -72,25 +72,25 @@ public class GlobalsTests
         var result1 = g.AddColor(Color.FromRgb(1, 2, 3));
         var result2 = g.RemoveColor(Color.FromRgb(1, 2, 3));
 
-        result1.ShouldBeTrue();
-        result2.ShouldBeTrue();
-        g.Colors.Count.ShouldBe(0);
+        await Assert.That(result1).IsTrue();
+        await Assert.That(result2).IsTrue();
+        await Assert.That(g.Colors.Count).IsEqualTo(0);
     }
 
-    [Fact]
-    public void Parse_NotExists()
+    [Test]
+    public async Task Parse_NotExists()
     {
         var fs = new MockFileSystem();
         var lg = NullLogger<Globals>.Instance;
         var g = Globals.Parse(fs, lg);
 
-        g.ShouldNotBeNull();
-        g.StyleManager.Count.ShouldBe(0);
-        g.Colors.Count.ShouldBe(0);
+        await Assert.That(g).IsNotNull();
+        await Assert.That(g.StyleManager.Count).IsEqualTo(0);
+        await Assert.That(g.Colors.Count).IsEqualTo(0);
     }
 
-    [Fact]
-    public void Parse_Exists_Empty()
+    [Test]
+    public async Task Parse_Exists_Empty()
     {
         var fs = new MockFileSystem(
             new Dictionary<string, MockFileData>
@@ -101,13 +101,13 @@ public class GlobalsTests
         var lg = NullLogger<Globals>.Instance;
         var g = Globals.Parse(fs, lg);
 
-        g.ShouldNotBeNull();
-        g.StyleManager.Count.ShouldBe(0);
-        g.Colors.Count.ShouldBe(0);
+        await Assert.That(g).IsNotNull();
+        await Assert.That(g.StyleManager.Count).IsEqualTo(0);
+        await Assert.That(g.Colors.Count).IsEqualTo(0);
     }
 
-    [Fact]
-    public void Parse_Exists_NotEmpty()
+    [Test]
+    public async Task Parse_Exists_NotEmpty()
     {
         var fs = new MockFileSystem(
             new Dictionary<string, MockFileData>
@@ -118,16 +118,16 @@ public class GlobalsTests
         var lg = NullLogger<Globals>.Instance;
         var g = Globals.Parse(fs, lg);
 
-        g.ShouldNotBeNull();
-        g.StyleManager.Count.ShouldBe(1);
-        g.Colors.Count.ShouldBe(1);
+        await Assert.That(g).IsNotNull();
+        await Assert.That(g.StyleManager.Count).IsEqualTo(1);
+        await Assert.That(g.Colors.Count).IsEqualTo(1);
 
-        g.StyleManager.Styles.First().FontFamily.ShouldBe("Volkhov");
-        g.Colors.First().Red.ShouldBe<byte>(0xAA);
+        await Assert.That(g.StyleManager.Styles.First().FontFamily).IsEqualTo("Volkhov");
+        await Assert.That(g.Colors.First().Red).IsEqualTo<byte>(0xAA);
     }
 
-    [Fact]
-    public void Save_Exists()
+    [Test]
+    public async Task Save_Exists()
     {
         var fs = new MockFileSystem(
             new Dictionary<string, MockFileData>
@@ -140,12 +140,12 @@ public class GlobalsTests
 
         var result = g.Save();
 
-        result.ShouldBeTrue();
-        fs.FileExists(Paths.Globals.LocalPath).ShouldBeTrue();
+        await Assert.That(result).IsTrue();
+        await Assert.That(fs.FileExists(Paths.Globals.LocalPath)).IsTrue();
     }
 
-    [Fact]
-    public void Save_NotExists()
+    [Test]
+    public async Task Save_NotExists()
     {
         var fs = new MockFileSystem();
         var lg = NullLogger<Globals>.Instance;
@@ -153,8 +153,8 @@ public class GlobalsTests
 
         var result = g.Save();
 
-        result.ShouldBeTrue();
-        fs.FileExists(Paths.Globals.LocalPath).ShouldBeTrue();
+        await Assert.That(result).IsTrue();
+        await Assert.That(fs.FileExists(Paths.Globals.LocalPath)).IsTrue();
     }
 
     private const string ExampleGlobals1 = """

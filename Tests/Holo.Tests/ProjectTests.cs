@@ -4,37 +4,36 @@ using System.IO.Abstractions.TestingHelpers;
 using AssCS;
 using Holo.Models;
 using Microsoft.Extensions.Logging.Abstractions;
-using Shouldly;
 using static Holo.Tests.Utilities.TestUtils;
 
 namespace Holo.Tests;
 
 public class ProjectTests
 {
-    [Fact]
-    public void Constructor()
+    [Test]
+    public async Task Constructor()
     {
         var fs = new MockFileSystem();
         var lg = NullLogger<Project>.Instance;
         var prj = new Project(fs, lg);
-        prj.LoadedWorkspaces.Count.ShouldBe(1);
-        prj.WorkingSpace?.Id.ShouldBe(prj.LoadedWorkspaces[0].Id);
+        await Assert.That(prj.LoadedWorkspaces.Count).IsEqualTo(1);
+        await Assert.That(prj.WorkingSpace?.Id).IsEqualTo(prj.LoadedWorkspaces[0].Id);
     }
 
-    [Fact]
-    public void AddWorkspace_New()
+    [Test]
+    public async Task AddWorkspace_New()
     {
         var fs = new MockFileSystem();
         var lg = NullLogger<Project>.Instance;
         var prj = new Project(fs, lg);
         var workspaceId = prj.AddWorkspace().Id;
 
-        prj.LoadedWorkspaces.ShouldContain(w => w.Id == workspaceId);
-        prj.WorkingSpace?.Id.ShouldBe(workspaceId);
+        await Assert.That(prj.LoadedWorkspaces).Contains(w => w.Id == workspaceId);
+        await Assert.That(prj.WorkingSpace?.Id).IsEqualTo(workspaceId);
     }
 
-    [Fact]
-    public void AddWorkspace_Existing()
+    [Test]
+    public async Task AddWorkspace_Existing()
     {
         var fs = new MockFileSystem();
         var lg = NullLogger<Project>.Instance;
@@ -42,12 +41,12 @@ public class ProjectTests
         var workspace = new Workspace(new Document(true), 123);
         var workspaceId = prj.AddWorkspace(workspace).Id;
 
-        prj.LoadedWorkspaces.ShouldContain(w => w.Id == workspaceId);
-        prj.WorkingSpace?.Id.ShouldBe(workspaceId);
+        await Assert.That(prj.LoadedWorkspaces).Contains(w => w.Id == workspaceId);
+        await Assert.That(prj.WorkingSpace?.Id).IsEqualTo(workspaceId);
     }
 
-    [Fact]
-    public void AddWorkspace_FromExistingDocument()
+    [Test]
+    public async Task AddWorkspace_FromExistingDocument()
     {
         var fs = new MockFileSystem();
         var lg = NullLogger<Project>.Instance;
@@ -55,12 +54,12 @@ public class ProjectTests
         var document = new Document(true);
         var workspaceId = prj.AddWorkspace(document, MakeTestableUri(fs, "test.ass")).Id;
 
-        prj.LoadedWorkspaces.ShouldContain(w => w.Id == workspaceId);
-        prj.WorkingSpace?.Id.ShouldBe(workspaceId);
+        await Assert.That(prj.LoadedWorkspaces).Contains(w => w.Id == workspaceId);
+        await Assert.That(prj.WorkingSpace?.Id).IsEqualTo(workspaceId);
     }
 
-    [Fact]
-    public void RemoveWorkspace_Exists()
+    [Test]
+    public async Task RemoveWorkspace_Exists()
     {
         var fs = new MockFileSystem();
         var lg = NullLogger<Project>.Instance;
@@ -69,34 +68,34 @@ public class ProjectTests
 
         var result = prj.RemoveWorkspace(workspaceId);
 
-        result.ShouldBeTrue();
-        prj.LoadedWorkspaces.ShouldNotContain(w => w.Id == workspaceId);
+        await Assert.That(result).IsTrue();
+        await Assert.That(prj.LoadedWorkspaces).DoesNotContain(w => w.Id == workspaceId);
     }
 
-    [Fact]
-    public void RemoveWorkspace_NotExists()
+    [Test]
+    public async Task RemoveWorkspace_NotExists()
     {
         var fs = new MockFileSystem();
         var lg = NullLogger<Project>.Instance;
         var prj = new Project(fs, lg);
         var result = prj.RemoveWorkspace(999);
 
-        result.ShouldBeFalse();
+        await Assert.That(result).IsFalse();
     }
 
-    [Fact]
-    public void AddDirectory_Root()
+    [Test]
+    public async Task AddDirectory_Root()
     {
         var fs = new MockFileSystem();
         var lg = NullLogger<Project>.Instance;
         var prj = new Project(fs, lg);
         var dir = prj.AddDirectory("Directory1");
 
-        prj.ReferencedItems.ShouldContain(dir);
+        await Assert.That(prj.ReferencedItems).Contains(dir);
     }
 
-    [Fact]
-    public void AddDirectory_Child()
+    [Test]
+    public async Task AddDirectory_Child()
     {
         var fs = new MockFileSystem();
         var lg = NullLogger<Project>.Instance;
@@ -104,12 +103,12 @@ public class ProjectTests
         var dir1 = prj.AddDirectory("Directory1");
         var dir2 = prj.AddDirectory("Directory2", dir1.Id);
 
-        prj.ReferencedItems.ShouldContain(dir1);
-        dir1.Children.ShouldContain(dir2);
+        await Assert.That(prj.ReferencedItems).Contains(dir1);
+        await Assert.That(dir1.Children).Contains(dir2);
     }
 
-    [Fact]
-    public void RemoveDirectory_Root()
+    [Test]
+    public async Task RemoveDirectory_Root()
     {
         var fs = new MockFileSystem();
         var lg = NullLogger<Project>.Instance;
@@ -117,31 +116,31 @@ public class ProjectTests
         var dir1 = prj.AddDirectory("Directory1");
         var dir2 = prj.AddDirectory("Directory2", dir1.Id);
 
-        prj.ReferencedItems.ShouldContain(dir1);
-        dir1.Children.ShouldContain(dir2);
+        await Assert.That(prj.ReferencedItems).Contains(dir1);
+        await Assert.That(dir1.Children).Contains(dir2);
 
         prj.RemoveDirectory(dir2.Id);
 
-        prj.ReferencedItems.ShouldContain(dir1);
-        dir1.Children.ShouldNotContain(dir2);
+        await Assert.That(prj.ReferencedItems).Contains(dir1);
+        await Assert.That(dir1.Children).DoesNotContain(dir2);
     }
 
-    [Fact]
-    public void RemoveDirectory_Child()
+    [Test]
+    public async Task RemoveDirectory_Child()
     {
         var fs = new MockFileSystem();
         var lg = NullLogger<Project>.Instance;
         var prj = new Project(fs, lg);
         var dir = prj.AddDirectory("Directory1");
 
-        prj.ReferencedItems.ShouldContain(dir);
+        await Assert.That(prj.ReferencedItems).Contains(dir);
 
         prj.RemoveDirectory(dir.Id);
-        prj.ReferencedItems.ShouldNotContain(dir);
+        await Assert.That(prj.ReferencedItems).DoesNotContain(dir);
     }
 
-    [Fact]
-    public void AddWorkspace_ToDirectory()
+    [Test]
+    public async Task AddWorkspace_ToDirectory()
     {
         var fs = new MockFileSystem();
         var lg = NullLogger<Project>.Instance;
@@ -150,24 +149,24 @@ public class ProjectTests
 
         var workspaceId = prj.AddWorkspace(dir.Id).Id;
 
-        dir.Children.ShouldContain(w => w.Id == workspaceId);
-        prj.LoadedWorkspaces.ShouldContain(w => w.Id == workspaceId);
-        prj.WorkingSpace?.Id.ShouldBe(workspaceId);
+        await Assert.That(dir.Children).Contains(w => w.Id == workspaceId);
+        await Assert.That(prj.LoadedWorkspaces).Contains(w => w.Id == workspaceId);
+        await Assert.That(prj.WorkingSpace?.Id).IsEqualTo(workspaceId);
     }
 
-    [Fact]
-    public void OpenDocument_NotExists()
+    [Test]
+    public async Task OpenDocument_NotExists()
     {
         var fs = new MockFileSystem();
         var lg = NullLogger<Project>.Instance;
         var prj = new Project(fs, lg);
         var result = prj.OpenDocument(999);
 
-        result.ShouldBe(-1);
+        await Assert.That(result).IsEqualTo(-1);
     }
 
-    [Fact]
-    public void CloseDocument_Exists()
+    [Test]
+    public async Task CloseDocument_Exists()
     {
         var fs = new MockFileSystem();
         var lg = NullLogger<Project>.Instance;
@@ -176,23 +175,23 @@ public class ProjectTests
 
         var result = prj.CloseDocument(docId);
 
-        result.ShouldBeTrue();
-        prj.LoadedWorkspaces.ShouldNotContain(d => d.Id == docId);
+        await Assert.That(result).IsTrue();
+        await Assert.That(prj.LoadedWorkspaces).DoesNotContain(d => d.Id == docId);
     }
 
-    [Fact]
-    public void CloseDocument_NotExists()
+    [Test]
+    public async Task CloseDocument_NotExists()
     {
         var fs = new MockFileSystem();
         var lg = NullLogger<Project>.Instance;
         var prj = new Project(fs, lg);
         var result = prj.CloseDocument(999);
 
-        result.ShouldBeFalse();
+        await Assert.That(result).IsFalse();
     }
 
-    [Fact]
-    public void Save()
+    [Test]
+    public async Task Save()
     {
         var fs = new MockFileSystem();
         var lg = NullLogger<Project>.Instance;
@@ -202,12 +201,12 @@ public class ProjectTests
 
         var result = prj.Save();
 
-        result.ShouldBeTrue();
-        fs.FileExists(path.LocalPath).ShouldBeTrue();
+        await Assert.That(result).IsTrue();
+        await Assert.That(fs.FileExists(path.LocalPath)).IsTrue();
     }
 
-    [Fact]
-    public void Parse()
+    [Test]
+    public async Task Parse()
     {
         var fs = new MockFileSystem();
         var lg = NullLogger<Project>.Instance;
@@ -216,14 +215,14 @@ public class ProjectTests
 
         var prj = new Project(fs, lg, path);
 
-        prj.Cps.ShouldBe<uint?>(21);
-        prj.UseSoftLinebreaks.ShouldBeNull();
-        prj.ReferencedItems.Count.ShouldBe(1);
-        prj.StyleManager.Styles.Count.ShouldBe(0);
+        await Assert.That(prj.Cps).IsEqualTo<uint?>(21);
+        await Assert.That(prj.UseSoftLinebreaks).IsNull();
+        await Assert.That(prj.ReferencedItems.Count).IsEqualTo(1);
+        await Assert.That(prj.StyleManager.Styles.Count).IsEqualTo(0);
     }
 
-    [Fact]
-    public void LoadDirectory_NotEmpty()
+    [Test]
+    public async Task LoadDirectory_NotEmpty()
     {
         var fs = new MockFileSystem();
         var lg = NullLogger<Project>.Instance;
@@ -237,15 +236,19 @@ public class ProjectTests
 
         var prj = new Project(fs, lg, MakeTestableUri(fs, "test/"));
 
-        prj.ReferencedItems.Count.ShouldBe(3);
-        prj.ReferencedItems.First(i => i.Type == ProjectItemType.Directory)
-            .Children.Count.ShouldBe(2);
-        prj.ReferencedItems.Last(i => i.Type == ProjectItemType.Directory)
-            .Children.Count.ShouldBe(1);
+        await Assert.That(prj.ReferencedItems.Count).IsEqualTo(3);
+        await Assert
+            .That(
+                prj.ReferencedItems.First(i => i.Type == ProjectItemType.Directory).Children.Count
+            )
+            .IsEqualTo(2);
+        await Assert
+            .That(prj.ReferencedItems.Last(i => i.Type == ProjectItemType.Directory).Children.Count)
+            .IsEqualTo(1);
     }
 
-    [Fact]
-    public void LoadDirectory_Empty()
+    [Test]
+    public async Task LoadDirectory_Empty()
     {
         var fs = new MockFileSystem();
         var lg = NullLogger<Project>.Instance;
@@ -255,19 +258,19 @@ public class ProjectTests
 
         var prj = new Project(fs, lg, MakeTestableUri(fs, "test/"));
 
-        prj.ReferencedItems.Count.ShouldBe(1);
-        prj.ReferencedItems.First().Type.ShouldBe(ProjectItemType.Document); // default document
+        await Assert.That(prj.ReferencedItems.Count).IsEqualTo(1);
+        await Assert.That(prj.ReferencedItems.First().Type).IsEqualTo(ProjectItemType.Document); // default document
     }
 
-    [Fact]
-    public void LoadDirectory_NotExists()
+    [Test]
+    public async Task LoadDirectory_NotExists()
     {
         var fs = new MockFileSystem();
         var lg = NullLogger<Project>.Instance;
         var prj = new Project(fs, lg, MakeTestableUri(fs, "test/"));
 
-        prj.ReferencedItems.Count.ShouldBe(1);
-        prj.ReferencedItems.First().Type.ShouldBe(ProjectItemType.Document); // default document
+        await Assert.That(prj.ReferencedItems.Count).IsEqualTo(1);
+        await Assert.That(prj.ReferencedItems.First().Type).IsEqualTo(ProjectItemType.Document); // default document
     }
 
     private const string ExampleProject = """

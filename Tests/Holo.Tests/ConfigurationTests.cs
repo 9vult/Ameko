@@ -4,41 +4,40 @@ using System.IO.Abstractions.TestingHelpers;
 using Holo.IO;
 using Holo.Models;
 using Microsoft.Extensions.Logging.Abstractions;
-using Shouldly;
 
 namespace Holo.Tests;
 
 public class ConfigurationTests
 {
-    [Fact]
-    public void Constructor()
+    [Test]
+    public async Task Constructor()
     {
         var fs = new MockFileSystem();
         var lg = NullLogger<Configuration.Configuration>.Instance;
         var cfg = new Configuration.Configuration(fs, lg);
 
-        cfg.Cps.ShouldBe<uint>(18);
-        cfg.UseSoftLinebreaks.ShouldBe(false);
-        cfg.AutosaveEnabled.ShouldBe(true);
-        cfg.AutosaveInterval.ShouldBe<uint>(60);
+        await Assert.That(cfg.Cps).IsEqualTo<uint>(18);
+        await Assert.That(cfg.UseSoftLinebreaks).IsEqualTo(false);
+        await Assert.That(cfg.AutosaveEnabled).IsEqualTo(true);
+        await Assert.That(cfg.AutosaveInterval).IsEqualTo<uint>(60);
     }
 
-    [Fact]
-    public void Parse_NotExists()
+    [Test]
+    public async Task Parse_NotExists()
     {
         var fs = new MockFileSystem();
         var lg = NullLogger<Configuration.Configuration>.Instance;
         var cfg = Configuration.Configuration.Parse(fs, lg);
 
-        cfg.ShouldNotBeNull();
-        cfg.Cps.ShouldBe<uint>(18);
-        cfg.UseSoftLinebreaks.ShouldBe(false);
-        cfg.AutosaveEnabled.ShouldBe(true);
-        cfg.AutosaveInterval.ShouldBe<uint>(60);
+        await Assert.That(cfg).IsNotNull();
+        await Assert.That(cfg.Cps).IsEqualTo<uint>(18);
+        await Assert.That(cfg.UseSoftLinebreaks).IsEqualTo(false);
+        await Assert.That(cfg.AutosaveEnabled).IsEqualTo(true);
+        await Assert.That(cfg.AutosaveInterval).IsEqualTo<uint>(60);
     }
 
-    [Fact]
-    public void Parse_Exists()
+    [Test]
+    public async Task Parse_Exists()
     {
         var fs = new MockFileSystem(
             new Dictionary<string, MockFileData>
@@ -49,20 +48,20 @@ public class ConfigurationTests
         var lg = NullLogger<Configuration.Configuration>.Instance;
         var cfg = Configuration.Configuration.Parse(fs, lg);
 
-        cfg.ShouldNotBeNull();
-        cfg.Cps.ShouldBe<uint>(12);
-        cfg.CpsIncludesWhitespace.ShouldBeFalse();
-        cfg.CpsIncludesPunctuation.ShouldBeFalse();
-        cfg.UseSoftLinebreaks.ShouldBe(true);
-        cfg.AutosaveEnabled.ShouldBe(false);
-        cfg.AutosaveInterval.ShouldBe<uint>(120);
-        cfg.LineWidthIncludesWhitespace.ShouldBeTrue();
-        cfg.LineWidthIncludesPunctuation.ShouldBeTrue();
-        cfg.Theme.ShouldBe(Theme.Light);
+        await Assert.That(cfg).IsNotNull();
+        await Assert.That(cfg.Cps).IsEqualTo<uint>(12);
+        await Assert.That(cfg.CpsIncludesWhitespace).IsFalse();
+        await Assert.That(cfg.CpsIncludesPunctuation).IsFalse();
+        await Assert.That(cfg.UseSoftLinebreaks).IsEqualTo(true);
+        await Assert.That(cfg.AutosaveEnabled).IsEqualTo(false);
+        await Assert.That(cfg.AutosaveInterval).IsEqualTo<uint>(120);
+        await Assert.That(cfg.LineWidthIncludesWhitespace).IsTrue();
+        await Assert.That(cfg.LineWidthIncludesPunctuation).IsTrue();
+        await Assert.That(cfg.Theme).IsEqualTo(Theme.Light);
     }
 
-    [Fact]
-    public void Save_Exists()
+    [Test]
+    public async Task Save_Exists()
     {
         var fs = new MockFileSystem(
             new Dictionary<string, MockFileData>
@@ -75,12 +74,12 @@ public class ConfigurationTests
 
         var result = cfg.Save();
 
-        result.ShouldBeTrue();
-        fs.FileExists(Paths.Configuration.LocalPath).ShouldBeTrue();
+        await Assert.That(result).IsTrue();
+        await Assert.That(fs.FileExists(Paths.Configuration.LocalPath)).IsTrue();
     }
 
-    [Fact]
-    public void Save_NotExists()
+    [Test]
+    public async Task Save_NotExists()
     {
         var fs = new MockFileSystem();
         var lg = NullLogger<Configuration.Configuration>.Instance;
@@ -88,8 +87,8 @@ public class ConfigurationTests
 
         var result = cfg.Save();
 
-        result.ShouldBeTrue();
-        fs.FileExists(Paths.Configuration.LocalPath).ShouldBeTrue();
+        await Assert.That(result).IsTrue();
+        await Assert.That(fs.FileExists(Paths.Configuration.LocalPath)).IsTrue();
     }
 
     private const string ExampleConfiguration = """

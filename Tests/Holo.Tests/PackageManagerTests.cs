@@ -8,14 +8,13 @@ using Holo.Scripting;
 using Holo.Scripting.Models;
 using Microsoft.Extensions.Logging.Abstractions;
 using RichardSzalay.MockHttp;
-using Shouldly;
 
 namespace Holo.Tests;
 
 public class PackageManagerTests
 {
-    [Fact]
-    public void IsPackageInstalled_True()
+    [Test]
+    public async Task IsPackageInstalled_True()
     {
         var fileSystem = new MockFileSystem(
             new Dictionary<string, MockFileData>
@@ -26,80 +25,80 @@ public class PackageManagerTests
         var lg = NullLogger<PackageManager>.Instance;
         var dc = new PackageManager(fileSystem, lg, new HttpClient());
 
-        dc.IsPackageInstalled(TestScriptPackage).ShouldBeTrue();
+        await Assert.That(dc.IsPackageInstalled(TestScriptPackage)).IsTrue();
     }
 
-    [Fact]
-    public void IsPackageInstalled_False()
+    [Test]
+    public async Task IsPackageInstalled_False()
     {
         var fileSystem = new MockFileSystem();
         var lg = NullLogger<PackageManager>.Instance;
         var dc = new PackageManager(fileSystem, lg, new HttpClient());
 
-        dc.IsPackageInstalled(TestScriptPackage).ShouldBeFalse();
+        await Assert.That(dc.IsPackageInstalled(TestScriptPackage)).IsFalse();
     }
 
-    [Fact]
-    public void ValidateQualifiedName_Simple()
+    [Test]
+    public async Task ValidateQualifiedName_Simple()
     {
-        PackageManager.ValidateQualifiedName("my.cool.script").ShouldBeTrue();
+        await Assert.That(PackageManager.ValidateQualifiedName("my.cool.script")).IsTrue();
     }
 
-    [Fact]
-    public void ValidateQualifiedName_Complex()
+    [Test]
+    public async Task ValidateQualifiedName_Complex()
     {
-        PackageManager.ValidateQualifiedName("joe19.co_ol.script").ShouldBeTrue();
+        await Assert.That(PackageManager.ValidateQualifiedName("joe19.co_ol.script")).IsTrue();
     }
 
-    [Fact]
-    public void ValidateQualifiedName_Invalid()
+    [Test]
+    public async Task ValidateQualifiedName_Invalid()
     {
-        PackageManager.ValidateQualifiedName("joe19.co!ol.script").ShouldBeFalse();
+        await Assert.That(PackageManager.ValidateQualifiedName("joe19.co!ol.script")).IsFalse();
     }
 
-    [Fact]
-    public void PackagePath_Script()
+    [Test]
+    public async Task PackagePath_Script()
     {
         var path = PackageManager.PackagePath(TestScriptPackage);
-        path.ShouldEndWith($"{TestScriptPackage.QualifiedName}.cs");
+        await Assert.That(path).EndsWith($"{TestScriptPackage.QualifiedName}.cs");
     }
 
-    [Fact]
-    public void PackagePath_Library()
+    [Test]
+    public async Task PackagePath_Library()
     {
         var path = PackageManager.PackagePath(TestLibraryPackage);
-        path.ShouldEndWith($"{TestLibraryPackage.QualifiedName}.lib.cs");
+        await Assert.That(path).EndsWith($"{TestLibraryPackage.QualifiedName}.lib.cs");
     }
 
-    [Fact]
-    public void PackagePath_Scriptlet()
+    [Test]
+    public async Task PackagePath_Scriptlet()
     {
         var path = PackageManager.PackagePath(TestScriptletPackage);
-        path.ShouldEndWith($"{TestLibraryPackage.QualifiedName}.js");
+        await Assert.That(path).EndsWith($"{TestLibraryPackage.QualifiedName}.js");
     }
 
-    [Fact]
-    public void SidecarPath_Script()
+    [Test]
+    public async Task SidecarPath_Script()
     {
         var path = PackageManager.SidecarPath(TestScriptPackage);
-        path.ShouldEndWith($"{TestScriptPackage.QualifiedName}.json");
+        await Assert.That(path).EndsWith($"{TestScriptPackage.QualifiedName}.json");
     }
 
-    [Fact]
-    public void SidecarPath_Library()
+    [Test]
+    public async Task SidecarPath_Library()
     {
         var path = PackageManager.SidecarPath(TestLibraryPackage);
-        path.ShouldEndWith($"{TestLibraryPackage.QualifiedName}.lib.json");
+        await Assert.That(path).EndsWith($"{TestLibraryPackage.QualifiedName}.lib.json");
     }
 
-    [Fact]
-    public void SidecarPath_Scriptlet()
+    [Test]
+    public async Task SidecarPath_Scriptlet()
     {
         var path = PackageManager.SidecarPath(TestScriptletPackage);
-        path.ShouldEndWith($"{TestLibraryPackage.QualifiedName}.json");
+        await Assert.That(path).EndsWith($"{TestLibraryPackage.QualifiedName}.json");
     }
 
-    [Fact]
+    [Test]
     public async Task SetUpBaseRepository_Handles_404()
     {
         var lg = NullLogger<PackageManager>.Instance;
@@ -110,11 +109,11 @@ public class PackageManagerTests
 
         await dc.SetUpBaseRepository();
 
-        dc.Repositories.Count.ShouldBe(0);
-        dc.PackageStore.Count.ShouldBe(0);
+        await Assert.That(dc.Repositories.Count).IsEqualTo(0);
+        await Assert.That(dc.PackageStore.Count).IsEqualTo(0);
     }
 
-    [Fact]
+    [Test]
     public async Task SetUpBaseRepository()
     {
         var lg = NullLogger<PackageManager>.Instance;
@@ -127,11 +126,11 @@ public class PackageManagerTests
 
         await dc.SetUpBaseRepository();
 
-        dc.Repositories.Count.ShouldBe(1);
-        dc.PackageStore.Count.ShouldBe(1);
+        await Assert.That(dc.Repositories.Count).IsEqualTo(1);
+        await Assert.That(dc.PackageStore.Count).IsEqualTo(1);
     }
 
-    [Fact]
+    [Test]
     public async Task SetUpBaseRepository_NoInternetConnection()
     {
         var lg = NullLogger<PackageManager>.Instance;
@@ -144,11 +143,11 @@ public class PackageManagerTests
 
         await dc.SetUpBaseRepository();
 
-        dc.Repositories.Count.ShouldBe(0);
-        dc.PackageStore.Count.ShouldBe(0);
+        await Assert.That(dc.Repositories.Count).IsEqualTo(0);
+        await Assert.That(dc.PackageStore.Count).IsEqualTo(0);
     }
 
-    [Fact]
+    [Test]
     public async Task InstallPackage_NoInternetConnection()
     {
         var fileSystem = new MockFileSystem();
@@ -169,10 +168,10 @@ public class PackageManagerTests
             dc.PackageStore.First(m => m.QualifiedName == Script1.QualifiedName)
         );
 
-        result.ShouldBe(InstallationResult.Failure);
+        await Assert.That(result).IsEqualTo(InstallationResult.Failure);
     }
 
-    [Fact]
+    [Test]
     public async Task InstallPackage_AlreadyInstalled()
     {
         var fileSystem = new MockFileSystem(
@@ -196,10 +195,10 @@ public class PackageManagerTests
             dc.PackageStore.First(m => m.QualifiedName == Script1.QualifiedName)
         );
 
-        result.ShouldBe(InstallationResult.AlreadyInstalled);
+        await Assert.That(result).IsEqualTo(InstallationResult.AlreadyInstalled);
     }
 
-    [Fact]
+    [Test]
     public async Task InstallPackage_NoDependencies()
     {
         var fileSystem = new MockFileSystem();
@@ -220,11 +219,11 @@ public class PackageManagerTests
             dc.PackageStore.First(m => m.QualifiedName == Script1.QualifiedName)
         );
 
-        result.ShouldBe(InstallationResult.Success);
-        fileSystem.FileExists(PackageManager.PackagePath(Script1)).ShouldBeTrue();
+        await Assert.That(result).IsEqualTo(InstallationResult.Success);
+        await Assert.That(fileSystem.FileExists(PackageManager.PackagePath(Script1))).IsTrue();
     }
 
-    [Fact]
+    [Test]
     public async Task UninstallPackage_NotInstalled()
     {
         var fileSystem = new MockFileSystem();
@@ -242,10 +241,10 @@ public class PackageManagerTests
             dc.PackageStore.First(m => m.QualifiedName == Script1.QualifiedName)
         );
 
-        result.ShouldBe(InstallationResult.NotInstalled);
+        await Assert.That(result).IsEqualTo(InstallationResult.NotInstalled);
     }
 
-    [Fact]
+    [Test]
     public async Task UninstallPackage()
     {
         var fileSystem = new MockFileSystem(
@@ -269,11 +268,11 @@ public class PackageManagerTests
             dc.PackageStore.First(m => m.QualifiedName == Script1.QualifiedName)
         );
 
-        result.ShouldBe(InstallationResult.Success);
-        fileSystem.FileExists(PackageManager.PackagePath(Script1)).ShouldBeFalse();
+        await Assert.That(result).IsEqualTo(InstallationResult.Success);
+        await Assert.That(fileSystem.FileExists(PackageManager.PackagePath(Script1))).IsFalse();
     }
 
-    [Fact]
+    [Test]
     public async Task UninstallPackage_IsDependent()
     {
         var fileSystem = new MockFileSystem(
@@ -299,12 +298,12 @@ public class PackageManagerTests
             dc.PackageStore.First(m => m.QualifiedName == Lib1.QualifiedName)
         );
 
-        result.ShouldBe(InstallationResult.IsRequiredDependency);
-        fileSystem.FileExists(PackageManager.PackagePath(Lib1)).ShouldBeTrue();
-        fileSystem.FileExists(PackageManager.SidecarPath(Lib1)).ShouldBeTrue();
+        await Assert.That(result).IsEqualTo(InstallationResult.IsRequiredDependency);
+        await Assert.That(fileSystem.FileExists(PackageManager.PackagePath(Lib1))).IsTrue();
+        await Assert.That(fileSystem.FileExists(PackageManager.SidecarPath(Lib1))).IsTrue();
     }
 
-    [Fact]
+    [Test]
     public async Task UninstallPackage_IsDependent_IsUpdate()
     {
         var fileSystem = new MockFileSystem(
@@ -331,12 +330,12 @@ public class PackageManagerTests
             true
         );
 
-        result.ShouldBe(InstallationResult.Success);
-        fileSystem.FileExists(PackageManager.PackagePath(Lib1)).ShouldBeFalse();
-        fileSystem.FileExists(PackageManager.SidecarPath(Lib1)).ShouldBeFalse();
+        await Assert.That(result).IsEqualTo(InstallationResult.Success);
+        await Assert.That(fileSystem.FileExists(PackageManager.PackagePath(Lib1))).IsFalse();
+        await Assert.That(fileSystem.FileExists(PackageManager.SidecarPath(Lib1))).IsFalse();
     }
 
-    [Fact]
+    [Test]
     public async Task IsPackageUpToDate_True()
     {
         var fileSystem = new MockFileSystem(
@@ -357,10 +356,10 @@ public class PackageManagerTests
         await dc.SetUpBaseRepository();
 
         // Check if up to date
-        dc.IsPackageUpToDate(Script1).ShouldBeTrue();
+        await Assert.That(dc.IsPackageUpToDate(Script1)).IsTrue();
     }
 
-    [Fact]
+    [Test]
     public async Task IsPackageUpToDate_False()
     {
         var fileSystem = new MockFileSystem(
@@ -381,10 +380,10 @@ public class PackageManagerTests
         await dc.SetUpBaseRepository();
 
         // Check if up to date
-        dc.IsPackageUpToDate(Script1).ShouldBeFalse();
+        await Assert.That(dc.IsPackageUpToDate(Script1)).IsFalse();
     }
 
-    [Fact]
+    [Test]
     public async Task GetUpdateCandidates_NoCandidates()
     {
         var fileSystem = new MockFileSystem(
@@ -405,10 +404,10 @@ public class PackageManagerTests
         await dc.SetUpBaseRepository();
 
         // Check if up to date
-        dc.GetUpdateCandidates().ShouldBeEmpty();
+        await Assert.That(dc.GetUpdateCandidates()).IsEmpty();
     }
 
-    [Fact]
+    [Test]
     public async Task GetUpdateCandidates_HasCandidates()
     {
         var fileSystem = new MockFileSystem(
@@ -429,10 +428,10 @@ public class PackageManagerTests
         await dc.SetUpBaseRepository();
 
         // Check if up to date
-        dc.GetUpdateCandidates().Count.ShouldBe(1);
+        await Assert.That(dc.GetUpdateCandidates().Count).IsEqualTo(1);
     }
 
-    [Fact]
+    [Test]
     public async Task AddRepository_NoInternetConnection()
     {
         var fileSystem = new MockFileSystem();
@@ -452,10 +451,10 @@ public class PackageManagerTests
         await dc.SetUpBaseRepository();
         var result = await dc.AddRepository(repoUrl);
 
-        result.ShouldBe(InstallationResult.Failure);
+        await Assert.That(result).IsEqualTo(InstallationResult.Failure);
     }
 
-    [Fact]
+    [Test]
     public async Task AddRepository_AlreadyInstalled()
     {
         var fileSystem = new MockFileSystem();
@@ -470,10 +469,10 @@ public class PackageManagerTests
         await dc.SetUpBaseRepository();
         var result = await dc.AddRepository(dc.BaseRepositoryUrl);
 
-        result.ShouldBe(InstallationResult.AlreadyInstalled);
+        await Assert.That(result).IsEqualTo(InstallationResult.AlreadyInstalled);
     }
 
-    [Fact]
+    [Test]
     public async Task AddRepository()
     {
         var fileSystem = new MockFileSystem();
@@ -491,10 +490,10 @@ public class PackageManagerTests
         await dc.SetUpBaseRepository();
         var result = await dc.AddRepository(repoUrl);
 
-        result.ShouldBe(InstallationResult.Success);
+        await Assert.That(result).IsEqualTo(InstallationResult.Success);
     }
 
-    [Fact]
+    [Test]
     public async Task RemoveRepository_NotInstalled()
     {
         var fileSystem = new MockFileSystem();
@@ -509,10 +508,10 @@ public class PackageManagerTests
         await dc.SetUpBaseRepository();
         var result = dc.RemoveRepository("Jeff's Repository");
 
-        result.ShouldBe(InstallationResult.NotInstalled);
+        await Assert.That(result).IsEqualTo(InstallationResult.NotInstalled);
     }
 
-    [Fact]
+    [Test]
     public async Task RemoveRepository()
     {
         var fileSystem = new MockFileSystem();
@@ -532,7 +531,7 @@ public class PackageManagerTests
 
         var result = dc.RemoveRepository("Ameko Dependency Control Base 2");
 
-        result.ShouldBe(InstallationResult.Success);
+        await Assert.That(result).IsEqualTo(InstallationResult.Success);
     }
 
     private static readonly Package TestScriptPackage = new Package

@@ -4,14 +4,13 @@ using System.IO.Abstractions.TestingHelpers;
 using Holo.Scripting;
 using Holo.Scripting.Models;
 using Microsoft.Extensions.Logging.Abstractions;
-using Shouldly;
 
 namespace Holo.Tests;
 
 public class ScriptConfigurationServiceTests
 {
-    [Fact]
-    public void Set_Primitive_NotExists()
+    [Test]
+    public async Task Set_Primitive_NotExists()
     {
         var sut1 = new Sut1();
         var fs = new MockFileSystem(
@@ -30,12 +29,12 @@ public class ScriptConfigurationServiceTests
 
         var result = service.TryGet<int>(sut1, "test1", out var value);
 
-        result.ShouldBeTrue();
-        value.ShouldBe(10);
+        await Assert.That(result).IsTrue();
+        await Assert.That(value).IsEqualTo(10);
     }
 
-    [Fact]
-    public void Set_Primitive_Exists()
+    [Test]
+    public async Task Set_Primitive_Exists()
     {
         var sut1 = new Sut1();
         var fs = new MockFileSystem(
@@ -50,18 +49,18 @@ public class ScriptConfigurationServiceTests
         var lg = NullLogger<ScriptConfigurationService>.Instance;
         var service = new ScriptConfigurationService(fs, lg);
         service.TryGet<int>(sut1, "test1", out var initial);
-        initial.ShouldNotBe(10);
+        await Assert.That(initial).IsNotEqualTo(10);
 
         service.Set(sut1, "test1", 10);
 
         var result = service.TryGet<int>(sut1, "test1", out var value);
 
-        result.ShouldBeTrue();
-        value.ShouldBe(10);
+        await Assert.That(result).IsTrue();
+        await Assert.That(value).IsEqualTo(10);
     }
 
-    [Fact]
-    public void Set_Object_NotExists()
+    [Test]
+    public async Task Set_Object_NotExists()
     {
         var sut1 = new Sut1();
         var fs = new MockFileSystem(
@@ -80,12 +79,12 @@ public class ScriptConfigurationServiceTests
 
         var result = service.TryGet<string>(sut1, "test2", out var value);
 
-        result.ShouldBeTrue();
-        value.ShouldBe("planes");
+        await Assert.That(result).IsTrue();
+        await Assert.That(value).IsEqualTo("planes");
     }
 
-    [Fact]
-    public void Set_Object_Exists()
+    [Test]
+    public async Task Set_Object_Exists()
     {
         var sut1 = new Sut1();
         var fs = new MockFileSystem(
@@ -100,18 +99,18 @@ public class ScriptConfigurationServiceTests
         var lg = NullLogger<ScriptConfigurationService>.Instance;
         var service = new ScriptConfigurationService(fs, lg);
         service.TryGet<string>(sut1, "test2", out var initial);
-        initial.ShouldNotBe("planes");
+        await Assert.That(initial).IsNotEqualTo("planes");
 
         service.Set(sut1, "test2", "planes");
 
         var result = service.TryGet<string>(sut1, "test2", out var value);
 
-        result.ShouldBeTrue();
-        value.ShouldBe("planes");
+        await Assert.That(result).IsTrue();
+        await Assert.That(value).IsEqualTo("planes");
     }
 
-    [Fact]
-    public void Get_NoFile()
+    [Test]
+    public async Task Get_NoFile()
     {
         var sut1 = new Sut1();
         var fs = new MockFileSystem();
@@ -119,12 +118,12 @@ public class ScriptConfigurationServiceTests
         var service = new ScriptConfigurationService(fs, lg);
 
         var result = service.TryGet<string>(sut1, "test2", out var value);
-        result.ShouldBeFalse();
-        value.ShouldBeNull();
+        await Assert.That(result).IsFalse();
+        await Assert.That(value).IsNull();
     }
 
-    [Fact]
-    public void Get_Primitive_NotExists()
+    [Test]
+    public async Task Get_Primitive_NotExists()
     {
         var sut1 = new Sut1();
         var fs = new MockFileSystem(
@@ -140,12 +139,12 @@ public class ScriptConfigurationServiceTests
         var service = new ScriptConfigurationService(fs, lg);
 
         var result = service.TryGet<int>(sut1, "test1", out var value);
-        result.ShouldBeFalse();
-        value.ShouldBe(0);
+        await Assert.That(result).IsFalse();
+        await Assert.That(value).IsEqualTo(0);
     }
 
-    [Fact]
-    public void Get_Primitive_Exists()
+    [Test]
+    public async Task Get_Primitive_Exists()
     {
         var sut1 = new Sut1();
         var fs = new MockFileSystem(
@@ -161,12 +160,12 @@ public class ScriptConfigurationServiceTests
         var service = new ScriptConfigurationService(fs, lg);
 
         var result = service.TryGet<int>(sut1, "test1", out var value);
-        result.ShouldBeTrue();
-        value.ShouldBe(14);
+        await Assert.That(result).IsTrue();
+        await Assert.That(value).IsEqualTo(14);
     }
 
-    [Fact]
-    public void Get_Object_NotExists()
+    [Test]
+    public async Task Get_Object_NotExists()
     {
         var sut1 = new Sut1();
         var fs = new MockFileSystem(
@@ -182,12 +181,12 @@ public class ScriptConfigurationServiceTests
         var service = new ScriptConfigurationService(fs, lg);
 
         var result = service.TryGet<string>(sut1, "test2", out var value);
-        result.ShouldBeFalse();
-        value.ShouldBeNull();
+        await Assert.That(result).IsFalse();
+        await Assert.That(value).IsNull();
     }
 
-    [Fact]
-    public void Get_Object_Exists()
+    [Test]
+    public async Task Get_Object_Exists()
     {
         var sut1 = new Sut1();
         var fs = new MockFileSystem(
@@ -203,12 +202,12 @@ public class ScriptConfigurationServiceTests
         var service = new ScriptConfigurationService(fs, lg);
 
         var result = service.TryGet<string>(sut1, "test2", out var value);
-        result.ShouldBeTrue();
-        value.ShouldBe("trains");
+        await Assert.That(result).IsTrue();
+        await Assert.That(value).IsEqualTo("trains");
     }
 
-    [Fact]
-    public void Remove_NotExists()
+    [Test]
+    public async Task Remove_NotExists()
     {
         var sut1 = new Sut1();
         var fs = new MockFileSystem(
@@ -224,11 +223,11 @@ public class ScriptConfigurationServiceTests
         var service = new ScriptConfigurationService(fs, lg);
 
         var result = service.Remove(sut1, "test1");
-        result.ShouldBeFalse();
+        await Assert.That(result).IsFalse();
     }
 
-    [Fact]
-    public void Remove_Exists()
+    [Test]
+    public async Task Remove_Exists()
     {
         var sut1 = new Sut1();
         var fs = new MockFileSystem(
@@ -244,11 +243,11 @@ public class ScriptConfigurationServiceTests
         var service = new ScriptConfigurationService(fs, lg);
 
         var result = service.Remove(sut1, "test1");
-        result.ShouldBeTrue();
+        await Assert.That(result).IsTrue();
     }
 
-    [Fact]
-    public void Contains_NotExists()
+    [Test]
+    public async Task Contains_NotExists()
     {
         var sut1 = new Sut1();
         var fs = new MockFileSystem(
@@ -264,11 +263,11 @@ public class ScriptConfigurationServiceTests
         var service = new ScriptConfigurationService(fs, lg);
 
         var result = service.Contains(sut1, "test1");
-        result.ShouldBeFalse();
+        await Assert.That(result).IsFalse();
     }
 
-    [Fact]
-    public void Contains_Exists()
+    [Test]
+    public async Task Contains_Exists()
     {
         var sut1 = new Sut1();
         var fs = new MockFileSystem(
@@ -284,7 +283,7 @@ public class ScriptConfigurationServiceTests
         var service = new ScriptConfigurationService(fs, lg);
 
         var result = service.Contains(sut1, "test1");
-        result.ShouldBeTrue();
+        await Assert.That(result).IsTrue();
     }
 
     private const string Config1 = "{}";

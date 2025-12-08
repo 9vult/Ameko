@@ -7,26 +7,25 @@ using Holo.IO;
 using Holo.Providers;
 using Holo.Tests.Utilities;
 using Microsoft.Extensions.Logging.Abstractions;
-using Shouldly;
 
 namespace Holo.Tests;
 
 public class LayoutProviderTests
 {
-    [Fact]
-    public void Constructor()
+    [Test]
+    public async Task Constructor()
     {
         var fs = new MockFileSystem();
         var lg = NullLogger<LayoutProvider>.Instance;
         var p = new MockPersistence();
         var provider = new LayoutProvider(fs, lg, p);
 
-        provider.Current.ShouldBeNull();
-        provider.Layouts.ShouldBeEmpty();
+        await Assert.That(provider.Current).IsNull();
+        await Assert.That(provider.Layouts).IsEmpty();
     }
 
-    [Fact]
-    public void Reload()
+    [Test]
+    public async Task Reload()
     {
         var fs = new MockFileSystem();
         fs.AddFile(
@@ -41,9 +40,9 @@ public class LayoutProviderTests
 
         provider.Reload();
 
-        provider.Current.ShouldNotBeNull();
-        provider.Current.Name.ShouldBe("ThunderClan Camp");
-        provider.Layouts.ShouldNotBeEmpty();
+        await Assert.That(provider.Current).IsNotNull();
+        await Assert.That(provider.Current!.Name).IsEqualTo("ThunderClan Camp");
+        await Assert.That(provider.Layouts).IsNotEmpty();
     }
 
     private const string ExampleLayout = """

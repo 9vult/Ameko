@@ -2,14 +2,13 @@
 
 using AssCS;
 using AssCS.History;
-using Shouldly;
 
 namespace Holo.Tests;
 
 public class WorkspaceTests
 {
-    [Fact]
-    public void Commit_Single()
+    [Test]
+    public async Task Commit_Single()
     {
         var wsp = new Workspace(new Document(true), 1);
         var e = new Event(99);
@@ -17,12 +16,14 @@ public class WorkspaceTests
 
         wsp.Commit(e, ChangeType.AddEvent);
 
-        wsp.Document.HistoryManager.CanUndo.ShouldBeTrue();
-        wsp.Document.HistoryManager.LastCommitType.ShouldBe(ChangeType.AddEvent);
+        await Assert.That(wsp.Document.HistoryManager.CanUndo).IsTrue();
+        await Assert
+            .That(wsp.Document.HistoryManager.LastCommitType)
+            .IsEqualTo(ChangeType.AddEvent);
     }
 
-    [Fact]
-    public void Commit_Multiple()
+    [Test]
+    public async Task Commit_Multiple()
     {
         var wsp = new Workspace(new Document(true), 1);
         var e1 = new Event(99);
@@ -32,12 +33,14 @@ public class WorkspaceTests
 
         wsp.Commit([e1, e2], ChangeType.AddEvent);
 
-        wsp.Document.HistoryManager.CanUndo.ShouldBeTrue();
-        wsp.Document.HistoryManager.LastCommitType.ShouldBe(ChangeType.AddEvent);
+        await Assert.That(wsp.Document.HistoryManager.CanUndo).IsTrue();
+        await Assert
+            .That(wsp.Document.HistoryManager.LastCommitType)
+            .IsEqualTo(ChangeType.AddEvent);
     }
 
-    [Fact]
-    public void Commit_Amends_When_Same_Type()
+    [Test]
+    public async Task Commit_Amends_When_Same_Type()
     {
         var wsp = new Workspace(new Document(true), 1);
         var e1 = new Event(99);
@@ -50,11 +53,11 @@ public class WorkspaceTests
         e1.Text = "Hello World";
         wsp.Commit(e1, ChangeType.ModifyEventText);
 
-        wsp.Document.HistoryManager.CanUndo.ShouldBeTrue();
+        await Assert.That(wsp.Document.HistoryManager.CanUndo).IsTrue();
     }
 
-    [Fact]
-    public void Commit_Does_Not_Amend_When_Different_Type()
+    [Test]
+    public async Task Commit_Does_Not_Amend_When_Different_Type()
     {
         var wsp = new Workspace(new Document(true), 1);
         var e1 = new Event(99);
@@ -64,11 +67,11 @@ public class WorkspaceTests
         e1.Text = "test";
         wsp.Commit(wsp.Document.EventManager.Tail, ChangeType.ModifyEventText);
 
-        wsp.Document.HistoryManager.CanUndo.ShouldBeTrue();
+        await Assert.That(wsp.Document.HistoryManager.CanUndo).IsTrue();
     }
 
-    [Fact]
-    public void Select_Single()
+    [Test]
+    public async Task Select_Single()
     {
         var wsp = new Workspace(new Document(true), 1);
         var e = new Event(99);
@@ -76,12 +79,12 @@ public class WorkspaceTests
 
         wsp.SelectionManager.Select(e);
 
-        wsp.SelectionManager.ActiveEvent.ShouldBe(e);
-        wsp.SelectionManager.SelectedEventCollection.Count.ShouldBe(1);
+        await Assert.That(wsp.SelectionManager.ActiveEvent).IsEqualTo(e);
+        await Assert.That(wsp.SelectionManager.SelectedEventCollection.Count).IsEqualTo(1);
     }
 
-    [Fact]
-    public void Select_Multiple()
+    [Test]
+    public async Task Select_Multiple()
     {
         var wsp = new Workspace(new Document(true), 1);
         var e1 = new Event(99);
@@ -91,12 +94,12 @@ public class WorkspaceTests
 
         wsp.SelectionManager.Select(e2, [e1, e2]);
 
-        wsp.SelectionManager.ActiveEvent.ShouldBe(e2);
-        wsp.SelectionManager.SelectedEventCollection.Count.ShouldBe(2);
+        await Assert.That(wsp.SelectionManager.ActiveEvent).IsEqualTo(e2);
+        await Assert.That(wsp.SelectionManager.SelectedEventCollection.Count).IsEqualTo(2);
     }
 
-    [Fact]
-    public void Undo_AddEvent()
+    [Test]
+    public async Task Undo_AddEvent()
     {
         var wsp = new Workspace(new Document(true), 1);
         var e1 = new Event(99);
@@ -107,19 +110,19 @@ public class WorkspaceTests
         wsp.Document.EventManager.AddLast(e2);
         wsp.Commit(e2, ChangeType.AddEvent);
 
-        wsp.Document.HistoryManager.CanUndo.ShouldBeTrue();
+        await Assert.That(wsp.Document.HistoryManager.CanUndo).IsTrue();
         wsp.Undo();
-        wsp.Document.EventManager.Events.ShouldNotContain(e2);
-        wsp.Document.EventManager.Events.ShouldContain(e1);
+        await Assert.That(wsp.Document.EventManager.Events).DoesNotContain(e2);
+        await Assert.That(wsp.Document.EventManager.Events).Contains(e1);
 
-        wsp.Document.HistoryManager.CanRedo.ShouldBeTrue();
+        await Assert.That(wsp.Document.HistoryManager.CanRedo).IsTrue();
         wsp.Undo();
-        wsp.Document.EventManager.Events.ShouldNotContain(e2);
-        wsp.Document.EventManager.Events.ShouldNotContain(e1);
+        await Assert.That(wsp.Document.EventManager.Events).DoesNotContain(e2);
+        await Assert.That(wsp.Document.EventManager.Events).DoesNotContain(e1);
     }
 
-    [Fact]
-    public void Redo_AddEvent()
+    [Test]
+    public async Task Redo_AddEvent()
     {
         var wsp = new Workspace(new Document(true), 1);
         var e1 = new Event(99);
@@ -132,25 +135,25 @@ public class WorkspaceTests
         wsp.Undo();
         wsp.Undo();
 
-        wsp.Document.EventManager.Events.ShouldNotContain(e2);
-        wsp.Document.EventManager.Events.ShouldNotContain(e1);
-        wsp.Document.HistoryManager.CanUndo.ShouldBeFalse();
-        wsp.Document.HistoryManager.CanRedo.ShouldBeTrue();
+        await Assert.That(wsp.Document.EventManager.Events).DoesNotContain(e2);
+        await Assert.That(wsp.Document.EventManager.Events).DoesNotContain(e1);
+        await Assert.That(wsp.Document.HistoryManager.CanUndo).IsFalse();
+        await Assert.That(wsp.Document.HistoryManager.CanRedo).IsTrue();
 
         wsp.Redo();
-        wsp.Document.EventManager.Events.ShouldContain(e1);
-        wsp.Document.EventManager.Events.ShouldNotContain(e2);
+        await Assert.That(wsp.Document.EventManager.Events).Contains(e1);
+        await Assert.That(wsp.Document.EventManager.Events).DoesNotContain(e2);
 
         wsp.Redo();
-        wsp.Document.EventManager.Events.ShouldContain(e1);
-        wsp.Document.EventManager.Events.ShouldContain(e2);
+        await Assert.That(wsp.Document.EventManager.Events).Contains(e1);
+        await Assert.That(wsp.Document.EventManager.Events).Contains(e2);
 
-        wsp.Document.HistoryManager.CanUndo.ShouldBeTrue();
-        wsp.Document.HistoryManager.CanRedo.ShouldBeFalse();
+        await Assert.That(wsp.Document.HistoryManager.CanUndo).IsTrue();
+        await Assert.That(wsp.Document.HistoryManager.CanRedo).IsFalse();
     }
 
-    [Fact]
-    public void Undo_RemoveEvent()
+    [Test]
+    public async Task Undo_RemoveEvent()
     {
         var wsp = new Workspace(new Document(true), 1);
         var e1 = new Event(99);
@@ -160,15 +163,15 @@ public class WorkspaceTests
         wsp.Document.EventManager.Remove(e1.Id);
         wsp.Commit(e1, ChangeType.RemoveEvent);
 
-        wsp.Document.EventManager.Events.ShouldNotContain(e1);
-        wsp.Document.HistoryManager.CanUndo.ShouldBeTrue();
+        await Assert.That(wsp.Document.EventManager.Events).DoesNotContain(e1);
+        await Assert.That(wsp.Document.HistoryManager.CanUndo).IsTrue();
 
         wsp.Undo();
-        wsp.Document.EventManager.Events.ShouldContain(e1);
+        await Assert.That(wsp.Document.EventManager.Events).Contains(e1);
     }
 
-    [Fact]
-    public void Redo_RemoveEvent()
+    [Test]
+    public async Task Redo_RemoveEvent()
     {
         var wsp = new Workspace(new Document(true), 1);
         var e1 = new Event(99);
@@ -178,15 +181,15 @@ public class WorkspaceTests
         wsp.Document.EventManager.Remove(e1.Id);
         wsp.Commit(e1, ChangeType.RemoveEvent);
         wsp.Undo();
-        wsp.Document.EventManager.Events.ShouldContain(e1);
-        wsp.Document.HistoryManager.CanRedo.ShouldBeTrue();
+        await Assert.That(wsp.Document.EventManager.Events).Contains(e1);
+        await Assert.That(wsp.Document.HistoryManager.CanRedo).IsTrue();
 
         wsp.Redo();
-        wsp.Document.EventManager.Events.ShouldNotContain(e1);
+        await Assert.That(wsp.Document.EventManager.Events).DoesNotContain(e1);
     }
 
-    [Fact]
-    public void Undo_ModifyEvent_Once()
+    [Test]
+    public async Task Undo_ModifyEvent_Once()
     {
         var wsp = new Workspace(new Document(true), 1);
         var e1 = wsp.Document.EventManager.Head;
@@ -195,11 +198,11 @@ public class WorkspaceTests
         wsp.Commit(e1, ChangeType.ModifyEventText);
 
         wsp.Undo();
-        wsp.Document.EventManager.Head.Text.ShouldBe(string.Empty);
+        await Assert.That(wsp.Document.EventManager.Head.Text).IsEqualTo(string.Empty);
     }
 
-    [Fact]
-    public void Redo_ModifyEvent_Once()
+    [Test]
+    public async Task Redo_ModifyEvent_Once()
     {
         var wsp = new Workspace(new Document(true), 1);
         var e1 = wsp.Document.EventManager.Head;
@@ -208,14 +211,14 @@ public class WorkspaceTests
         wsp.Commit(e1, ChangeType.ModifyEventText);
         wsp.Undo();
 
-        wsp.Document.HistoryManager.CanRedo.ShouldBeTrue();
+        await Assert.That(wsp.Document.HistoryManager.CanRedo).IsTrue();
         wsp.Redo();
 
-        wsp.Document.EventManager.Head.Text.ShouldBe("Hello!");
+        await Assert.That(wsp.Document.EventManager.Head.Text).IsEqualTo("Hello!");
     }
 
-    [Fact]
-    public void Undo_ModifyEvent_Multiple()
+    [Test]
+    public async Task Undo_ModifyEvent_Multiple()
     {
         var wsp = new Workspace(new Document(true), 1);
         var e1 = wsp.Document.EventManager.Head;
@@ -226,11 +229,11 @@ public class WorkspaceTests
         wsp.Commit(e1, ChangeType.ModifyEventText, true);
 
         wsp.Undo();
-        wsp.Document.EventManager.Head.Text.ShouldBe(string.Empty);
+        await Assert.That(wsp.Document.EventManager.Head.Text).IsEqualTo(string.Empty);
     }
 
-    [Fact]
-    public void Redo_ModifyEvent_Multiple()
+    [Test]
+    public async Task Redo_ModifyEvent_Multiple()
     {
         var wsp = new Workspace(new Document(true), 1);
         var e1 = wsp.Document.EventManager.Head;
@@ -241,9 +244,9 @@ public class WorkspaceTests
         wsp.Commit(e1, ChangeType.ModifyEventText);
         wsp.Undo();
 
-        wsp.Document.HistoryManager.CanRedo.ShouldBeTrue();
+        await Assert.That(wsp.Document.HistoryManager.CanRedo).IsTrue();
         wsp.Redo();
 
-        wsp.Document.EventManager.Head.Text.ShouldBe("Hello! World!");
+        await Assert.That(wsp.Document.EventManager.Head.Text).IsEqualTo("Hello! World!");
     }
 }

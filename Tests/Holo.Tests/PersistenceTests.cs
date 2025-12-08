@@ -4,36 +4,35 @@ using System.IO.Abstractions.TestingHelpers;
 using Holo.Configuration;
 using Holo.IO;
 using Microsoft.Extensions.Logging.Abstractions;
-using Shouldly;
 
 namespace Holo.Tests;
 
 public class PersistenceTests
 {
-    [Fact]
-    public void Constructor()
+    [Test]
+    public async Task Constructor()
     {
         var fs = new MockFileSystem();
         var lg = NullLogger<Persistence>.Instance;
         var p = new Persistence(fs, lg);
 
-        p.LayoutName.ShouldBe("Default");
-        p.UseColorRing.ShouldBeFalse();
+        await Assert.That(p.LayoutName).IsEqualTo("Default");
+        await Assert.That(p.UseColorRing).IsFalse();
     }
 
-    [Fact]
-    public void Parse_NotExists()
+    [Test]
+    public async Task Parse_NotExists()
     {
         var fs = new MockFileSystem();
         var lg = NullLogger<Persistence>.Instance;
         var p = Persistence.Parse(fs, lg);
 
-        p.LayoutName.ShouldBe("Default");
-        p.UseColorRing.ShouldBeFalse();
+        await Assert.That(p.LayoutName).IsEqualTo("Default");
+        await Assert.That(p.UseColorRing).IsFalse();
     }
 
-    [Fact]
-    public void Parse_Exists()
+    [Test]
+    public async Task Parse_Exists()
     {
         var fs = new MockFileSystem(
             new Dictionary<string, MockFileData>
@@ -44,12 +43,12 @@ public class PersistenceTests
         var lg = NullLogger<Persistence>.Instance;
         var p = Persistence.Parse(fs, lg);
 
-        p.LayoutName.ShouldBe("Upside Down");
-        p.UseColorRing.ShouldBeTrue();
+        await Assert.That(p.LayoutName).IsEqualTo("Upside Down");
+        await Assert.That(p.UseColorRing).IsTrue();
     }
 
-    [Fact]
-    public void Save_Exists()
+    [Test]
+    public async Task Save_Exists()
     {
         var fs = new MockFileSystem(
             new Dictionary<string, MockFileData>
@@ -62,12 +61,12 @@ public class PersistenceTests
 
         var result = p.Save();
 
-        result.ShouldBeTrue();
-        fs.FileExists(Paths.Persistence.LocalPath).ShouldBeTrue();
+        await Assert.That(result).IsTrue();
+        await Assert.That(fs.FileExists(Paths.Persistence.LocalPath)).IsTrue();
     }
 
-    [Fact]
-    public void Save_NotExists()
+    [Test]
+    public async Task Save_NotExists()
     {
         var fs = new MockFileSystem();
         var lg = NullLogger<Persistence>.Instance;
@@ -75,8 +74,8 @@ public class PersistenceTests
 
         var result = p.Save();
 
-        result.ShouldBeTrue();
-        fs.FileExists(Paths.Persistence.LocalPath).ShouldBeTrue();
+        await Assert.That(result).IsTrue();
+        await Assert.That(fs.FileExists(Paths.Persistence.LocalPath)).IsTrue();
     }
 
     private const string ExamplePersistence = """
