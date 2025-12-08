@@ -35,10 +35,14 @@ public class AmekoServiceProvider
         {
             p.ClearProviders();
             p.SetMinimumLevel(LogLevel.Debug);
-            p.AddNLog();
 
             // Filter out HttpClient debug logs
-            p.AddFilter("Microsoft.Extensions.Http.DefaultHttpClientFactory", LogLevel.Warning);
+            p.AddFilter<NLogLoggerProvider>("System.Net.Http.HttpClient", LogLevel.Warning);
+            p.AddFilter<NLogLoggerProvider>(
+                "Microsoft.Extensions.Http.DefaultHttpClientFactory",
+                LogLevel.Warning
+            );
+            p.AddNLog();
         });
 
         // --- Configuration ---
@@ -108,9 +112,6 @@ public class AmekoServiceProvider
 
         // --- Main Window ---
         services.AddSingleton<MainWindow>();
-
-        // Extra config
-        services.ConfigureHttpClientDefaults(p => p.RemoveAllLoggers()); // disable HttpClient logging
 
         Provider = services.BuildServiceProvider();
 
