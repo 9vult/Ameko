@@ -5,7 +5,6 @@
     <File Path="Directory.Packages.props" />
   </Folder>
   <Folder Name="/Tests/">
-    <Project Path="Tests/Ameko.ViewModel.Tests/Ameko.ViewModel.Tests.csproj" />
     <Project Path="Tests/AssCS.Tests/AssCS.Tests.csproj" />
     <Project Path="Tests/Holo.Tests/Holo.Tests.csproj" />
   </Folder>
