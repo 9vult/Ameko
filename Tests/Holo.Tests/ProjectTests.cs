@@ -276,6 +276,7 @@ public class ProjectTests
              "ReferencedDocuments": [],
              "Styles": [],
              "Cps": 21,
+             "DefaultLayer": 0,
              "CpsIncludesWhitespace": null,
              "CpsIncludesPunctuation": null,
              "UseSoftLinebreaks": null,
