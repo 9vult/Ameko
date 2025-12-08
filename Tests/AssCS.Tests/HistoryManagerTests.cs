@@ -1,14 +1,13 @@
 ﻿// SPDX-License-Identifier: MPL-2.0
 
 using AssCS.History;
-using Shouldly;
 
 namespace AssCS.Tests;
 
 public class HistoryManagerTests
 {
-    [Fact]
-    public void Commit_AddEvent()
+    [Test]
+    public async Task Commit_AddEvent()
     {
         var event1 = new Event(100);
         var doc = new Document(false);
@@ -19,17 +18,17 @@ public class HistoryManagerTests
 
         hm.Commit(ChangeType.AddEvent);
 
-        hm.CanUndo.ShouldBeTrue();
-        hm.CanRedo.ShouldBeFalse();
+        await Assert.That(hm.CanUndo).IsTrue();
+        await Assert.That(hm.CanRedo).IsFalse();
 
         var lastCommit = hm.PeekHistory();
-        lastCommit.Type.ShouldBe(ChangeType.AddEvent);
-        lastCommit.Chain.ShouldContain(event1.Id);
-        lastCommit.Events[event1.Id].ShouldBe(event1);
+        await Assert.That(lastCommit.Type).IsEqualTo(ChangeType.AddEvent);
+        await Assert.That(lastCommit.Chain).Contains(event1.Id);
+        await Assert.That(lastCommit.Events[event1.Id]).IsEqualTo(event1);
     }
 
-    [Fact]
-    public void Commit_RemoveEvent()
+    [Test]
+    public async Task Commit_RemoveEvent()
     {
         var event1 = new Event(100);
         var doc = new Document(false);
@@ -42,17 +41,17 @@ public class HistoryManagerTests
         doc.EventManager.Remove(event1.Id);
         hm.Commit(ChangeType.RemoveEvent);
 
-        hm.CanUndo.ShouldBeTrue();
-        hm.CanRedo.ShouldBeFalse();
+        await Assert.That(hm.CanUndo).IsTrue();
+        await Assert.That(hm.CanRedo).IsFalse();
 
         var lastCommit = hm.PeekHistory();
-        lastCommit.Type.ShouldBe(ChangeType.RemoveEvent);
-        lastCommit.Chain.ShouldNotContain(event1.Id);
-        lastCommit.Events.Keys.ShouldNotContain(event1.Id);
+        await Assert.That(lastCommit.Type).IsEqualTo(ChangeType.RemoveEvent);
+        await Assert.That(lastCommit.Chain).DoesNotContain(event1.Id);
+        await Assert.That(lastCommit.Events.Keys).DoesNotContain(event1.Id);
     }
 
-    [Fact]
-    public void Commit_ModifyEvent()
+    [Test]
+    public async Task Commit_ModifyEvent()
     {
         var eventA = new Event(100) { Text = "Holo" };
         var doc = new Document(false);
@@ -65,17 +64,17 @@ public class HistoryManagerTests
         eventA.Text = "Lawrence";
         hm.Commit(ChangeType.ModifyEventText);
 
-        hm.CanUndo.ShouldBeTrue();
-        hm.CanRedo.ShouldBeFalse();
+        await Assert.That(hm.CanUndo).IsTrue();
+        await Assert.That(hm.CanRedo).IsFalse();
 
         var lastCommit = hm.PeekHistory();
-        lastCommit.Type.ShouldBe(ChangeType.ModifyEventText);
-        lastCommit.Chain.ShouldContain(eventA.Id);
-        lastCommit.Events[eventA.Id].Text.ShouldBe("Lawrence");
+        await Assert.That(lastCommit.Type).IsEqualTo(ChangeType.ModifyEventText);
+        await Assert.That(lastCommit.Chain).Contains(eventA.Id);
+        await Assert.That(lastCommit.Events[eventA.Id].Text).IsEqualTo("Lawrence");
     }
 
-    [Fact]
-    public void Commit_ModifyEvent_NoCoalesce()
+    [Test]
+    public async Task Commit_ModifyEvent_NoCoalesce()
     {
         var eventA = new Event(100) { Text = "Frieren" };
         var doc = new Document(false);
@@ -92,17 +91,17 @@ public class HistoryManagerTests
         hm.Commit(ChangeType.ModifyEventText, eventA);
 
         var lastCommit = hm.PeekHistory();
-        lastCommit.Type.ShouldBe(ChangeType.ModifyEventText);
-        lastCommit.Events[eventA.Id].Text.ShouldBe("Stark");
+        await Assert.That(lastCommit.Type).IsEqualTo(ChangeType.ModifyEventText);
+        await Assert.That(lastCommit.Events[eventA.Id].Text).IsEqualTo("Stark");
 
         hm.Undo();
         lastCommit = hm.PeekHistory();
-        lastCommit.Type.ShouldBe(ChangeType.ModifyEventText); // Make sure there were 2 modify commits
-        lastCommit.Events[eventA.Id].Text.ShouldBe("Fern");
+        await Assert.That(lastCommit.Type).IsEqualTo(ChangeType.ModifyEventText); // Make sure there were 2 modify commits
+        await Assert.That(lastCommit.Events[eventA.Id].Text).IsEqualTo("Fern");
     }
 
-    [Fact]
-    public void Commit_ModifyEvent_Coalesce()
+    [Test]
+    public async Task Commit_ModifyEvent_Coalesce()
     {
         var eventA = new Event(100) { Text = "Frieren" };
         var doc = new Document(false);
@@ -116,23 +115,23 @@ public class HistoryManagerTests
         hm.Commit(ChangeType.ModifyEventText);
 
         var lastCommit = hm.PeekHistory();
-        lastCommit.Type.ShouldBe(ChangeType.ModifyEventText);
-        lastCommit.Events[eventA.Id].Text.ShouldBe("Fern");
+        await Assert.That(lastCommit.Type).IsEqualTo(ChangeType.ModifyEventText);
+        await Assert.That(lastCommit.Events[eventA.Id].Text).IsEqualTo("Fern");
 
         eventA.Text = "Stark";
         hm.Commit(ChangeType.ModifyEventText, eventA, true);
 
         lastCommit = hm.PeekHistory();
-        lastCommit.Type.ShouldBe(ChangeType.ModifyEventText);
-        lastCommit.Events[eventA.Id].Text.ShouldBe("Stark");
+        await Assert.That(lastCommit.Type).IsEqualTo(ChangeType.ModifyEventText);
+        await Assert.That(lastCommit.Events[eventA.Id].Text).IsEqualTo("Stark");
 
         hm.Undo();
         lastCommit = hm.PeekHistory();
-        lastCommit.Type.ShouldBe(ChangeType.AddEvent); // Make sure there was only 1 modify commit
+        await Assert.That(lastCommit.Type).IsEqualTo(ChangeType.AddEvent); // Make sure there was only 1 modify commit
     }
 
-    [Fact]
-    public void Commit_AddStyle()
+    [Test]
+    public async Task Commit_AddStyle()
     {
         var style1 = new Style(100);
         var doc = new Document(false);
@@ -143,16 +142,16 @@ public class HistoryManagerTests
 
         hm.Commit(ChangeType.AddStyle);
 
-        hm.CanUndo.ShouldBeTrue();
-        hm.CanRedo.ShouldBeFalse();
+        await Assert.That(hm.CanUndo).IsTrue();
+        await Assert.That(hm.CanRedo).IsFalse();
 
         var lastCommit = hm.PeekHistory();
-        lastCommit.Type.ShouldBe(ChangeType.AddStyle);
-        lastCommit.Styles.ShouldContain(style1);
+        await Assert.That(lastCommit.Type).IsEqualTo(ChangeType.AddStyle);
+        await Assert.That(lastCommit.Styles).Contains(style1);
     }
 
-    [Fact]
-    public void Commit_RemoveStyle()
+    [Test]
+    public async Task Commit_RemoveStyle()
     {
         var style1 = new Style(100);
         var doc = new Document(false);
@@ -165,16 +164,16 @@ public class HistoryManagerTests
         doc.StyleManager.Remove(style1.Name);
         hm.Commit(ChangeType.RemoveStyle);
 
-        hm.CanUndo.ShouldBeTrue();
-        hm.CanRedo.ShouldBeFalse();
+        await Assert.That(hm.CanUndo).IsTrue();
+        await Assert.That(hm.CanRedo).IsFalse();
 
         var lastCommit = hm.PeekHistory();
-        lastCommit.Type.ShouldBe(ChangeType.RemoveStyle);
-        lastCommit.Styles.ShouldNotContain(style1);
+        await Assert.That(lastCommit.Type).IsEqualTo(ChangeType.RemoveStyle);
+        await Assert.That(lastCommit.Styles).DoesNotContain(style1);
     }
 
-    [Fact]
-    public void Commit_ModifyStyle()
+    [Test]
+    public async Task Commit_ModifyStyle()
     {
         var style1 = new Style(100) { Name = "Cool Style 1" };
         var doc = new Document(false);
@@ -187,17 +186,17 @@ public class HistoryManagerTests
         style1.Name = "Uncool!";
         hm.Commit(ChangeType.ModifyStyle);
 
-        hm.CanUndo.ShouldBeTrue();
-        hm.CanRedo.ShouldBeFalse();
+        await Assert.That(hm.CanUndo).IsTrue();
+        await Assert.That(hm.CanRedo).IsFalse();
 
         var lastCommit = hm.PeekHistory();
-        lastCommit.Type.ShouldBe(ChangeType.ModifyStyle);
-        lastCommit.Styles.ShouldContain(style1);
-        lastCommit.Styles[0].Name.ShouldBe("Uncool!");
+        await Assert.That(lastCommit.Type).IsEqualTo(ChangeType.ModifyStyle);
+        await Assert.That(lastCommit.Styles).Contains(style1);
+        await Assert.That(lastCommit.Styles[0].Name).IsEqualTo("Uncool!");
     }
 
-    [Fact]
-    public void Commit_ModifyStyle_NoCoalesce()
+    [Test]
+    public async Task Commit_ModifyStyle_NoCoalesce()
     {
         var style1 = new Style(100) { Name = "Cool Style 1" };
         var doc = new Document(false);
@@ -214,17 +213,17 @@ public class HistoryManagerTests
         hm.Commit(style1);
 
         var lastCommit = hm.PeekHistory();
-        lastCommit.Type.ShouldBe(ChangeType.ModifyStyle);
-        lastCommit.Styles[0].Name.ShouldBe("Jinkies!");
+        await Assert.That(lastCommit.Type).IsEqualTo(ChangeType.ModifyStyle);
+        await Assert.That(lastCommit.Styles[0].Name).IsEqualTo("Jinkies!");
 
         hm.Undo();
         lastCommit = hm.PeekHistory();
-        lastCommit.Type.ShouldBe(ChangeType.ModifyStyle); // Make sure there were 2 modify commits
-        lastCommit.Styles[0].Name.ShouldBe("Uncool!");
+        await Assert.That(lastCommit.Type).IsEqualTo(ChangeType.ModifyStyle); // Make sure there were 2 modify commits
+        await Assert.That(lastCommit.Styles[0].Name).IsEqualTo("Uncool!");
     }
 
-    [Fact]
-    public void Commit_ModifyStyle_Coalesce()
+    [Test]
+    public async Task Commit_ModifyStyle_Coalesce()
     {
         var style1 = new Style(100) { Name = "Cool Style 1" };
         var doc = new Document(false);
@@ -238,23 +237,23 @@ public class HistoryManagerTests
         hm.Commit(ChangeType.ModifyStyle);
 
         var lastCommit = hm.PeekHistory();
-        lastCommit.Type.ShouldBe(ChangeType.ModifyStyle);
-        lastCommit.Styles[0].Name.ShouldBe("Uncool!");
+        await Assert.That(lastCommit.Type).IsEqualTo(ChangeType.ModifyStyle);
+        await Assert.That(lastCommit.Styles[0].Name).IsEqualTo("Uncool!");
 
         style1.Name = "Jinkies!";
         hm.Commit(style1, true);
 
         lastCommit = hm.PeekHistory();
-        lastCommit.Type.ShouldBe(ChangeType.ModifyStyle);
-        lastCommit.Styles[0].Name.ShouldBe("Jinkies!");
+        await Assert.That(lastCommit.Type).IsEqualTo(ChangeType.ModifyStyle);
+        await Assert.That(lastCommit.Styles[0].Name).IsEqualTo("Jinkies!");
 
         hm.Undo();
         lastCommit = hm.PeekHistory();
-        lastCommit.Type.ShouldBe(ChangeType.AddStyle); // Make sure there was only 1 modify commit
+        await Assert.That(lastCommit.Type).IsEqualTo(ChangeType.AddStyle); // Make sure there was only 1 modify commit
     }
 
-    [Fact]
-    public void Undo_AddEvent()
+    [Test]
+    public async Task Undo_AddEvent()
     {
         var event1 = new Event(100);
         var doc = new Document(false);
@@ -263,18 +262,18 @@ public class HistoryManagerTests
 
         doc.EventManager.AddFirst(event1);
         hm.Commit(ChangeType.AddEvent);
-        doc.EventManager.Events.ShouldContain(event1);
+        await Assert.That(doc.EventManager.Events).Contains(event1);
 
         hm.Undo();
 
-        doc.EventManager.Events.ShouldNotContain(event1);
-        hm.CanRedo.ShouldBeTrue();
+        await Assert.That(doc.EventManager.Events).DoesNotContain(event1);
+        await Assert.That(hm.CanRedo).IsTrue();
         var commit = hm.PeekFuture();
-        commit.Type.ShouldBe(ChangeType.AddEvent);
+        await Assert.That(commit.Type).IsEqualTo(ChangeType.AddEvent);
     }
 
-    [Fact]
-    public void Undo_RemoveEvent()
+    [Test]
+    public async Task Undo_RemoveEvent()
     {
         var event1 = new Event(100);
         var doc = new Document(false);
@@ -284,18 +283,18 @@ public class HistoryManagerTests
 
         doc.EventManager.Remove(event1.Id);
         hm.Commit(ChangeType.RemoveEvent);
-        doc.EventManager.Events.ShouldNotContain(event1);
+        await Assert.That(doc.EventManager.Events).DoesNotContain(event1);
 
         hm.Undo();
 
-        doc.EventManager.Events.ShouldContain(event1);
-        hm.CanRedo.ShouldBeTrue();
+        await Assert.That(doc.EventManager.Events).Contains(event1);
+        await Assert.That(hm.CanRedo).IsTrue();
         var commit = hm.PeekFuture();
-        commit.Type.ShouldBe(ChangeType.RemoveEvent);
+        await Assert.That(commit.Type).IsEqualTo(ChangeType.RemoveEvent);
     }
 
-    [Fact]
-    public void Undo_ModifyEvent()
+    [Test]
+    public async Task Undo_ModifyEvent()
     {
         var event1 = new Event(100) { Text = "Hello" };
         var doc = new Document(false);
@@ -305,18 +304,18 @@ public class HistoryManagerTests
 
         event1.Text = "Goodbye";
         hm.Commit(ChangeType.ModifyEventText, event1);
-        doc.EventManager.Head.Text.ShouldBe("Goodbye");
+        await Assert.That(doc.EventManager.Head.Text).IsEqualTo("Goodbye");
 
         hm.Undo();
 
-        doc.EventManager.Head.Text.ShouldBe("Hello");
-        hm.CanRedo.ShouldBeTrue();
+        await Assert.That(doc.EventManager.Head.Text).IsEqualTo("Hello");
+        await Assert.That(hm.CanRedo).IsTrue();
         var commit = hm.PeekFuture();
-        commit.Type.ShouldBe(ChangeType.ModifyEventText);
+        await Assert.That(commit.Type).IsEqualTo(ChangeType.ModifyEventText);
     }
 
-    [Fact]
-    public void Undo_AddStyle()
+    [Test]
+    public async Task Undo_AddStyle()
     {
         var style1 = new Style(100);
         var doc = new Document(false);
@@ -325,18 +324,18 @@ public class HistoryManagerTests
 
         doc.StyleManager.Add(style1);
         hm.Commit(ChangeType.AddStyle);
-        doc.StyleManager.TryGet(style1.Name, out _).ShouldBeTrue();
+        await Assert.That(doc.StyleManager.TryGet(style1.Name, out _)).IsTrue();
 
         hm.Undo();
 
-        doc.StyleManager.TryGet(style1.Name, out _).ShouldBeFalse();
-        hm.CanRedo.ShouldBeTrue();
+        await Assert.That(doc.StyleManager.TryGet(style1.Name, out _)).IsFalse();
+        await Assert.That(hm.CanRedo).IsTrue();
         var commit = hm.PeekFuture();
-        commit.Type.ShouldBe(ChangeType.AddStyle);
+        await Assert.That(commit.Type).IsEqualTo(ChangeType.AddStyle);
     }
 
-    [Fact]
-    public void Undo_RemoveStyle()
+    [Test]
+    public async Task Undo_RemoveStyle()
     {
         var style1 = new Style(100);
         var doc = new Document(false);
@@ -346,18 +345,18 @@ public class HistoryManagerTests
 
         doc.StyleManager.Remove(style1.Name);
         hm.Commit(ChangeType.RemoveStyle);
-        doc.StyleManager.TryGet(style1.Name, out _).ShouldBeFalse();
+        await Assert.That(doc.StyleManager.TryGet(style1.Name, out _)).IsFalse();
 
         hm.Undo();
 
-        doc.StyleManager.TryGet(style1.Name, out _).ShouldBeTrue();
-        hm.CanRedo.ShouldBeTrue();
+        await Assert.That(doc.StyleManager.TryGet(style1.Name, out _)).IsTrue();
+        await Assert.That(hm.CanRedo).IsTrue();
         var commit = hm.PeekFuture();
-        commit.Type.ShouldBe(ChangeType.RemoveStyle);
+        await Assert.That(commit.Type).IsEqualTo(ChangeType.RemoveStyle);
     }
 
-    [Fact]
-    public void Undo_ModifyStyle()
+    [Test]
+    public async Task Undo_ModifyStyle()
     {
         var style1 = new Style(100) { Name = "Hello" };
         var doc = new Document(false);
@@ -367,20 +366,20 @@ public class HistoryManagerTests
 
         style1.Name = "Goodbye";
         hm.Commit(style1);
-        doc.StyleManager.TryGet("Goodbye", out _).ShouldBeTrue();
-        doc.StyleManager.TryGet("Hello", out _).ShouldBeFalse();
+        await Assert.That(doc.StyleManager.TryGet("Goodbye", out _)).IsTrue();
+        await Assert.That(doc.StyleManager.TryGet("Hello", out _)).IsFalse();
 
         hm.Undo();
 
-        doc.StyleManager.TryGet("Goodbye", out _).ShouldBeFalse();
-        doc.StyleManager.TryGet("Hello", out _).ShouldBeTrue();
-        hm.CanRedo.ShouldBeTrue();
+        await Assert.That(doc.StyleManager.TryGet("Goodbye", out _)).IsFalse();
+        await Assert.That(doc.StyleManager.TryGet("Hello", out _)).IsTrue();
+        await Assert.That(hm.CanRedo).IsTrue();
         var commit = hm.PeekFuture();
-        commit.Type.ShouldBe(ChangeType.ModifyStyle);
+        await Assert.That(commit.Type).IsEqualTo(ChangeType.ModifyStyle);
     }
 
-    [Fact]
-    public void Redo_AddEvent()
+    [Test]
+    public async Task Redo_AddEvent()
     {
         var event1 = new Event(100);
         var doc = new Document(false);
@@ -389,24 +388,24 @@ public class HistoryManagerTests
 
         doc.EventManager.AddFirst(event1);
         hm.Commit(ChangeType.AddEvent);
-        doc.EventManager.Events.ShouldContain(event1);
+        await Assert.That(doc.EventManager.Events).Contains(event1);
 
         hm.Undo();
-        doc.EventManager.Events.ShouldNotContain(event1);
-        hm.CanRedo.ShouldBeTrue();
+        await Assert.That(doc.EventManager.Events).DoesNotContain(event1);
+        await Assert.That(hm.CanRedo).IsTrue();
         var commit = hm.PeekFuture();
-        commit.Type.ShouldBe(ChangeType.AddEvent);
+        await Assert.That(commit.Type).IsEqualTo(ChangeType.AddEvent);
 
         hm.Redo();
 
-        doc.EventManager.Events.ShouldContain(event1);
-        hm.CanRedo.ShouldBeFalse();
+        await Assert.That(doc.EventManager.Events).Contains(event1);
+        await Assert.That(hm.CanRedo).IsFalse();
         commit = hm.PeekHistory();
-        commit.Type.ShouldBe(ChangeType.AddEvent);
+        await Assert.That(commit.Type).IsEqualTo(ChangeType.AddEvent);
     }
 
-    [Fact]
-    public void Redo_RemoveEvent()
+    [Test]
+    public async Task Redo_RemoveEvent()
     {
         var event1 = new Event(100);
         var doc = new Document(false);
@@ -416,24 +415,24 @@ public class HistoryManagerTests
 
         doc.EventManager.Remove(event1.Id);
         hm.Commit(ChangeType.RemoveEvent);
-        doc.EventManager.Events.ShouldNotContain(event1);
+        await Assert.That(doc.EventManager.Events).DoesNotContain(event1);
 
         hm.Undo();
-        doc.EventManager.Events.ShouldContain(event1);
-        hm.CanRedo.ShouldBeTrue();
+        await Assert.That(doc.EventManager.Events).Contains(event1);
+        await Assert.That(hm.CanRedo).IsTrue();
         var commit = hm.PeekFuture();
-        commit.Type.ShouldBe(ChangeType.RemoveEvent);
+        await Assert.That(commit.Type).IsEqualTo(ChangeType.RemoveEvent);
 
         hm.Redo();
 
-        doc.EventManager.Events.ShouldNotContain(event1);
-        hm.CanRedo.ShouldBeFalse();
+        await Assert.That(doc.EventManager.Events).DoesNotContain(event1);
+        await Assert.That(hm.CanRedo).IsFalse();
         commit = hm.PeekHistory();
-        commit.Type.ShouldBe(ChangeType.RemoveEvent);
+        await Assert.That(commit.Type).IsEqualTo(ChangeType.RemoveEvent);
     }
 
-    [Fact]
-    public void Redo_ModifyEvent()
+    [Test]
+    public async Task Redo_ModifyEvent()
     {
         var event1 = new Event(100) { Text = "Hello" };
         var doc = new Document(false);
@@ -443,24 +442,24 @@ public class HistoryManagerTests
 
         event1.Text = "Goodbye";
         hm.Commit(ChangeType.ModifyEventText, event1);
-        doc.EventManager.Head.Text.ShouldBe("Goodbye");
+        await Assert.That(doc.EventManager.Head.Text).IsEqualTo("Goodbye");
 
         hm.Undo();
-        doc.EventManager.Head.Text.ShouldBe("Hello");
-        hm.CanRedo.ShouldBeTrue();
+        await Assert.That(doc.EventManager.Head.Text).IsEqualTo("Hello");
+        await Assert.That(hm.CanRedo).IsTrue();
         var commit = hm.PeekFuture();
-        commit.Type.ShouldBe(ChangeType.ModifyEventText);
+        await Assert.That(commit.Type).IsEqualTo(ChangeType.ModifyEventText);
 
         hm.Redo();
 
-        doc.EventManager.Head.Text.ShouldBe("Goodbye");
-        hm.CanRedo.ShouldBeFalse();
+        await Assert.That(doc.EventManager.Head.Text).IsEqualTo("Goodbye");
+        await Assert.That(hm.CanRedo).IsFalse();
         commit = hm.PeekHistory();
-        commit.Type.ShouldBe(ChangeType.ModifyEventText);
+        await Assert.That(commit.Type).IsEqualTo(ChangeType.ModifyEventText);
     }
 
-    [Fact]
-    public void Redo_AddStyle()
+    [Test]
+    public async Task Redo_AddStyle()
     {
         var style1 = new Style(100);
         var doc = new Document(false);
@@ -469,24 +468,24 @@ public class HistoryManagerTests
 
         doc.StyleManager.Add(style1);
         hm.Commit(ChangeType.AddStyle);
-        doc.StyleManager.TryGet(style1.Name, out _).ShouldBeTrue();
+        await Assert.That(doc.StyleManager.TryGet(style1.Name, out _)).IsTrue();
 
         hm.Undo();
-        doc.StyleManager.TryGet(style1.Name, out _).ShouldBeFalse();
-        hm.CanRedo.ShouldBeTrue();
+        await Assert.That(doc.StyleManager.TryGet(style1.Name, out _)).IsFalse();
+        await Assert.That(hm.CanRedo).IsTrue();
         var commit = hm.PeekFuture();
-        commit.Type.ShouldBe(ChangeType.AddStyle);
+        await Assert.That(commit.Type).IsEqualTo(ChangeType.AddStyle);
 
         hm.Redo();
 
-        doc.StyleManager.TryGet(style1.Name, out _).ShouldBeTrue();
-        hm.CanRedo.ShouldBeFalse();
+        await Assert.That(doc.StyleManager.TryGet(style1.Name, out _)).IsTrue();
+        await Assert.That(hm.CanRedo).IsFalse();
         commit = hm.PeekHistory();
-        commit.Type.ShouldBe(ChangeType.AddStyle);
+        await Assert.That(commit.Type).IsEqualTo(ChangeType.AddStyle);
     }
 
-    [Fact]
-    public void Redo_RemoveStyle()
+    [Test]
+    public async Task Redo_RemoveStyle()
     {
         var style1 = new Style(100);
         var doc = new Document(false);
@@ -496,24 +495,24 @@ public class HistoryManagerTests
 
         doc.StyleManager.Remove(style1.Name);
         hm.Commit(ChangeType.RemoveStyle);
-        doc.StyleManager.TryGet(style1.Name, out _).ShouldBeFalse();
+        await Assert.That(doc.StyleManager.TryGet(style1.Name, out _)).IsFalse();
 
         hm.Undo();
-        doc.StyleManager.TryGet(style1.Name, out _).ShouldBeTrue();
-        hm.CanRedo.ShouldBeTrue();
+        await Assert.That(doc.StyleManager.TryGet(style1.Name, out _)).IsTrue();
+        await Assert.That(hm.CanRedo).IsTrue();
         var commit = hm.PeekFuture();
-        commit.Type.ShouldBe(ChangeType.RemoveStyle);
+        await Assert.That(commit.Type).IsEqualTo(ChangeType.RemoveStyle);
 
         hm.Redo();
 
-        doc.StyleManager.TryGet(style1.Name, out _).ShouldBeFalse();
-        hm.CanRedo.ShouldBeFalse();
+        await Assert.That(doc.StyleManager.TryGet(style1.Name, out _)).IsFalse();
+        await Assert.That(hm.CanRedo).IsFalse();
         commit = hm.PeekHistory();
-        commit.Type.ShouldBe(ChangeType.RemoveStyle);
+        await Assert.That(commit.Type).IsEqualTo(ChangeType.RemoveStyle);
     }
 
-    [Fact]
-    public void Redo_ModifyStyle()
+    [Test]
+    public async Task Redo_ModifyStyle()
     {
         var style1 = new Style(100) { Name = "Hello" };
         var doc = new Document(false);
@@ -523,22 +522,22 @@ public class HistoryManagerTests
 
         style1.Name = "Goodbye";
         hm.Commit(style1);
-        doc.StyleManager.TryGet("Goodbye", out _).ShouldBeTrue();
-        doc.StyleManager.TryGet("Hello", out _).ShouldBeFalse();
+        await Assert.That(doc.StyleManager.TryGet("Goodbye", out _)).IsTrue();
+        await Assert.That(doc.StyleManager.TryGet("Hello", out _)).IsFalse();
 
         hm.Undo();
-        doc.StyleManager.TryGet("Goodbye", out _).ShouldBeFalse();
-        doc.StyleManager.TryGet("Hello", out _).ShouldBeTrue();
-        hm.CanRedo.ShouldBeTrue();
+        await Assert.That(doc.StyleManager.TryGet("Goodbye", out _)).IsFalse();
+        await Assert.That(doc.StyleManager.TryGet("Hello", out _)).IsTrue();
+        await Assert.That(hm.CanRedo).IsTrue();
         var commit = hm.PeekFuture();
-        commit.Type.ShouldBe(ChangeType.ModifyStyle);
+        await Assert.That(commit.Type).IsEqualTo(ChangeType.ModifyStyle);
 
         hm.Redo();
 
-        doc.StyleManager.TryGet("Goodbye", out _).ShouldBeTrue();
-        doc.StyleManager.TryGet("Hello", out _).ShouldBeFalse();
-        hm.CanRedo.ShouldBeFalse();
+        await Assert.That(doc.StyleManager.TryGet("Goodbye", out _)).IsTrue();
+        await Assert.That(doc.StyleManager.TryGet("Hello", out _)).IsFalse();
+        await Assert.That(hm.CanRedo).IsFalse();
         commit = hm.PeekHistory();
-        commit.Type.ShouldBe(ChangeType.ModifyStyle);
+        await Assert.That(commit.Type).IsEqualTo(ChangeType.ModifyStyle);
     }
 }

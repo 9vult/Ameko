@@ -1,116 +1,114 @@
 ﻿// SPDX-License-Identifier: MPL-2.0
 
-using Shouldly;
-
 namespace AssCS.Tests;
 
 public class EventManagerTests
 {
-    [Fact]
-    public void AddAfter()
+    [Test]
+    public async Task AddAfter()
     {
         var em = new EventManager();
         em.AddFirst(new Event(1));
-        em.GetAfter(1).ShouldBeNull();
+        await Assert.That(em.GetAfter(1)).IsNull();
 
         em.AddAfter(1, new Event(2));
-        em.GetAfter(1).ShouldNotBeNull();
+        await Assert.That(em.GetAfter(1)).IsNotNull();
     }
 
-    [Fact]
-    public void AddBefore()
+    [Test]
+    public async Task AddBefore()
     {
         var em = new EventManager();
         em.AddFirst(new Event(1));
-        em.GetBefore(1).ShouldBeNull();
+        await Assert.That(em.GetBefore(1)).IsNull();
 
         em.AddBefore(1, new Event(2));
-        em.GetBefore(1).ShouldNotBeNull();
+        await Assert.That(em.GetBefore(1)).IsNotNull();
     }
 
-    [Fact]
-    public void AddListAfter()
+    [Test]
+    public async Task AddListAfter()
     {
         var em = new EventManager();
         em.AddFirst(new Event(1));
 
         em.AddAfter(1, [new Event(2), new Event(3), new Event(4)]);
-        em.Tail.Id.ShouldBe(4);
+        await Assert.That(em.Tail.Id).IsEqualTo(4);
     }
 
-    [Fact]
-    public void AddListBefore_Asc()
+    [Test]
+    public async Task AddListBefore_Asc()
     {
         var em = new EventManager();
         em.AddFirst(new Event(1));
 
         em.AddBefore(1, [new Event(2), new Event(3), new Event(4)], true);
-        em.Head.Id.ShouldBe(4);
+        await Assert.That(em.Head.Id).IsEqualTo(4);
     }
 
-    [Fact]
-    public void AddListBefore_Desc()
+    [Test]
+    public async Task AddListBefore_Desc()
     {
         var em = new EventManager();
         em.AddFirst(new Event(1));
 
         em.AddBefore(1, [new Event(2), new Event(3), new Event(4)], false);
-        em.Head.Id.ShouldBe(2);
+        await Assert.That(em.Head.Id).IsEqualTo(2);
     }
 
-    [Fact]
-    public void AddLast()
+    [Test]
+    public async Task AddLast()
     {
         var em = new EventManager();
         em.AddFirst(new Event(1));
         em.AddBefore(1, [new Event(2), new Event(3), new Event(4)], false);
 
         em.AddLast(new Event(5));
-        em.Tail.Id.ShouldBe(5);
+        await Assert.That(em.Tail.Id).IsEqualTo(5);
     }
 
-    [Fact]
-    public void AddFirst()
+    [Test]
+    public async Task AddFirst()
     {
         var em = new EventManager();
         em.AddFirst(new Event(1));
 
         em.AddFirst(new Event(2));
-        em.Head.Id.ShouldBe(2);
+        await Assert.That(em.Head.Id).IsEqualTo(2);
     }
 
-    [Fact]
-    public void AddListLast()
+    [Test]
+    public async Task AddListLast()
     {
         var em = new EventManager();
         em.AddFirst(new Event(1));
 
         em.AddLast([new Event(2), new Event(3), new Event(4)]);
-        em.Tail.Id.ShouldBe(4);
+        await Assert.That(em.Tail.Id).IsEqualTo(4);
     }
 
-    [Fact]
-    public void AddListFirst_Asc()
+    [Test]
+    public async Task AddListFirst_Asc()
     {
         var em = new EventManager();
         em.AddFirst(new Event(1));
 
         em.AddFirst([new Event(2), new Event(3), new Event(4)], true);
-        em.Head.Id.ShouldBe(4);
+        await Assert.That(em.Head.Id).IsEqualTo(4);
     }
 
-    [Fact]
-    public void AddListFirst_Desc()
+    [Test]
+    public async Task AddListFirst_Desc()
     {
         var em = new EventManager();
         em.AddFirst(new Event(1));
 
         em.AddFirst([new Event(2), new Event(3), new Event(4)], false);
-        em.Head.Id.ShouldBe(2);
+        await Assert.That(em.Head.Id).IsEqualTo(2);
     }
 
-    [Fact]
-    public void Replace()
+    [Test]
+    public async Task Replace()
     {
         var em = new EventManager();
         em.AddFirst(new Event(1));
@@ -120,18 +118,18 @@ public class EventManagerTests
         em.Replace(2, new Event(4));
 
         var resultA = em.TryGetAfter(1, out var after);
-        resultA.ShouldBeTrue();
+        await Assert.That(resultA).IsTrue();
         if (resultA)
-            after!.Id.ShouldBe(4);
+            await Assert.That(after!.Id).IsEqualTo(4);
 
         var resultB = em.TryGetBefore(3, out var before);
-        resultB.ShouldBeTrue();
+        await Assert.That(resultB).IsTrue();
         if (resultB)
-            before!.Id.ShouldBe(4);
+            await Assert.That(before!.Id).IsEqualTo(4);
     }
 
-    [Fact]
-    public void ReplaceInplace()
+    [Test]
+    public async Task ReplaceInplace()
     {
         var em = new EventManager();
         var eA = new Event(1) { Text = "A" };
@@ -141,13 +139,13 @@ public class EventManagerTests
         em.ReplaceInPlace(eB);
 
         var result = em.TryGet(eA.Id, out var outA);
-        result.ShouldBeTrue();
+        await Assert.That(result).IsTrue();
         if (result)
-            outA!.Id.ShouldBe(eB.Id);
+            await Assert.That(outA!.Id).IsEqualTo(eB.Id);
     }
 
-    [Fact]
-    public void ReplaceInplaceList()
+    [Test]
+    public async Task ReplaceInplaceList()
     {
         var em = new EventManager();
         var eA = new Event(1) { Text = "A" };
@@ -160,57 +158,57 @@ public class EventManagerTests
         em.ReplaceInPlace([eB, eD]);
 
         var resultA = em.TryGet(eA.Id, out var outA);
-        resultA.ShouldBeTrue();
+        await Assert.That(resultA).IsTrue();
         if (resultA)
-            outA!.Id.ShouldBe(eB.Id);
+            await Assert.That(outA!.Id).IsEqualTo(eB.Id);
 
         var resultB = em.TryGet(eC.Id, out var outC);
-        resultB.ShouldBeTrue();
+        await Assert.That(resultB).IsTrue();
         if (resultB)
-            outC!.Id.ShouldBe(eD.Id);
+            await Assert.That(outC!.Id).IsEqualTo(eD.Id);
     }
 
-    [Fact]
-    public void Remove()
+    [Test]
+    public async Task Remove()
     {
         var em = new EventManager();
         em.AddFirst([new Event(1), new Event(2), new Event(3)], false);
 
-        em.Count.ShouldBe(3);
+        await Assert.That(em.Count).IsEqualTo(3);
         em.Remove(2);
-        em.Count.ShouldBe(2);
+        await Assert.That(em.Count).IsEqualTo(2);
 
         var result = em.TryGetAfter(1, out var after);
-        result.ShouldBeTrue();
+        await Assert.That(result).IsTrue();
         if (result)
-            after!.Id.ShouldBe(3);
+            await Assert.That(after!.Id).IsEqualTo(3);
     }
 
-    [Fact]
-    public void RemoveList()
+    [Test]
+    public async Task RemoveList()
     {
         var em = new EventManager();
         em.AddFirst([new Event(1), new Event(2), new Event(3)], false);
 
-        em.Count.ShouldBe(3);
+        await Assert.That(em.Count).IsEqualTo(3);
         em.Remove([1, 3]);
 
-        em.Count.ShouldBe(1);
-        em.Head.Id.ShouldBe(em.Tail.Id);
+        await Assert.That(em.Count).IsEqualTo(1);
+        await Assert.That(em.Head.Id).IsEqualTo(em.Tail.Id);
     }
 
-    [Fact]
-    public void Has()
+    [Test]
+    public async Task Has()
     {
         var em = new EventManager();
         em.AddFirst(new Event(1));
 
-        em.Has(1).ShouldBeTrue();
-        em.Has(2).ShouldBeFalse();
+        await Assert.That(em.Has(1)).IsTrue();
+        await Assert.That(em.Has(2)).IsFalse();
     }
 
-    [Fact]
-    public void ChangeStyle()
+    [Test]
+    public async Task ChangeStyle()
     {
         var em = new EventManager();
         em.AddFirst(
@@ -224,40 +222,40 @@ public class EventManagerTests
 
         em.ChangeStyle("A", "C");
 
-        em.Get(1).Style.ShouldBe("C");
-        em.Get(2).Style.ShouldBe("B");
-        em.Get(3).Style.ShouldBe("C");
+        await Assert.That(em.Get(1).Style).IsEqualTo("C");
+        await Assert.That(em.Get(2).Style).IsEqualTo("B");
+        await Assert.That(em.Get(3).Style).IsEqualTo("C");
     }
 
-    [Fact]
-    public void Duplicate()
+    [Test]
+    public async Task Duplicate()
     {
         var em = new EventManager();
         var original = new Event(1) { Text = "Original" };
         em.AddFirst(original);
 
         var dupe = em.Duplicate(original);
-        dupe.Id.ShouldNotBe(original.Id);
+        await Assert.That(dupe.Id).IsNotEqualTo(original.Id);
 
         var result = em.TryGetAfter(original.Id, out var after);
-        result.ShouldBeTrue();
+        await Assert.That(result).IsTrue();
         if (result)
-            after!.Text.ShouldBe(original.Text);
+            await Assert.That(after!.Text).IsEqualTo(original.Text);
     }
 
-    [Fact]
-    public void InsertBefore_NoOverlap()
+    [Test]
+    public async Task InsertBefore_NoOverlap()
     {
         var em = new EventManager();
         var e1 = new Event(1) { Start = Time.FromSeconds(10), End = Time.FromSeconds(15) };
         em.AddFirst(e1);
 
         var e2 = em.InsertBefore(e1);
-        (e2.End - e2.Start).TotalSeconds.ShouldBe(5);
+        await Assert.That((e2.End - e2.Start).TotalSeconds).IsEqualTo(5);
     }
 
-    [Fact]
-    public void InsertBefore_Overlap()
+    [Test]
+    public async Task InsertBefore_Overlap()
     {
         var em = new EventManager();
         var e1 = new Event(2) { Start = Time.FromSeconds(5), End = Time.FromSeconds(7) };
@@ -265,22 +263,22 @@ public class EventManagerTests
         em.AddFirst([e1, e2], false);
 
         var e3 = em.InsertBefore(e2);
-        (e3.End - e3.Start).TotalSeconds.ShouldBe(3);
+        await Assert.That((e3.End - e3.Start).TotalSeconds).IsEqualTo(3);
     }
 
-    [Fact]
-    public void InsertAfter_NoOverlap()
+    [Test]
+    public async Task InsertAfter_NoOverlap()
     {
         var em = new EventManager();
         var e1 = new Event(1) { Start = Time.FromSeconds(10), End = Time.FromSeconds(15) };
         em.AddFirst(e1);
 
         var e2 = em.InsertAfter(e1);
-        (e2.End - e2.Start).TotalSeconds.ShouldBe(5);
+        await Assert.That((e2.End - e2.Start).TotalSeconds).IsEqualTo(5);
     }
 
-    [Fact]
-    public void InsertAfter_Overlap()
+    [Test]
+    public async Task InsertAfter_Overlap()
     {
         var em = new EventManager();
         var e1 = new Event(1) { Start = Time.FromSeconds(5), End = Time.FromSeconds(7) };
@@ -288,11 +286,11 @@ public class EventManagerTests
         em.AddFirst([e1, e2], false);
 
         var e3 = em.InsertAfter(e1);
-        (e3.End - e3.Start).TotalSeconds.ShouldBe(3);
+        await Assert.That((e3.End - e3.Start).TotalSeconds).IsEqualTo(3);
     }
 
-    [Fact]
-    public void Split_MultipleSegments()
+    [Test]
+    public async Task Split_MultipleSegments()
     {
         var em = new EventManager();
         var testEvent = new Event(em.NextId)
@@ -305,21 +303,23 @@ public class EventManagerTests
 
         var result = em.Split(testEvent.Id).ToList();
 
-        em.TryGet(testEvent.Id, out _).ShouldBeFalse();
-        result.Count.ShouldBe(2);
-        result[0].End.TotalMilliseconds.ShouldBeLessThan(result[1].End.TotalMilliseconds);
-        result[1].Start.ShouldBe(result[0].End);
-        result.Last().End.ShouldBe(testEvent.End);
+        await Assert.That(em.TryGet(testEvent.Id, out _)).IsFalse();
+        await Assert.That(result.Count).IsEqualTo(2);
+        await Assert
+            .That(result[0].End.TotalMilliseconds)
+            .IsLessThan(result[1].End.TotalMilliseconds);
+        await Assert.That(result[1].Start).IsEqualTo(result[0].End);
+        await Assert.That(result.Last().End).IsEqualTo(testEvent.End);
 
         foreach (var e in result)
         {
-            em.TryGet(e.Id, out var addedEvent).ShouldBeTrue();
-            addedEvent.ShouldBeEquivalentTo(e);
+            await Assert.That(em.TryGet(e.Id, out var addedEvent)).IsTrue();
+            await Assert.That(addedEvent).IsEqualTo(e);
         }
     }
 
-    [Fact]
-    public void Split_SingleSegment()
+    [Test]
+    public async Task Split_SingleSegment()
     {
         var em = new EventManager();
         var testEvent = new Event(em.NextId)
@@ -332,24 +332,24 @@ public class EventManagerTests
 
         var result = em.Split(testEvent.Id).ToList();
 
-        em.TryGet(testEvent.Id, out _).ShouldBeFalse();
-        result.Count.ShouldBe(1);
-        result[0].Text.ShouldBe("No newlines here");
-        result[0].Start.ShouldBe(testEvent.Start);
-        result[0].End.ShouldBe(testEvent.End);
+        await Assert.That(em.TryGet(testEvent.Id, out _)).IsFalse();
+        await Assert.That(result.Count).IsEqualTo(1);
+        await Assert.That(result[0].Text).IsEqualTo("No newlines here");
+        await Assert.That(result[0].Start).IsEqualTo(testEvent.Start);
+        await Assert.That(result[0].End).IsEqualTo(testEvent.End);
     }
 
-    [Fact]
-    public void Split_NotFound()
+    [Test]
+    public async Task Split_NotFound()
     {
         var em = new EventManager();
         var result = em.Split(999);
 
-        result.ShouldBeEmpty();
+        await Assert.That(result).IsEmpty();
     }
 
-    [Fact]
-    public void Split_Empty()
+    [Test]
+    public async Task Split_Empty()
     {
         var em = new EventManager();
         var testEvent = new Event(em.NextId)
@@ -361,11 +361,11 @@ public class EventManagerTests
         em.AddFirst(testEvent);
 
         var result = em.Split(testEvent.Id);
-        result.ShouldBeEmpty();
+        await Assert.That(result).IsEmpty();
     }
 
-    [Fact]
-    public void Split_KeepTimes()
+    [Test]
+    public async Task Split_KeepTimes()
     {
         var em = new EventManager();
         var testEvent = new Event(em.NextId)
@@ -378,23 +378,23 @@ public class EventManagerTests
 
         var result = em.Split(testEvent.Id, keepTimes: true).ToList();
 
-        em.TryGet(testEvent.Id, out _).ShouldBeFalse();
-        result.Count.ShouldBe(2);
+        await Assert.That(em.TryGet(testEvent.Id, out _)).IsFalse();
+        await Assert.That(result.Count).IsEqualTo(2);
 
-        result[0].Start.ShouldBe(testEvent.Start);
-        result[0].End.ShouldBe(testEvent.End);
-        result[1].Start.ShouldBe(testEvent.Start);
-        result[1].End.ShouldBe(testEvent.End);
+        await Assert.That(result[0].Start).IsEqualTo(testEvent.Start);
+        await Assert.That(result[0].End).IsEqualTo(testEvent.End);
+        await Assert.That(result[1].Start).IsEqualTo(testEvent.Start);
+        await Assert.That(result[1].End).IsEqualTo(testEvent.End);
 
         foreach (var e in result)
         {
-            em.TryGet(e.Id, out var addedEvent).ShouldBeTrue();
-            addedEvent.ShouldBeEquivalentTo(e);
+            await Assert.That(em.TryGet(e.Id, out var addedEvent)).IsTrue();
+            await Assert.That(addedEvent).IsEqualTo(e);
         }
     }
 
-    [Fact]
-    public void Split_AtCursor()
+    [Test]
+    public async Task Split_AtCursor()
     {
         var em = new EventManager();
         var testEvent = new Event(em.NextId)
@@ -407,24 +407,28 @@ public class EventManagerTests
 
         var result = em.Split(testEvent.Id, 6).ToList();
 
-        em.TryGet(testEvent.Id, out _).ShouldBeFalse();
-        result.Count.ShouldBe(2);
-        result[0].End.TotalMilliseconds.ShouldBeLessThan(result[1].End.TotalMilliseconds);
-        result[1].Start.ShouldBe(result[0].End);
-        result.Last().End.TotalMilliseconds.ShouldBe(testEvent.End.TotalMilliseconds);
+        await Assert.That(em.TryGet(testEvent.Id, out _)).IsFalse();
+        await Assert.That(result.Count).IsEqualTo(2);
+        await Assert
+            .That(result[0].End.TotalMilliseconds)
+            .IsLessThan(result[1].End.TotalMilliseconds);
+        await Assert.That(result[1].Start).IsEqualTo(result[0].End);
+        await Assert
+            .That(result.Last().End.TotalMilliseconds)
+            .IsEqualTo(testEvent.End.TotalMilliseconds);
 
         foreach (var e in result)
         {
-            em.TryGet(e.Id, out var addedEvent).ShouldBeTrue();
-            addedEvent.ShouldBeEquivalentTo(e);
+            await Assert.That(em.TryGet(e.Id, out var addedEvent)).IsTrue();
+            await Assert.That(addedEvent).IsEqualTo(e);
         }
 
-        result[0].Text.ShouldBe("Short ");
-        result[1].Text.ShouldBe("Longer segment");
+        await Assert.That(result[0].Text).IsEqualTo("Short ");
+        await Assert.That(result[1].Text).IsEqualTo("Longer segment");
     }
 
-    [Fact]
-    public void Split_AtCursor_WithSplitTime()
+    [Test]
+    public async Task Split_AtCursor_WithSplitTime()
     {
         var em = new EventManager();
         var testEvent = new Event(em.NextId)
@@ -439,27 +443,31 @@ public class EventManagerTests
 
         var result = em.Split(testEvent.Id, 6, false, splitTime).ToList();
 
-        em.TryGet(testEvent.Id, out _).ShouldBeFalse();
-        result.Count.ShouldBe(2);
-        result[0].End.TotalMilliseconds.ShouldBeLessThan(result[1].End.TotalMilliseconds);
-        result[1].Start.ShouldBe(result[0].End);
-        result.Last().End.TotalMilliseconds.ShouldBe(testEvent.End.TotalMilliseconds);
+        await Assert.That(em.TryGet(testEvent.Id, out _)).IsFalse();
+        await Assert.That(result.Count).IsEqualTo(2);
+        await Assert
+            .That(result[0].End.TotalMilliseconds)
+            .IsLessThan(result[1].End.TotalMilliseconds);
+        await Assert.That(result[1].Start).IsEqualTo(result[0].End);
+        await Assert
+            .That(result.Last().End.TotalMilliseconds)
+            .IsEqualTo(testEvent.End.TotalMilliseconds);
 
-        result[0].End.ShouldBe(splitTime);
-        result[1].Start.ShouldBe(splitTime);
+        await Assert.That(result[0].End).IsEqualTo(splitTime);
+        await Assert.That(result[1].Start).IsEqualTo(splitTime);
 
         foreach (var e in result)
         {
-            em.TryGet(e.Id, out var addedEvent).ShouldBeTrue();
-            addedEvent.ShouldBeEquivalentTo(e);
+            await Assert.That(em.TryGet(e.Id, out var addedEvent)).IsTrue();
+            await Assert.That(addedEvent).IsEqualTo(e);
         }
 
-        result[0].Text.ShouldBe("Short ");
-        result[1].Text.ShouldBe("Longer segment");
+        await Assert.That(result[0].Text).IsEqualTo("Short ");
+        await Assert.That(result[1].Text).IsEqualTo("Longer segment");
     }
 
-    [Fact]
-    public void Split_AtCursor_KeepTimes()
+    [Test]
+    public async Task Split_AtCursor_KeepTimes()
     {
         var em = new EventManager();
         var testEvent = new Event(em.NextId)
@@ -472,26 +480,26 @@ public class EventManagerTests
 
         var result = em.Split(testEvent.Id, 6, keepTimes: true).ToList();
 
-        em.TryGet(testEvent.Id, out _).ShouldBeFalse();
-        result.Count.ShouldBe(2);
+        await Assert.That(em.TryGet(testEvent.Id, out _)).IsFalse();
+        await Assert.That(result.Count).IsEqualTo(2);
 
-        result[0].Start.ShouldBe(testEvent.Start);
-        result[0].End.ShouldBe(testEvent.End);
-        result[1].Start.ShouldBe(testEvent.Start);
-        result[1].End.ShouldBe(testEvent.End);
+        await Assert.That(result[0].Start).IsEqualTo(testEvent.Start);
+        await Assert.That(result[0].End).IsEqualTo(testEvent.End);
+        await Assert.That(result[1].Start).IsEqualTo(testEvent.Start);
+        await Assert.That(result[1].End).IsEqualTo(testEvent.End);
 
         foreach (var e in result)
         {
-            em.TryGet(e.Id, out var addedEvent).ShouldBeTrue();
-            addedEvent.ShouldBeEquivalentTo(e);
+            await Assert.That(em.TryGet(e.Id, out var addedEvent)).IsTrue();
+            await Assert.That(addedEvent).IsEqualTo(e);
         }
 
-        result[0].Text.ShouldBe("Short ");
-        result[1].Text.ShouldBe("Longer segment");
+        await Assert.That(result[0].Text).IsEqualTo("Short ");
+        await Assert.That(result[1].Text).IsEqualTo("Longer segment");
     }
 
-    [Fact]
-    public void Split_AtCursor_KeepTimes_And_SplitTime()
+    [Test]
+    public async Task Split_AtCursor_KeepTimes_And_SplitTime()
     {
         var em = new EventManager();
         var testEvent = new Event(em.NextId)
@@ -504,15 +512,14 @@ public class EventManagerTests
 
         var splitTime = Time.FromMillis(1500);
 
-        Action action = () => em.Split(testEvent.Id, 6, true, splitTime);
-
-        action
-            .ShouldThrow<ArgumentException>()
-            .Message.ShouldBe("Can't keep times with a specified split time!");
+        await Assert
+            .That(() => em.Split(testEvent.Id, 6, true, splitTime))
+            .Throws<ArgumentException>()
+            .WithMessage("Can't keep times with a specified split time!");
     }
 
-    [Fact]
-    public void Merge_AreAdjacent_Forward()
+    [Test]
+    public async Task Merge_AreAdjacent_Forward()
     {
         var em = new EventManager();
         var eventA = new Event(5)
@@ -532,14 +539,14 @@ public class EventManagerTests
 
         var result = em.Merge(eventA.Id, eventB.Id);
 
-        result.ShouldNotBeNull();
-        result.Text.ShouldBe("Hello\\NWorld");
-        result.Start.ShouldBe(eventA.Start);
-        result.End.ShouldBe(eventB.End);
+        await Assert.That(result).IsNotNull();
+        await Assert.That(result.Text).IsEqualTo("Hello\\NWorld");
+        await Assert.That(result.Start).IsEqualTo(eventA.Start);
+        await Assert.That(result.End).IsEqualTo(eventB.End);
     }
 
-    [Fact]
-    public void Merge_AreAdjacent_Backward()
+    [Test]
+    public async Task Merge_AreAdjacent_Backward()
     {
         var em = new EventManager();
         var eventA = new Event(5)
@@ -559,14 +566,14 @@ public class EventManagerTests
 
         var result = em.Merge(eventB.Id, eventA.Id);
 
-        result.ShouldNotBeNull();
-        result.Text.ShouldBe("Hello\\NWorld");
-        result.Start.ShouldBe(eventA.Start);
-        result.End.ShouldBe(eventB.End);
+        await Assert.That(result).IsNotNull();
+        await Assert.That(result.Text).IsEqualTo("Hello\\NWorld");
+        await Assert.That(result.Start).IsEqualTo(eventA.Start);
+        await Assert.That(result.End).IsEqualTo(eventB.End);
     }
 
-    [Fact]
-    public void Merge_UseSoftLinebreaks()
+    [Test]
+    public async Task Merge_UseSoftLinebreaks()
     {
         var em = new EventManager();
         var eventA = new Event(5)
@@ -586,14 +593,14 @@ public class EventManagerTests
 
         var result = em.Merge(eventA.Id, eventB.Id, true);
 
-        result.ShouldNotBeNull();
-        result.Text.ShouldBe("Hello\\nWorld");
-        result.Start.ShouldBe(eventA.Start);
-        result.End.ShouldBe(eventB.End);
+        await Assert.That(result).IsNotNull();
+        await Assert.That(result.Text).IsEqualTo("Hello\\nWorld");
+        await Assert.That(result.Start).IsEqualTo(eventA.Start);
+        await Assert.That(result.End).IsEqualTo(eventB.End);
     }
 
-    [Fact]
-    public void Merge_NotAdjacent()
+    [Test]
+    public async Task Merge_NotAdjacent()
     {
         var em = new EventManager();
         var eventA = new Event(5)
@@ -620,20 +627,20 @@ public class EventManagerTests
 
         var result = em.Merge(eventA.Id, eventC.Id);
 
-        result.ShouldBeNull();
+        await Assert.That(result).IsNull();
     }
 
-    [Fact]
-    public void Merge_NotExist()
+    [Test]
+    public async Task Merge_NotExist()
     {
         var em = new EventManager();
         var result = em.Merge(999, 1);
 
-        result.ShouldBeNull();
+        await Assert.That(result).IsNull();
     }
 
-    [Fact]
-    public void Merge_OriginalsRemoved()
+    [Test]
+    public async Task Merge_OriginalsRemoved()
     {
         var em = new EventManager();
         var eventA = new Event(5)
@@ -653,7 +660,7 @@ public class EventManagerTests
 
         em.Merge(eventA.Id, eventB.Id);
 
-        em.TryGet(eventA.Id, out _).ShouldBeFalse();
-        em.TryGet(eventB.Id, out _).ShouldBeFalse();
+        await Assert.That(em.TryGet(eventA.Id, out _)).IsFalse();
+        await Assert.That(em.TryGet(eventB.Id, out _)).IsFalse();
     }
 }

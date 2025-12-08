@@ -1,141 +1,140 @@
 // SPDX-License-Identifier: MPL-2.0
 
 using AssCS.Utilities;
-using Shouldly;
 
 namespace AssCS.Tests;
 
 public class StringExtensionsTests
 {
-    [Fact]
-    public void ParseAssDouble_Empty()
+    [Test]
+    public async Task ParseAssDouble_Empty()
     {
-        string.Empty.ParseAssDouble().ShouldBe(0);
+        await Assert.That(string.Empty.ParseAssDouble()).IsEqualTo(0);
     }
 
-    [Fact]
-    public void ParseAssDouble_Invalid()
+    [Test]
+    public async Task ParseAssDouble_Invalid()
     {
-        "a".ParseAssDouble().ShouldBe(0);
+        await Assert.That("a".ParseAssDouble()).IsEqualTo(0);
     }
 
-    [Fact]
-    public void ParseAssDouble_Decimal()
+    [Test]
+    public async Task ParseAssDouble_Decimal()
     {
-        "123.45".ParseAssDouble().ShouldBe(123.45d);
+        await Assert.That("123.45".ParseAssDouble()).IsEqualTo(123.45d);
     }
 
-    [Fact]
-    public void ParseAssDouble_Decimal_Positive()
+    [Test]
+    public async Task ParseAssDouble_Decimal_Positive()
     {
-        "+123.45".ParseAssDouble().ShouldBe(123.45d);
+        await Assert.That("+123.45".ParseAssDouble()).IsEqualTo(123.45d);
     }
 
-    [Fact]
-    public void ParseAssDouble_Decimal_Negative()
+    [Test]
+    public async Task ParseAssDouble_Decimal_Negative()
     {
-        "-123.45".ParseAssDouble().ShouldBe(-123.45d);
+        await Assert.That("-123.45".ParseAssDouble()).IsEqualTo(-123.45d);
     }
 
-    [Fact]
-    public void ParseAssDouble_Exponential()
+    [Test]
+    public async Task ParseAssDouble_Exponential()
     {
-        "3e4".ParseAssDouble().ShouldBe(3e4d);
+        await Assert.That("3e4".ParseAssDouble()).IsEqualTo(3e4d);
     }
 
-    [Fact]
-    public void ParseAssDouble_Exponential_Positive()
+    [Test]
+    public async Task ParseAssDouble_Exponential_Positive()
     {
-        "+3e4".ParseAssDouble().ShouldBe(3e4d);
+        await Assert.That("+3e4".ParseAssDouble()).IsEqualTo(3e4d);
     }
 
-    [Fact]
-    public void ParseAssDouble_Exponential_Negative()
+    [Test]
+    public async Task ParseAssDouble_Exponential_Negative()
     {
-        "-3e4".ParseAssDouble().ShouldBe(-3e4d);
+        await Assert.That("-3e4".ParseAssDouble()).IsEqualTo(-3e4d);
     }
 
-    [Fact]
-    public void ParseAssDouble_Hex()
+    [Test]
+    public async Task ParseAssDouble_Hex()
     {
-        "0x15".ParseAssDouble().ShouldBe(0x15);
+        await Assert.That("0x15".ParseAssDouble()).IsEqualTo(0x15);
     }
 
-    [Fact]
-    public void ParseAssDouble_Hex_Positive()
+    [Test]
+    public async Task ParseAssDouble_Hex_Positive()
     {
-        "+0x15".ParseAssDouble().ShouldBe(0x15);
+        await Assert.That("+0x15".ParseAssDouble()).IsEqualTo(0x15);
     }
 
-    [Fact]
-    public void ParseAssDouble_Hex_Negative()
+    [Test]
+    public async Task ParseAssDouble_Hex_Negative()
     {
-        "-0x15".ParseAssDouble().ShouldBe(-0x15);
+        await Assert.That("-0x15".ParseAssDouble()).IsEqualTo(-0x15);
     }
 
-    [Fact]
-    public void ParseAssInt_Empty()
+    [Test]
+    public async Task ParseAssInt_Empty()
     {
-        string.Empty.ParseAssInt().ShouldBe(0);
+        await Assert.That(string.Empty.ParseAssInt()).IsEqualTo(0);
     }
 
-    [Fact]
-    public void ParseAssInt_Invalid()
+    [Test]
+    public async Task ParseAssInt_Invalid()
     {
-        "a".ParseAssInt().ShouldBe(0);
+        await Assert.That("a".ParseAssInt()).IsEqualTo(0);
     }
 
-    [Fact]
-    public void ParseAssInt_Decimal()
+    [Test]
+    public async Task ParseAssInt_Decimal()
     {
-        "123.45".ParseAssInt().ShouldBe(123);
+        await Assert.That("123.45".ParseAssInt()).IsEqualTo(123);
     }
 
-    [Fact]
-    public void ParseAssInt_Decimal_Positive()
+    [Test]
+    public async Task ParseAssInt_Decimal_Positive()
     {
-        "+123.45".ParseAssInt().ShouldBe(123);
+        await Assert.That("+123.45".ParseAssInt()).IsEqualTo(123);
     }
 
-    [Fact]
-    public void ParseAssInt_Decimal_Negative()
+    [Test]
+    public async Task ParseAssInt_Decimal_Negative()
     {
-        "-123.45".ParseAssInt().ShouldBe(-123);
+        await Assert.That("-123.45".ParseAssInt()).IsEqualTo(-123);
     }
 
-    [Fact]
-    public void ParseAssInt_Exponential()
+    [Test]
+    public async Task ParseAssInt_Exponential()
     {
-        "3e4".ParseAssInt().ShouldBe((int)3e4);
+        await Assert.That("3e4".ParseAssInt()).IsEqualTo((int)3e4);
     }
 
-    [Fact]
-    public void ParseAssInt_Exponential_Positive()
+    [Test]
+    public async Task ParseAssInt_Exponential_Positive()
     {
-        "+3e4".ParseAssInt().ShouldBe((int)3e4);
+        await Assert.That("+3e4".ParseAssInt()).IsEqualTo((int)3e4);
     }
 
-    [Fact]
-    public void ParseAssInt_Exponential_Negative()
+    [Test]
+    public async Task ParseAssInt_Exponential_Negative()
     {
-        "-3e4".ParseAssInt().ShouldBe((int)-3e4);
+        await Assert.That("-3e4".ParseAssInt()).IsEqualTo((int)-3e4);
     }
 
-    [Fact]
-    public void ParseAssInt_Hex()
+    [Test]
+    public async Task ParseAssInt_Hex()
     {
-        "0x15".ParseAssInt().ShouldBe(0x15);
+        await Assert.That("0x15".ParseAssInt()).IsEqualTo(0x15);
     }
 
-    [Fact]
-    public void ParseAssInt_Hex_Positive()
+    [Test]
+    public async Task ParseAssInt_Hex_Positive()
     {
-        "+0x15".ParseAssInt().ShouldBe(0x15);
+        await Assert.That("+0x15".ParseAssInt()).IsEqualTo(0x15);
     }
 
-    [Fact]
-    public void ParseAssInt_Hex_Negative()
+    [Test]
+    public async Task ParseAssInt_Hex_Negative()
     {
-        "-0x15".ParseAssInt().ShouldBe(-0x15);
+        await Assert.That("-0x15".ParseAssInt()).IsEqualTo(-0x15);
     }
 }

@@ -2,15 +2,14 @@
 
 using System.IO.Abstractions.TestingHelpers;
 using AssCS.IO;
-using Shouldly;
 using static AssCS.Tests.Utilities.TestUtils;
 
 namespace AssCS.Tests;
 
 public class TxtWriterTests
 {
-    [Fact]
-    public void Write()
+    [Test]
+    public async Task Write()
     {
         var fs = new MockFileSystem();
         var path = MakeTestableUri(fs, "test.txt");
@@ -19,20 +18,20 @@ public class TxtWriterTests
 
         var result = tw.Write(fs, path);
 
-        result.ShouldBeTrue();
+        await Assert.That(result).IsTrue();
 
         // Validate the written file
         var stream = fs.FileStream.New(path.LocalPath, FileMode.Open);
         var reader = new StreamReader(stream);
 
-        var lines = reader.ReadToEnd().Split('\n');
-        lines.Length.ShouldBe(4 + 1); // Empty line at the end, so +1
-        lines[1].ShouldStartWith("Joe: ");
-        lines[2].ShouldStartWith("# Joe: ");
+        var lines = (await reader.ReadToEndAsync()).Split('\n');
+        await Assert.That(lines.Length).IsEqualTo(4 + 1); // Empty line at the end, so +1
+        await Assert.That(lines[1]).StartsWith("Joe: ");
+        await Assert.That(lines[2]).StartsWith("# Joe: ");
     }
 
-    [Fact]
-    public void Write_NoComments()
+    [Test]
+    public async Task Write_NoComments()
     {
         var fs = new MockFileSystem();
         var path = MakeTestableUri(fs, "test.txt");
@@ -41,20 +40,20 @@ public class TxtWriterTests
 
         var result = tw.Write(fs, path);
 
-        result.ShouldBeTrue();
+        await Assert.That(result).IsTrue();
 
         // Validate the written file
         var stream = fs.FileStream.New(path.LocalPath, FileMode.Open);
         var reader = new StreamReader(stream);
 
-        var lines = reader.ReadToEnd().Split('\n');
-        lines.Length.ShouldBe(3 + 1);
-        lines[1].ShouldStartWith("Joe: ");
-        lines[2].ShouldStartWith("Tim: ");
+        var lines = (await reader.ReadToEndAsync()).Split('\n');
+        await Assert.That(lines.Length).IsEqualTo(3 + 1);
+        await Assert.That(lines[1]).StartsWith("Joe: ");
+        await Assert.That(lines[2]).StartsWith("Tim: ");
     }
 
-    [Fact]
-    public void Write_NoActors()
+    [Test]
+    public async Task Write_NoActors()
     {
         var fs = new MockFileSystem();
         var path = MakeTestableUri(fs, "test.txt");
@@ -63,20 +62,20 @@ public class TxtWriterTests
 
         var result = tw.Write(fs, path);
 
-        result.ShouldBeTrue();
+        await Assert.That(result).IsTrue();
 
         // Validate the written file
         var stream = fs.FileStream.New(path.LocalPath, FileMode.Open);
         var reader = new StreamReader(stream);
 
-        var lines = reader.ReadToEnd().Split('\n');
-        lines.Length.ShouldBe(4 + 1);
-        lines[1].ShouldStartWith("Mama");
-        lines[2].ShouldStartWith("# Mama");
+        var lines = (await reader.ReadToEndAsync()).Split('\n');
+        await Assert.That(lines.Length).IsEqualTo(4 + 1);
+        await Assert.That(lines[1]).StartsWith("Mama");
+        await Assert.That(lines[2]).StartsWith("# Mama");
     }
 
-    [Fact]
-    public void Write_NoComments_NoActors()
+    [Test]
+    public async Task Write_NoComments_NoActors()
     {
         var fs = new MockFileSystem();
         var path = MakeTestableUri(fs, "test.txt");
@@ -85,88 +84,88 @@ public class TxtWriterTests
 
         var result = tw.Write(fs, path);
 
-        result.ShouldBeTrue();
+        await Assert.That(result).IsTrue();
 
         // Validate the written file
         var stream = fs.FileStream.New(path.LocalPath, FileMode.Open);
         var reader = new StreamReader(stream);
 
-        var lines = reader.ReadToEnd().Split('\n');
-        lines.Length.ShouldBe(3 + 1);
-        lines[1].ShouldStartWith("Mama");
-        lines[2].ShouldStartWith("Bits SO COOL");
+        var lines = (await reader.ReadToEndAsync()).Split('\n');
+        await Assert.That(lines.Length).IsEqualTo(3 + 1);
+        await Assert.That(lines[1]).StartsWith("Mama");
+        await Assert.That(lines[2]).StartsWith("Bits SO COOL");
     }
 
-    [Fact]
-    public void StripNewlines_Big_NoSpace()
+    [Test]
+    public async Task StripNewlines_Big_NoSpace()
     {
         const string input = @"This is the first line.\NThis is the second line.";
         const string expected = @"This is the first line. This is the second line.";
 
-        TxtWriter.StripNewlines(input).ShouldBe(expected);
+        await Assert.That(TxtWriter.StripNewlines(input)).IsEqualTo(expected);
     }
 
-    [Fact]
-    public void StripNewlines_Big_LeftSpace()
+    [Test]
+    public async Task StripNewlines_Big_LeftSpace()
     {
         const string input = @"This is the first line. \NThis is the second line.";
         const string expected = @"This is the first line. This is the second line.";
 
-        TxtWriter.StripNewlines(input).ShouldBe(expected);
+        await Assert.That(TxtWriter.StripNewlines(input)).IsEqualTo(expected);
     }
 
-    [Fact]
-    public void StripNewlines_Big_RightSpace()
+    [Test]
+    public async Task StripNewlines_Big_RightSpace()
     {
         const string input = @"This is the first line.\N This is the second line.";
         const string expected = @"This is the first line. This is the second line.";
 
-        TxtWriter.StripNewlines(input).ShouldBe(expected);
+        await Assert.That(TxtWriter.StripNewlines(input)).IsEqualTo(expected);
     }
 
-    [Fact]
-    public void StripNewlines_Big_ManySpace()
+    [Test]
+    public async Task StripNewlines_Big_ManySpace()
     {
         const string input = @"This is the first line.    \N  This is the second line.";
         const string expected = @"This is the first line. This is the second line.";
 
-        TxtWriter.StripNewlines(input).ShouldBe(expected);
+        await Assert.That(TxtWriter.StripNewlines(input)).IsEqualTo(expected);
     }
 
-    [Fact]
-    public void StripNewlines_Small_NoSpace()
+    [Test]
+    public async Task StripNewlines_Small_NoSpace()
     {
         const string input = @"This is the first line.\nThis is the second line.";
         const string expected = @"This is the first line. This is the second line.";
 
-        TxtWriter.StripNewlines(input).ShouldBe(expected);
+        await Assert.That(TxtWriter.StripNewlines(input)).IsEqualTo(expected);
     }
 
-    [Fact]
-    public void StripNewlines_Small_LeftSpace()
+    [Test]
+    public async Task StripNewlines_Small_LeftSpace()
     {
         const string input = @"This is the first line. \nThis is the second line.";
         const string expected = @"This is the first line. This is the second line.";
 
-        TxtWriter.StripNewlines(input).ShouldBe(expected);
+        await Assert.That(TxtWriter.StripNewlines(input)).IsEqualTo(expected);
     }
 
-    [Fact]
-    public void StripNewlines_Small_RightSpace()
+    [Test]
+    public async Task StripNewlines_Small_RightSpace()
     {
         const string input = @"This is the first line.\n This is the second line.";
         const string expected = @"This is the first line. This is the second line.";
 
-        TxtWriter.StripNewlines(input).ShouldBe(expected);
+        await Assert.That(TxtWriter.StripNewlines(input)).IsEqualTo(expected);
     }
 
-    [Fact]
-    public void StripNewlines_Small_ManySpace()
+    [Test]
+    public async Task StripNewlines_Small_ManySpace()
     {
         const string input = @"This is the first line.    \n  This is the second line.";
         const string expected = @"This is the first line. This is the second line.";
 
-        TxtWriter.StripNewlines(input).ShouldBe(expected);
+        await Assert.That(TxtWriter.StripNewlines(input)).IsEqualTo(expected);
     }
 
     private static Document CreateDoc()

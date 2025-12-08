@@ -1,187 +1,189 @@
 ﻿// SPDX-License-Identifier: MPL-2.0
 
-using Shouldly;
-
 namespace AssCS.Tests;
 
 public class ColorTests
 {
-    [Fact]
-    public void FromAss_NoAlpha()
+    [Test]
+    public async Task FromAss_NoAlpha()
     {
         var c = Color.FromAss("&H00FF33");
 
-        c.Alpha.ShouldBe<byte>(0x00);
-        c.Blue.ShouldBe<byte>(0x00);
-        c.Green.ShouldBe<byte>(0xFF);
-        c.Red.ShouldBe<byte>(0x33);
+        await Assert.That(c.Alpha).IsEqualTo<byte>(0x00);
+        await Assert.That(c.Blue).IsEqualTo<byte>(0x00);
+        await Assert.That(c.Green).IsEqualTo<byte>(0xFF);
+        await Assert.That(c.Red).IsEqualTo<byte>(0x33);
     }
 
-    [Fact]
-    public void FromAss_Alpha()
+    [Test]
+    public async Task FromAss_Alpha()
     {
         var c = Color.FromAss("&H4400FF33&");
 
-        c.Alpha.ShouldBe<byte>(0x44);
-        c.Blue.ShouldBe<byte>(0x00);
-        c.Green.ShouldBe<byte>(0xFF);
-        c.Red.ShouldBe<byte>(0x33);
+        await Assert.That(c.Alpha).IsEqualTo<byte>(0x44);
+        await Assert.That(c.Blue).IsEqualTo<byte>(0x00);
+        await Assert.That(c.Green).IsEqualTo<byte>(0xFF);
+        await Assert.That(c.Red).IsEqualTo<byte>(0x33);
     }
 
-    [Fact]
-    public void FromAss_Malformed()
+    [Test]
+    public async Task FromAss_Malformed()
     {
-        Action action = () => Color.FromAss("&H4400FF533&");
-
-        action
-            .ShouldThrow<ArgumentException>()
-            .Message.ShouldBe("Color &H4400FF533& is invalid or malformed.");
+        await Assert
+            .That(() => Color.FromAss("&H4400FF533&"))
+            .Throws<ArgumentException>()
+            .WithMessage("Color &H4400FF533& is invalid or malformed.");
     }
 
-    [Fact]
-    public void FromRgb()
+    [Test]
+    public async Task FromRgb()
     {
         var c = Color.FromRgb(0, 0xFF, 0x33);
-        c.Red.ShouldBe<byte>(0x00);
-        c.Green.ShouldBe<byte>(0xFF);
-        c.Blue.ShouldBe<byte>(0x33);
-        c.Alpha.ShouldBe<byte>(0x00);
+
+        await Assert.That(c.Alpha).IsEqualTo<byte>(0x00);
+        await Assert.That(c.Blue).IsEqualTo<byte>(0x33);
+        await Assert.That(c.Green).IsEqualTo<byte>(0xFF);
+        await Assert.That(c.Red).IsEqualTo<byte>(0x00);
     }
 
-    [Fact]
-    public void FromRgba()
+    [Test]
+    public async Task FromRgba()
     {
         var c = Color.FromRgba(0, 0xFF, 0x33, 0x80);
-        c.Red.ShouldBe<byte>(0x00);
-        c.Green.ShouldBe<byte>(0xFF);
-        c.Blue.ShouldBe<byte>(0x33);
-        c.Alpha.ShouldBe<byte>(0x80);
+
+        await Assert.That(c.Alpha).IsEqualTo<byte>(0x80);
+        await Assert.That(c.Blue).IsEqualTo<byte>(0x33);
+        await Assert.That(c.Green).IsEqualTo<byte>(0xFF);
+        await Assert.That(c.Red).IsEqualTo<byte>(0x00);
     }
 
-    [Fact]
-    public void FromHex_Rgb()
+    [Test]
+    public async Task FromHex_Rgb()
     {
         var c = Color.FromHex("#FF00AA");
-        c.Red.ShouldBe<byte>(0xFF);
-        c.Green.ShouldBe<byte>(0x00);
-        c.Blue.ShouldBe<byte>(0xAA);
-        c.Alpha.ShouldBe<byte>(0x00);
+
+        await Assert.That(c.Alpha).IsEqualTo<byte>(0x00);
+        await Assert.That(c.Blue).IsEqualTo<byte>(0xAA);
+        await Assert.That(c.Green).IsEqualTo<byte>(0x00);
+        await Assert.That(c.Red).IsEqualTo<byte>(0xFF);
     }
 
-    [Fact]
-    public void FromHex_Rgba()
+    [Test]
+    public async Task FromHex_Rgba()
     {
         var c = Color.FromHex("#FF00AA55");
-        c.Red.ShouldBe<byte>(0xFF);
-        c.Green.ShouldBe<byte>(0x00);
-        c.Blue.ShouldBe<byte>(0xAA);
-        c.Alpha.ShouldBe<byte>(0x55);
+
+        await Assert.That(c.Alpha).IsEqualTo<byte>(0x55);
+        await Assert.That(c.Blue).IsEqualTo<byte>(0xAA);
+        await Assert.That(c.Green).IsEqualTo<byte>(0x00);
+        await Assert.That(c.Red).IsEqualTo<byte>(0xFF);
     }
 
-    [Fact]
-    public void FromHtml()
+    [Test]
+    public async Task FromHtml()
     {
         var c = Color.FromHtml("red");
-        c.Red.ShouldBe<byte>(0xFF);
-        c.Green.ShouldBe<byte>(0x00);
-        c.Blue.ShouldBe<byte>(0x00);
-        c.Alpha.ShouldBe<byte>(0x00);
+
+        await Assert.That(c.Alpha).IsEqualTo<byte>(0x00);
+        await Assert.That(c.Blue).IsEqualTo<byte>(0x00);
+        await Assert.That(c.Green).IsEqualTo<byte>(0x00);
+        await Assert.That(c.Red).IsEqualTo<byte>(0xFF);
     }
 
-    [Fact]
-    public void AsStyleColor_RGB()
+    [Test]
+    public async Task AsStyleColor_RGB()
     {
         var c = Color.FromRgb(0x44, 0xFF, 0x25);
 
-        c.AsStyleColor().ShouldBe("&H0025FF44");
+        await Assert.That(c.AsStyleColor()).IsEqualTo("&H0025FF44");
     }
 
-    [Fact]
-    public void AsStyleColor_RGBA()
+    [Test]
+    public async Task AsStyleColor_RGBA()
     {
         var c = Color.FromRgba(0x44, 0xFF, 0x25, 0x50);
 
-        c.AsStyleColor().ShouldBe("&H5025FF44");
+        await Assert.That(c.AsStyleColor()).IsEqualTo("&H5025FF44");
     }
 
-    [Fact]
-    public void AsOverrideColor_RGB()
+    [Test]
+    public async Task AsOverrideColor_RGB()
     {
         var c = Color.FromRgb(0x44, 0xFF, 0x25);
 
-        c.AsOverrideColor().ShouldBe("&H25FF44&");
+        await Assert.That(c.AsOverrideColor()).IsEqualTo("&H25FF44&");
     }
 
-    [Fact]
-    public void AsOverrideColor_RGBA()
+    [Test]
+    public async Task AsOverrideColor_RGBA()
     {
         var c = Color.FromRgba(0x44, 0xFF, 0x25, 0x50);
 
-        c.AsOverrideColor().ShouldBe("&H25FF44&");
+        await Assert.That(c.AsOverrideColor()).IsEqualTo("&H25FF44&");
     }
 
-    [Fact]
-    public void Contrast()
+    [Test]
+    public async Task Contrast()
     {
         var white = Color.FromRgb(255, 255, 255);
         var black = Color.FromRgb(0, 0, 0);
 
-        Color.Contrast(white, black).ShouldBeInRange(20.9999, 21.0001);
+        await Assert.That(Color.Contrast(white, black)).IsBetween(20.9999, 21.0001);
     }
 
-    [Fact]
-    public void Luminance()
+    [Test]
+    public async Task Luminance()
     {
         var white = Color.FromRgb(255, 255, 255);
         var black = Color.FromRgb(0, 0, 0);
 
-        white.Luminance.ShouldBeInRange(0.9999, 1.0001);
-        black.Luminance.ShouldBe(0);
+        await Assert.That(white.Luminance).IsBetween(0.9999, 1.0001);
+        await Assert.That(black.Luminance).IsEqualTo(0);
     }
 
-    [Fact]
-    public void Add()
+    [Test]
+    public async Task Add()
     {
         var color1 = Color.FromRgba(200, 200, 200, 200);
         var color2 = Color.FromRgba(100, 100, 100, 100);
 
         var result = color1 + color2;
 
-        result.Red.ShouldBe<byte>(255);
-        result.Green.ShouldBe<byte>(255);
-        result.Blue.ShouldBe<byte>(255);
-        result.Alpha.ShouldBe<byte>(255);
+        await Assert.That(result.Alpha).IsEqualTo<byte>(255);
+        await Assert.That(result.Blue).IsEqualTo<byte>(255);
+        await Assert.That(result.Green).IsEqualTo<byte>(255);
+        await Assert.That(result.Red).IsEqualTo<byte>(255);
     }
 
-    [Fact]
-    public void Subtract()
+    [Test]
+    public async Task Subtract()
     {
         var color1 = Color.FromRgba(100, 100, 100, 100);
         var color2 = Color.FromRgba(150, 150, 150, 150);
 
         var result = color1 - color2;
 
-        result.Red.ShouldBe<byte>(0);
-        result.Green.ShouldBe<byte>(0);
-        result.Blue.ShouldBe<byte>(0);
-        result.Alpha.ShouldBe<byte>(0);
+        await Assert.That(result.Alpha).IsEqualTo<byte>(0);
+        await Assert.That(result.Blue).IsEqualTo<byte>(0);
+        await Assert.That(result.Green).IsEqualTo<byte>(0);
+        await Assert.That(result.Red).IsEqualTo<byte>(0);
     }
 
-    [Fact]
-    public void Equals_True()
+    [Test]
+    public async Task Equals_True()
     {
         var color1 = Color.FromRgba(10, 20, 30, 40);
         var color2 = Color.FromRgba(10, 20, 30, 40);
 
-        color1.ShouldBe(color2);
+        await Assert.That(color1.Equals(color2)).IsTrue();
     }
 
-    [Fact]
-    public void Equals_False()
+    [Test]
+    public async Task Equals_False()
     {
         var color1 = Color.FromRgba(10, 20, 30, 40);
         var color2 = Color.FromRgba(50, 60, 70, 80);
 
-        color1.ShouldNotBe(color2);
+        await Assert.That(color1.Equals(color2)).IsFalse();
     }
 }

@@ -1,7 +1,5 @@
 ﻿// SPDX-License-Identifier: MPL-2.0
 
-using Shouldly;
-
 namespace AssCS.Tests;
 
 public class StyleTests
@@ -15,93 +13,93 @@ public class StyleTests
     private const string CcsStyle =
         "Style: Default, Arial, 24,&H00B4FCFC,&H00B4FCFC,&H00000008,&H80000008,0,0,0,0,100,100,0.00,0.00,1,1.00,2.00,2,25.00,25.00,25.00,0";
 
-    [Fact]
-    public void FromAss()
+    [Test]
+    public async Task FromAss()
     {
-        Style s = Style.FromAss(1, BasicStyle);
+        var s = Style.FromAss(1, BasicStyle);
 
-        s.Name.ShouldBe("Default");
-        s.FontFamily.ShouldBe("Noto Serif");
-        s.FontSize.ShouldBe(69);
-        s.PrimaryColor.ShouldBe(Color.FromRgb(0xFF, 0xFF, 0xFF));
-        s.SecondaryColor.ShouldBe(Color.FromRgb(0x0, 0x0, 0x0));
-        s.OutlineColor.ShouldBe(Color.FromRgb(0x1F, 0x29, 0x12));
-        s.ShadowColor.ShouldBe(Color.FromRgba(0x1F, 0x29, 0x12, 0xA0));
-        s.IsBold.ShouldBeTrue();
-        s.IsItalic.ShouldBeFalse();
-        s.IsUnderline.ShouldBeFalse();
-        s.IsStrikethrough.ShouldBeFalse();
-        s.ScaleX.ShouldBe(100);
-        s.ScaleY.ShouldBe(100);
-        s.Spacing.ShouldBe(0);
-        s.Angle.ShouldBe(0);
-        s.BorderStyle.ShouldBe(1);
-        s.BorderThickness.ShouldBe(4.4d);
-        s.ShadowDistance.ShouldBe(2.2d);
-        s.Alignment.ShouldBe(2);
-        s.Margins.ShouldBe(new Margins(275, 275, 60));
-        s.Encoding.ShouldBe(1);
+        await Assert.That(s.Name).IsEqualTo("Default");
+        await Assert.That(s.FontFamily).IsEqualTo("Noto Serif");
+        await Assert.That(s.FontSize).IsEqualTo(69);
+        await Assert.That(s.PrimaryColor).IsEqualTo(Color.FromRgb(0xFF, 0xFF, 0xFF));
+        await Assert.That(s.SecondaryColor).IsEqualTo(Color.FromRgb(0x0, 0x0, 0x0));
+        await Assert.That(s.OutlineColor).IsEqualTo(Color.FromRgb(0x1F, 0x29, 0x12));
+        await Assert.That(s.ShadowColor).IsEqualTo(Color.FromRgba(0x1F, 0x29, 0x12, 0xA0));
+        await Assert.That(s.IsBold).IsTrue();
+        await Assert.That(s.IsItalic).IsFalse();
+        await Assert.That(s.IsUnderline).IsFalse();
+        await Assert.That(s.IsStrikethrough).IsFalse();
+        await Assert.That(s.ScaleX).IsEqualTo(100);
+        await Assert.That(s.ScaleY).IsEqualTo(100);
+        await Assert.That(s.Spacing).IsEqualTo(0);
+        await Assert.That(s.Angle).IsEqualTo(0);
+        await Assert.That(s.BorderStyle).IsEqualTo(1);
+        await Assert.That(s.BorderThickness).IsEqualTo(4.4d);
+        await Assert.That(s.ShadowDistance).IsEqualTo(2.2d);
+        await Assert.That(s.Alignment).IsEqualTo(2);
+        await Assert.That(s.Margins).IsEqualTo(new Margins(275, 275, 60));
+        await Assert.That(s.Encoding).IsEqualTo(1);
     }
 
-    [Fact]
-    public void FromAss_Ccs()
+    [Test]
+    public async Task FromAss_Ccs()
     {
-        Style s = Style.FromAss(1, CcsStyle);
+        var s = Style.FromAss(1, CcsStyle);
 
-        s.Name.ShouldBe("Default");
-        s.FontFamily.ShouldBe("Arial");
-        s.FontSize.ShouldBe(24);
-        s.ScaleX.ShouldBe(100);
-        s.ScaleY.ShouldBe(100);
-        s.Spacing.ShouldBe(0);
-        s.Angle.ShouldBe(0);
-        s.BorderStyle.ShouldBe(1);
-        s.BorderThickness.ShouldBe(1d);
-        s.ShadowDistance.ShouldBe(2d);
-        s.Margins.ShouldBe(new Margins(25, 25, 25));
-        s.Encoding.ShouldBe(0);
+        await Assert.That(s.Name).IsEqualTo("Default");
+        await Assert.That(s.FontFamily).IsEqualTo("Arial");
+        await Assert.That(s.FontSize).IsEqualTo(24);
+        await Assert.That(s.ScaleX).IsEqualTo(100);
+        await Assert.That(s.ScaleY).IsEqualTo(100);
+        await Assert.That(s.Spacing).IsEqualTo(0);
+        await Assert.That(s.Angle).IsEqualTo(0);
+        await Assert.That(s.BorderStyle).IsEqualTo(1);
+        await Assert.That(s.BorderThickness).IsEqualTo(1d);
+        await Assert.That(s.ShadowDistance).IsEqualTo(2d);
+        await Assert.That(s.Margins).IsEqualTo(new Margins(25, 25, 25));
+        await Assert.That(s.Encoding).IsEqualTo(0);
     }
 
-    [Fact]
-    public void FromAss_Malformed()
+    [Test]
+    public async Task FromAss_Malformed()
     {
-        Action action = () => Style.FromAss(1, BasicStyle.Replace(',', 'A'));
-
-        action.ShouldThrow<ArgumentException>();
+        await Assert
+            .That(() => Style.FromAss(1, BasicStyle.Replace(',', 'A')))
+            .Throws<ArgumentException>();
     }
 
-    [Fact]
-    public void AsAss()
+    [Test]
+    public async Task AsAss()
     {
-        Style s = Style.FromAss(1, BasicStyle);
+        var s = Style.FromAss(1, BasicStyle);
 
-        s.AsAss().ShouldBe(BasicStyle);
+        await Assert.That(s.AsAss()).IsEqualTo(BasicStyle);
     }
 
-    [Fact]
-    public void Clone()
+    [Test]
+    public async Task Clone()
     {
-        Style s1 = Style.FromAss(1, BasicStyle);
-        Style s2 = s1.Clone();
+        var s1 = Style.FromAss(1, BasicStyle);
+        var s2 = s1.Clone();
 
-        s2.ShouldBe(s1);
+        await Assert.That(s2).IsEqualTo(s1);
     }
 
-    [Fact]
-    public void Equals_True()
+    [Test]
+    public async Task Equals_True()
     {
         var style1 = new Style(1) { Name = "TestStyle" };
         var style2 = new Style(1) { Name = "TestStyle" };
 
-        style1.ShouldBe(style2);
+        await Assert.That(style1).IsEqualTo(style2);
     }
 
-    [Fact]
-    public void Equals_False()
+    [Test]
+    public async Task Equals_False()
     {
         var style1 = new Style(1) { Name = "StyleA" };
         var style2 = new Style(2) { Name = "StyleB" };
 
-        style1.ShouldNotBe(style2);
+        await Assert.That(style1).IsNotEqualTo(style2);
     }
 }

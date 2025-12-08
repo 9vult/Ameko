@@ -1,7 +1,5 @@
 ﻿// SPDX-License-Identifier: MPL-2.0
 
-using Shouldly;
-
 namespace AssCS.Tests;
 
 public class EventTests
@@ -17,93 +15,93 @@ public class EventTests
     private const string CcsEvent =
         @"Dialogue: 0,0:03:09.48,0:03:12.40,TopCenter,,,,25.00,,WE CAN JUST CALL THIS THE END OF THE GAME, YEAH?\N- It was a big hit.";
 
-    [Fact]
-    public void FromAss()
+    [Test]
+    public async Task FromAss()
     {
-        Event e = Event.FromAss(1, BasicEvent);
+        var e = Event.FromAss(1, BasicEvent);
 
-        e.IsComment.ShouldBeFalse();
-        e.Layer.ShouldBe(0);
-        e.Start.ShouldBe(Time.FromMillis(130570)); // 2:10.57
-        e.End.ShouldBe(Time.FromMillis(133510)); // 2:13.51
-        e.Style.ShouldBe("Default");
-        e.Actor.ShouldBe("Heiter");
-        e.Margins.ShouldBe(new Margins(0, 0, 0));
-        e.Effect.ShouldBe(string.Empty);
-        e.Text.ShouldBe("It's the victorious return of the heroes' party.");
+        await Assert.That(e.IsComment).IsFalse();
+        await Assert.That(e.Layer).IsEqualTo(0);
+        await Assert.That(e.Start).IsEqualTo(Time.FromMillis(130570)); // 2:10.57
+        await Assert.That(e.End).IsEqualTo(Time.FromMillis(133510)); // 2:13.51
+        await Assert.That(e.Style).IsEqualTo("Default");
+        await Assert.That(e.Actor).IsEqualTo("Heiter");
+        await Assert.That(e.Margins).IsEqualTo(new Margins(0, 0, 0));
+        await Assert.That(e.Effect).IsEqualTo(string.Empty);
+        await Assert.That(e.Text).IsEqualTo("It's the victorious return of the heroes' party.");
     }
 
-    [Fact]
-    public void FromAss_Ccs()
+    [Test]
+    public async Task FromAss_Ccs()
     {
-        Event e = Event.FromAss(1, CcsEvent);
-        e.Margins.ShouldBe(new Margins(0, 0, 25));
+        var e = Event.FromAss(1, CcsEvent);
+        await Assert.That(e.Margins).IsEqualTo(new Margins(0, 0, 25));
     }
 
-    [Fact]
-    public void FromAss_Malformed()
+    [Test]
+    public async Task FromAss_Malformed()
     {
-        Action action = () => Event.FromAss(1, BasicEvent.Replace(',', 'Q'));
-
-        action.ShouldThrow<ArgumentException>();
+        await Assert
+            .That(() => Event.FromAss(1, BasicEvent.Replace(',', 'Q')))
+            .Throws<ArgumentException>();
     }
 
-    [Fact]
-    public void AsAss()
+    [Test]
+    public async Task AsAss()
     {
-        Event e = Event.FromAss(1, BasicEvent);
+        var e = Event.FromAss(1, BasicEvent);
 
-        e.AsAss().ShouldBe(BasicEvent);
+        await Assert.That(e.AsAss()).IsEqualTo(BasicEvent);
     }
 
-    [Fact]
-    public void StripText()
+    [Test]
+    public async Task StripText()
     {
-        Event e = Event.FromAss(1, TagEvent);
+        var e = Event.FromAss(1, TagEvent);
         e.StripTags();
 
-        e.Text.ShouldBe("You're bald, there's no point in fussing.");
+        await Assert.That(e.Text).IsEqualTo("You're bald, there's no point in fussing.");
     }
 
-    [Fact]
-    public void Clone()
+    [Test]
+    public async Task Clone()
     {
-        Event e1 = Event.FromAss(1, BasicEvent);
-        Event e2 = e1.Clone();
+        var e1 = Event.FromAss(1, BasicEvent);
+        var e2 = e1.Clone();
 
-        e2.ShouldBe(e1);
+        await Assert.That(e2).IsEqualTo(e1);
     }
 
-    [Fact]
-    public void CollidesWith()
+    [Test]
+    public async Task CollidesWith()
     {
-        Event e1 = new Event(1) { Start = Time.FromSeconds(0), End = Time.FromSeconds(5) };
-        Event e2 = new Event(2) { Start = Time.FromSeconds(2.5), End = Time.FromSeconds(7.5) };
-        Event e3 = new Event(3) { Start = Time.FromSeconds(10), End = Time.FromSeconds(15) };
+        var e1 = new Event(1) { Start = Time.FromSeconds(0), End = Time.FromSeconds(5) };
+        var e2 = new Event(2) { Start = Time.FromSeconds(2.5), End = Time.FromSeconds(7.5) };
+        var e3 = new Event(3) { Start = Time.FromSeconds(10), End = Time.FromSeconds(15) };
 
-        e1.CollidesWith(e2).ShouldBeTrue();
-        e2.CollidesWith(e1).ShouldBeTrue();
+        await Assert.That(e1.CollidesWith(e2)).IsTrue();
+        await Assert.That(e2.CollidesWith(e1)).IsTrue();
 
-        e1.CollidesWith(e3).ShouldBeFalse();
-        e2.CollidesWith(e3).ShouldBeFalse();
+        await Assert.That(e1.CollidesWith(e3)).IsFalse();
+        await Assert.That(e2.CollidesWith(e3)).IsFalse();
     }
 
-    [Fact]
-    public void TransformCodeToAss()
+    [Test]
+    public async Task TransformCodeToAss()
     {
         var evt = new Event(1) { Text = "Line1\n  Line2" };
-        evt.TransformCodeToAss().ShouldContain("--[[2]]");
+        await Assert.That(evt.TransformCodeToAss()).Contains("--[[2]]");
     }
 
-    [Fact]
-    public void TransformAssToCode()
+    [Test]
+    public async Task TransformAssToCode()
     {
         var evt = new Event(1) { Text = "Line1--[[2]]Line2" };
-        evt.TransformAssToCode().ShouldContain(Environment.NewLine + "  Line2");
+        await Assert.That(evt.TransformAssToCode()).Contains(Environment.NewLine + "  Line2");
     }
 
-    [Fact]
-    public void SetFields_NoFlags()
+    [Test]
+    public async Task SetFields_NoFlags()
     {
         var baseline = Event.FromAss(1, BasicEvent);
         var evt1 = Event.FromAss(1, BasicEvent);
@@ -112,11 +110,11 @@ public class EventTests
 
         evt1.SetFields(fields, evt2);
 
-        evt1.IsCongruentWith(baseline).ShouldBeTrue();
+        await Assert.That(evt1.IsCongruentWith(baseline)).IsTrue();
     }
 
-    [Fact]
-    public void SetFields_AllFlags()
+    [Test]
+    public async Task SetFields_AllFlags()
     {
         var baseline = Event.FromAss(1, BasicEvent);
         var evt1 = Event.FromAss(1, BasicEvent);
@@ -136,161 +134,161 @@ public class EventTests
 
         evt1.SetFields(fields, evt2);
 
-        evt1.IsCongruentWith(baseline).ShouldBeFalse();
-        evt1.IsCongruentWith(evt2).ShouldBeTrue();
+        await Assert.That(evt1.IsCongruentWith(baseline)).IsFalse();
+        await Assert.That(evt1.IsCongruentWith(evt2)).IsTrue();
     }
 
     #region Cps & Line Width
 
-    [Fact]
-    public void Cps_NoTags()
+    [Test]
+    public async Task Cps_NoTags()
     {
-        Event e = new Event(1)
+        var e = new Event(1)
         {
             Start = Time.FromSeconds(0),
             End = Time.FromSeconds(1),
             Text = "The quick brown fox jumps over the lazy dog",
         };
 
-        e.Cps.ShouldBe(35);
+        await Assert.That(e.Cps).IsEqualTo(35);
     }
 
-    [Fact]
-    public void Cps_Newline()
+    [Test]
+    public async Task Cps_Newline()
     {
-        Event e = new Event(1)
+        var e = new Event(1)
         {
             Start = Time.FromSeconds(0),
             End = Time.FromSeconds(1),
             Text = "The quick brown fox\\Njumps over the lazy dog",
         };
 
-        e.Cps.ShouldBe(35);
+        await Assert.That(e.Cps).IsEqualTo(35);
     }
 
-    [Fact]
-    public void Cps_Random_Backslash()
+    [Test]
+    public async Task Cps_Random_Backslash()
     {
-        Event e = new Event(1)
+        var e = new Event(1)
         {
             Start = Time.FromSeconds(0),
             End = Time.FromSeconds(1),
-            Text = "The quick brown fox\\Njumps \\over the lazy dog",
+            Text = @"The quick brown fox\Njumps \over the lazy dog",
         };
 
-        e.Cps.ShouldBe(35);
+        await Assert.That(e.Cps).IsEqualTo(35);
     }
 
-    [Fact]
-    public void Cps_Floating_Newline()
+    [Test]
+    public async Task Cps_Floating_Newline()
     {
-        Event e = new Event(1)
+        var e = new Event(1)
         {
             Start = Time.FromSeconds(0),
             End = Time.FromSeconds(1),
             Text = "The quick brown fox \\N jumps over the lazy dog",
         };
 
-        e.Cps.ShouldBe(35);
+        await Assert.That(e.Cps).IsEqualTo(35);
     }
 
-    [Fact]
-    public void Cps_Hard_Space()
+    [Test]
+    public async Task Cps_Hard_Space()
     {
-        Event e = new Event(1)
+        var e = new Event(1)
         {
             Start = Time.FromSeconds(0),
             End = Time.FromSeconds(1),
             Text = "The quick brown fox\\hjumps over the lazy dog",
         };
 
-        e.Cps.ShouldBe(35);
+        await Assert.That(e.Cps).IsEqualTo(35);
     }
 
-    [Fact]
-    public void Cps_Terminating_Newline()
+    [Test]
+    public async Task Cps_Terminating_Newline()
     {
-        Event e = new Event(1)
+        var e = new Event(1)
         {
             Start = Time.FromSeconds(0),
             End = Time.FromSeconds(1),
             Text = "The quick brown fox jumps over the lazy dog\\N",
         };
 
-        e.Cps.ShouldBe(35);
+        await Assert.That(e.Cps).IsEqualTo(35);
     }
 
-    [Fact]
-    public void Cps_Tags()
+    [Test]
+    public async Task Cps_Tags()
     {
-        Event e = new Event(1)
+        var e = new Event(1)
         {
             Start = Time.FromSeconds(0),
             End = Time.FromSeconds(1),
             Text =
-                "The quick {\\i1}brown{\\i0} fox{it could be an artic fox} jumps over the lazy dog",
+                @"The quick {\i1}brown{\i0} fox{it could be an artic fox} jumps over the lazy dog",
         };
 
-        e.Cps.ShouldBe(35);
+        await Assert.That(e.Cps).IsEqualTo(35);
     }
 
-    [Fact]
-    public void Cps_Kanji()
+    [Test]
+    public async Task Cps_Kanji()
     {
-        Event e = new Event(1)
+        var e = new Event(1)
         {
             Start = Time.FromSeconds(0),
             End = Time.FromSeconds(1),
             Text = "この番組は、ご覧のスポンサーの提供でお送りします。",
         };
 
-        e.Cps.ShouldBe(23);
+        await Assert.That(e.Cps).IsEqualTo(23);
     }
 
-    [Fact]
-    public void Cps_Decomposed_Hangul()
+    [Test]
+    public async Task Cps_Decomposed_Hangul()
     {
-        Event e1 = new Event(1)
+        var e1 = new Event(1)
         {
             Start = Time.FromSeconds(0),
             End = Time.FromSeconds(1),
             Text = "\u1100\u1161\u11a8", // 각
         };
 
-        Event e2 = new Event(2)
+        var e2 = new Event(2)
         {
             Start = Time.FromSeconds(0),
             End = Time.FromSeconds(1),
             Text = "\uac01", // 각
         };
 
-        e1.Cps.ShouldBe(e2.Cps);
+        await Assert.That(e1.Cps).IsEqualTo(e2.Cps);
     }
 
-    [Fact]
-    public void Cps_Ffi_Ligature()
+    [Test]
+    public async Task Cps_Ffi_Ligature()
     {
-        Event e1 = new Event(1)
+        var e1 = new Event(1)
         {
             Start = Time.FromSeconds(0),
             End = Time.FromSeconds(1),
             Text = "ﬃ",
         };
 
-        Event e2 = new Event(2)
+        var e2 = new Event(2)
         {
             Start = Time.FromSeconds(0),
             End = Time.FromSeconds(1),
             Text = "ffi",
         };
 
-        e1.Cps.ShouldNotBe(e2.Cps);
+        await Assert.That(e1.Cps).IsNotEqualTo(e2.Cps);
     }
 
-    [Fact]
-    public void Cps_Multilingual()
+    [Test]
+    public async Task Cps_Multilingual()
     {
-        Event e = new Event(1)
+        var e = new Event(1)
         {
             Start = Time.FromSeconds(0),
             End = Time.FromSeconds(1),
@@ -298,106 +296,106 @@ public class EventTests
                 "He said, \"Hello world!\"\\N彼は「おはよう世界！」と言いました。\\nОн сказал: «Здравствуй, мир!»",
         };
 
-        e.Cps.ShouldBe(51);
+        await Assert.That(e.Cps).IsEqualTo(51);
     }
 
-    [Fact]
-    public void MaxLineWidth_SingleLine()
+    [Test]
+    public async Task MaxLineWidth_SingleLine()
     {
-        Event e = new Event(1)
+        var e = new Event(1)
         {
             Start = Time.FromSeconds(0),
             End = Time.FromSeconds(1),
             Text = "The quick brown fox jumps over the lazy dog",
         };
 
-        e.MaxLineWidth.ShouldBe(35);
+        await Assert.That(e.MaxLineWidth).IsEqualTo(35);
     }
 
-    [Fact]
-    public void MaxLineWidth_SingleLine_Tags()
+    [Test]
+    public async Task MaxLineWidth_SingleLine_Tags()
     {
-        Event e = new Event(1)
+        var e = new Event(1)
         {
             Start = Time.FromSeconds(0),
             End = Time.FromSeconds(1),
             Text =
-                "The quick {\\i1}brown{\\i0} fox{it could be an artic fox} jumps over the lazy dog",
+                @"The quick {\i1}brown{\i0} fox{it could be an artic fox} jumps over the lazy dog",
         };
 
-        e.MaxLineWidth.ShouldBe(35);
+        await Assert.That(e.MaxLineWidth).IsEqualTo(35);
     }
 
-    [Fact]
-    public void MaxLineWidth_MultipleLines()
+    [Test]
+    public async Task MaxLineWidth_MultipleLines()
     {
-        Event e = new Event(1)
+        var e = new Event(1)
         {
             Start = Time.FromSeconds(0),
             End = Time.FromSeconds(1),
             Text = "The quick brown fox\\Njumps over the lazy dog",
         };
 
-        e.MaxLineWidth.ShouldBe(19);
+        await Assert.That(e.MaxLineWidth).IsEqualTo(19);
     }
 
-    [Fact]
-    public void MaxLineWidth_MultipeLines_Tags()
+    [Test]
+    public async Task MaxLineWidth_MultipeLines_Tags()
     {
-        Event e = new Event(1)
+        var e = new Event(1)
         {
             Start = Time.FromSeconds(0),
             End = Time.FromSeconds(1),
             Text =
-                "The quick {\\i1}brown{\\i0} fox{it could be an artic fox}\\Njumps over the lazy dog",
+                @"The quick {\i1}brown{\i0} fox{it could be an artic fox}\Njumps over the lazy dog",
         };
 
-        e.MaxLineWidth.ShouldBe(19);
+        await Assert.That(e.MaxLineWidth).IsEqualTo(19);
     }
 
-    [Fact]
-    public void MaxLineWidth_Kanji()
+    [Test]
+    public async Task MaxLineWidth_Kanji()
     {
-        Event e = new Event(1)
+        var e = new Event(1)
         {
             Start = Time.FromSeconds(0),
             End = Time.FromSeconds(1),
             Text = "この番組は、\\nご覧のスポンサーの提供でお送りします。",
         };
 
-        e.MaxLineWidth.ShouldBe(19);
+        await Assert.That(e.MaxLineWidth).IsEqualTo(19);
     }
 
-    [Fact]
-    public void MaxLineWidth_Decomposed_Hangul()
+    [Test]
+    public async Task MaxLineWidth_Decomposed_Hangul()
     {
-        Event e = new Event(1)
+        var e = new Event(1)
         {
             Start = Time.FromSeconds(0),
             End = Time.FromSeconds(1),
             Text = "\u1100\u1161\u11a8\\N\uac01", // 각 \n 각
         };
 
-        e.MaxLineWidth.ShouldBe(1);
+        await Assert.That(e.MaxLineWidth).IsEqualTo(1);
     }
 
-    [Fact]
-    public void MaxLineWidth_Ffi_Ligature()
+    [Test]
+    public async Task MaxLineWidth_Ffi_Ligature()
     {
-        Event e = new Event(1)
+        var e = new Event(1)
         {
             Start = Time.FromSeconds(0),
             End = Time.FromSeconds(1),
             Text = "ﬃ\\Nffi",
         };
 
-        e.MaxLineWidth.ShouldBe(3);
+        await Assert.That(e.MaxLineWidth).IsEqualTo(3);
     }
 
-    [Fact]
-    public void MaxLineWidth_Multilingual()
+    [Test]
+    public async Task MaxLineWidth_Multilingual()
     {
-        Event e = new Event(1)
+        var e = new Event(1)
         {
             Start = Time.FromSeconds(0),
             End = Time.FromSeconds(1),
@@ -405,88 +403,94 @@ public class EventTests
                 "He said, \"Hello world!\"\\N彼は「おはよう世界！」と言いました。\\nОн сказал: «Здравствуй, мир!»",
         };
 
-        e.MaxLineWidth.ShouldBe(26);
+        await Assert.That(e.MaxLineWidth).IsEqualTo(26);
     }
 
     #endregion Cps & Line Width
 
     #region GetStrippedText
 
-    [Fact]
-    public void GetStrippedText_Normal()
+    [Test]
+    public async Task GetStrippedText_Normal()
     {
-        Event e = Event.FromAss(1, TagEvent);
+        var e = Event.FromAss(1, TagEvent);
 
-        e.GetStrippedText().ShouldBe("You're bald, there's no point in fussing.");
+        await Assert
+            .That(e.GetStrippedText())
+            .IsEqualTo("You're bald, there's no point in fussing.");
     }
 
-    [Fact]
-    public void GetStrippedText_Empty()
+    [Test]
+    public async Task GetStrippedText_Empty()
     {
-        Event e = new Event(1);
+        var e = new Event(1);
 
-        e.GetStrippedText().ShouldBe(string.Empty);
+        await Assert.That(e.GetStrippedText()).IsEqualTo(string.Empty);
     }
 
-    [Fact]
-    public void GetStrippedText_OnlyTag()
+    [Test]
+    public async Task GetStrippedText_OnlyTag()
     {
-        Event e = new Event(1) { Text = "{\\q2}" };
+        var e = new Event(1) { Text = "{\\q2}" };
 
-        e.GetStrippedText().ShouldBe(string.Empty);
+        await Assert.That(e.GetStrippedText()).IsEqualTo(string.Empty);
     }
 
-    [Fact]
-    public void GetStrippedText_Short_After()
+    [Test]
+    public async Task GetStrippedText_Short_After()
     {
-        Event e = new Event(1) { Text = "{\\q2}A" };
+        var e = new Event(1) { Text = "{\\q2}A" };
 
-        e.GetStrippedText().ShouldBe("A");
+        await Assert.That(e.GetStrippedText()).IsEqualTo("A");
     }
 
-    [Fact]
-    public void GetStrippedText_Short_Before()
+    [Test]
+    public async Task GetStrippedText_Short_Before()
     {
-        Event e = new Event(1) { Text = "A{\\q2}" };
+        var e = new Event(1) { Text = "A{\\q2}" };
 
-        e.GetStrippedText().ShouldBe("A");
+        await Assert.That(e.GetStrippedText()).IsEqualTo("A");
     }
 
     #endregion GetStrippedText
 
     #region ToggleTag
 
-    [Fact]
-    public void ToggleTag_ToggleTagPair()
+    [Test]
+    public async Task ToggleTag_ToggleTagPair()
     {
-        Event e = Event.FromAss(1, TagEvent);
-        Style s = new Style(1); // Default style
+        var e = Event.FromAss(1, TagEvent);
+        var s = new Style(1); // Default style
 
         e.ToggleTag("\\i", s, 12, 16); // Inside the tag
 
-        e.Text.ShouldBe("You're {\\i0}bald{\\i1}, there's no point in fussing.");
+        await Assert.That(e.Text).IsEqualTo(@"You're {\i0}bald{\i1}, there's no point in fussing.");
     }
 
-    [Fact]
-    public void ToggleTag_AddToExistingPair()
+    [Test]
+    public async Task ToggleTag_AddToExistingPair()
     {
-        Event e = Event.FromAss(1, TagEvent);
-        Style s = new Style(1); // Default style
+        var e = Event.FromAss(1, TagEvent);
+        var s = new Style(1); // Default style
 
         e.ToggleTag("\\b", s, 12, 16); // Inside the tag
 
-        e.Text.ShouldBe("You're {\\i1\\b1}bald{\\i0\\b0}, there's no point in fussing.");
+        await Assert
+            .That(e.Text)
+            .IsEqualTo(@"You're {\i1\b1}bald{\i0\b0}, there's no point in fussing.");
     }
 
-    [Fact]
-    public void ToggleTag_AddTag()
+    [Test]
+    public async Task ToggleTag_AddTag()
     {
-        Event e = Event.FromAss(1, BasicEvent);
-        Style s = new Style(1); // Default style
+        var e = Event.FromAss(1, BasicEvent);
+        var s = new Style(1); // Default style
 
         e.ToggleTag("\\i", s, 0, 0);
 
-        e.Text.ShouldBe("{\\i1}It's the victorious return of the heroes' party.");
+        await Assert
+            .That(e.Text)
+            .IsEqualTo(@"{\i1}It's the victorious return of the heroes' party.");
     }
 
     #endregion ToggleTag

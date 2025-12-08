@@ -1,7 +1,5 @@
 ﻿// SPDX-License-Identifier: MPL-2.0
 
-using Shouldly;
-
 namespace AssCS.Tests;
 
 public class ExtradataManagerTests

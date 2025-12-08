@@ -2,15 +2,14 @@
 
 using System.IO.Abstractions.TestingHelpers;
 using AssCS.IO;
-using Shouldly;
 using static AssCS.Tests.Utilities.TestUtils;
 
 namespace AssCS.Tests;
 
 public class AssWriterTests
 {
-    [Fact]
-    public void Write()
+    [Test]
+    public async Task Write()
     {
         var fs = new MockFileSystem();
         var path = MakeTestableUri(fs, "test.ass");
@@ -19,23 +18,28 @@ public class AssWriterTests
 
         var result = aw.Write(fs, path);
 
-        result.ShouldBeTrue();
-        fs.FileExists(path.LocalPath).ShouldBeTrue();
+        await Assert.That(result).IsTrue();
+        await Assert.That(fs.FileExists(path.LocalPath)).IsTrue();
 
         // Validate the written file
         var recreation = new AssParser().Parse(fs, path);
 
-        recreation.ShouldNotBeNull();
-        recreation
-            .StyleManager.Get("Test")
-            .IsCongruentWith(CreateDoc().StyleManager.Get("Test"))
-            .ShouldBeTrue();
-        recreation.EventManager.Head.IsCongruentWith(CreateDoc().EventManager.Head).ShouldBeTrue();
-        recreation.GarbageManager.GetAll().Count.ShouldBe(1);
+        await Assert.That(recreation).IsNotNull();
+        await Assert
+            .That(
+                recreation
+                    .StyleManager.Get("Test")
+                    .IsCongruentWith(CreateDoc().StyleManager.Get("Test"))
+            )
+            .IsTrue();
+        await Assert
+            .That(recreation.EventManager.Head.IsCongruentWith(CreateDoc().EventManager.Head))
+            .IsTrue();
+        await Assert.That(recreation.GarbageManager.GetAll().Count).IsEqualTo(1);
     }
 
-    [Fact]
-    public void Write_Export()
+    [Test]
+    public async Task Write_Export()
     {
         var fs = new MockFileSystem();
         var path = MakeTestableUri(fs, "test.ass");
@@ -44,19 +48,24 @@ public class AssWriterTests
 
         var result = aw.Write(fs, path, true);
 
-        result.ShouldBeTrue();
-        fs.FileExists(path.LocalPath).ShouldBeTrue();
+        await Assert.That(result).IsTrue();
+        await Assert.That(fs.FileExists(path.LocalPath)).IsTrue();
 
         // Validate the written file
         var recreation = new AssParser().Parse(fs, path);
 
-        recreation.ShouldNotBeNull();
-        recreation
-            .StyleManager.Get("Test")
-            .IsCongruentWith(CreateDoc().StyleManager.Get("Test"))
-            .ShouldBeTrue();
-        recreation.EventManager.Head.IsCongruentWith(CreateDoc().EventManager.Head).ShouldBeTrue();
-        recreation.GarbageManager.GetAll().Count.ShouldBe(0);
+        await Assert.That(recreation).IsNotNull();
+        await Assert
+            .That(
+                recreation
+                    .StyleManager.Get("Test")
+                    .IsCongruentWith(CreateDoc().StyleManager.Get("Test"))
+            )
+            .IsTrue();
+        await Assert
+            .That(recreation.EventManager.Head.IsCongruentWith(CreateDoc().EventManager.Head))
+            .IsTrue();
+        await Assert.That(recreation.GarbageManager.GetAll().Count).IsEqualTo(0);
     }
 
     private static Document CreateDoc()

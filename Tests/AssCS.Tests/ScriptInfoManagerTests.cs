@@ -1,70 +1,72 @@
 ﻿// SPDX-License-Identifier: MPL-2.0
 
-using Shouldly;
-
 namespace AssCS.Tests;
 
 public class ScriptInfoManagerTests
 {
-    [Fact]
-    public void LoadDefault()
+    [Test]
+    public async Task LoadDefault()
     {
         var sim = new ScriptInfoManager();
         sim.LoadDefault();
 
-        sim.Count.ShouldBe(15);
+        await Assert.That(sim.Count).IsEqualTo(15);
     }
 
-    [Fact]
-    public void Set()
+    [Test]
+    public async Task Set()
     {
         var sim = new ScriptInfoManager();
         sim.Set("test", "testvalue");
         sim.Set("test2", "testvalue2");
 
-        sim.Get("test").ShouldBe("testvalue");
-        sim.Get("test2").ShouldBe("testvalue2");
+        await Assert.That(sim.Get("test")).IsEqualTo("testvalue");
+        await Assert.That(sim.Get("test2")).IsEqualTo("testvalue2");
     }
 
-    [Fact]
-    public void Set_Again()
+    [Test]
+    public async Task Set_Again()
     {
         var sim = new ScriptInfoManager();
         sim.Set("test", "testvalue");
         sim.Set("test", "testvalue2");
 
-        sim.Get("test").ShouldBe("testvalue2");
+        await Assert.That(sim.Get("test")).IsEqualTo("testvalue2");
     }
 
-    [Fact]
-    public void Set_BangHeader()
+    [Test]
+    public async Task Set_BangHeader()
     {
         var sim = new ScriptInfoManager();
         sim.Set("!", "testvalue");
         sim.Set("!", "testvalue2");
 
-        sim.GetAll().ShouldContain(new KeyValuePair<string, string>("!", "testvalue"));
-        sim.GetAll().ShouldContain(new KeyValuePair<string, string>("!", "testvalue2"));
+        await Assert
+            .That(sim.GetAll())
+            .Contains(new KeyValuePair<string, string>("!", "testvalue"));
+        await Assert
+            .That(sim.GetAll())
+            .Contains(new KeyValuePair<string, string>("!", "testvalue2"));
     }
 
-    [Fact]
-    public void Remove()
+    [Test]
+    public async Task Remove()
     {
         var sim = new ScriptInfoManager();
         sim.LoadDefault();
 
-        sim.Get("Title").ShouldBe("Default File");
+        await Assert.That(sim.Get("Title")).IsEqualTo("Default File");
         sim.Remove("Title");
-        sim.Get("Title").ShouldBeNull();
+        await Assert.That(sim.Get("Title")).IsNull();
     }
 
-    [Fact]
-    public void Clear()
+    [Test]
+    public async Task Clear()
     {
         var sim = new ScriptInfoManager();
         sim.LoadDefault();
 
         sim.Clear();
-        sim.Count.ShouldBe(0);
+        await Assert.That(sim.Count).IsEqualTo(0);
     }
 }

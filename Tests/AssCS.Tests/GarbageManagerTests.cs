@@ -1,82 +1,80 @@
 ﻿// SPDX-License-Identifier: MPL-2.0
 
-using Shouldly;
-
 namespace AssCS.Tests;
 
 public class GarbageManagerTests
 {
-    [Fact]
-    public void StringValue()
+    [Test]
+    public async Task StringValue()
     {
         var gm = new GarbageManager();
         gm.Set("test", "test");
 
-        gm.GetString("test").ShouldBe("test");
+        await Assert.That(gm.GetString("test")).IsEqualTo("test");
     }
 
-    [Fact]
-    public void DoubleValue()
+    [Test]
+    public async Task DoubleValue()
     {
         var gm = new GarbageManager();
         gm.Set("test", 1.5d);
 
-        gm.GetDouble("test").ShouldBe(1.5d);
+        await Assert.That(gm.GetDouble("test")).IsEqualTo(1.5d);
     }
 
-    [Fact]
-    public void DecimalValue()
+    [Test]
+    public async Task DecimalValue()
     {
         var gm = new GarbageManager();
         gm.Set("test", 1.5m);
 
-        gm.GetDecimal("test").ShouldBe(1.5m);
+        await Assert.That(gm.GetDecimal("test")).IsEqualTo(1.5m);
     }
 
-    [Fact]
-    public void IntValue()
+    [Test]
+    public async Task IntValue()
     {
         var gm = new GarbageManager();
         gm.Set("test", 1);
 
-        gm.GetInt("test").ShouldBe(1);
+        await Assert.That(gm.GetInt("test")).IsEqualTo(1);
     }
 
-    [Fact]
-    public void BoolValue()
+    [Test]
+    public async Task BoolValue()
     {
         var gm = new GarbageManager();
         gm.Set("test", true);
 
-        gm.GetBool("test").ShouldBeTrue();
+        await Assert.That(gm.GetBool("test")).IsTrue();
     }
 
-    [Fact]
-    public void LoadDefault()
+    [Test]
+    public async Task LoadDefault()
     {
         var gm = new GarbageManager();
         gm.LoadDefault();
 
-        gm.Count.ShouldBe(6);
+        await Assert.That(gm.Count).IsEqualTo(6);
     }
 
-    [Fact]
-    public void Clear()
+    [Test]
+    public async Task Clear()
     {
         var gm = new GarbageManager();
         gm.LoadDefault();
         gm.Clear();
 
-        gm.Count.ShouldBe(0);
+        await Assert.That(gm.Count).IsEqualTo(0);
     }
 
-    [Fact]
-    public void Contains()
+    [Test]
+    public async Task Contains()
     {
         var gm = new GarbageManager();
-        gm.Contains("test").ShouldBeFalse();
+        await Assert.That(gm.Contains("test")).IsFalse();
 
         gm.Set("test", "test");
-        gm.Contains("test").ShouldBeTrue();
+        await Assert.That(gm.Contains("test")).IsTrue();
     }
 }

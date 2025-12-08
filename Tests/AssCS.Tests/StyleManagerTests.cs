@@ -1,72 +1,69 @@
 ﻿// SPDX-License-Identifier: MPL-2.0
 
-using Shouldly;
-
 namespace AssCS.Tests;
 
 public class StyleManagerTests
 {
-    [Fact]
-    public void Add()
+    [Test]
+    public async Task Add()
     {
         var sm = new StyleManager();
         var s1 = new Style(1) { Name = "Style1" };
 
         sm.Add(s1);
 
-        sm.Styles.Contains(s1).ShouldBeTrue();
+        await Assert.That(sm.Styles.Contains(s1)).IsTrue();
     }
 
-    [Fact]
-    public void Add_Duplicate()
+    [Test]
+    public async Task Add_Duplicate()
     {
         var sm = new StyleManager();
         var s1 = new Style(1) { Name = "Style1" };
         var s2 = new Style(2) { Name = "Style1" };
         sm.Add(s1);
-        Action action = () => sm.Add(s2);
 
-        action.ShouldThrow<ArgumentException>();
+        await Assert.That(() => sm.Add(s2)).Throws<ArgumentException>();
     }
 
-    [Fact]
-    public void Remove_Name_Exists()
+    [Test]
+    public async Task Remove_Name_Exists()
     {
         var sm = new StyleManager();
         var s1 = new Style(1) { Name = "Style1" };
         sm.Add(s1);
 
-        sm.Remove("Style1").ShouldBeTrue();
+        await Assert.That(sm.Remove("Style1")).IsTrue();
     }
 
-    [Fact]
-    public void Remove_Id_Exists()
+    [Test]
+    public async Task Remove_Id_Exists()
     {
         var sm = new StyleManager();
         var s1 = new Style(1) { Name = "Style1" };
         sm.Add(s1);
 
-        sm.Remove(1).ShouldBeTrue();
+        await Assert.That(sm.Remove(1)).IsTrue();
     }
 
-    [Fact]
-    public void Remove_Name_NotExists()
+    [Test]
+    public async Task Remove_Name_NotExists()
     {
         var sm = new StyleManager();
 
-        sm.Remove("Style1").ShouldBeFalse();
+        await Assert.That(sm.Remove("Style1")).IsFalse();
     }
 
-    [Fact]
-    public void Remove_Id_NotExists()
+    [Test]
+    public async Task Remove_Id_NotExists()
     {
         var sm = new StyleManager();
 
-        sm.Remove(1).ShouldBeFalse();
+        await Assert.That(sm.Remove(1)).IsFalse();
     }
 
-    [Fact]
-    public void AddOrReplace()
+    [Test]
+    public async Task AddOrReplace()
     {
         var sm = new StyleManager();
         var s1 = new Style(1) { Name = "Style1", FontFamily = "Arial" };
@@ -75,88 +72,86 @@ public class StyleManagerTests
         var s2 = new Style(2) { Name = "Style1", FontFamily = "Comic Sans MS" };
         sm.AddOrReplace(s2);
 
-        sm.Get("Style1").Id.ShouldBe(2);
+        await Assert.That(sm.Get("Style1").Id).IsEqualTo(2);
     }
 
-    [Fact]
-    public void Get_Name_Exists()
+    [Test]
+    public async Task Get_Name_Exists()
     {
         var sm = new StyleManager();
         var s1 = new Style(1);
         sm.Add(s1);
 
-        sm.Get("Default").ShouldBeSameAs(s1);
+        await Assert.That(sm.Get("Default")).IsEqualTo(s1);
     }
 
-    [Fact]
-    public void Get_Id_Exists()
+    [Test]
+    public async Task Get_Id_Exists()
     {
         var sm = new StyleManager();
         var s1 = new Style(1);
         sm.Add(s1);
 
-        sm.Get(1).ShouldBeSameAs(s1);
+        await Assert.That(sm.Get(1)).IsEqualTo(s1);
     }
 
-    [Fact]
-    public void Get_Name_NotExists()
+    [Test]
+    public async Task Get_Name_NotExists()
     {
         var sm = new StyleManager();
 
-        Action action = () => sm.Get("Default");
-        action.ShouldThrow<ArgumentException>();
+        await Assert.That(() => sm.Get("Default")).Throws<ArgumentException>();
     }
 
-    [Fact]
-    public void Get_Id_NotExists()
+    [Test]
+    public async Task Get_Id_NotExists()
     {
         var sm = new StyleManager();
 
-        Action action = () => sm.Get(1);
-        action.ShouldThrow<ArgumentException>();
+        await Assert.That(() => sm.Get(1)).Throws<ArgumentException>();
     }
 
-    [Fact]
-    public void TryGet_Name_Exists()
+    [Test]
+    public async Task TryGet_Name_Exists()
     {
         var sm = new StyleManager();
         var s1 = new Style(1);
         sm.Add(s1);
 
         var result = sm.TryGet("Default", out var style);
-        result.ShouldBeTrue();
-        style.ShouldBeSameAs(s1);
+        await Assert.That(result).IsTrue();
+        await Assert.That(style).IsEqualTo(s1);
     }
 
-    [Fact]
-    public void TryGet_Id_Exists()
+    [Test]
+    public async Task TryGet_Id_Exists()
     {
         var sm = new StyleManager();
         var s1 = new Style(1);
         sm.Add(s1);
 
         var result = sm.TryGet(1, out var style);
-        result.ShouldBeTrue();
-        style.ShouldBeSameAs(s1);
+        await Assert.That(result).IsTrue();
+        await Assert.That(style).IsEqualTo(s1);
     }
 
-    [Fact]
-    public void TryGet_Name_NotExists()
+    [Test]
+    public async Task TryGet_Name_NotExists()
     {
         var sm = new StyleManager();
 
         var result = sm.TryGet("Default", out var style);
-        result.ShouldBeFalse();
-        style.ShouldBeNull();
+        await Assert.That(result).IsFalse();
+        await Assert.That(style).IsNull();
     }
 
-    [Fact]
-    public void TryGet_Id_NotExists()
+    [Test]
+    public async Task TryGet_Id_NotExists()
     {
         var sm = new StyleManager();
 
         var result = sm.TryGet(1, out var style);
-        result.ShouldBeFalse();
-        style.ShouldBeNull();
+        await Assert.That(result).IsFalse();
+        await Assert.That(style).IsNull();
     }
 }

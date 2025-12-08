@@ -2,7 +2,6 @@
 
 using System.IO.Abstractions.TestingHelpers;
 using AssCS.IO;
-using Shouldly;
 
 namespace AssCS.Tests;
 
@@ -10,8 +9,8 @@ using static Utilities.TestUtils;
 
 public class SrtParserTests
 {
-    [Fact]
-    public void Parse()
+    [Test]
+    public async Task Parse()
     {
         var fs = new MockFileSystem();
         var path = MakeTestableUri(fs, "test.srt");
@@ -21,23 +20,23 @@ public class SrtParserTests
 
         var doc = sp.Parse(fs, path);
 
-        doc.ShouldNotBeNull();
-        doc.StyleManager.Styles.Count.ShouldBe(1);
-        doc.EventManager.Events.Count.ShouldBe(5);
+        await Assert.That(doc).IsNotNull();
+        await Assert.That(doc.StyleManager.Styles.Count).IsEqualTo(1);
+        await Assert.That(doc.EventManager.Events.Count).IsEqualTo(5);
 
         var last = doc.EventManager.Tail;
-        last.ShouldNotBeNull();
-        last.Start.TotalMilliseconds.ShouldBe(17260);
-        last.End.TotalMilliseconds.ShouldBe(18100);
-        last.Text.ShouldBe("（風太郎）あっ");
+        await Assert.That(last).IsNotNull();
+        await Assert.That(last.Start.TotalMilliseconds).IsEqualTo(17260);
+        await Assert.That(last.End.TotalMilliseconds).IsEqualTo(18100);
+        await Assert.That(last.Text).IsEqualTo("（風太郎）あっ");
 
         var three = doc.EventManager.Get(2);
-        three.ShouldNotBeNull();
-        three.Text.ShouldBe(@"（スタッフ）\N起きてください 新郎様");
+        await Assert.That(three).IsNotNull();
+        await Assert.That(three.Text).IsEqualTo(@"（スタッフ）\N起きてください 新郎様");
     }
 
-    [Fact]
-    public void ParseWithTags()
+    [Test]
+    public async Task ParseWithTags()
     {
         var fs = new MockFileSystem();
         var path = MakeTestableUri(fs, "test.srt");
@@ -47,17 +46,19 @@ public class SrtParserTests
 
         var doc = sp.Parse(fs, path);
 
-        doc.ShouldNotBeNull();
-        doc.EventManager.Events.Count.ShouldBe(1);
+        await Assert.That(doc).IsNotNull();
+        await Assert.That(doc.EventManager.Events.Count).IsEqualTo(1);
         var last = doc.EventManager.Tail;
 
-        last.Text.ShouldBe(
-            @"Hey {\i1}dear {\b1}my{\b0\i0} {\u1}friends{\u0}\N{\fnArial\fs32\c&H4400FF&}So cool{\fn\fs\c}"
-        );
+        await Assert
+            .That(last.Text)
+            .IsEqualTo(
+                @"Hey {\i1}dear {\b1}my{\b0\i0} {\u1}friends{\u0}\N{\fnArial\fs32\c&H4400FF&}So cool{\fn\fs\c}"
+            );
     }
 
-    [Fact]
-    public void ExpectedSubtitleIndex()
+    [Test]
+    public async Task ExpectedSubtitleIndex()
     {
         var fs = new MockFileSystem();
         var path = MakeTestableUri(fs, "test.srt");
@@ -65,13 +66,14 @@ public class SrtParserTests
 
         var sp = new SrtParser();
 
-        Action action = () => sp.Parse(fs, path);
-
-        action.ShouldThrow<FormatException>().Message.ShouldBe("Expected subtitle index at line 1");
+        await Assert
+            .That(() => sp.Parse(fs, path))
+            .Throws<FormatException>()
+            .WithMessage("Expected subtitle index at line 1");
     }
 
-    [Fact]
-    public void ExpectedTimestamps()
+    [Test]
+    public async Task ExpectedTimestamps()
     {
         var fs = new MockFileSystem();
         var path = MakeTestableUri(fs, "test.srt");
@@ -79,13 +81,14 @@ public class SrtParserTests
 
         var sp = new SrtParser();
 
-        Action action = () => sp.Parse(fs, path);
-
-        action.ShouldThrow<FormatException>().Message.ShouldBe("Expected timestamps at line 2");
+        await Assert
+            .That(() => sp.Parse(fs, path))
+            .Throws<FormatException>()
+            .WithMessage("Expected timestamps at line 2");
     }
 
-    [Fact]
-    public void UnexpectedEndOfFile()
+    [Test]
+    public async Task UnexpectedEndOfFile()
     {
         var fs = new MockFileSystem();
         var path = MakeTestableUri(fs, "test.srt");
@@ -93,9 +96,10 @@ public class SrtParserTests
 
         var sp = new SrtParser();
 
-        Action action = () => sp.Parse(fs, path);
-
-        action.ShouldThrow<FormatException>().Message.ShouldBe("Unexpected end of SRT file");
+        await Assert
+            .That(() => sp.Parse(fs, path))
+            .Throws<FormatException>()
+            .WithMessage("Unexpected end of SRT file");
     }
 
     private const string File1 = """
