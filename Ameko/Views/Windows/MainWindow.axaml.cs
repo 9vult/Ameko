@@ -11,7 +11,9 @@ using Ameko.Services;
 using Ameko.ViewModels.Dialogs;
 using Ameko.ViewModels.Windows;
 using Ameko.Views.Dialogs;
+using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Input;
 using Avalonia.Platform.Storage;
 using Avalonia.ReactiveUI;
@@ -428,6 +430,16 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         };
 
         Closing += async (sender, args) => await OnWindowClosing(sender, args);
+        Closed += (_, _) =>
+        {
+            if (
+                Application.Current?.ApplicationLifetime
+                is IClassicDesktopStyleApplicationLifetime desktop
+            )
+                desktop.Shutdown();
+            else
+                Environment.Exit(0);
+        };
 
         this.WhenActivated(disposables =>
         {

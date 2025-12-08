@@ -52,7 +52,7 @@ sealed class Program
         try
         {
             BuildAvaloniaApp()
-                .StartWithClassicDesktopLifetime(args, ShutdownMode.OnMainWindowClose);
+                .StartWithClassicDesktopLifetime(args, ShutdownMode.OnExplicitShutdown);
         }
 #if !DEBUG
         catch (Exception ex)
