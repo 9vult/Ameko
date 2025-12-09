@@ -5,10 +5,10 @@ using System.IO.Abstractions.TestingHelpers;
 using AssCS;
 using Holo.Models;
 using Holo.Providers;
-using Holo.Tests.Mocks;
 using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
-using static Holo.Tests.Utilities.TestUtils;
+using TestingUtils;
+using static TestingUtils.TestableUri;
 
 namespace Holo.Tests;
 

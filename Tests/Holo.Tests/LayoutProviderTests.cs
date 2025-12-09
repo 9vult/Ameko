@@ -5,8 +5,8 @@ using System.IO.Abstractions.TestingHelpers;
 using Holo.Configuration;
 using Holo.IO;
 using Holo.Providers;
-using Holo.Tests.Utilities;
 using Microsoft.Extensions.Logging.Abstractions;
+using static TestingUtils.TestableUri;
 
 namespace Holo.Tests;
 
@@ -29,9 +29,10 @@ public class LayoutProviderTests
     {
         var fs = new MockFileSystem();
         fs.AddFile(
-            TestUtils
-                .MakeTestableUri(fs, Path.Combine(Directories.DataHome, "layouts", "testing.toml"))
-                .LocalPath,
+            MakeTestableUri(
+                fs,
+                Path.Combine(Directories.DataHome, "layouts", "testing.toml")
+            ).LocalPath,
             new MockFileData(ExampleLayout)
         );
         var lg = NullLogger<LayoutProvider>.Instance;

@@ -3,7 +3,7 @@
 using Holo.Media;
 using Holo.Media.Providers;
 
-namespace Holo.Tests.Mocks;
+namespace TestingUtils;
 
 public unsafe class NullSourceProvider : ISourceProvider
 {

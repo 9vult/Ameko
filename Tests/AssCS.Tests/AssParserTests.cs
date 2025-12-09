@@ -2,7 +2,7 @@
 
 using System.IO.Abstractions.TestingHelpers;
 using AssCS.IO;
-using static AssCS.Tests.Utilities.TestUtils;
+using static TestingUtils.TestableUri;
 
 namespace AssCS.Tests;
 

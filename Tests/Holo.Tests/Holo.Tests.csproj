@@ -27,6 +27,10 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Holo\Holo.csproj" />
+    <ProjectReference Include="..\TestingUtils\TestingUtils.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Utilities\" />
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <ItemGroup>

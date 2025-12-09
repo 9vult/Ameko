@@ -2,10 +2,9 @@
 
 using System.IO.Abstractions.TestingHelpers;
 using AssCS.IO;
+using static TestingUtils.TestableUri;
 
 namespace AssCS.Tests;
-
-using static Utilities.TestUtils;
 
 public class SrtParserTests
 {

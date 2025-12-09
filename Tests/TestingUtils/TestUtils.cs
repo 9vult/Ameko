@@ -2,9 +2,9 @@
 
 using System.IO.Abstractions.TestingHelpers;
 
-namespace Holo.Tests.Utilities;
+namespace TestingUtils;
 
-public static class TestUtils
+public static class TestableUri
 {
     /// <summary>
     /// Create a cross-platform <see cref="Uri"/> from a relative <paramref name="path"/>
