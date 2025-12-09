@@ -8,6 +8,7 @@ using System.Reactive.Disposables;
 using System.Threading.Tasks;
 using Ameko.Messages;
 using Ameko.Services;
+using Ameko.ViewModels;
 using Ameko.ViewModels.Dialogs;
 using Ameko.ViewModels.Windows;
 using Ameko.Views.Dialogs;
@@ -34,6 +35,40 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
     private readonly SearchDialog _searchDialog;
     private bool _isSearching;
     private bool _canClose;
+
+    /// <summary>
+    /// Show an async dialog window
+    /// </summary>
+    /// <param name="interaction">Interaction</param>
+    /// <typeparam name="TDialog">Dialog type</typeparam>
+    /// <typeparam name="TViewModel">ViewModel type</typeparam>
+    private async Task DoShowDialogAsync<TDialog, TViewModel>(
+        IInteractionContext<TViewModel, Unit> interaction
+    )
+        where TDialog : Window, new()
+        where TViewModel : ViewModelBase
+    {
+        var dialog = new TDialog { DataContext = interaction.Input };
+        await dialog.ShowDialog(this);
+        interaction.SetOutput(Unit.Default);
+    }
+
+    /// <summary>
+    /// Show a window
+    /// </summary>
+    /// <param name="interaction">Interaction</param>
+    /// <typeparam name="TWindow">Dialog type</typeparam>
+    /// <typeparam name="TViewModel">ViewModel type</typeparam>
+    private static void DoShowWindow<TWindow, TViewModel>(
+        IInteractionContext<TViewModel, Unit> interaction
+    )
+        where TWindow : Window, new()
+        where TViewModel : ViewModelBase
+    {
+        var window = new TWindow { DataContext = interaction.Input };
+        window.Show();
+        interaction.SetOutput(Unit.Default);
+    }
 
     private async Task DoShowOpenSubtitleDialogAsync(IInteractionContext<Unit, Uri[]?> interaction)
     {
@@ -217,26 +252,6 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         interaction.SetOutput(Unit.Default);
     }
 
-    private async Task DoShowSpellcheckDialogAsync(
-        IInteractionContext<SpellcheckDialogViewModel, Unit> interaction
-    )
-    {
-        _logger.LogDebug("Displaying spellcheck dialog");
-        var dialog = new SpellcheckDialog { DataContext = interaction.Input };
-        await dialog.ShowDialog(this);
-        interaction.SetOutput(Unit.Default);
-    }
-
-    private void DoShowStylesManager(
-        IInteractionContext<StylesManagerWindowViewModel, Unit> interaction
-    )
-    {
-        _logger.LogDebug("Displaying Styles Manager");
-        var window = new StylesManagerWindow { DataContext = interaction.Input };
-        window.Show();
-        interaction.SetOutput(Unit.Default);
-    }
-
     private async Task DoShowAttachReferenceFileDialogAsync(
         IInteractionContext<Unit, Uri?> interaction
     )
@@ -265,16 +280,6 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
             return;
         }
         interaction.SetOutput(null);
-    }
-
-    private async Task DoShowShiftTimesDialogAsync(
-        IInteractionContext<ShiftTimesDialogViewModel, Unit> interaction
-    )
-    {
-        _logger.LogDebug("Displaying Shift Times dialog");
-        var window = new ShiftTimesDialog { DataContext = interaction.Input };
-        await window.ShowDialog(this);
-        interaction.SetOutput(Unit.Default);
     }
 
     private async Task DoShowOpenVideoDialogAsync(IInteractionContext<Unit, Uri?> interaction)
@@ -311,81 +316,7 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         interaction.SetOutput(result);
     }
 
-    private async Task DoShowPkgManWindowAsync(
-        IInteractionContext<PkgManWindowViewModel, Unit> interaction
-    )
-    {
-        _logger.LogDebug("Displaying Dependency Control");
-        var window = new PkgManWindow { DataContext = interaction.Input };
-        await window.ShowDialog(this);
-        interaction.SetOutput(Unit.Default);
-    }
-
-    private void DoShowPlaygroundWindow(
-        IInteractionContext<PlaygroundWindowViewModel, Unit> interaction
-    )
-    {
-        _logger.LogDebug("Displaying Script Playground");
-        var window = new PlaygroundWindow { DataContext = interaction.Input };
-        window.Show();
-        interaction.SetOutput(Unit.Default);
-    }
-
-    private void DoShowHelpWindow(IInteractionContext<HelpWindowViewModel, Unit> interaction)
-    {
-        _logger.LogDebug("Displaying Help Window");
-        var window = new HelpWindow() { DataContext = interaction.Input };
-        window.Show();
-        interaction.SetOutput(Unit.Default);
-    }
-
-    private void DoShowLogWindow(IInteractionContext<LogWindowViewModel, Unit> interaction)
-    {
-        _logger.LogDebug("Displaying Log Window");
-        var window = new LogWindow { DataContext = interaction.Input };
-        window.Show();
-        interaction.SetOutput(Unit.Default);
-    }
-
-    private async Task DoShowAboutWindowAsync(
-        IInteractionContext<AboutWindowViewModel, Unit> interaction
-    )
-    {
-        _logger.LogDebug("Displaying About Window");
-        var window = new AboutWindow() { DataContext = interaction.Input };
-        await window.ShowDialog(this);
-        interaction.SetOutput(Unit.Default);
-    }
-
-    private void DoShowKeybindsDialog(
-        IInteractionContext<KeybindsDialogViewModel, Unit> interaction
-    )
-    {
-        _logger.LogDebug("Displaying Keybinds Dialog");
-        var dialog = new KeybindsDialog { DataContext = interaction.Input };
-        dialog.ShowDialog(this);
-        interaction.SetOutput(Unit.Default);
-    }
-
-    private void DoShowConfigDialog(IInteractionContext<ConfigDialogViewModel, Unit> interaction)
-    {
-        _logger.LogDebug("Displaying Config Dialog");
-        var dialog = new ConfigDialog { DataContext = interaction.Input };
-        dialog.ShowDialog(this);
-        interaction.SetOutput(Unit.Default);
-    }
-
-    private void DoShowProjectConfigDialog(
-        IInteractionContext<ProjectConfigDialogViewModel, Unit> interaction
-    )
-    {
-        _logger.LogDebug("Displaying Project Config Dialog");
-        var dialog = new ProjectConfigDialog { DataContext = interaction.Input };
-        dialog.ShowDialog(this);
-        interaction.SetOutput(Unit.Default);
-    }
-
-    private async Task DoShowinstallDictionaryDialogAsync(
+    private async Task DoShowInstallDictionaryDialogAsync(
         IInteractionContext<InstallDictionaryDialogViewModel, Unit> interaction
     )
     {
@@ -445,6 +376,7 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         {
             if (ViewModel is not null)
             {
+                // csharpier-ignore-start
                 // File
                 ViewModel.OpenSubtitle.RegisterHandler(DoShowOpenSubtitleDialogAsync);
                 ViewModel.SaveSubtitleAs.RegisterHandler(DoShowSaveSubtitleAsDialogAsync);
@@ -454,31 +386,30 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
                 ViewModel.SaveProjectAs.RegisterHandler(DoShowSaveProjectAsDialogAsync);
                 // Edit
                 ViewModel.ShowSearchDialog.RegisterHandler(DoShowSearchDialog);
-                ViewModel.ShowSpellcheckDialog.RegisterHandler(DoShowSpellcheckDialogAsync);
+                ViewModel.ShowSpellcheckDialog.RegisterHandler(DoShowDialogAsync<SpellcheckDialog, SpellcheckDialogViewModel>);
                 // Subtitle
-                ViewModel.ShowStylesManager.RegisterHandler(DoShowStylesManager);
+                ViewModel.ShowStylesManager.RegisterHandler(DoShowWindow<StylesManagerWindow, StylesManagerWindowViewModel>);
                 ViewModel.AttachReferenceFile.RegisterHandler(DoShowAttachReferenceFileDialogAsync);
                 // Project
                 // Timing
-                ViewModel.ShowShiftTimesDialog.RegisterHandler(DoShowShiftTimesDialogAsync);
+                ViewModel.ShowShiftTimesDialog.RegisterHandler(DoShowDialogAsync<ShiftTimesDialog, ShiftTimesDialogViewModel>);
                 // Video
                 ViewModel.OpenVideo.RegisterHandler(DoShowOpenVideoDialogAsync);
                 ViewModel.ShowJumpDialog.RegisterHandler(DoShowJumpDialogAsync);
                 // Scripts
-                ViewModel.ShowPackageManager.RegisterHandler(DoShowPkgManWindowAsync);
-                ViewModel.ShowPlaygroundWindow.RegisterHandler(DoShowPlaygroundWindow);
+                ViewModel.ShowPackageManager.RegisterHandler(DoShowWindow<PkgManWindow, PkgManWindowViewModel>);
+                ViewModel.ShowPlaygroundWindow.RegisterHandler(DoShowWindow<PlaygroundWindow, PlaygroundWindowViewModel>);
                 // Help
-                ViewModel.ShowHelpWindow.RegisterHandler(DoShowHelpWindow);
-                ViewModel.ShowLogWindow.RegisterHandler(DoShowLogWindow);
-                ViewModel.ShowAboutWindow.RegisterHandler(DoShowAboutWindowAsync);
-                ViewModel.ShowConfigDialog.RegisterHandler(DoShowConfigDialog);
-                ViewModel.ShowProjectConfigDialog.RegisterHandler(DoShowProjectConfigDialog);
-                ViewModel.ShowKeybindsDialog.RegisterHandler(DoShowKeybindsDialog);
+                ViewModel.ShowHelpWindow.RegisterHandler(DoShowWindow<HelpWindow, HelpWindowViewModel>);
+                ViewModel.ShowLogWindow.RegisterHandler(DoShowWindow<LogWindow, LogWindowViewModel>);
+                ViewModel.ShowAboutWindow.RegisterHandler(DoShowDialogAsync<AboutWindow, AboutWindowViewModel>);
+                ViewModel.ShowConfigDialog.RegisterHandler(DoShowDialogAsync<ConfigDialog, ConfigDialogViewModel>);
+                ViewModel.ShowProjectConfigDialog.RegisterHandler(DoShowDialogAsync<ProjectConfigDialog, ProjectConfigDialogViewModel>);
+                ViewModel.ShowKeybindsDialog.RegisterHandler(DoShowDialogAsync<KeybindsDialog, KeybindsDialogViewModel>);
                 ViewModel.OpenIssueTracker.RegisterHandler(DoOpenIssueTrackerAsync);
                 // Other
-                ViewModel.ShowInstallDictionaryDialog.RegisterHandler(
-                    DoShowinstallDictionaryDialogAsync
-                );
+                ViewModel.ShowInstallDictionaryDialog.RegisterHandler(DoShowInstallDictionaryDialogAsync);
+                // csharpier-ignore-end
 
                 // Generate layouts menu and apply current layout
                 ApplyLayout(ViewModel, ViewModel.LayoutProvider.Current);
