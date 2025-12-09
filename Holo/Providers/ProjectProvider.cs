@@ -6,34 +6,48 @@ using Microsoft.Extensions.Logging;
 
 namespace Holo.Providers;
 
-public class ProjectProvider(IFileSystem fileSystem, ILoggerFactory loggerFactory)
-    : BindableBase,
-        IProjectProvider
+public class ProjectProvider(
+    IFileSystem fileSystem,
+    ILoggerFactory loggerFactory,
+    IWorkspaceFactory workspaceFactory
+) : BindableBase, IProjectProvider
 {
     /// <inheritdoc />
     public Project Current
     {
         get;
         set => SetProperty(ref field, value);
-    } = new(fileSystem, loggerFactory.CreateLogger<Project>());
+    } = new(fileSystem, loggerFactory.CreateLogger<Project>(), workspaceFactory);
 
     /// <inheritdoc />
     public Project Create(bool isEmpty = false)
     {
-        var logger = loggerFactory.CreateLogger<Project>();
-        return new Project(fileSystem, logger, isEmpty);
+        return new Project(
+            fileSystem,
+            loggerFactory.CreateLogger<Project>(),
+            workspaceFactory,
+            isEmpty
+        );
     }
 
     /// <inheritdoc />
     public Project CreateFromFile(Uri uri)
     {
-        var logger = loggerFactory.CreateLogger<Project>();
-        return new Project(fileSystem, logger, uri);
+        return new Project(
+            fileSystem,
+            loggerFactory.CreateLogger<Project>(),
+            workspaceFactory,
+            uri
+        );
     }
 
     public Project CreateFromDirectory(Uri uri)
     {
-        var logger = loggerFactory.CreateLogger<Project>();
-        return new Project(fileSystem, logger, uri);
+        return new Project(
+            fileSystem,
+            loggerFactory.CreateLogger<Project>(),
+            workspaceFactory,
+            uri
+        );
     }
 }

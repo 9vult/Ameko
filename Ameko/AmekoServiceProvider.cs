@@ -8,9 +8,11 @@ using Ameko.ViewModels.Controls;
 using Ameko.ViewModels.Dialogs;
 using Ameko.ViewModels.Windows;
 using Ameko.Views.Windows;
+using Holo;
 using Holo.Configuration;
 using Holo.Configuration.Keybinds;
 using Holo.IO;
+using Holo.Media.Providers;
 using Holo.Providers;
 using Holo.Scripting;
 using Microsoft.Extensions.DependencyInjection;
@@ -77,7 +79,6 @@ public class AmekoServiceProvider
         services.AddSingleton<IGitService, GitService>();
         services.AddSingleton<ILayoutProvider, LayoutProvider>();
         services.AddSingleton<IMessageService, MessageService>();
-        services.AddSingleton<IProjectProvider, ProjectProvider>();
         services.AddSingleton<IDictionaryService, DictionaryService>();
         services.AddSingleton<ISpellcheckService, SpellcheckService>();
 
@@ -91,6 +92,8 @@ public class AmekoServiceProvider
         // --- Factories ---
         services.AddSingleton<StaticLoggerFactory>();
         services.AddSingleton<ITabFactory, TabFactory>();
+        services.AddSingleton<IProjectProvider, ProjectProvider>();
+        services.AddSingleton<IWorkspaceFactory, WorkspaceFactory>();
         services.AddSingleton<IStylesManagerFactory, StylesManagerFactory>();
 
         // --- ViewModels ---
@@ -109,6 +112,10 @@ public class AmekoServiceProvider
         services.AddSingleton<IPackageManager, PackageManager>();
         services.AddSingleton<IScriptConfigurationService, ScriptConfigurationService>();
         services.AddSingleton<ScriptServiceLocator>();
+
+        // --- Media ---
+        services.AddTransient<MediaController>();
+        services.AddTransient<ISourceProvider, MizukiSourceProvider>();
 
         // --- Main Window ---
         services.AddSingleton<MainWindow>();

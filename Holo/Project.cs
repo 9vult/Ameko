@@ -8,6 +8,7 @@ using AssCS;
 using AssCS.IO;
 using AssCS.Utilities;
 using Holo.Models;
+using Holo.Providers;
 using Microsoft.Extensions.Logging;
 
 namespace Holo;
@@ -40,10 +41,7 @@ public class Project : BindableBase
     private readonly RangeObservableCollection<ProjectItem> _referencedItems;
     private readonly RangeObservableCollection<Workspace> _loadedWorkspaces;
 
-    /// <summary>
-    /// The filesystem being used
-    /// </summary>
-    /// <remarks>This allows for filesystem mocking to be used in tests</remarks>
+    private readonly IWorkspaceFactory _workspaceFactory;
     private readonly IFileSystem _fileSystem;
     private readonly ILogger _logger;
 
@@ -233,7 +231,7 @@ public class Project : BindableBase
     public Workspace AddWorkspace(int parentId = -1)
     {
         _logger.LogTrace("Creating a default workspace");
-        var wsp = new Workspace(new Document(true), NextId);
+        var wsp = _workspaceFactory.Create(new Document(true), NextId);
         return AddWorkspace(wsp, parentId);
     }
 
@@ -247,7 +245,7 @@ public class Project : BindableBase
     public Workspace AddWorkspace(Document document, Uri savePath, int parentId = -1)
     {
         _logger.LogTrace("Creating a workspace from document at {Uri}", savePath);
-        var wsp = new Workspace(document, NextId, savePath);
+        var wsp = _workspaceFactory.Create(document, NextId, savePath);
         return AddWorkspace(wsp, parentId);
     }
 
@@ -260,7 +258,7 @@ public class Project : BindableBase
     public Workspace AddWorkspace(Document document, int parentId = -1)
     {
         _logger.LogTrace("Creating a workspace from document with no save path");
-        var wsp = new Workspace(document, NextId);
+        var wsp = _workspaceFactory.Create(document, NextId);
         return AddWorkspace(wsp, parentId);
     }
 
@@ -403,7 +401,7 @@ public class Project : BindableBase
             var parser = new AssParser();
             var document = parser.Parse(_fileSystem, item.Uri!);
 
-            item.Workspace = new Workspace(document, item.Id, item.Uri);
+            item.Workspace = _workspaceFactory.Create(document, item.Id, item.Uri);
             _loadedWorkspaces.Add(item.Workspace);
             WorkingSpace = item.Workspace;
             return item.Id;
@@ -701,12 +699,20 @@ public class Project : BindableBase
     /// </summary>
     /// <param name="fileSystem">FileSystem to use</param>
     /// <param name="logger">Logger to use</param>
+    /// <param name="workspaceFactory">Factory for creating <see cref="Workspace"/>s</param>
     /// <param name="isEmpty">If the project should be created
     /// without a default <see cref="Workspace"/></param>
-    internal Project(IFileSystem fileSystem, ILogger<Project> logger, bool isEmpty = false)
+    internal Project(
+        IFileSystem fileSystem,
+        ILogger<Project> logger,
+        IWorkspaceFactory workspaceFactory,
+        bool isEmpty = false
+    )
     {
         _fileSystem = fileSystem;
         _logger = logger;
+        _workspaceFactory = workspaceFactory;
+
         _referencedItems = [];
         _loadedWorkspaces = [];
         _customWords = [];
@@ -725,7 +731,7 @@ public class Project : BindableBase
             return;
 
         var id = NextId;
-        var defaultWorkspace = new Workspace(new Document(true), id);
+        var defaultWorkspace = _workspaceFactory.Create(new Document(true), id);
         var defaultLink = new DocumentItem { Id = id, Workspace = defaultWorkspace };
 
         _referencedItems.Add(defaultLink);
@@ -733,8 +739,22 @@ public class Project : BindableBase
         _workingSpace = defaultWorkspace;
     }
 
-    internal Project(IFileSystem fileSystem, ILogger<Project> logger, Uri uri)
-        : this(fileSystem, logger, isEmpty: true)
+    /// <summary>
+    /// Initialize a Project
+    /// </summary>
+    /// <param name="fileSystem">FileSystem to use</param>
+    /// <param name="logger">Logger to use</param>
+    /// <param name="workspaceFactory">Factory for creating <see cref="Workspace"/>s</param>
+    /// <param name="uri">Path the project is saved to</param>
+    /// <exception cref="FileNotFoundException">If the project file was not found</exception>
+    /// <exception cref="InvalidDataException">If the project file is malformed</exception>
+    internal Project(
+        IFileSystem fileSystem,
+        ILogger<Project> logger,
+        IWorkspaceFactory workspaceFactory,
+        Uri uri
+    )
+        : this(fileSystem, logger, workspaceFactory, isEmpty: true)
     {
         var path = uri.LocalPath;
         // We are loading a project file

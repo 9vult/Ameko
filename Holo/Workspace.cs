@@ -3,8 +3,6 @@
 using AssCS;
 using AssCS.History;
 using Holo.Configuration;
-using Holo.Media.Providers;
-using Holo.Providers;
 using Microsoft.Extensions.Logging;
 
 namespace Holo;
@@ -302,19 +300,28 @@ public class Workspace : BindableBase
     }
 
     /// <summary>
-    /// A group of related files for editing, part of a <see cref="Project"/>
+    /// Initialize a Workspace
     /// </summary>
-    /// <param name="document">Ass document</param>
-    /// <param name="id">Workspace ID</param>
-    /// <param name="savePath">Path the <paramref name="document"/> saves to,
-    /// or <see langword="null"/> if unsaved</param>
-    public Workspace(Document document, int id, Uri? savePath = null)
+    /// <param name="document">Document in the workspace</param>
+    /// <param name="id">Unique ID</param>
+    /// <param name="savePath"><paramref name="document"/>'s save path, if applicable</param>
+    /// <param name="logger">Logger</param>
+    /// <param name="mediaController">MediaController to use</param>
+    internal Workspace(
+        Document document,
+        int id,
+        Uri? savePath,
+        ILogger<Workspace> logger,
+        MediaController mediaController
+    )
     {
-        _logger = StaticLoggerFactory.GetLogger<Workspace>();
         Document = document;
+        MediaController = mediaController;
         Id = id;
-        _savePath = savePath;
         IsSaved = true;
+
+        _savePath = savePath;
+        _logger = logger;
 
         if (_savePath is not null)
         {
@@ -337,10 +344,6 @@ public class Workspace : BindableBase
             RaisePropertyChanged(nameof(DisplayActorsColumn));
             RaisePropertyChanged(nameof(DisplayEffectsColumn));
         };
-
-        // TODO: make this cleaner
-        var mp = new MizukiSourceProvider();
-        MediaController = new MediaController(mp, StaticLoggerFactory.GetLogger<MediaController>());
 
         // TODO: Should this be here or elsewhere?
         document.HistoryManager.OnChangeMade += (_, _) => MediaController.SetSubtitles(document);
