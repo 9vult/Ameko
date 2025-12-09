@@ -23,9 +23,13 @@ public class SpellcheckDialogViewModelTests
     private Project _project = null!;
     private SpellcheckDialogViewModel _sut = null!;
 
-    private void CreateSut(params SpellcheckSuggestion[] items)
+    private void CreateSut(
+        SpellcheckSuggestion[] items1,
+        SpellcheckSuggestion[]? items2 = null,
+        SpellcheckSuggestion[]? items3 = null
+    )
     {
-        _spellcheckService.CheckSpelling().Returns(items);
+        _spellcheckService.CheckSpelling().Returns(items1, items2 ?? [], items3 ?? []);
         _sut = new SpellcheckDialogViewModel(_projectFactory, _spellcheckService, _tabFactory);
     }
 
@@ -46,12 +50,14 @@ public class SpellcheckDialogViewModelTests
     public async Task Loads_First_Suggestion_On_Startup()
     {
         CreateSut(
-            new SpellcheckSuggestion
-            {
-                Word = "teh",
-                Suggestions = ["the"],
-                EventId = 5,
-            }
+            [
+                new SpellcheckSuggestion
+                {
+                    Word = "teh",
+                    Suggestions = ["the"],
+                    EventId = 5,
+                },
+            ]
         );
 
         await Assert.That(_sut.MisspelledWord).IsEqualTo("teh");
@@ -64,25 +70,26 @@ public class SpellcheckDialogViewModelTests
     public async Task ChangeCommand_Replaces_Text_And_Moves_To_Next()
     {
         CreateSut(
-            new SpellcheckSuggestion
-            {
-                Word = "teh",
-                Suggestions = ["the"],
-                EventId = 5,
-            },
-            new SpellcheckSuggestion
-            {
-                Word = "wierd",
-                Suggestions = ["weird"],
-                EventId = 9,
-            }
+            [
+                new SpellcheckSuggestion
+                {
+                    Word = "teh",
+                    Suggestions = ["the"],
+                    EventId = 5,
+                },
+                new SpellcheckSuggestion
+                {
+                    Word = "wierd",
+                    Suggestions = ["weird"],
+                    EventId = 9,
+                },
+            ]
         );
 
         // Setup
         var evt1 = new Event(5) { Text = "this is teh test" };
         var evt2 = new Event(9) { Text = "so wierd!" };
-        _document.EventManager.AddLast(evt1);
-        _document.EventManager.AddLast(evt2);
+        _document.EventManager.AddLast([evt1, evt2]);
 
         // Execute
         _sut.ChangeCommand.Execute(null);
@@ -97,37 +104,54 @@ public class SpellcheckDialogViewModelTests
     }
 
     [Test]
-    public async Task AddToProjectCommand_Calls_Service()
+    public async Task AddCommands_Call_Services_And_Suggestion_Is_Removed()
     {
         CreateSut(
-            new SpellcheckSuggestion
-            {
-                Word = "teh",
-                Suggestions = ["the"],
-                EventId = 7,
-            }
+            [
+                new SpellcheckSuggestion
+                {
+                    Word = "teh",
+                    Suggestions = ["the"],
+                    EventId = 7,
+                },
+            ],
+            [
+                new SpellcheckSuggestion
+                {
+                    Word = "wierd",
+                    Suggestions = ["weird"],
+                    EventId = 8,
+                },
+            ]
         );
 
         // Setup
         var evt1 = new Event(7) { Text = "this is teh test" };
-        _document.EventManager.AddLast(evt1);
+        var evt2 = new Event(8) { Text = "so wierd!" };
+        _document.EventManager.AddLast([evt1, evt2]);
 
         _sut.AddToProjectCommand.Execute(null);
+        _sut.AddToGlobalsCommand.Execute(null);
 
         _spellcheckService.Received().AddWordToProject("teh");
-        _spellcheckService.Received().CheckSpelling();
+        _spellcheckService.Received().AddWordToGlobals("wierd");
+        _spellcheckService.Received(3).CheckSpelling(); // Initial + 2
+
+        await Assert.That(_sut.HaveSuggestions).IsFalse();
     }
 
     [Test]
     public async Task When_No_Suggestions_Remain_HaveSuggestions_Is_False()
     {
         CreateSut(
-            new SpellcheckSuggestion
-            {
-                Word = "abc",
-                Suggestions = [],
-                EventId = 10,
-            }
+            [
+                new SpellcheckSuggestion
+                {
+                    Word = "abc",
+                    Suggestions = [],
+                    EventId = 10,
+                },
+            ]
         );
 
         // Move to end
