@@ -89,14 +89,14 @@ public partial class TabItemViewModel : ViewModelBase
     {
         return ReactiveCommand.CreateFromTask(async () =>
         {
-            var lines = await PasteEvents.Handle(this);
-            if (lines is null || lines.Length == 0)
+            var lines = (await PasteEvents.Handle(this))?.ToList();
+            if (lines is null || lines.Count == 0)
             {
                 _messageService.Enqueue(I18N.Other.Message_ClipboardEmpty, TimeSpan.FromSeconds(5));
                 return;
             }
 
-            var vm = new PasteOverDialogViewModel(lines);
+            var vm = _vmFactory.Create<PasteOverDialogViewModel>(lines);
             var fields = (await ShowPasteOverDialog.Handle(vm))?.Fields ?? EventField.None;
 
             if (fields == EventField.None)
@@ -145,7 +145,7 @@ public partial class TabItemViewModel : ViewModelBase
                     newEvents.Add(target);
                 }
                 target = Workspace.Document.EventManager.GetAfter(target.Id);
-            } while (i < lines.Length);
+            } while (i < lines.Count);
 
             if (editedEvents.Count != 0 && newEvents.Count == 0)
                 Workspace.Commit(editedEvents, ChangeType.ComplexEvent); // Use complexEvent to prevent coalescing

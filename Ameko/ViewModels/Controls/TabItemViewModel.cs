@@ -7,6 +7,7 @@ using System.Windows.Input;
 using Ameko.DataModels;
 using Ameko.Messages;
 using Ameko.Services;
+using Ameko.Utilities;
 using Ameko.ViewModels.Dialogs;
 using AssCS;
 using Holo;
@@ -164,6 +165,7 @@ public partial class TabItemViewModel : ViewModelBase
     private readonly IScriptService _scriptService;
     private readonly IMessageService _messageService;
     private readonly IIoService _ioService;
+    private readonly IViewModelFactory _vmFactory;
 
     public Workspace Workspace { get; }
 
@@ -203,6 +205,7 @@ public partial class TabItemViewModel : ViewModelBase
         IScriptService scriptService,
         ILayoutProvider layoutProvider,
         IMessageService messageService,
+        IViewModelFactory vmFactory,
         IIoService ioService,
         Workspace workspace
     )
@@ -279,6 +282,7 @@ public partial class TabItemViewModel : ViewModelBase
         Configuration = configuration;
         KeybindService = keybindService;
         LayoutProvider = layoutProvider;
+        _vmFactory = vmFactory;
 
         Workspace.OnFileModifiedExternally += async (_, _) =>
         {

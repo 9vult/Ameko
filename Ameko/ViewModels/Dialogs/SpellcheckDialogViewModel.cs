@@ -22,8 +22,6 @@ namespace Ameko.ViewModels.Dialogs;
 
 public partial class SpellcheckDialogViewModel : ViewModelBase
 {
-    private readonly IProjectProvider _projectProvider;
-
     private IEnumerator<SpellcheckSuggestion> _spellcheckSuggestions;
 
     private readonly Workspace? _workspace;
@@ -80,8 +78,6 @@ public partial class SpellcheckDialogViewModel : ViewModelBase
         ITabFactory tabFactory
     )
     {
-        _projectProvider = projectProvider;
-
         DictionaryInUse = string.Format(
             I18N.Spellcheck.Spellcheck_Label_Dictionary,
             spellcheckService.CurrentLanguage.Name
@@ -92,7 +88,7 @@ public partial class SpellcheckDialogViewModel : ViewModelBase
 
         _spellcheckSuggestions = spellcheckService.CheckSpelling().GetEnumerator();
 
-        _workspace = _projectProvider.Current.WorkingSpace;
+        _workspace = projectProvider.Current.WorkingSpace;
         if (_workspace is not null)
             tabFactory.TryGetViewModel(_workspace, out _tabVm);
 

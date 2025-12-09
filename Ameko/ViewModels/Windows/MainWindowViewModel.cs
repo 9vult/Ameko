@@ -2,7 +2,6 @@
 
 using System;
 using System.Collections.ObjectModel;
-using System.IO.Abstractions;
 using System.Linq;
 using System.Reactive;
 using System.Windows.Input;
@@ -25,13 +24,12 @@ namespace Ameko.ViewModels.Windows;
 
 public partial class MainWindowViewModel : ViewModelBase
 {
-    private readonly IServiceProvider _serviceProvider;
-    private readonly IStylesManagerFactory _stylesManagerFactory;
+    private readonly IViewModelFactory _vmFactory;
     private readonly IMessageService _messageService;
     private readonly IMessageBoxService _messageBoxService;
     private readonly ISpellcheckService _spellcheckService;
     private readonly IDictionaryService _dictionaryService;
-    private readonly IFileSystem _fileSystem;
+    private readonly ITabFactory _tabFactory;
     private readonly ILogger _logger;
 
     public IConfiguration Configuration { get; }
@@ -279,36 +277,36 @@ public partial class MainWindowViewModel : ViewModelBase
     }
 
     public MainWindowViewModel(
-        IServiceProvider serviceProvider,
         ILogger<MainWindowViewModel> logger,
-        IFileSystem fileSystem,
+        IConfiguration configuration,
         IIoService ioService,
         ILayoutProvider layoutProvider,
         IProjectProvider projectProvider,
-        IStylesManagerFactory stylesManagerFactory,
         IScriptService scriptService,
-        IMessageService messageService,
-        IMessageBoxService messageBoxService,
-        ISpellcheckService spellCheckService,
         IDictionaryService dictionaryService,
-        IConfiguration configuration,
-        GitToolboxViewModel gitToolboxViewModel
+        IMessageBoxService messageBoxService,
+        IMessageService messageService,
+        ISpellcheckService spellCheckService,
+        ITabFactory tabFactory,
+        IViewModelFactory vmFactory
     )
     {
         _logger = logger;
-        _serviceProvider = serviceProvider;
-        _fileSystem = fileSystem;
+
+        Configuration = configuration;
         IoService = ioService;
         LayoutProvider = layoutProvider;
         ProjectProvider = projectProvider;
-        _stylesManagerFactory = stylesManagerFactory;
         ScriptService = scriptService;
-        _messageService = messageService;
-        _messageBoxService = messageBoxService;
-        _spellcheckService = spellCheckService;
+
         _dictionaryService = dictionaryService;
-        Configuration = configuration;
-        GitToolboxViewModel = gitToolboxViewModel;
+        _messageBoxService = messageBoxService;
+        _messageService = messageService;
+        _spellcheckService = spellCheckService;
+        _tabFactory = tabFactory;
+        _vmFactory = vmFactory;
+
+        GitToolboxViewModel = _vmFactory.Create<GitToolboxViewModel>();
 
         #region Interactions
         // File

@@ -4,8 +4,8 @@ using System.Reactive;
 using System.Reactive.Linq;
 using System.Windows.Input;
 using Ameko.Messages;
+using Ameko.Utilities;
 using AssCS;
-using Holo.Configuration;
 using ReactiveUI;
 using Color = AssCS.Color;
 
@@ -75,12 +75,12 @@ public partial class StyleEditorDialogViewModel : ViewModelBase
     /// <summary>
     /// Initialize a style editor
     /// </summary>
-    /// <param name="persistence">Application persistence</param>
+    /// <param name="vmFactory">ViewModel factory</param>
     /// <param name="style">Style being edited</param>
     /// <param name="manager">Manager the <paramref name="style"/> belongs to</param>
     /// <param name="document">Document the manager belongs to, if applicable</param>
     public StyleEditorDialogViewModel(
-        IPersistence persistence,
+        IViewModelFactory vmFactory,
         Style style,
         StyleManager manager,
         Document? document
@@ -100,7 +100,7 @@ public partial class StyleEditorDialogViewModel : ViewModelBase
         EditColorCommand = ReactiveCommand.CreateFromTask(
             async (Color color) =>
             {
-                var vm = new ColorDialogViewModel(persistence, color);
+                var vm = vmFactory.Create<ColorDialogViewModel>(color);
                 _ = await ShowColorDialog.Handle(vm);
 
                 // Get the buttons to update

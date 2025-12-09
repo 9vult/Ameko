@@ -94,18 +94,10 @@ public class AmekoServiceProvider
         services.AddSingleton<ITabFactory, TabFactory>();
         services.AddSingleton<IProjectProvider, ProjectProvider>();
         services.AddSingleton<IWorkspaceFactory, WorkspaceFactory>();
-        services.AddSingleton<IStylesManagerFactory, StylesManagerFactory>();
+        services.AddSingleton<IViewModelFactory, ViewModelFactory>();
 
         // --- ViewModels ---
         services.AddSingleton<MainWindowViewModel>();
-        services.AddSingleton<GitToolboxViewModel>();
-        services.AddTransient<LogWindowViewModel>();
-        services.AddTransient<HelpWindowViewModel>();
-        services.AddTransient<ConfigDialogViewModel>();
-        services.AddTransient<PkgManWindowViewModel>();
-        services.AddTransient<KeybindsDialogViewModel>();
-        services.AddTransient<PlaygroundWindowViewModel>();
-        services.AddTransient<ProjectConfigDialogViewModel>();
 
         // --- Scripting ---
         services.AddSingleton<IScriptService, ScriptService>();

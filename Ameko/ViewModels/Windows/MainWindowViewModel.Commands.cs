@@ -139,7 +139,11 @@ public partial class MainWindowViewModel : ViewModelBase
                     culture
                 );
                 var lang = SpellcheckLanguage.AvailableLanguages.First(l => l.Locale == culture);
-                var vm = new InstallDictionaryDialogViewModel(_dictionaryService, lang, true);
+                var vm = _vmFactory.Create<InstallDictionaryDialogViewModel>(
+                    _dictionaryService,
+                    lang,
+                    true
+                );
                 await ShowInstallDictionaryDialog.Handle(vm);
                 _spellcheckService.RebuildDictionary();
             }
@@ -169,7 +173,11 @@ public partial class MainWindowViewModel : ViewModelBase
                     var lang = SpellcheckLanguage.AvailableLanguages.First(l =>
                         l.Locale == culture
                     );
-                    var vm = new InstallDictionaryDialogViewModel(_dictionaryService, lang, true);
+                    var vm = _vmFactory.Create<InstallDictionaryDialogViewModel>(
+                        _dictionaryService,
+                        lang,
+                        true
+                    );
                     await ShowInstallDictionaryDialog.Handle(vm);
                     _spellcheckService.RebuildDictionary();
                 }
@@ -338,8 +346,7 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         return ReactiveCommand.CreateFromTask(async () =>
         {
-            var tabFactory = _serviceProvider.GetRequiredService<ITabFactory>();
-            var vm = new SearchDialogViewModel(ProjectProvider, tabFactory);
+            var vm = _vmFactory.Create<SearchDialogViewModel>();
             await ShowSearchDialog.Handle(vm);
         });
     }
@@ -351,8 +358,7 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         return ReactiveCommand.CreateFromTask(async () =>
         {
-            var tabFactory = _serviceProvider.GetRequiredService<ITabFactory>();
-            var vm = new SpellcheckDialogViewModel(ProjectProvider, _spellcheckService, tabFactory);
+            var vm = _vmFactory.Create<SpellcheckDialogViewModel>();
             await ShowSpellcheckDialog.Handle(vm);
         });
     }
@@ -366,7 +372,7 @@ public partial class MainWindowViewModel : ViewModelBase
         {
             if (ProjectProvider.Current.IsWorkspaceLoaded)
             {
-                var vm = _stylesManagerFactory.Create(
+                var vm = _vmFactory.Create<StylesManagerWindowViewModel>(
                     ProjectProvider.Current,
                     ProjectProvider.Current.WorkingSpace.Document
                 );
@@ -428,7 +434,7 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         return ReactiveCommand.CreateFromTask(async () =>
         {
-            var vm = _serviceProvider.GetRequiredService<ProjectConfigDialogViewModel>();
+            var vm = _vmFactory.Create<ProjectConfigDialogViewModel>();
             await ShowProjectConfigDialog.Handle(vm);
         });
     }
@@ -442,7 +448,9 @@ public partial class MainWindowViewModel : ViewModelBase
         {
             if (ProjectProvider.Current.IsWorkspaceLoaded)
             {
-                var vm = new ShiftTimesDialogViewModel(ProjectProvider.Current.WorkingSpace);
+                var vm = _vmFactory.Create<ShiftTimesDialogViewModel>(
+                    ProjectProvider.Current.WorkingSpace
+                );
                 await ShowShiftTimesDialog.Handle(vm);
             }
         });
@@ -462,8 +470,7 @@ public partial class MainWindowViewModel : ViewModelBase
             }
 
             ISourceProvider.IndexingProgressCallback? callback = null;
-            var tabFactory = _serviceProvider.GetRequiredService<ITabFactory>();
-            if (tabFactory.TryGetViewModel(wsp, out var tabVm))
+            if (_tabFactory.TryGetViewModel(wsp, out var tabVm))
             {
                 callback = (current, total) =>
                 {
@@ -531,7 +538,7 @@ public partial class MainWindowViewModel : ViewModelBase
 
             var videoLoaded = wsp.MediaController.IsVideoLoaded;
 
-            var vm = new JumpDialogViewModel(videoLoaded);
+            var vm = _vmFactory.Create<JumpDialogViewModel>(videoLoaded);
             var result = await ShowJumpDialog.Handle(vm);
 
             if (result is null)
@@ -591,7 +598,7 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         return ReactiveCommand.CreateFromTask(async () =>
         {
-            var vm = _serviceProvider.GetRequiredService<PkgManWindowViewModel>();
+            var vm = _vmFactory.Create<PkgManWindowViewModel>();
             await ShowPackageManager.Handle(vm);
         });
     }
@@ -603,7 +610,7 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         return ReactiveCommand.CreateFromTask(async () =>
         {
-            var vm = _serviceProvider.GetRequiredService<PlaygroundWindowViewModel>();
+            var vm = _vmFactory.Create<PlaygroundWindowViewModel>();
             await ShowPlaygroundWindow.Handle(vm);
         });
     }
@@ -637,7 +644,7 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         return ReactiveCommand.CreateFromTask(async () =>
         {
-            var vm = _serviceProvider.GetRequiredService<HelpWindowViewModel>();
+            var vm = _vmFactory.Create<HelpWindowViewModel>();
             await ShowHelpWindow.Handle(vm);
         });
     }
@@ -649,7 +656,7 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         return ReactiveCommand.CreateFromTask(async () =>
         {
-            var vm = _serviceProvider.GetRequiredService<LogWindowViewModel>();
+            var vm = _vmFactory.Create<LogWindowViewModel>();
             await ShowLogWindow.Handle(vm);
         });
     }
@@ -661,7 +668,7 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         return ReactiveCommand.CreateFromTask(async () =>
         {
-            var vm = new AboutWindowViewModel();
+            var vm = _vmFactory.Create<AboutWindowViewModel>();
             await ShowAboutWindow.Handle(vm);
         });
     }
@@ -673,7 +680,7 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         return ReactiveCommand.CreateFromTask(async () =>
         {
-            var vm = _serviceProvider.GetRequiredService<KeybindsDialogViewModel>();
+            var vm = _vmFactory.Create<KeybindsDialogViewModel>();
             await ShowKeybindsDialog.Handle(vm);
         });
     }
@@ -685,7 +692,7 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         return ReactiveCommand.CreateFromTask(async () =>
         {
-            var vm = _serviceProvider.GetRequiredService<ConfigDialogViewModel>();
+            var vm = _vmFactory.Create<ConfigDialogViewModel>();
             await ShowConfigDialog.Handle(vm);
         });
     }
@@ -868,7 +875,11 @@ public partial class MainWindowViewModel : ViewModelBase
                     culture
                 );
                 var lang = SpellcheckLanguage.AvailableLanguages.First(l => l.Locale == culture);
-                var vm = new InstallDictionaryDialogViewModel(_dictionaryService, lang, false);
+                var vm = _vmFactory.Create<InstallDictionaryDialogViewModel>(
+                    _dictionaryService,
+                    lang,
+                    false
+                );
                 await ShowInstallDictionaryDialog.Handle(vm);
                 _spellcheckService.RebuildDictionary();
             }

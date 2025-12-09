@@ -3,6 +3,7 @@
 using System.Reactive;
 using System.Windows.Input;
 using Ameko.Messages;
+using Ameko.Utilities;
 using Ameko.ViewModels.Dialogs;
 using AssCS;
 using Holo;
@@ -14,6 +15,7 @@ namespace Ameko.ViewModels.Windows;
 public partial class StylesManagerWindowViewModel : ViewModelBase
 {
     private readonly IPersistence _persistence;
+    private readonly IViewModelFactory _vmFactory;
 
     public Project Project { get; }
     public Document Document { get; }
@@ -68,12 +70,14 @@ public partial class StylesManagerWindowViewModel : ViewModelBase
 
     public StylesManagerWindowViewModel(
         IPersistence persistence,
+        IViewModelFactory vmFactory,
         IGlobals globals,
         Project project,
         Document document
     )
     {
         _persistence = persistence;
+        _vmFactory = vmFactory;
 
         Globals = globals;
         Project = project;
