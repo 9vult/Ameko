@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\Ameko\Ameko.csproj" />
+      <ProjectReference Include="..\..\AssCS\AssCS.csproj" />
+      <ProjectReference Include="..\..\Holo\Holo.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="TestableIO.System.IO.Abstractions" />
+      <PackageReference Include="TestableIO.System.IO.Abstractions.TestingHelpers" />
+    </ItemGroup>
+
+</Project>

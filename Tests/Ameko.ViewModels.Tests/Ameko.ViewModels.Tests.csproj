@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <LangVersion>latest</LangVersion>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <RootNamespace>Ameko.ViewModels</RootNamespace>
+    </PropertyGroup>
+    <ItemGroup>
+      <PackageReference Include="NSubstitute" />
+      <PackageReference Include="TUnit" />
+    </ItemGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\..\Ameko\Ameko.csproj" />
+      <ProjectReference Include="..\..\AssCS\AssCS.csproj" />
+      <ProjectReference Include="..\..\Holo\Holo.csproj" />
+      <ProjectReference Include="..\TestingUtils\TestingUtils.csproj" />
+    </ItemGroup>
+
+</Project>
