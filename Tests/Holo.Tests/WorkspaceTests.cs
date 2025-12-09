@@ -2,15 +2,28 @@
 
 using AssCS;
 using AssCS.History;
+using Holo.Tests.Mocks;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Holo.Tests;
 
 public class WorkspaceTests
 {
+    private static Workspace CreateWorkspace(Document document, int id)
+    {
+        return new Workspace(
+            document,
+            id,
+            null,
+            NullLogger<Workspace>.Instance,
+            new MediaController(new NullSourceProvider(), NullLogger<MediaController>.Instance)
+        );
+    }
+
     [Test]
     public async Task Commit_Single()
     {
-        var wsp = new Workspace(new Document(true), 1);
+        var wsp = CreateWorkspace(new Document(true), 1);
         var e = new Event(99);
         wsp.Document.EventManager.AddLast(e);
 
@@ -25,7 +38,7 @@ public class WorkspaceTests
     [Test]
     public async Task Commit_Multiple()
     {
-        var wsp = new Workspace(new Document(true), 1);
+        var wsp = CreateWorkspace(new Document(true), 1);
         var e1 = new Event(99);
         var e2 = new Event(100);
         wsp.Document.EventManager.AddLast(e1);
@@ -42,7 +55,7 @@ public class WorkspaceTests
     [Test]
     public async Task Commit_Amends_When_Same_Type()
     {
-        var wsp = new Workspace(new Document(true), 1);
+        var wsp = CreateWorkspace(new Document(true), 1);
         var e1 = new Event(99);
         wsp.Document.EventManager.AddLast(e1);
         wsp.Commit(e1, ChangeType.AddEvent);
@@ -59,7 +72,7 @@ public class WorkspaceTests
     [Test]
     public async Task Commit_Does_Not_Amend_When_Different_Type()
     {
-        var wsp = new Workspace(new Document(true), 1);
+        var wsp = CreateWorkspace(new Document(true), 1);
         var e1 = new Event(99);
         wsp.Document.EventManager.AddLast(e1);
         wsp.Commit(e1, ChangeType.AddEvent);
@@ -73,7 +86,7 @@ public class WorkspaceTests
     [Test]
     public async Task Select_Single()
     {
-        var wsp = new Workspace(new Document(true), 1);
+        var wsp = CreateWorkspace(new Document(true), 1);
         var e = new Event(99);
         wsp.Document.EventManager.AddLast(e);
 
@@ -86,7 +99,7 @@ public class WorkspaceTests
     [Test]
     public async Task Select_Multiple()
     {
-        var wsp = new Workspace(new Document(true), 1);
+        var wsp = CreateWorkspace(new Document(true), 1);
         var e1 = new Event(99);
         var e2 = new Event(100);
         wsp.Document.EventManager.AddLast(e1);
@@ -101,7 +114,7 @@ public class WorkspaceTests
     [Test]
     public async Task Undo_AddEvent()
     {
-        var wsp = new Workspace(new Document(true), 1);
+        var wsp = CreateWorkspace(new Document(true), 1);
         var e1 = new Event(99);
         var e2 = new Event(100);
 
@@ -124,7 +137,7 @@ public class WorkspaceTests
     [Test]
     public async Task Redo_AddEvent()
     {
-        var wsp = new Workspace(new Document(true), 1);
+        var wsp = CreateWorkspace(new Document(true), 1);
         var e1 = new Event(99);
         var e2 = new Event(100);
 
@@ -155,7 +168,7 @@ public class WorkspaceTests
     [Test]
     public async Task Undo_RemoveEvent()
     {
-        var wsp = new Workspace(new Document(true), 1);
+        var wsp = CreateWorkspace(new Document(true), 1);
         var e1 = new Event(99);
         wsp.Document.EventManager.AddLast(e1);
         wsp.Commit(e1, ChangeType.AddEvent);
@@ -173,7 +186,7 @@ public class WorkspaceTests
     [Test]
     public async Task Redo_RemoveEvent()
     {
-        var wsp = new Workspace(new Document(true), 1);
+        var wsp = CreateWorkspace(new Document(true), 1);
         var e1 = new Event(99);
         wsp.Document.EventManager.AddLast(e1);
         wsp.Commit(e1, ChangeType.AddEvent);
@@ -191,7 +204,7 @@ public class WorkspaceTests
     [Test]
     public async Task Undo_ModifyEvent_Once()
     {
-        var wsp = new Workspace(new Document(true), 1);
+        var wsp = CreateWorkspace(new Document(true), 1);
         var e1 = wsp.Document.EventManager.Head;
 
         e1.Text = "Hello!";
@@ -204,7 +217,7 @@ public class WorkspaceTests
     [Test]
     public async Task Redo_ModifyEvent_Once()
     {
-        var wsp = new Workspace(new Document(true), 1);
+        var wsp = CreateWorkspace(new Document(true), 1);
         var e1 = wsp.Document.EventManager.Head;
 
         e1.Text = "Hello!";
@@ -220,7 +233,7 @@ public class WorkspaceTests
     [Test]
     public async Task Undo_ModifyEvent_Multiple()
     {
-        var wsp = new Workspace(new Document(true), 1);
+        var wsp = CreateWorkspace(new Document(true), 1);
         var e1 = wsp.Document.EventManager.Head;
 
         e1.Text = "Hello!";
@@ -235,7 +248,7 @@ public class WorkspaceTests
     [Test]
     public async Task Redo_ModifyEvent_Multiple()
     {
-        var wsp = new Workspace(new Document(true), 1);
+        var wsp = CreateWorkspace(new Document(true), 1);
         var e1 = wsp.Document.EventManager.Head;
 
         e1.Text = "Hello!";
