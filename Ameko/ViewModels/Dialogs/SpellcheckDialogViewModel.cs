@@ -7,7 +7,6 @@ using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using Ameko.DataModels;
 using Ameko.Utilities;
 using Ameko.ViewModels.Controls;
 using AssCS;
@@ -72,12 +71,74 @@ public partial class SpellcheckDialogViewModel : ViewModelBase
     public ICommand AddToGlobalsCommand { get; }
     public ICommand AddToBothCommand { get; }
 
+    private Action _resetSuggestions;
+
+    /// <summary>
+    /// Initialize the Spellcheck Dialog with suggestions for the entire active <see cref="Document"/>
+    /// </summary>
+    /// <param name="projectProvider">Project provider</param>
+    /// <param name="spellcheckService">Spellcheck service</param>
+    /// <param name="tabFactory">Tab factory</param>
     public SpellcheckDialogViewModel(
         IProjectProvider projectProvider,
         ISpellcheckService spellcheckService,
         ITabFactory tabFactory
     )
+        : this(
+            projectProvider,
+            spellcheckService,
+            tabFactory,
+            spellcheckService.CheckSpelling().GetEnumerator()
+        )
     {
+        _resetSuggestions = () =>
+        {
+            _spellcheckSuggestions = spellcheckService.CheckSpelling().GetEnumerator();
+        };
+    }
+
+    /// <summary>
+    /// Initialize the Spellcheck Dialog with suggestions for the entire specified <paramref name="event"/>
+    /// </summary>
+    /// <param name="projectProvider">Project provider</param>
+    /// <param name="spellcheckService">Spellcheck service</param>
+    /// <param name="tabFactory">Tab factory</param>
+    /// <param name="event"></param>
+    public SpellcheckDialogViewModel(
+        IProjectProvider projectProvider,
+        ISpellcheckService spellcheckService,
+        ITabFactory tabFactory,
+        Event @event
+    )
+        : this(
+            projectProvider,
+            spellcheckService,
+            tabFactory,
+            spellcheckService.CheckSpelling(@event).GetEnumerator()
+        )
+    {
+        _resetSuggestions = () =>
+        {
+            _spellcheckSuggestions = spellcheckService.CheckSpelling(@event).GetEnumerator();
+        };
+    }
+
+    private SpellcheckDialogViewModel(
+        IProjectProvider projectProvider,
+        ISpellcheckService spellcheckService,
+        ITabFactory tabFactory,
+        IEnumerator<SpellcheckSuggestion> initialSuggestions
+    )
+    {
+        // Configure the initial suggestions
+        _spellcheckSuggestions = initialSuggestions;
+
+        // If this private constructor is being called for some reason
+        _resetSuggestions ??= () =>
+        {
+            _spellcheckSuggestions = spellcheckService.CheckSpelling().GetEnumerator();
+        };
+
         DictionaryInUse = string.Format(
             I18N.Spellcheck.Spellcheck_Label_Dictionary,
             spellcheckService.CurrentLanguage.Name
@@ -85,8 +146,6 @@ public partial class SpellcheckDialogViewModel : ViewModelBase
 
         _suggestions = [];
         Suggestions = new ReadOnlyObservableCollection<string>(_suggestions);
-
-        _spellcheckSuggestions = spellcheckService.CheckSpelling().GetEnumerator();
 
         _workspace = projectProvider.Current.WorkingSpace;
         if (_workspace is not null)
@@ -113,7 +172,7 @@ public partial class SpellcheckDialogViewModel : ViewModelBase
         {
             spellcheckService.AddWordToProject(_misspelledWord);
             // Restart in case it shows up again
-            _spellcheckSuggestions = spellcheckService.CheckSpelling().GetEnumerator();
+            _resetSuggestions();
             await LoadNextSuggestion();
         });
 
@@ -121,7 +180,7 @@ public partial class SpellcheckDialogViewModel : ViewModelBase
         {
             spellcheckService.AddWordToGlobals(_misspelledWord);
             // Restart in case it shows up again
-            _spellcheckSuggestions = spellcheckService.CheckSpelling().GetEnumerator();
+            _resetSuggestions();
             await LoadNextSuggestion();
         });
 
@@ -130,7 +189,7 @@ public partial class SpellcheckDialogViewModel : ViewModelBase
             spellcheckService.AddWordToProject(_misspelledWord);
             spellcheckService.AddWordToGlobals(_misspelledWord);
             // Restart in case it shows up again
-            _spellcheckSuggestions = spellcheckService.CheckSpelling().GetEnumerator();
+            _resetSuggestions();
             await LoadNextSuggestion();
         });
 

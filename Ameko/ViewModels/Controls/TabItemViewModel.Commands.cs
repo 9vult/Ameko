@@ -412,6 +412,23 @@ public partial class TabItemViewModel : ViewModelBase
     }
 
     /// <summary>
+    /// Spellcheck the selected event
+    /// </summary>
+    private ReactiveCommand<Unit, Unit> CreateSpellcheckEventCommand()
+    {
+        return ReactiveCommand.CreateFromTask(async () =>
+        {
+            var selectionManager = Workspace.SelectionManager;
+
+            if (selectionManager.SelectedEventCollection.Count == 0)
+                return;
+
+            var vm = _vmFactory.Create<SpellcheckDialogViewModel>(selectionManager.ActiveEvent);
+            await ShowSpellcheckDialog.Handle(vm);
+        });
+    }
+
+    /// <summary>
     /// Get or Create the next event in the document
     /// </summary>
     private ReactiveCommand<Unit, Unit> CreateGetOrCreateAfterCommand()

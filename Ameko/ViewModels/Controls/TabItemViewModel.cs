@@ -34,6 +34,7 @@ public partial class TabItemViewModel : ViewModelBase
         FileModifiedDialogViewModel,
         FileModifiedDialogClosedMessage?
     > ShowFileModifiedDialog { get; }
+    public Interaction<SpellcheckDialogViewModel, Unit> ShowSpellcheckDialog { get; }
     public Interaction<Event, Unit> ScrollToAndSelectEvent { get; }
     public Interaction<Unit, Uri?> SaveFrameAs { get; }
     public Interaction<string, Unit> CopyFrame { get; }
@@ -88,11 +89,14 @@ public partial class TabItemViewModel : ViewModelBase
     public ICommand ExecuteScriptCommand { get; }
 
     // Editor
-    [KeybindTarget("ameko.event.splitCursor", KeybindContext.Grid)]
+    [KeybindTarget("ameko.event.splitCursor", KeybindContext.Editor)]
     public ICommand SplitEventsAtCursorCommand { get; }
 
-    [KeybindTarget("ameko.event.splitCursor.keepTimes", KeybindContext.Grid)]
+    [KeybindTarget("ameko.event.splitCursor.keepTimes", KeybindContext.Editor)]
     public ICommand SplitEventsAtCursorKeepTimesCommand { get; }
+
+    [KeybindTarget("ameko.event.spellcheck", "Shift+F7", KeybindContext.Editor)]
+    public ICommand SpellcheckEventCommand { get; }
 
     // Video
     [KeybindTarget("ameko.video.play", KeybindContext.Video)]
@@ -227,6 +231,7 @@ public partial class TabItemViewModel : ViewModelBase
             new Interaction<PasteOverDialogViewModel, PasteOverDialogClosedMessage?>();
         ShowFileModifiedDialog =
             new Interaction<FileModifiedDialogViewModel, FileModifiedDialogClosedMessage?>();
+        ShowSpellcheckDialog = new Interaction<SpellcheckDialogViewModel, Unit>();
         ScrollToAndSelectEvent = new Interaction<Event, Unit>();
         SaveFrameAs = new Interaction<Unit, Uri?>();
         CopyFrame = new Interaction<string, Unit>();
@@ -258,6 +263,7 @@ public partial class TabItemViewModel : ViewModelBase
         // Editor
         SplitEventsAtCursorCommand = CreateSplitEventsAtCursorCommand();
         SplitEventsAtCursorKeepTimesCommand = CreateSplitEventsAtCursorKeepTimesCommand();
+        SpellcheckEventCommand = CreateSpellcheckEventCommand();
 
         // Video
         PlayPauseCommand = CreatePlayPauseCommand();

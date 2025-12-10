@@ -7,6 +7,7 @@ using System.Reactive;
 using System.Reactive.Disposables;
 using System.Threading.Tasks;
 using Ameko.Messages;
+using Ameko.ViewModels;
 using Ameko.ViewModels.Controls;
 using Ameko.ViewModels.Dialogs;
 using Ameko.Views.Dialogs;
@@ -27,6 +28,29 @@ namespace Ameko.Views.Controls;
 
 public partial class TabItem : ReactiveUserControl<TabItemViewModel>
 {
+    /// <summary>
+    /// Show an async dialog window
+    /// </summary>
+    /// <param name="interaction">Interaction</param>
+    /// <typeparam name="TDialog">Dialog type</typeparam>
+    /// <typeparam name="TViewModel">ViewModel type</typeparam>
+    private async Task DoShowDialogAsync<TDialog, TViewModel>(
+        IInteractionContext<TViewModel, Unit> interaction
+    )
+        where TDialog : Window, new()
+        where TViewModel : ViewModelBase
+    {
+        var window = TopLevel.GetTopLevel(this);
+        if (window is null)
+        {
+            interaction.SetOutput(Unit.Default);
+            return;
+        }
+        var dialog = new TDialog { DataContext = interaction.Input };
+        await dialog.ShowDialog((Window)window);
+        interaction.SetOutput(Unit.Default);
+    }
+
     private async Task DoCopyEventsAsync(IInteractionContext<TabItemViewModel, string?> interaction)
     {
         var window = TopLevel.GetTopLevel(this);
@@ -234,15 +258,17 @@ public partial class TabItem : ReactiveUserControl<TabItemViewModel>
                         },
                         DispatcherPriority.Background
                     );
-
+                    // csharpier-ignore-start
                     vm.CopyEvents.RegisterHandler(DoCopyEventsAsync);
                     vm.CopyPlaintextEvents.RegisterHandler(DoCopyPlaintextEventsAsync);
                     vm.CutEvents.RegisterHandler(DoCutEventsAsync);
                     vm.PasteEvents.RegisterHandler(DoPasteEventsAsync);
                     vm.ShowPasteOverDialog.RegisterHandler(DoShowPasteOverDialogAsync);
                     vm.ShowFileModifiedDialog.RegisterHandler(DoShowFileModifiedDialogAsync);
+                    vm.ShowSpellcheckDialog.RegisterHandler(DoShowDialogAsync<SpellcheckDialog, SpellcheckDialogViewModel>);
                     vm.SaveFrameAs.RegisterHandler(DoShowSaveFrameAsDialogAsync);
                     vm.CopyFrame.RegisterHandler(DoCopyFrameAsync);
+                    // csharpier-ignore-end
 
                     // Register keybinds
                     vm.KeybindService.KeybindRegistrar.OnKeybindsChanged += (_, _) =>

@@ -351,4 +351,7 @@
     <data name="Editor_Menu_SplitLineAtCursorKeepTimes" xml:space="preserve">
         <value>Split Line at Cursor (Keep Times)</value>
     </data>
+    <data name="Editor_Menu_SpellcheckLine" xml:space="preserve">
+        <value>Spellcheck This Line</value>
+    </data>
 </root>

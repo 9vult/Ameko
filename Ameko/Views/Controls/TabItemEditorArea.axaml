@@ -219,6 +219,10 @@
                      IsUndoEnabled="False">
                 <TextBox.ContextMenu>
                     <ContextMenu>
+                        <MenuItem Header="{x:Static i18n:Resources.Editor_Menu_SpellcheckLine}"
+                                  Icon="{icons:MaterialIconExt Kind=Spellcheck}"
+                                  Command="{Binding SpellcheckEventCommand}" />
+                        <Separator />
                         <MenuItem Header="{x:Static i18n:Resources.Editor_Menu_SplitLineAtCursor}"
                                   Icon="{icons:MaterialIconExt Kind=CallSplit}"
                                   Command="{Binding SplitEventsAtCursorCommand}" />

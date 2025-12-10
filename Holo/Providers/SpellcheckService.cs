@@ -2,6 +2,7 @@
 
 using System.IO.Abstractions;
 using System.Text.RegularExpressions;
+using AssCS;
 using AssCS.Utilities;
 using Holo.Configuration;
 using Holo.Models;
@@ -22,21 +23,15 @@ public partial class SpellcheckService(
     private static readonly string[] EffectHeuristics = ["fx", "karaoke", "code"];
     private const string TypesettingHeuristic = @"\pos";
 
+    private static readonly string[] Newlines = ["\\N", "\\n"];
+    private const string Space = " ";
+
     private WordList _dictionary = WordList.CreateFromWords([]); // Empty
 
     public SpellcheckLanguage CurrentLanguage { get; private set; } =
         SpellcheckLanguage.AvailableLanguages[0];
 
-    /// <summary>
-    /// Check the current document,
-    /// using basic heuristics to exclude assumed typesetting events
-    /// </summary>
-    /// <remarks>
-    ///<b>THIS METHOD IS NAIVE!</b> It uses spaces to find word boundaries.
-    /// In the future, it may be worth looking into additional libraries,
-    /// like ICU4N's BreakIterator, to find word boundaries in a fully
-    /// language-agnostic way.
-    /// </remarks>
+    /// <inheritdoc />
     public IEnumerable<SpellcheckSuggestion> CheckSpelling()
     {
         var document = projectProvider.Current.WorkingSpace?.Document;
@@ -51,12 +46,9 @@ public partial class SpellcheckService(
                 !e.Text.Contains(TypesettingHeuristic, StringComparison.CurrentCultureIgnoreCase)
             );
 
-        const string space = " ";
-        string[] newlines = ["\\N", "\\n"];
-
         foreach (var @event in candidates)
         {
-            var cleanText = @event.GetStrippedText().ReplaceMany(newlines, space).Trim();
+            var cleanText = @event.GetStrippedText().ReplaceMany(Newlines, Space).Trim();
             var wordMatches = WordRegex().Matches(cleanText);
 
             foreach (Match match in wordMatches)
@@ -78,9 +70,31 @@ public partial class SpellcheckService(
         }
     }
 
-    /// <summary>
-    /// Rebuild the spellcheck dictionary using the current culture and custom words
-    /// </summary>
+    /// <inheritdoc />
+    public IEnumerable<SpellcheckSuggestion> CheckSpelling(Event @event)
+    {
+        var cleanText = @event.GetStrippedText().ReplaceMany(Newlines, Space).Trim();
+        var wordMatches = WordRegex().Matches(cleanText);
+
+        foreach (Match match in wordMatches)
+        {
+            var word = match.Value;
+            if (string.IsNullOrWhiteSpace(word))
+                continue;
+            if (_dictionary.Check(word))
+                continue;
+
+            // Not in the dictionary
+            yield return new SpellcheckSuggestion
+            {
+                EventId = @event.Id,
+                Word = word,
+                Suggestions = _dictionary.Suggest(word).ToList(),
+            };
+        }
+    }
+
+    /// <inheritdoc />
     public void RebuildDictionary()
     {
         var culture = projectProvider.Current.SpellcheckCulture ?? configuration.SpellcheckCulture;

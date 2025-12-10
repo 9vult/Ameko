@@ -710,5 +710,11 @@ namespace Ameko.I18N {
                 return ResourceManager.GetString("Editor_Menu_SplitLineAtCursorKeepTimes", resourceCulture);
             }
         }
+        
+        public static string Editor_Menu_SpellcheckLine {
+            get {
+                return ResourceManager.GetString("Editor_Menu_SpellcheckLine", resourceCulture);
+            }
+        }
     }
 }
