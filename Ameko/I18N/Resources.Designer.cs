@@ -698,5 +698,17 @@ namespace Ameko.I18N {
                 return ResourceManager.GetString("Menu_IssueTracker", resourceCulture);
             }
         }
+        
+        public static string Editor_Menu_SplitLineAtCursor {
+            get {
+                return ResourceManager.GetString("Editor_Menu_SplitLineAtCursor", resourceCulture);
+            }
+        }
+        
+        public static string Editor_Menu_SplitLineAtCursorKeepTimes {
+            get {
+                return ResourceManager.GetString("Editor_Menu_SplitLineAtCursorKeepTimes", resourceCulture);
+            }
+        }
     }
 }

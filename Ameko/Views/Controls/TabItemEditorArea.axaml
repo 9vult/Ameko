@@ -216,7 +216,18 @@
                      MinLines="1"
                      FontFamily="{StaticResource ZenKakuGothicNew}"
                      TextWrapping="Wrap"
-                     IsUndoEnabled="False" />
+                     IsUndoEnabled="False">
+                <TextBox.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="{x:Static i18n:Resources.Editor_Menu_SplitLineAtCursor}"
+                                  Icon="{icons:MaterialIconExt Kind=CallSplit}"
+                                  Command="{Binding SplitEventsAtCursorCommand}" />
+                        <MenuItem Header="{x:Static i18n:Resources.Editor_Menu_SplitLineAtCursorKeepTimes}"
+                                  Icon="{icons:MaterialIconExt Kind=CallSplit}"
+                                  Command="{Binding SplitEventsAtCursorKeepTimesCommand}" />
+                    </ContextMenu>
+                </TextBox.ContextMenu>
+            </TextBox>
         </Grid>
     </DockPanel>
 </UserControl>

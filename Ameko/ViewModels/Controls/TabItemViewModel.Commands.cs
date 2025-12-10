@@ -354,6 +354,64 @@ public partial class TabItemViewModel : ViewModelBase
     }
 
     /// <summary>
+    /// Split events at cursor
+    /// </summary>
+    private ReactiveCommand<Unit, Unit> CreateSplitEventsAtCursorCommand()
+    {
+        return ReactiveCommand.Create(() =>
+        {
+            var selectionManager = Workspace.SelectionManager;
+
+            if (selectionManager.SelectedEventCollection.Count == 0)
+                return;
+
+            var newEvents = Workspace
+                .Document.EventManager.Split(selectionManager.ActiveEvent.Id, EditBoxSelectionStart)
+                .ToList();
+
+            if (newEvents.Count == 0)
+                return;
+
+            Workspace.Commit(
+                [.. selectionManager.SelectedEventCollection, .. newEvents],
+                ChangeType.ComplexEvent
+            );
+            selectionManager.Select(newEvents.Last());
+        });
+    }
+
+    /// <summary>
+    /// Split events at cursor, keeping times
+    /// </summary>
+    private ReactiveCommand<Unit, Unit> CreateSplitEventsAtCursorKeepTimesCommand()
+    {
+        return ReactiveCommand.Create(() =>
+        {
+            var selectionManager = Workspace.SelectionManager;
+
+            if (selectionManager.SelectedEventCollection.Count == 0)
+                return;
+
+            var newEvents = Workspace
+                .Document.EventManager.Split(
+                    selectionManager.ActiveEvent.Id,
+                    EditBoxSelectionStart,
+                    keepTimes: true
+                )
+                .ToList();
+
+            if (newEvents.Count == 0)
+                return;
+
+            Workspace.Commit(
+                [.. selectionManager.SelectedEventCollection, .. newEvents],
+                ChangeType.ComplexEvent
+            );
+            selectionManager.Select(newEvents.Last());
+        });
+    }
+
+    /// <summary>
     /// Get or Create the next event in the document
     /// </summary>
     private ReactiveCommand<Unit, Unit> CreateGetOrCreateAfterCommand()

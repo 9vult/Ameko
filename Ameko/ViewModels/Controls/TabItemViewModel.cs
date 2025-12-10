@@ -42,6 +42,7 @@ public partial class TabItemViewModel : ViewModelBase
 
     #region Commands
 
+    // Grid
     [KeybindTarget("ameko.event.copy", "Ctrl+C", KeybindContext.Grid)]
     public ICommand CopyEventsCommand { get; }
 
@@ -85,6 +86,13 @@ public partial class TabItemViewModel : ViewModelBase
     [KeybindTarget("ameko.event.toggleComment", KeybindContext.Grid)]
     public ICommand ToggleCommentCommand { get; }
     public ICommand ExecuteScriptCommand { get; }
+
+    // Editor
+    [KeybindTarget("ameko.event.splitCursor", KeybindContext.Grid)]
+    public ICommand SplitEventsAtCursorCommand { get; }
+
+    [KeybindTarget("ameko.event.splitCursor.keepTimes", KeybindContext.Grid)]
+    public ICommand SplitEventsAtCursorKeepTimesCommand { get; }
 
     // Video
     [KeybindTarget("ameko.video.play", KeybindContext.Video)]
@@ -225,6 +233,7 @@ public partial class TabItemViewModel : ViewModelBase
         #endregion
 
         #region Commands
+        // Grid
         CopyEventsCommand = CreateCopyEventsCommand();
         CutEventsCommand = CreateCutEventsCommand();
         PasteEventsCommand = CreatePasteEventsCommand();
@@ -245,6 +254,10 @@ public partial class TabItemViewModel : ViewModelBase
         ShiftReferenceBackwardCommand = CreateShiftReferenceBackwardCommand();
 
         ExecuteScriptCommand = CreateExecuteScriptCommand();
+
+        // Editor
+        SplitEventsAtCursorCommand = CreateSplitEventsAtCursorCommand();
+        SplitEventsAtCursorKeepTimesCommand = CreateSplitEventsAtCursorKeepTimesCommand();
 
         // Video
         PlayPauseCommand = CreatePlayPauseCommand();

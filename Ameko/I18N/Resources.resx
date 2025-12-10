@@ -345,4 +345,10 @@
     <data name="Menu_IssueTracker" xml:space="preserve">
         <value>_Issue Tracker</value>
     </data>
+    <data name="Editor_Menu_SplitLineAtCursor" xml:space="preserve">
+        <value>Split Line at Cursor</value>
+    </data>
+    <data name="Editor_Menu_SplitLineAtCursorKeepTimes" xml:space="preserve">
+        <value>Split Line at Cursor (Keep Times)</value>
+    </data>
 </root>
