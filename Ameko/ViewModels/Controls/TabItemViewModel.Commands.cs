@@ -183,12 +183,10 @@ public partial class TabItemViewModel : ViewModelBase
             if (selection.Count == 0)
                 return;
 
-            var events = selection
-                .Select(@event => Workspace.Document.EventManager.Duplicate(@event))
-                .ToList();
+            var clones = Workspace.Document.EventManager.Duplicate(selection);
 
-            Workspace.Commit(events, ChangeType.AddEvent);
-            Workspace.SelectionManager.Select(events.Last());
+            Workspace.Commit(clones, ChangeType.AddEvent);
+            Workspace.SelectionManager.Select(clones.Last());
         });
     }
 

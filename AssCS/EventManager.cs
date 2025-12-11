@@ -696,6 +696,45 @@ public class EventManager : BindableBase
     }
 
     /// <summary>
+    /// Duplicate events
+    /// </summary>
+    /// <param name="targets">Events to duplicate</param>
+    /// <returns>The duplicate events</returns>
+    /// <remarks>Relies on <see cref="Event.Index"/> being set to determine order</remarks>
+    public IList<Event> Duplicate(IList<Event> targets)
+    {
+        if (targets.Count == 0)
+            return [];
+
+        if (targets.Count == 1)
+            return [Duplicate(targets[0])];
+
+        targets = targets.OrderBy(e => e.Index).ToList();
+
+        // Test if the targets are adjacent (5, 6, 7, 8...) rather than random (5, 8, 13...)
+        var areAdjacent = targets
+            .Zip(targets.Skip(1), (a, b) => b.Index - a.Index == 1)
+            .All(x => x);
+
+        var clones = targets.Select(e => e.Clone(NextId)).ToList();
+
+        // Add in A B C A B C order
+        if (areAdjacent)
+        {
+            AddAfter(targets.Last().Id, clones);
+            return clones;
+        }
+
+        // Add in A A B B C C order
+        for (var i = 0; i < targets.Count; i++)
+        {
+            AddAfter(targets[i].Id, clones[i]);
+        }
+
+        return clones;
+    }
+
+    /// <summary>
     /// Insert a new event before the target event
     /// </summary>
     /// <param name="target">Child event</param>

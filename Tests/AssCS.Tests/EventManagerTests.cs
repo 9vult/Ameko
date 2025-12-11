@@ -228,7 +228,7 @@ public class EventManagerTests
     }
 
     [Test]
-    public async Task Duplicate()
+    public async Task Duplicate_One()
     {
         var em = new EventManager();
         var original = new Event(1) { Text = "Original" };
@@ -241,6 +241,43 @@ public class EventManagerTests
         await Assert.That(result).IsTrue();
         if (result)
             await Assert.That(after!.Text).IsEqualTo(original.Text);
+    }
+
+    [Test]
+    public async Task Duplicate_Multiple_Adjacent()
+    {
+        var em = new EventManager();
+        var event1 = new Event(em.NextId) { Text = "One", Index = 1 };
+        var event2 = new Event(em.NextId) { Text = "Two", Index = 2 };
+        var event3 = new Event(em.NextId) { Text = "Three", Index = 3 };
+        var targets = new List<Event> { event1, event2, event3 };
+        em.AddFirst(targets, false);
+
+        var clones = em.Duplicate(targets);
+
+        // A B C A B C order
+        await Assert.That(clones.Count).IsEqualTo(targets.Count);
+        await Assert.That(em.TryGetAfter(event3.Id, out var clone1)).IsTrue();
+        await Assert.That(clone1!.IsCongruentWith(event1)).IsTrue();
+    }
+
+    [Test]
+    public async Task Duplicate_Multiple_NotAdjacent()
+    {
+        var em = new EventManager();
+        var event1 = new Event(em.NextId) { Text = "One", Index = 1 };
+        var event2 = new Event(em.NextId) { Text = "Two", Index = 2 };
+        var event3 = new Event(em.NextId) { Text = "Three", Index = 3 };
+        var events = new List<Event> { event1, event2, event3 };
+        em.AddFirst(events, false);
+
+        var targets = new List<Event> { event1, event3 };
+        var clones = em.Duplicate(targets);
+
+        // A A B B C C order
+        await Assert.That(clones.Count).IsEqualTo(targets.Count);
+        await Assert.That(em.TryGetAfter(event1.Id, out var clone1)).IsTrue();
+        await Assert.That(clone1!.IsCongruentWith(event1)).IsTrue();
     }
 
     [Test]
