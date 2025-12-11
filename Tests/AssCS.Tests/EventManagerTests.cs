@@ -301,7 +301,7 @@ public class EventManagerTests
         };
         em.AddFirst(testEvent);
 
-        var result = em.Split(testEvent.Id).ToList();
+        var result = em.Split(testEvent.Id);
 
         await Assert.That(em.TryGet(testEvent.Id, out _)).IsFalse();
         await Assert.That(result.Count).IsEqualTo(2);
@@ -330,7 +330,7 @@ public class EventManagerTests
         };
         em.AddFirst(testEvent);
 
-        var result = em.Split(testEvent.Id).ToList();
+        var result = em.Split(testEvent.Id);
 
         await Assert.That(em.TryGet(testEvent.Id, out _)).IsFalse();
         await Assert.That(result.Count).IsEqualTo(1);
@@ -376,7 +376,7 @@ public class EventManagerTests
         };
         em.AddFirst(testEvent);
 
-        var result = em.Split(testEvent.Id, keepTimes: true).ToList();
+        var result = em.Split(testEvent.Id, keepTimes: true);
 
         await Assert.That(em.TryGet(testEvent.Id, out _)).IsFalse();
         await Assert.That(result.Count).IsEqualTo(2);
@@ -405,7 +405,7 @@ public class EventManagerTests
         };
         em.AddFirst(testEvent);
 
-        var result = em.Split(testEvent.Id, 6).ToList();
+        var result = em.Split(testEvent.Id, 6);
 
         await Assert.That(em.TryGet(testEvent.Id, out _)).IsFalse();
         await Assert.That(result.Count).IsEqualTo(2);
@@ -441,7 +441,7 @@ public class EventManagerTests
 
         var splitTime = Time.FromMillis(1500);
 
-        var result = em.Split(testEvent.Id, 6, false, splitTime).ToList();
+        var result = em.Split(testEvent.Id, 6, false, splitTime);
 
         await Assert.That(em.TryGet(testEvent.Id, out _)).IsFalse();
         await Assert.That(result.Count).IsEqualTo(2);
@@ -478,7 +478,7 @@ public class EventManagerTests
         };
         em.AddFirst(testEvent);
 
-        var result = em.Split(testEvent.Id, 6, keepTimes: true).ToList();
+        var result = em.Split(testEvent.Id, 6, keepTimes: true);
 
         await Assert.That(em.TryGet(testEvent.Id, out _)).IsFalse();
         await Assert.That(result.Count).IsEqualTo(2);

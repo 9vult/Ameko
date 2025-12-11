@@ -436,7 +436,7 @@ public class EventManager : BindableBase
     /// </remarks>
     /// <exception cref="ArgumentException">If an event in the <paramref name="list"/> is not found</exception>
     /// <seealso cref="Replace(int, Event)"/>
-    public void ReplaceInPlace(IEnumerable<Event> list)
+    public void ReplaceInPlace(IList<Event> list)
     {
         foreach (var e in list)
         {
@@ -774,7 +774,7 @@ public class EventManager : BindableBase
     /// <param name="id">ID of the event to split</param>
     /// <param name="keepTimes">All resulting events have the same start and end times?</param>
     /// <returns>List of events created by the split</returns>
-    public IEnumerable<Event> Split(int id, bool keepTimes = false)
+    public List<Event> Split(int id, bool keepTimes = false)
     {
         if (!TryGet(id, out var @event) || string.IsNullOrEmpty(@event.Text))
             return [];
@@ -830,12 +830,7 @@ public class EventManager : BindableBase
     /// <param name="keepTimes">All resulting events have the same start and end times?</param>
     /// <param name="splitTime">Optionally specify a time to use</param>
     /// <returns>List of events created by the split</returns>
-    public IEnumerable<Event> Split(
-        int id,
-        int index,
-        bool keepTimes = false,
-        Time? splitTime = null
-    )
+    public List<Event> Split(int id, int index, bool keepTimes = false, Time? splitTime = null)
     {
         if (!TryGet(id, out var @event) || string.IsNullOrEmpty(@event.Text))
             return [];

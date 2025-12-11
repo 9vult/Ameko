@@ -430,13 +430,11 @@ public partial class TabItemViewModel : ViewModelBase
             if (selectionManager.SelectedEventCollection.Count == 0)
                 return;
 
-            var newEvents = Workspace
-                .Document.EventManager.Split(
-                    selectionManager.ActiveEvent.Id,
-                    EditBoxSelectionStart,
-                    keepTimes: true
-                )
-                .ToList();
+            var newEvents = Workspace.Document.EventManager.Split(
+                selectionManager.ActiveEvent.Id,
+                EditBoxSelectionStart,
+                keepTimes: true
+            );
 
             if (newEvents.Count == 0)
                 return;
