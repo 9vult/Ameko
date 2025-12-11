@@ -313,20 +313,20 @@ public partial class TabItemViewModel : ViewModelBase
         {
             var selectionManager = Workspace.SelectionManager;
 
-            if (selectionManager.SelectedEventCollection.Count != 2)
-                return;
-
             var useSoftBreaks =
                 ProjectProvider.Current.UseSoftLinebreaks ?? Configuration.UseSoftLinebreaks;
 
-            var one = selectionManager.SelectedEventCollection[0];
-            var two = selectionManager.SelectedEventCollection[1];
-
-            var newEvent = Workspace.Document.EventManager.Merge(one.Id, two.Id, useSoftBreaks);
+            var newEvent = Workspace.Document.EventManager.Merge(
+                selectionManager.SelectedEventCollection,
+                useSoftBreaks
+            );
             if (newEvent is null)
                 return;
 
-            Workspace.Commit([one, two, newEvent], ChangeType.ComplexEvent);
+            Workspace.Commit(
+                [.. selectionManager.SelectedEventCollection, newEvent],
+                ChangeType.ComplexEvent
+            );
             selectionManager.Select(newEvent);
         });
     }

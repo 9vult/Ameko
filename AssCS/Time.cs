@@ -173,6 +173,11 @@ public class Time : BindableBase, IComparable<Time>
     public static Time FromTime(Time t) => new(t);
 
     /// <summary>
+    /// Create a Time object at t=0
+    /// </summary>
+    public static Time Zero => new(TimeSpan.Zero);
+
+    /// <summary>
     /// Initialize a zero time
     /// </summary>
     public Time()

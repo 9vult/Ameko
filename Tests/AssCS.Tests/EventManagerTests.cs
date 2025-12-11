@@ -519,7 +519,7 @@ public class EventManagerTests
     }
 
     [Test]
-    public async Task Merge_AreAdjacent_Forward()
+    public async Task Merge()
     {
         var em = new EventManager();
         var eventA = new Event(5)
@@ -537,34 +537,7 @@ public class EventManagerTests
         em.AddFirst(eventA);
         em.AddAfter(eventA.Id, eventB);
 
-        var result = em.Merge(eventA.Id, eventB.Id);
-
-        await Assert.That(result).IsNotNull();
-        await Assert.That(result.Text).IsEqualTo("Hello\\NWorld");
-        await Assert.That(result.Start).IsEqualTo(eventA.Start);
-        await Assert.That(result.End).IsEqualTo(eventB.End);
-    }
-
-    [Test]
-    public async Task Merge_AreAdjacent_Backward()
-    {
-        var em = new EventManager();
-        var eventA = new Event(5)
-        {
-            Text = "Hello",
-            Start = Time.FromMillis(0),
-            End = Time.FromMillis(1000),
-        };
-        var eventB = new Event(10)
-        {
-            Text = "World",
-            Start = eventA.End,
-            End = Time.FromMillis(2000),
-        };
-        em.AddFirst(eventA);
-        em.AddAfter(eventA.Id, eventB);
-
-        var result = em.Merge(eventB.Id, eventA.Id);
+        var result = em.Merge([eventA, eventB]);
 
         await Assert.That(result).IsNotNull();
         await Assert.That(result.Text).IsEqualTo("Hello\\NWorld");
@@ -591,7 +564,7 @@ public class EventManagerTests
         em.AddFirst(eventA);
         em.AddAfter(eventA.Id, eventB);
 
-        var result = em.Merge(eventA.Id, eventB.Id, true);
+        var result = em.Merge([eventA, eventB], true);
 
         await Assert.That(result).IsNotNull();
         await Assert.That(result.Text).IsEqualTo("Hello\\nWorld");
@@ -600,41 +573,10 @@ public class EventManagerTests
     }
 
     [Test]
-    public async Task Merge_NotAdjacent()
+    public async Task Merge_Empty()
     {
         var em = new EventManager();
-        var eventA = new Event(5)
-        {
-            Text = "Hello",
-            Start = Time.FromMillis(0),
-            End = Time.FromMillis(1000),
-        };
-        var eventB = new Event(10)
-        {
-            Text = "Cool",
-            Start = eventA.End,
-            End = Time.FromMillis(2000),
-        };
-        var eventC = new Event(15)
-        {
-            Text = "World",
-            Start = eventB.End,
-            End = Time.FromMillis(3000),
-        };
-        em.AddFirst(eventA);
-        em.AddAfter(eventA.Id, eventB);
-        em.AddAfter(eventB.Id, eventC);
-
-        var result = em.Merge(eventA.Id, eventC.Id);
-
-        await Assert.That(result).IsNull();
-    }
-
-    [Test]
-    public async Task Merge_NotExist()
-    {
-        var em = new EventManager();
-        var result = em.Merge(999, 1);
+        var result = em.Merge([]);
 
         await Assert.That(result).IsNull();
     }
@@ -658,7 +600,7 @@ public class EventManagerTests
         em.AddFirst(eventA);
         em.AddAfter(eventA.Id, eventB);
 
-        em.Merge(eventA.Id, eventB.Id);
+        em.Merge([eventA, eventB]);
 
         await Assert.That(em.TryGet(eventA.Id, out _)).IsFalse();
         await Assert.That(em.TryGet(eventB.Id, out _)).IsFalse();

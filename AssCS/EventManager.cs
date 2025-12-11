@@ -3,6 +3,7 @@
 using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
+using System.Text;
 using AssCS.History;
 using AssCS.Utilities;
 
@@ -906,50 +907,41 @@ public class EventManager : BindableBase
     }
 
     /// <summary>
-    /// Merge two adjacent events together
+    /// Merge events together
     /// </summary>
-    /// <remarks>The events must be directly adjacent</remarks>
-    /// <param name="a">IDs of the first event</param>
-    /// <param name="b">IDs of the second event</param>
+    /// <param name="events">Events to merge</param>
     /// <param name="useSoftLinebreaks">Whether to use soft linebreaks or not</param>
     /// <returns>The new event, or <see langword="null"/> on failure</returns>
-    /// <remarks>The events must be adjacent. Non-adjacency will result in failure.</remarks>
-    public Event? Merge(int a, int b, bool useSoftLinebreaks = false)
+    /// <remarks>Relies on <see cref="Event.Index"/> being set to determine order</remarks>
+    public Event? Merge(IList<Event> events, bool useSoftLinebreaks = false)
     {
         var newline = !useSoftLinebreaks ? @"\N" : @"\n";
 
-        if (!TryGet(a, out var first))
-            return null;
-        if (!TryGet(b, out var second))
+        if (events.Count == 0)
             return null;
 
-        var afterFirst = GetAfter(a);
-        var beforeFirst = GetBefore(a);
+        events = events.OrderBy(e => e.Index).ThenBy(e => e.Start).ToList();
 
-        Event result;
-        if (afterFirst is not null && afterFirst.Equals(second))
+        List<string> content = [];
+        var start = events[0].Start;
+        var end = events[0].End;
+
+        foreach (var @event in events)
         {
-            result = Event.FromEvent(NextId, first);
-            result.Start = first.Start;
-            result.End = second.End;
-            result.Text = $"{first.Text}{newline}{second.Text}";
-
-            AddAfter(b, result);
-            Remove(a);
-            Remove(b);
-            return result;
+            content.Add(@event.Text);
+            if (@event.Start < start)
+                start = @event.Start;
+            if (@event.End > end)
+                end = @event.End;
         }
 
-        if (beforeFirst is null || !beforeFirst.Equals(second))
-            return null;
+        var result = Event.FromEvent(NextId, events[0]);
+        result.Start = start;
+        result.End = end;
+        result.Text = string.Join(newline, content);
 
-        result = Event.FromEvent(NextId, first);
-        result.Start = second.Start;
-        result.End = first.End;
-        result.Text = $"{second.Text}{newline}{first.Text}";
-        AddAfter(a, result);
-        Remove(a);
-        Remove(b);
+        AddAfter(events[0].Id, result);
+        Remove(events.Select(e => e.Id).ToList());
         return result;
     }
 
