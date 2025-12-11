@@ -110,6 +110,14 @@
 			    <MenuItem Header="{x:Static i18n:Resources.EventsGrid_Menu_InsertAfter}"
 			              Icon="{icons:MaterialIconExt Kind=ArrowCollapseDown}"
 			              Command="{Binding InsertEventAfterCommand}" />
+                <MenuItem Header="{x:Static i18n:Resources.EventsGrid_Menu_InsertBeforeAtVideoTime}"
+                          Icon="{icons:MaterialIconExt Kind=ArrowCollapseUp}"
+                          IsEnabled="{Binding Workspace.MediaController.IsVideoLoaded}"
+                          Command="{Binding InsertEventBeforeAtVideoTimeCommand}" />
+                <MenuItem Header="{x:Static i18n:Resources.EventsGrid_Menu_InsertAfterAtVideoTime}"
+                          Icon="{icons:MaterialIconExt Kind=ArrowCollapseDown}"
+                          IsEnabled="{Binding Workspace.MediaController.IsVideoLoaded}"
+                          Command="{Binding InsertEventAfterAtVideoTimeCommand}" />
 			    <Separator />
 			    <MenuItem Header="{x:Static i18n:Resources.EventsGrid_Menu_Copy}"
 			              Icon="{icons:MaterialIconExt Kind=ContentCopy}"

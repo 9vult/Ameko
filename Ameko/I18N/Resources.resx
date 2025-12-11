@@ -354,4 +354,10 @@
     <data name="Editor_Menu_SpellcheckLine" xml:space="preserve">
         <value>Spellcheck This Line</value>
     </data>
+    <data name="EventsGrid_Menu_InsertBeforeAtVideoTime" xml:space="preserve">
+        <value>Insert Before at Video Time</value>
+    </data>
+    <data name="EventsGrid_Menu_InsertAfterAtVideoTime" xml:space="preserve">
+        <value>Insert After at Video Time</value>
+    </data>
 </root>

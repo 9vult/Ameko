@@ -716,5 +716,17 @@ namespace Ameko.I18N {
                 return ResourceManager.GetString("Editor_Menu_SpellcheckLine", resourceCulture);
             }
         }
+        
+        public static string EventsGrid_Menu_InsertBeforeAtVideoTime {
+            get {
+                return ResourceManager.GetString("EventsGrid_Menu_InsertBeforeAtVideoTime", resourceCulture);
+            }
+        }
+        
+        public static string EventsGrid_Menu_InsertAfterAtVideoTime {
+            get {
+                return ResourceManager.GetString("EventsGrid_Menu_InsertAfterAtVideoTime", resourceCulture);
+            }
+        }
     }
 }

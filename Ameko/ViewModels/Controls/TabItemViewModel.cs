@@ -68,6 +68,12 @@ public partial class TabItemViewModel : ViewModelBase
     [KeybindTarget("ameko.event.insertAfter", KeybindContext.Grid)]
     public ICommand InsertEventAfterCommand { get; }
 
+    [KeybindTarget("ameko.event.insertBefore.videoTime", KeybindContext.Grid)]
+    public ICommand InsertEventBeforeAtVideoTimeCommand { get; }
+
+    [KeybindTarget("ameko.event.insertAfter.videoTime", KeybindContext.Grid)]
+    public ICommand InsertEventAfterAtVideoTimeCommand { get; }
+
     [KeybindTarget("ameko.event.merge", KeybindContext.Grid)]
     public ICommand MergeEventsCommand { get; }
 
@@ -247,6 +253,8 @@ public partial class TabItemViewModel : ViewModelBase
         DuplicateEventsCommand = CreateDuplicateEventsCommand();
         InsertEventBeforeCommand = CreateInsertEventBeforeCommand();
         InsertEventAfterCommand = CreateInsertEventAfterCommand();
+        InsertEventBeforeAtVideoTimeCommand = CreateInsertEventBeforeAtVideoTimeCommand();
+        InsertEventAfterAtVideoTimeCommand = CreateInsertEventAfterAtVideoTimeCommand();
         MergeEventsCommand = CreateMergeEventsCommand();
         SplitEventsCommand = CreateSplitEventsCommand();
         SplitEventsKeepTimesCommand = CreateSplitEventsKeepTimesCommand();

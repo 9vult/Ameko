@@ -223,6 +223,44 @@ public partial class TabItemViewModel : ViewModelBase
     }
 
     /// <summary>
+    /// Insert event before
+    /// </summary>
+    private ReactiveCommand<Unit, Unit> CreateInsertEventBeforeAtVideoTimeCommand()
+    {
+        return ReactiveCommand.Create(() =>
+        {
+            if (!Workspace.MediaController.IsVideoLoaded)
+                return;
+            var @event = Workspace.Document.EventManager.InsertBefore(
+                Workspace.SelectionManager.ActiveEvent
+            );
+            @event.Start = Workspace.MediaController.CurrentTime ?? Time.FromSeconds(0);
+            @event.End = @event.Start + Time.FromSeconds(5);
+            Workspace.Commit(@event, ChangeType.AddEvent);
+            Workspace.SelectionManager.Select(@event);
+        });
+    }
+
+    /// <summary>
+    /// Insert event after
+    /// </summary>
+    private ReactiveCommand<Unit, Unit> CreateInsertEventAfterAtVideoTimeCommand()
+    {
+        return ReactiveCommand.Create(() =>
+        {
+            if (!Workspace.MediaController.IsVideoLoaded)
+                return;
+            var @event = Workspace.Document.EventManager.InsertAfter(
+                Workspace.SelectionManager.ActiveEvent
+            );
+            @event.Start = Workspace.MediaController.CurrentTime ?? Time.FromSeconds(0);
+            @event.End = @event.Start + Time.FromSeconds(5);
+            Workspace.Commit(@event, ChangeType.AddEvent);
+            Workspace.SelectionManager.Select(@event);
+        });
+    }
+
+    /// <summary>
     /// Delete events
     /// </summary>
     private ReactiveCommand<Unit, Unit> CreateDeleteEventsCommand()
