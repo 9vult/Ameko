@@ -94,7 +94,7 @@ public class HistoryManagerTests
         await Assert.That(lastCommit.Type).IsEqualTo(ChangeType.ModifyEventText);
         await Assert.That(lastCommit.Events[eventA.Id].Text).IsEqualTo("Stark");
 
-        hm.Undo();
+        hm.Undo(out _, out _);
         lastCommit = hm.PeekHistory();
         await Assert.That(lastCommit.Type).IsEqualTo(ChangeType.ModifyEventText); // Make sure there were 2 modify commits
         await Assert.That(lastCommit.Events[eventA.Id].Text).IsEqualTo("Fern");
@@ -125,7 +125,7 @@ public class HistoryManagerTests
         await Assert.That(lastCommit.Type).IsEqualTo(ChangeType.ModifyEventText);
         await Assert.That(lastCommit.Events[eventA.Id].Text).IsEqualTo("Stark");
 
-        hm.Undo();
+        hm.Undo(out _, out _);
         lastCommit = hm.PeekHistory();
         await Assert.That(lastCommit.Type).IsEqualTo(ChangeType.AddEvent); // Make sure there was only 1 modify commit
     }
@@ -216,7 +216,7 @@ public class HistoryManagerTests
         await Assert.That(lastCommit.Type).IsEqualTo(ChangeType.ModifyStyle);
         await Assert.That(lastCommit.Styles[0].Name).IsEqualTo("Jinkies!");
 
-        hm.Undo();
+        hm.Undo(out _, out _);
         lastCommit = hm.PeekHistory();
         await Assert.That(lastCommit.Type).IsEqualTo(ChangeType.ModifyStyle); // Make sure there were 2 modify commits
         await Assert.That(lastCommit.Styles[0].Name).IsEqualTo("Uncool!");
@@ -247,7 +247,7 @@ public class HistoryManagerTests
         await Assert.That(lastCommit.Type).IsEqualTo(ChangeType.ModifyStyle);
         await Assert.That(lastCommit.Styles[0].Name).IsEqualTo("Jinkies!");
 
-        hm.Undo();
+        hm.Undo(out _, out _);
         lastCommit = hm.PeekHistory();
         await Assert.That(lastCommit.Type).IsEqualTo(ChangeType.AddStyle); // Make sure there was only 1 modify commit
     }
@@ -264,7 +264,7 @@ public class HistoryManagerTests
         hm.Commit(ChangeType.AddEvent);
         await Assert.That(doc.EventManager.Events).Contains(event1);
 
-        hm.Undo();
+        hm.Undo(out _, out _);
 
         await Assert.That(doc.EventManager.Events).DoesNotContain(event1);
         await Assert.That(hm.CanRedo).IsTrue();
@@ -285,7 +285,7 @@ public class HistoryManagerTests
         hm.Commit(ChangeType.RemoveEvent);
         await Assert.That(doc.EventManager.Events).DoesNotContain(event1);
 
-        hm.Undo();
+        hm.Undo(out _, out _);
 
         await Assert.That(doc.EventManager.Events).Contains(event1);
         await Assert.That(hm.CanRedo).IsTrue();
@@ -306,7 +306,7 @@ public class HistoryManagerTests
         hm.Commit(ChangeType.ModifyEventText, event1);
         await Assert.That(doc.EventManager.Head.Text).IsEqualTo("Goodbye");
 
-        hm.Undo();
+        hm.Undo(out _, out _);
 
         await Assert.That(doc.EventManager.Head.Text).IsEqualTo("Hello");
         await Assert.That(hm.CanRedo).IsTrue();
@@ -326,7 +326,7 @@ public class HistoryManagerTests
         hm.Commit(ChangeType.AddStyle);
         await Assert.That(doc.StyleManager.TryGet(style1.Name, out _)).IsTrue();
 
-        hm.Undo();
+        hm.Undo(out _, out _);
 
         await Assert.That(doc.StyleManager.TryGet(style1.Name, out _)).IsFalse();
         await Assert.That(hm.CanRedo).IsTrue();
@@ -347,7 +347,7 @@ public class HistoryManagerTests
         hm.Commit(ChangeType.RemoveStyle);
         await Assert.That(doc.StyleManager.TryGet(style1.Name, out _)).IsFalse();
 
-        hm.Undo();
+        hm.Undo(out _, out _);
 
         await Assert.That(doc.StyleManager.TryGet(style1.Name, out _)).IsTrue();
         await Assert.That(hm.CanRedo).IsTrue();
@@ -369,7 +369,7 @@ public class HistoryManagerTests
         await Assert.That(doc.StyleManager.TryGet("Goodbye", out _)).IsTrue();
         await Assert.That(doc.StyleManager.TryGet("Hello", out _)).IsFalse();
 
-        hm.Undo();
+        hm.Undo(out _, out _);
 
         await Assert.That(doc.StyleManager.TryGet("Goodbye", out _)).IsFalse();
         await Assert.That(doc.StyleManager.TryGet("Hello", out _)).IsTrue();
@@ -390,13 +390,13 @@ public class HistoryManagerTests
         hm.Commit(ChangeType.AddEvent);
         await Assert.That(doc.EventManager.Events).Contains(event1);
 
-        hm.Undo();
+        hm.Undo(out _, out _);
         await Assert.That(doc.EventManager.Events).DoesNotContain(event1);
         await Assert.That(hm.CanRedo).IsTrue();
         var commit = hm.PeekFuture();
         await Assert.That(commit.Type).IsEqualTo(ChangeType.AddEvent);
 
-        hm.Redo();
+        hm.Redo(out _);
 
         await Assert.That(doc.EventManager.Events).Contains(event1);
         await Assert.That(hm.CanRedo).IsFalse();
@@ -417,13 +417,13 @@ public class HistoryManagerTests
         hm.Commit(ChangeType.RemoveEvent);
         await Assert.That(doc.EventManager.Events).DoesNotContain(event1);
 
-        hm.Undo();
+        hm.Undo(out _, out _);
         await Assert.That(doc.EventManager.Events).Contains(event1);
         await Assert.That(hm.CanRedo).IsTrue();
         var commit = hm.PeekFuture();
         await Assert.That(commit.Type).IsEqualTo(ChangeType.RemoveEvent);
 
-        hm.Redo();
+        hm.Redo(out _);
 
         await Assert.That(doc.EventManager.Events).DoesNotContain(event1);
         await Assert.That(hm.CanRedo).IsFalse();
@@ -444,13 +444,13 @@ public class HistoryManagerTests
         hm.Commit(ChangeType.ModifyEventText, event1);
         await Assert.That(doc.EventManager.Head.Text).IsEqualTo("Goodbye");
 
-        hm.Undo();
+        hm.Undo(out _, out _);
         await Assert.That(doc.EventManager.Head.Text).IsEqualTo("Hello");
         await Assert.That(hm.CanRedo).IsTrue();
         var commit = hm.PeekFuture();
         await Assert.That(commit.Type).IsEqualTo(ChangeType.ModifyEventText);
 
-        hm.Redo();
+        hm.Redo(out _);
 
         await Assert.That(doc.EventManager.Head.Text).IsEqualTo("Goodbye");
         await Assert.That(hm.CanRedo).IsFalse();
@@ -470,13 +470,13 @@ public class HistoryManagerTests
         hm.Commit(ChangeType.AddStyle);
         await Assert.That(doc.StyleManager.TryGet(style1.Name, out _)).IsTrue();
 
-        hm.Undo();
+        hm.Undo(out _, out _);
         await Assert.That(doc.StyleManager.TryGet(style1.Name, out _)).IsFalse();
         await Assert.That(hm.CanRedo).IsTrue();
         var commit = hm.PeekFuture();
         await Assert.That(commit.Type).IsEqualTo(ChangeType.AddStyle);
 
-        hm.Redo();
+        hm.Redo(out _);
 
         await Assert.That(doc.StyleManager.TryGet(style1.Name, out _)).IsTrue();
         await Assert.That(hm.CanRedo).IsFalse();
@@ -497,13 +497,13 @@ public class HistoryManagerTests
         hm.Commit(ChangeType.RemoveStyle);
         await Assert.That(doc.StyleManager.TryGet(style1.Name, out _)).IsFalse();
 
-        hm.Undo();
+        hm.Undo(out _, out _);
         await Assert.That(doc.StyleManager.TryGet(style1.Name, out _)).IsTrue();
         await Assert.That(hm.CanRedo).IsTrue();
         var commit = hm.PeekFuture();
         await Assert.That(commit.Type).IsEqualTo(ChangeType.RemoveStyle);
 
-        hm.Redo();
+        hm.Redo(out _);
 
         await Assert.That(doc.StyleManager.TryGet(style1.Name, out _)).IsFalse();
         await Assert.That(hm.CanRedo).IsFalse();
@@ -525,14 +525,14 @@ public class HistoryManagerTests
         await Assert.That(doc.StyleManager.TryGet("Goodbye", out _)).IsTrue();
         await Assert.That(doc.StyleManager.TryGet("Hello", out _)).IsFalse();
 
-        hm.Undo();
+        hm.Undo(out _, out _);
         await Assert.That(doc.StyleManager.TryGet("Goodbye", out _)).IsFalse();
         await Assert.That(doc.StyleManager.TryGet("Hello", out _)).IsTrue();
         await Assert.That(hm.CanRedo).IsTrue();
         var commit = hm.PeekFuture();
         await Assert.That(commit.Type).IsEqualTo(ChangeType.ModifyStyle);
 
-        hm.Redo();
+        hm.Redo(out _);
 
         await Assert.That(doc.StyleManager.TryGet("Goodbye", out _)).IsTrue();
         await Assert.That(doc.StyleManager.TryGet("Hello", out _)).IsFalse();

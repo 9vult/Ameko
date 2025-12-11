@@ -1,6 +1,7 @@
 ﻿// SPDX-License-Identifier: MPL-2.0
 
 using System.Collections.Concurrent;
+using System.Diagnostics.CodeAnalysis;
 
 namespace AssCS.History;
 
@@ -150,35 +151,49 @@ public class HistoryManager(
     /// Retrieve the latest commit from the Undo stack,
     /// apply its state, and add it to the Redo stack
     /// </summary>
-    /// <returns>The commit, or <see langword="null"/> on failure</returns>
-    public Commit? Undo()
+    /// <param name="applied">The commit that was applied (n-1)</param>
+    /// <param name="undone">The commit that was undone (n)</param>
+    /// <returns><see langword="true"/> on success</returns>
+    /// <exception cref="InvalidOperationException">If not enough commits are in the stack</exception>
+    public bool Undo(
+        [NotNullWhen(true)] out Commit? applied,
+        [NotNullWhen(true)] out Commit? undone
+    )
     {
-        if (!CanUndo || !_history.TryPop(out var top))
-            return null;
+        if (!CanUndo || !_history.TryPop(out undone))
+        {
+            applied = null;
+            undone = null;
+            return false;
+        }
 
-        _future.Push(top);
-        if (!_history.TryPeek(out var commit))
+        _future.Push(undone);
+        if (!_history.TryPeek(out applied))
             throw new InvalidOperationException("Undo failed, no commits in the undo stack!");
 
-        eventManager.RestoreState(commit);
-        styleManager.RestoreState(commit);
-        extradataManager.RestoreState(commit);
+        eventManager.RestoreState(applied);
+        styleManager.RestoreState(applied);
+        extradataManager.RestoreState(applied);
 
         LastCommitTime = DateTimeOffset.Now;
         LastCommitType = ChangeType.TimeMachine;
         NotifyAbilitiesChanged();
-        return commit;
+        return true;
     }
 
     /// <summary>
     /// Retrieve the latest commit from the Redo stack,
     /// apply its state, and add it to the Undo stack
     /// </summary>
-    /// <returns>The commit, or <see langword="null"/> on failure</returns>
-    public Commit? Redo()
+    /// <param name="commit">The commit that was applied</param>
+    /// <returns><see langword="true"/> on success</returns>
+    public bool Redo([NotNullWhen(true)] out Commit? commit)
     {
-        if (!CanRedo || !_future.TryPop(out var commit))
-            return null;
+        if (!CanRedo || !_future.TryPop(out commit))
+        {
+            commit = null;
+            return false;
+        }
 
         _history.Push(commit);
 
@@ -189,7 +204,7 @@ public class HistoryManager(
         LastCommitTime = DateTimeOffset.Now;
         LastCommitType = ChangeType.TimeMachine;
         NotifyAbilitiesChanged();
-        return commit;
+        return true;
     }
 
     public Commit PeekHistory()

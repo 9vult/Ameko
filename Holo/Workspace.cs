@@ -200,14 +200,24 @@ public class Workspace : BindableBase
             return;
         SelectionManager.BeginSelectionChange();
         _logger.LogTrace("Undoing");
-        var commit = Document.HistoryManager.Undo();
 
-        // Re-select
-        var selection = commit
-            ?.Selection?.Where(id => commit.Events.TryGetValue(id, out _))
-            .Select(id => commit.Events[id])
+        if (!Document.HistoryManager.Undo(out var applied, out var undone))
+        {
+            _logger.LogError("Undo failed");
+            return;
+        }
+
+        var currentSelection = SelectionManager.SelectedEventCollection.Select(e => e.Id).ToList();
+        var shouldChangeSelection = !(undone.Selection ?? []).SequenceEqual(currentSelection); // cross-reference undone commit's selection
+        var selectionIds = shouldChangeSelection ? undone.Selection ?? [] : currentSelection;
+
+        // Change selection to the committed state
+        var selection = selectionIds
+            .Where(id => applied.Events.TryGetValue(id, out _)) // use applied commit's events
+            .Select(id => applied.Events[id])
             .ToList();
-        if (selection?.Count > 0)
+
+        if (selection.Count > 0)
             SelectionManager.ForceSelect(selection[0], selection);
     }
 
@@ -217,14 +227,24 @@ public class Workspace : BindableBase
             return;
         SelectionManager.BeginSelectionChange();
         _logger.LogTrace("Redoing");
-        var commit = Document.HistoryManager.Redo();
 
-        // Re-select
-        var selection = commit
-            ?.Selection?.Where(id => commit.Events.TryGetValue(id, out _))
+        if (!Document.HistoryManager.Redo(out var commit))
+        {
+            _logger.LogError("Undo failed");
+            return;
+        }
+
+        var currentSelection = SelectionManager.SelectedEventCollection.Select(e => e.Id).ToList();
+        var shouldChangeSelection = !(commit.Selection ?? []).SequenceEqual(currentSelection);
+        var selectionIds = shouldChangeSelection ? commit.Selection ?? [] : currentSelection;
+
+        // Change selection to the committed state
+        var selection = selectionIds
+            .Where(id => commit.Events.TryGetValue(id, out _))
             .Select(id => commit.Events[id])
             .ToList();
-        if (selection?.Count > 0)
+
+        if (selection.Count > 0)
             SelectionManager.ForceSelect(selection[0], selection);
     }
 
