@@ -89,16 +89,34 @@ pub const BuffersContext = struct {
     }
 };
 
+pub const AudioDrawingContext = struct {
+    buffer: ?*frames.Bitmap,
+    waveform_height: usize,
+    amplitude_scale: f32,
+    pixel_ms: f32,
+
+    pub fn Init() AudioDrawingContext {
+        return AudioDrawingContext{
+            .buffer = null,
+            .waveform_height = 120,
+            .amplitude_scale = 2.0,
+            .pixel_ms = 2.0,
+        };
+    }
+};
+
 pub const GlobalContext = struct {
     ffms: FFMSContext,
     libass: LibassContext,
     buffers: BuffersContext,
+    audioDrawing: AudioDrawingContext,
 
     pub fn Init() GlobalContext {
         return GlobalContext{
             .ffms = FFMSContext.Init(),
             .libass = LibassContext.Init(),
             .buffers = BuffersContext.Init(),
+            .audioDrawing = AudioDrawingContext.Init(),
         };
     }
 

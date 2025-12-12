@@ -11,6 +11,7 @@ const errors = @import("errors.zig");
 const logger = @import("logger.zig");
 const buffers = @import("buffers.zig");
 const context = @import("context.zig");
+const waveform = @import("waveform.zig");
 
 var is_initialized = false;
 
@@ -131,6 +132,13 @@ pub export fn GetFrame(g_ctx: *context.GlobalContext, frame_number: c_int, times
 /// Get the audio
 pub export fn GetAudio(g_ctx: *context.GlobalContext, progress_cb: common.ProgressCallback) ?*frames.AudioFrame {
     return buffers.GetAudio(g_ctx, progress_cb) catch {
+        return null;
+    };
+}
+
+/// Get an audio waveform bitmap
+pub export fn GetWaveform(g_ctx: *context.GlobalContext, start_time: c_longlong, width: c_int) ?*frames.Bitmap {
+    return waveform.GetWaveform(g_ctx, @floatFromInt(start_time), @intCast(width)) catch {
         return null;
     };
 }
