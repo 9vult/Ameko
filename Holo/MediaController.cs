@@ -18,6 +18,8 @@ public class MediaController : BindableBase
     private unsafe FrameGroup* _lastFrame;
     private unsafe FrameGroup* _nextFrame;
     private unsafe AudioFrame* _audioFrame;
+    private unsafe Bitmap* _lastVizFrame;
+    private unsafe Bitmap* _nextVizFrame;
     private int _currentFrame;
     private readonly Lock _frameLock = new();
     private Task? _fetchTask;
@@ -109,6 +111,18 @@ public class MediaController : BindableBase
         get;
         private set => SetProperty(ref field, value);
     }
+
+    public int VisualizerWidth
+    {
+        get;
+        private set => SetProperty(ref field, value);
+    } = 1000;
+
+    public int VisualizerHeight
+    {
+        get;
+        private set => SetProperty(ref field, value);
+    } = 120;
 
     /// <summary>
     /// If we should automatically seek to the start of an event when the selection changes
@@ -412,6 +426,7 @@ public class MediaController : BindableBase
                 {
                     return false; // ??
                 }
+                _lastVizFrame = _provider.GetVisualization(VisualizerWidth, 0, 1000);
             }
 
             IsVideoLoaded = true;
@@ -498,6 +513,28 @@ public class MediaController : BindableBase
         throw new InvalidOperationException("Frame is unavailable");
     }
 
+    public unsafe Bitmap* GetCurrentVizFrame()
+    {
+        if (!_provider.IsInitialized)
+            throw new InvalidOperationException("Provider is not initialized");
+        if (!IsVideoLoaded)
+            throw new InvalidOperationException("Video is not loaded");
+
+        lock (_frameLock)
+        {
+            if (_nextVizFrame is not null)
+            {
+                _lastVizFrame = _nextVizFrame;
+                _nextVizFrame = null;
+            }
+        }
+
+        if (_lastVizFrame is not null)
+            return _lastVizFrame;
+
+        throw new InvalidOperationException("Frame is unavailable");
+    }
+
     public unsafe AudioFrame* GetAudioFrame()
     {
         if (!_provider.IsInitialized)
@@ -562,10 +599,11 @@ public class MediaController : BindableBase
         var time = VideoInfo?.MillisecondsFromFrame(frameToFetch) ?? 0;
 
         var frame = _provider.GetFrame(frameToFetch, time, false);
+        var vizFrame = _provider.GetVisualization(VisualizerWidth, time, time);
         lock (_frameLock)
         {
-            // if (frameToFetch == _currentFrame || subtitlesChanged) // Do we want this gate?
             _nextFrame = frame;
+            _nextVizFrame = vizFrame;
 
             FrameReady?.Invoke();
 

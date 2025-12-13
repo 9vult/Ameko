@@ -86,6 +86,15 @@ public interface ISourceProvider
     unsafe AudioFrame* GetAudio(IndexingProgressCallback? progressCallback = null);
 
     /// <summary>
+    /// Get a waveform bitmap for the specified time
+    /// </summary>
+    /// <param name="width">Width of the generated bitmap</param>
+    /// <param name="startTime">Time to start at</param>
+    /// <param name="frameTime">Timestamp of the current video frame</param>
+    /// <returns>Output bitmap</returns>
+    unsafe Bitmap* GetVisualization(int width, long startTime, long frameTime);
+
+    /// <summary>
     /// Release a frame
     /// </summary>
     /// <param name="frame">Pointer to frame to release</param>

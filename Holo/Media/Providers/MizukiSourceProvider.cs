@@ -144,6 +144,12 @@ public unsafe class MizukiSourceProvider : ISourceProvider
     }
 
     /// <inheritdoc />
+    public Bitmap* GetVisualization(int width, long startTime, long frameTime)
+    {
+        return External.GetVisualization(_context, width, startTime, frameTime);
+    }
+
+    /// <inheritdoc />
     public int ReleaseFrame(FrameGroup* frame)
     {
         return External.ReleaseFrame(frame);
@@ -278,6 +284,14 @@ internal static unsafe partial class External
     internal static unsafe partial AudioFrame* GetAudio(
         GlobalContext* context,
         IndexingProgressCallback? progressCallback
+    );
+
+    [LibraryImport("mizuki")]
+    internal static unsafe partial Bitmap* GetVisualization(
+        GlobalContext* context,
+        int width,
+        long startTime,
+        long frameTime
     );
 
     [LibraryImport("mizuki")]
