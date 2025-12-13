@@ -6,6 +6,8 @@ using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
 using Holo.IO;
+using Holo.Providers;
+using Microsoft.Extensions.Logging;
 
 namespace Holo.Media.Providers;
 
@@ -16,6 +18,7 @@ public unsafe class MizukiSourceProvider : ISourceProvider
 {
     private static readonly External.LogCallback LogDelegate = Log;
 
+    private static readonly ILogger MizukiLogger = StaticLoggerFactory.GetLogger("Mizuki");
     private GlobalContext* _context = null;
     private GCHandle? _progressHandle;
 
@@ -174,28 +177,27 @@ public unsafe class MizukiSourceProvider : ISourceProvider
     /// <param name="ptr">Pointer to the c-string</param>
     private static void Log(int level, nint ptr)
     {
-        // TODO: Re-implement once we have a proper SourceProvider factory or something
-
         var msg = Marshal.PtrToStringAnsi(ptr);
-        Console.WriteLine(msg);
-        // switch (level)
-        // {
-        //     case 0:
-        //         Logger.Trace(msg);
-        //         break;
-        //     case 1:
-        //         Logger.Debug(msg);
-        //         break;
-        //     case 2:
-        //         Logger.Info(msg);
-        //         break;
-        //     case 3:
-        //         Logger.Warn(msg);
-        //         break;
-        //     case 4:
-        //         Logger.Error(msg);
-        //         break;
-        // }
+        if (msg is null)
+            return;
+        switch (level)
+        {
+            case 0:
+                MizukiLogger.LogTrace("{MizukiMessage}", msg);
+                break;
+            case 1:
+                MizukiLogger.LogDebug("{MizukiMessage}", msg);
+                break;
+            case 2:
+                MizukiLogger.LogInformation("{MizukiMessage}", msg);
+                break;
+            case 3:
+                MizukiLogger.LogWarning("{MizukiMessage}", msg);
+                break;
+            case 4:
+                MizukiLogger.LogError("{MizukiMessage}", msg);
+                break;
+        }
     }
 
     /// <summary>
