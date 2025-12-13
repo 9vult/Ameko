@@ -26,7 +26,7 @@ pub fn RenderWaveform(g_ctx: *context.GlobalContext, bmp: *frames.Bitmap, start_
         // Clear
         @memset(bmp.*.data[0 .. ctx.waveform_height * pitch], 0);
 
-        var current_sample: usize = @intFromFloat(start_time * @as(f64, @floatFromInt(pixel_samples)));
+        var current_sample: usize = @intFromFloat(start_time * @as(f64, sr / 1000.0));
 
         var x: usize = 0;
         while (x < width) : (x += 1) {
