@@ -9,24 +9,39 @@ const context = @import("context.zig");
 pub fn RenderWaveform(g_ctx: *context.GlobalContext, bmp: *frames.Bitmap, start_time: f64, frame_time: f64) void {
     const ctx = &g_ctx.*.visualization;
 
-    const end_time = start_time + @as(f64, @floatFromInt(bmp.*.width)) * @as(f64, ctx.pixel_ms);
     const audio_data = g_ctx.*.buffers.audio_buffer;
     const stereo = g_ctx.*.ffms.channel_count == 2;
     const sr: f32 = @floatFromInt(g_ctx.*.ffms.sample_rate);
 
     const pixel_samples: usize = @intFromFloat(ctx.pixel_ms * sr / 1000.0);
 
+    const width: usize = @intCast(bmp.*.width);
+    const pitch: usize = @intCast(bmp.*.pitch);
+    const mid: i16 = @intCast(@divFloor(bmp.*.height, 2));
+
     if (audio_data) |audio| {
         const effective_length: usize = if (stereo) audio.len / 2 else audio.len;
 
-        const width: usize = @intCast(bmp.*.width);
-        const pitch: usize = @intCast(bmp.*.pitch);
-        const mid: i16 = @intCast(@divFloor(bmp.*.height, 2));
+        const visible_ms: f64 = @as(f64, @floatFromInt(width)) * @as(f64, @floatCast(ctx.pixel_ms));
+        const duration_ms: f64 = (@as(f32, @floatFromInt(effective_length)) * 1000.0) / sr;
+
+        // Calculate start and end times
+        var start = start_time;
+
+        if (duration_ms > visible_ms) {
+            const max_start = duration_ms - visible_ms;
+            if (start > max_start) {
+                start = max_start;
+            }
+        } else {
+            start = 0; // Audio is shorter than the viewport
+        }
+        const end = start + visible_ms;
 
         // Clear
         @memset(bmp.*.data[0 .. ctx.waveform_height * pitch], 0);
 
-        var current_sample: usize = @intFromFloat(start_time * @as(f64, sr / 1000.0));
+        var current_sample: usize = @intFromFloat(start * @as(f64, sr / 1000.0));
 
         var x: usize = 0;
         while (x < width) : (x += 1) {
@@ -73,8 +88,8 @@ pub fn RenderWaveform(g_ctx: *context.GlobalContext, bmp: *frames.Bitmap, start_
         }
 
         // Draw frame time
-        if (frame_time >= start_time and frame_time <= end_time) {
-            const delta = frame_time - start_time;
+        if (frame_time >= start and frame_time <= end) {
+            const delta = frame_time - start;
             const frame_x: usize = @intFromFloat(delta / ctx.pixel_ms);
 
             drawLine(bmp, frame_x, 0, @intCast(ctx.waveform_height), 0xffff0000); // red
