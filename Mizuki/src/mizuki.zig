@@ -11,7 +11,6 @@ const errors = @import("errors.zig");
 const logger = @import("logger.zig");
 const buffers = @import("buffers.zig");
 const context = @import("context.zig");
-const waveform = @import("waveform.zig");
 
 var is_initialized = false;
 
@@ -96,7 +95,7 @@ pub export fn SetSubtitles(g_ctx: *context.GlobalContext, data: [*c]u8, data_len
 /// Allocate frame buffers
 pub export fn AllocateBuffers(g_ctx: *context.GlobalContext, num_buffers: c_int, max_cache_mb: c_int) c_int {
     const ffms_ctx = g_ctx.*.ffms;
-    buffers.Init(
+    buffers.InitVideo(
         g_ctx,
         @intCast(num_buffers),
         max_cache_mb,
@@ -113,6 +112,7 @@ pub export fn AllocateAudioBuffer(g_ctx: *context.GlobalContext) c_int {
     buffers.InitAudio(g_ctx) catch |err| {
         return errors.IntFromFfmsError(err);
     };
+    buffers.InitVisualization(g_ctx);
     return 0;
 }
 
@@ -124,7 +124,7 @@ pub export fn FreeBuffers(g_ctx: *context.GlobalContext) c_int {
 
 /// Get a frame
 pub export fn GetFrame(g_ctx: *context.GlobalContext, frame_number: c_int, timestamp: c_longlong, raw: c_int) ?*frames.FrameGroup {
-    return buffers.ProcFrame(g_ctx, frame_number, timestamp, raw) catch {
+    return buffers.ProcVideoFrame(g_ctx, frame_number, timestamp, raw) catch {
         return null;
     };
 }
@@ -136,9 +136,19 @@ pub export fn GetAudio(g_ctx: *context.GlobalContext, progress_cb: common.Progre
     };
 }
 
-/// Get an audio waveform bitmap
-pub export fn GetWaveform(g_ctx: *context.GlobalContext, start_time: c_longlong, width: c_int) ?*frames.Bitmap {
-    return waveform.GetWaveform(g_ctx, @floatFromInt(start_time), @intCast(width)) catch {
+/// Get an audio visualization bitmap
+pub export fn GetVisualization(
+    g_ctx: *context.GlobalContext,
+    width: c_int,
+    start_time: c_longlong,
+    frame_time: c_longlong,
+) ?*frames.Bitmap {
+    return buffers.ProcVizualizationFrame(
+        g_ctx,
+        @intCast(width),
+        @floatFromInt(start_time),
+        @floatFromInt(frame_time),
+    ) catch {
         return null;
     };
 }

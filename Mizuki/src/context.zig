@@ -74,30 +74,31 @@ pub const LibassContext = struct {
 pub const BuffersContext = struct {
     max_size: i64,
     total_size: i64,
-    buffers: std.ArrayList(*frames.FrameGroup),
+    frame_buffers: std.ArrayList(*frames.FrameGroup),
     audio_buffer: ?[]i16,
     audio_frame: ?*frames.AudioFrame,
+    viz_buffers: std.ArrayList(*frames.Bitmap),
+    max_viz_buffers: usize = 8,
 
     pub fn Init() BuffersContext {
         return BuffersContext{
             .max_size = 0,
             .total_size = 0,
-            .buffers = undefined,
+            .frame_buffers = undefined,
             .audio_buffer = null,
             .audio_frame = null,
+            .viz_buffers = undefined,
         };
     }
 };
 
-pub const AudioDrawingContext = struct {
-    buffer: ?*frames.Bitmap,
+pub const VisualizationContext = struct {
     waveform_height: usize,
     amplitude_scale: f32,
     pixel_ms: f32,
 
-    pub fn Init() AudioDrawingContext {
-        return AudioDrawingContext{
-            .buffer = null,
+    pub fn Init() VisualizationContext {
+        return VisualizationContext{
             .waveform_height = 120,
             .amplitude_scale = 2.0,
             .pixel_ms = 2.0,
@@ -109,14 +110,14 @@ pub const GlobalContext = struct {
     ffms: FFMSContext,
     libass: LibassContext,
     buffers: BuffersContext,
-    audioDrawing: AudioDrawingContext,
+    visualization: VisualizationContext,
 
     pub fn Init() GlobalContext {
         return GlobalContext{
             .ffms = FFMSContext.Init(),
             .libass = LibassContext.Init(),
             .buffers = BuffersContext.Init(),
-            .audioDrawing = AudioDrawingContext.Init(),
+            .visualization = VisualizationContext.Init(),
         };
     }
 

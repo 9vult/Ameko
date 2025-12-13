@@ -7,18 +7,19 @@ const libass = @import("libass.zig");
 const frames = @import("frames.zig");
 const common = @import("common.zig");
 const context = @import("context.zig");
+const viz = @import("visualization.zig");
 
 /// Pre-initialize video buffers
-pub fn Init(g_ctx: *context.GlobalContext, num_buffers: usize, max_cache_mb: c_int, width: usize, height: usize, pitch: usize) ffms.FfmsError!void {
+pub fn InitVideo(g_ctx: *context.GlobalContext, num_buffers: usize, max_cache_mb: c_int, width: usize, height: usize, pitch: usize) ffms.FfmsError!void {
     var ctx = &g_ctx.*.buffers;
-    ctx.buffers = .empty;
+    ctx.frame_buffers = .empty;
     ctx.max_size = @as(i64, max_cache_mb) * std.math.pow(i64, 1024, 2);
 
     // Pre-allocate buffers
     var i: usize = 0;
     while (i < num_buffers) : (i += 1) {
-        const frame = try AllocateFrame(width, height, pitch);
-        try ctx.buffers.append(common.allocator, frame);
+        const frame = try AllocateVideoFrame(width, height, pitch);
+        try ctx.frame_buffers.append(common.allocator, frame);
     }
 }
 
@@ -39,6 +40,13 @@ pub fn InitAudio(g_ctx: *context.GlobalContext) ffms.FfmsError!void {
         .duration_ms = @divFloor((ffms_ctx.sample_count * 1000), ffms_ctx.sample_rate),
         .valid = 0,
     };
+}
+
+/// Initialize the visualization buffer
+pub fn InitVisualization(g_ctx: *context.GlobalContext) void {
+    const ctx = &g_ctx.*.buffers;
+
+    ctx.viz_buffers = .empty;
 }
 
 /// Get the audio buffer
@@ -66,7 +74,9 @@ pub fn GetAudio(g_ctx: *context.GlobalContext, progress_cb: common.ProgressCallb
 /// Free the buffers
 pub fn Deinit(g_ctx: *context.GlobalContext) void {
     var ctx = &g_ctx.*.buffers;
-    for (ctx.buffers.items) |buffer| {
+
+    // free video frame buffers
+    for (ctx.frame_buffers.items) |buffer| {
         // free video pixel buffer
         const v_total: usize = @intCast(buffer.*.video_frame.*.height * buffer.*.video_frame.*.pitch);
         if (v_total != 0) {
@@ -79,12 +89,13 @@ pub fn Deinit(g_ctx: *context.GlobalContext) void {
             common.allocator.free(buffer.*.subtitle_frame.*.data[0..s_total]);
         }
 
+        // destroy [build destroy]
         common.allocator.destroy(buffer.*.video_frame);
         common.allocator.destroy(buffer.*.subtitle_frame);
         common.allocator.destroy(buffer);
     }
 
-    ctx.buffers.deinit(common.allocator);
+    ctx.frame_buffers.deinit(common.allocator);
 
     // free audio buffer
     if (ctx.audio_buffer) |audio_buffer| {
@@ -97,12 +108,78 @@ pub fn Deinit(g_ctx: *context.GlobalContext) void {
         common.allocator.destroy(audio_frame);
         ctx.audio_frame = null;
     }
+
+    // free visualization buffers
+    for (ctx.viz_buffers.items) |buffer| {
+        const total: usize = @intCast(buffer.*.height * buffer.*.pitch);
+        if (total != 0) {
+            common.allocator.free(buffer.*.data[0..total]);
+        }
+        common.allocator.destroy(buffer);
+    }
+
+    ctx.viz_buffers.deinit(common.allocator);
+}
+
+pub fn ProcVizualizationFrame(g_ctx: *context.GlobalContext, width: c_int, start_time: f64, frame_time: f64) !*frames.Bitmap {
+    const ctx = &g_ctx.*.buffers;
+    const viz_ctx = &g_ctx.*.visualization;
+
+    var buffers = ctx.viz_buffers;
+    var result: ?*frames.Bitmap = null;
+
+    // See if there's a buffer available with the correct width
+    for (buffers.items, 0..) |buffer, idx| {
+        if (buffer.*.valid == 0 and buffer.*.width == width) {
+            result = buffer;
+
+            // Move buffer to the front of the list
+            if (idx != 0) {
+                _ = buffers.swapRemove(idx);
+                try buffers.insert(common.allocator, 0, buffer);
+            }
+
+            viz.RenderWaveform(g_ctx, result.?, start_time, frame_time);
+            return result.?;
+        }
+    }
+
+    // No buffer with matching width, so we need to find an invalidated buffer and replace it
+    // (or make a new one if there's space)
+
+    // If there's no room, make space
+    if (buffers.items.len >= ctx.max_viz_buffers) {
+        const last = buffers.swapRemove(buffers.items.len - 1);
+        _ = ReleaseVisualizationFrame(last);
+        try buffers.insert(common.allocator, 0, last);
+    }
+
+    // Find an invalidated buffer
+    for (buffers.items) |buffer| {
+        if (buffer.*.valid == 0) {
+            result = buffer;
+            break;
+        }
+    }
+
+    // Allocate the buffer
+    const height = viz_ctx.waveform_height;
+    if (result == null) { // Allocate a new buffer entirely
+        result = try AllocateVisualizationFrame(@intCast(width), height);
+    } else { // Allocate just the data field
+        const pitch = width * 4; // BGRA
+        const total_bytes = height * @as(usize, @intCast(pitch));
+        try AllocateVisualizationBitmap(result.?, total_bytes);
+    }
+
+    viz.RenderWaveform(g_ctx, result.?, start_time, frame_time);
+    return result.?;
 }
 
 /// Get a frame
-pub fn ProcFrame(g_ctx: *context.GlobalContext, frame_number: c_int, timestamp: c_longlong, raw: c_int) ffms.FfmsError!*frames.FrameGroup {
+pub fn ProcVideoFrame(g_ctx: *context.GlobalContext, frame_number: c_int, timestamp: c_longlong, raw: c_int) ffms.FfmsError!*frames.FrameGroup {
     var ctx = &g_ctx.*.buffers;
-    var buffers = ctx.buffers;
+    var buffers = ctx.frame_buffers;
 
     _ = raw; // For sub-less frame
     var result: ?*frames.FrameGroup = null;
@@ -123,6 +200,7 @@ pub fn ProcFrame(g_ctx: *context.GlobalContext, frame_number: c_int, timestamp: 
                 try libass.GetFrame(g_ctx, timestamp, result.?.*.subtitle_frame);
             }
 
+            // TODO: Render to the buffer
             return result.?;
         }
     }
@@ -133,7 +211,7 @@ pub fn ProcFrame(g_ctx: *context.GlobalContext, frame_number: c_int, timestamp: 
     // If we're at the size limit, make space
     if (ctx.total_size >= ctx.max_size) {
         const last = buffers.swapRemove(buffers.items.len - 1);
-        _ = ReleaseFrame(last);
+        _ = ReleaseVideoFrame(last);
         try buffers.insert(common.allocator, 0, last);
     }
 
@@ -149,7 +227,7 @@ pub fn ProcFrame(g_ctx: *context.GlobalContext, frame_number: c_int, timestamp: 
     if (result == null) {
         // Clone geometry from the first buffer
         const reference = buffers.items[0];
-        result = try AllocateFrame(
+        result = try AllocateVideoFrame(
             @intCast(reference.*.video_frame.*.width),
             @intCast(reference.*.video_frame.*.height),
             @intCast(reference.*.video_frame.*.pitch),
@@ -167,14 +245,25 @@ pub fn ProcFrame(g_ctx: *context.GlobalContext, frame_number: c_int, timestamp: 
 }
 
 /// Mark a frame as invalid so it can be reused
-pub fn ReleaseFrame(frame: *frames.FrameGroup) c_int {
+pub fn ReleaseVideoFrame(frame: *frames.FrameGroup) c_int {
     frame.video_frame.valid = 0;
     frame.subtitle_frame.valid = 0;
     return 0;
 }
 
+/// Mark a viz frame as invalid and free the data field so it can be reused
+pub fn ReleaseVisualizationFrame(frame: *frames.Bitmap) c_int {
+    frame.valid = 0;
+    const total: usize = @intCast(frame.height * frame.*.pitch);
+    if (total != 0) {
+        common.allocator.free(frame.*.data[0..total]);
+    }
+    frame.data = undefined;
+    return 0;
+}
+
 /// Allocate a new frame buffer
-fn AllocateFrame(width: usize, height: usize, pitch: usize) !*frames.FrameGroup {
+fn AllocateVideoFrame(width: usize, height: usize, pitch: usize) !*frames.FrameGroup {
     const total_bytes = height * pitch;
     const v_pixel_buffer = try common.allocator.alloc(u8, total_bytes);
     const s_pixel_buffer = try common.allocator.alloc(u8, total_bytes);
@@ -210,4 +299,29 @@ fn AllocateFrame(width: usize, height: usize, pitch: usize) !*frames.FrameGroup 
     };
 
     return group;
+}
+
+/// Allocate a visualization frame
+fn AllocateVisualizationFrame(width: usize, height: usize) !*frames.Bitmap {
+    const pitch = width * 4; // BGRA
+    const total_bytes = height * pitch;
+    const frame = try common.allocator.create(frames.Bitmap);
+
+    frame.* = .{
+        .data = undefined,
+        .width = @intCast(width),
+        .height = @intCast(height),
+        .pitch = @intCast(pitch),
+    };
+
+    try AllocateVisualizationBitmap(frame, total_bytes);
+
+    return frame;
+}
+
+/// Helper function for allocating a bitmap buffer
+fn AllocateVisualizationBitmap(frame: *frames.Bitmap, total_bytes: usize) !void {
+    const bmp = &frame;
+    const pixel_buffer = try common.allocator.alloc(u8, total_bytes);
+    bmp.*.data = pixel_buffer.ptr;
 }
