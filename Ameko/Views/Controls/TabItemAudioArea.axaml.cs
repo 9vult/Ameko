@@ -6,6 +6,7 @@ using System.Reactive.Disposables;
 using Ameko.Renderers;
 using Ameko.ViewModels.Controls;
 using Avalonia;
+using Avalonia.Input;
 using Avalonia.ReactiveUI;
 using ReactiveUI;
 

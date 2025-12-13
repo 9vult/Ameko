@@ -176,6 +176,24 @@ public unsafe class MizukiSourceProvider : ISourceProvider
         return ptr.ToLongArray();
     }
 
+    /// <inheritdoc />
+    public int GetChannelCount()
+    {
+        return External.GetChannelCount(_context);
+    }
+
+    /// <inheritdoc />
+    public int GetSampleRate()
+    {
+        return External.GetSampleRate(_context);
+    }
+
+    /// <inheritdoc />
+    public long GetSampleCount()
+    {
+        return External.GetSampleCount(_context);
+    }
+
     /// <summary>
     /// Callback for handling logs emitted by Mizuki
     /// </summary>
@@ -305,6 +323,15 @@ internal static unsafe partial class External
 
     [LibraryImport("mizuki")]
     internal static partial UnmanagedArray GetTimecodes(GlobalContext* context);
+
+    [LibraryImport("mizuki")]
+    internal static partial int GetChannelCount(GlobalContext* context);
+
+    [LibraryImport("mizuki")]
+    internal static partial int GetSampleRate(GlobalContext* context);
+
+    [LibraryImport("mizuki")]
+    internal static partial long GetSampleCount(GlobalContext* context);
 
     [LibraryImport("mizuki")]
     internal static partial UnmanagedArray GetFrameIntervals(GlobalContext* context);

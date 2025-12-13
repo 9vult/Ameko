@@ -120,6 +120,24 @@ public interface ISourceProvider
     long[] GetFrameIntervals();
 
     /// <summary>
+    /// How many channels are in the audio
+    /// </summary>
+    /// <returns></returns>
+    int GetChannelCount();
+
+    /// <summary>
+    /// Sample rate of the audio
+    /// </summary>
+    /// <returns></returns>
+    int GetSampleRate();
+
+    /// <summary>
+    /// How many samples are in the audio
+    /// </summary>
+    /// <returns></returns>
+    long GetSampleCount();
+
+    /// <summary>
     /// Indexing progress
     /// </summary>
     /// <param name="current">Current progress</param>

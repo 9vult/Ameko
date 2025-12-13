@@ -6,13 +6,15 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              
              xmlns:c="clr-namespace:Ameko.Views.Controls"
-             xmlns:converters="clr-namespace:Ameko.Converters"
-             xmlns:holo="clr-namespace:Holo.Media;assembly=Holo"
-             xmlns:i18n="clr-namespace:Ameko.I18N"
-             xmlns:icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              xmlns:vm="clr-namespace:Ameko.ViewModels.Controls"
              
              x:Class="Ameko.Views.Controls.TabItemAudioArea"
              x:DataType="vm:TabItemViewModel">
-    <c:Visualizer MediaController="{Binding Workspace.MediaController}" />
+    <Grid RowDefinitions="*, Auto">
+        <c:Visualizer Grid.Row="0" MediaController="{Binding Workspace.MediaController}" />
+        <c:SeekSlider Grid.Row="1"
+                      Minimum="0"
+                      Maximum="{Binding Workspace.MediaController.AudioInfo.Duration, FallbackValue=0}"
+                      Value="{Binding Workspace.MediaController.VisualizerPositionMs}"/>
+    </Grid>
 </UserControl>

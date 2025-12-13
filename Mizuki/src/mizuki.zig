@@ -182,6 +182,21 @@ pub export fn GetFrameIntervals(g_ctx: *context.GlobalContext) common.LongArray 
     };
 }
 
+/// Get the number of channels in the audio
+pub export fn GetChannelCount(g_ctx: *context.GlobalContext) c_int {
+    return g_ctx.*.ffms.channel_count;
+}
+
+/// Get the audio's sample rate
+pub export fn GetSampleRate(g_ctx: *context.GlobalContext) c_int {
+    return g_ctx.*.ffms.sample_rate;
+}
+
+/// Get the number of samples in the audio
+pub export fn GetSampleCount(g_ctx: *context.GlobalContext) c_longlong {
+    return @intCast(g_ctx.*.ffms.sample_count);
+}
+
 /// Set the logging callback
 pub export fn SetLoggerCallback(callback: logger.LogCallback) void {
     logger.SetCallback(callback);

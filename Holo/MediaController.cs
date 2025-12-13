@@ -48,6 +48,15 @@ public class MediaController : BindableBase
         private set => SetProperty(ref field, value);
     }
 
+    /// <summary>
+    /// Information about the loaded audio
+    /// </summary>
+    public AudioInfo? AudioInfo
+    {
+        get;
+        private set => SetProperty(ref field, value);
+    }
+
     [MemberNotNullWhen(true, nameof(VideoInfo))]
     public bool IsVideoLoaded
     {
@@ -115,14 +124,26 @@ public class MediaController : BindableBase
     public int VisualizerWidth
     {
         get;
-        private set => SetProperty(ref field, value);
+        set => SetProperty(ref field, value);
     } = 1000;
 
     public int VisualizerHeight
     {
         get;
-        private set => SetProperty(ref field, value);
+        set => SetProperty(ref field, value);
     } = 120;
+
+    public long VisualizerPositionMs
+    {
+        get;
+        set
+        {
+            if (value <= 0 || value >= (AudioInfo?.Duration ?? 0))
+                return;
+            SetProperty(ref field, value);
+            RequestFrame(CurrentFrame);
+        }
+    } = 0;
 
     /// <summary>
     /// If we should automatically seek to the start of an event when the selection changes
@@ -404,7 +425,14 @@ public class MediaController : BindableBase
                     frameIntervals: _provider.GetFrameIntervals(),
                     keyframes: _provider.GetKeyframes(),
                     testFrame->VideoFrame->Width,
-                    testFrame->VideoFrame->Height
+                    testFrame->VideoFrame->Height,
+                    true // TODO
+                );
+
+                AudioInfo = new AudioInfo(
+                    channelCount: _provider.GetChannelCount(),
+                    sampleRate: _provider.GetSampleRate(),
+                    sampleCount: _provider.GetSampleCount()
                 );
 
                 _playback.Intervals = VideoInfo.FrameIntervals;
@@ -599,7 +627,7 @@ public class MediaController : BindableBase
         var time = VideoInfo?.MillisecondsFromFrame(frameToFetch) ?? 0;
 
         var frame = _provider.GetFrame(frameToFetch, time, false);
-        var vizFrame = _provider.GetVisualization(VisualizerWidth, time, time);
+        var vizFrame = _provider.GetVisualization(VisualizerWidth, VisualizerPositionMs, time);
         lock (_frameLock)
         {
             _nextFrame = frame;

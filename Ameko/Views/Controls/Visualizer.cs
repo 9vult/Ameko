@@ -4,6 +4,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using Ameko.DataModels.OpenGl;
 using Avalonia;
+using Avalonia.Controls;
 using Avalonia.OpenGL;
 using Avalonia.OpenGL.Controls;
 using Avalonia.Threading;
@@ -67,6 +68,7 @@ public class Visualizer : OpenGlControlBase
         IsInitialized = true;
 
         _scaleFactor = VisualRoot?.RenderScaling ?? 1.0d;
+        MediaController?.VisualizerWidth = (int)Bounds.Width;
 
         _ebo = new BufferObject<uint>(_gl, Indices, BufferTargetARB.ElementArrayBuffer);
         _vbo = new BufferObject<float>(_gl, Vertices, BufferTargetARB.ArrayBuffer);
@@ -156,6 +158,13 @@ public class Visualizer : OpenGlControlBase
     {
         base.OnDetachedFromVisualTree(e);
         MediaController?.FrameReady -= OnFrameReady;
+    }
+
+    /// <inheritdoc />
+    protected override void OnSizeChanged(SizeChangedEventArgs e)
+    {
+        base.OnSizeChanged(e);
+        MediaController?.VisualizerWidth = (int)e.NewSize.Width;
     }
 
     private void OnFrameReady()
