@@ -6,10 +6,18 @@ const frames = @import("frames.zig");
 const logger = @import("logger.zig");
 const context = @import("context.zig");
 
+// Colors
+const color_waveform = 0xff00ff00;
+const color_playhead = 0xffff0000;
+const color_qseconds = 0xffd0d0d0;
+const color_seconds = 0xfff85797;
+const color_kf = 0xffe1e1e1;
+
+/// Render a waveform representation of the audio
 pub fn RenderWaveform(
     g_ctx: *context.GlobalContext,
     bmp: *frames.Bitmap,
-    pixel_ms: f32,
+    pixels_per_ms: f32,
     amplitude_scale: f32,
     start_time: f64,
     frame_time: f64,
@@ -18,19 +26,21 @@ pub fn RenderWaveform(
     const stereo = g_ctx.*.ffms.channel_count == 2;
     const sr: f32 = @floatFromInt(g_ctx.*.ffms.sample_rate);
 
-    const pixel_samples: usize = @intFromFloat(pixel_ms * sr / 1000.0);
+    const pixel_samples: usize = @intFromFloat(pixels_per_ms * sr / 1000.0);
 
     const bmp_width: usize = @intCast(bmp.*.width);
     const bmp_height: usize = @intCast(bmp.*.height);
     const bmp_mid: i16 = @intCast(@divFloor(bmp_height, 2));
     const bmp_pitch: usize = @intCast(bmp.*.pitch);
-    const wfv_height: i16 = @intCast(@divFloor(bmp_height * 9, 10));
+    const wfv_height: i16 = @intCast(@divFloor(bmp_height * 9, 10)); // 90% height
     const wvf_mid: i16 = @divFloor(wfv_height, 2);
+    const gutter_height: usize = @divFloor(bmp_height, 20); // 5% height
+    const gutter_half: usize = @divFloor(gutter_height, 2);
 
     if (audio_data) |audio| {
         const effective_length: usize = if (stereo) audio.len / 2 else audio.len;
 
-        const visible_ms: f64 = @as(f64, @floatFromInt(bmp_width)) * @as(f64, @floatCast(pixel_ms));
+        const visible_ms: f64 = @as(f64, @floatFromInt(bmp_width)) * @as(f64, @floatCast(pixels_per_ms));
         const duration_ms: f64 = (@as(f32, @floatFromInt(effective_length)) * 1000.0) / sr;
 
         // Calculate start and end times
@@ -49,18 +59,41 @@ pub fn RenderWaveform(
         // Clear
         @memset(bmp.*.data[0 .. bmp_height * bmp_pitch], 0);
 
+        // Draw second hashes in the gutter
+        const pixels_per_sec: f64 = 1000.0 / @as(f64, @floatCast(pixels_per_ms));
+        if (pixels_per_sec >= 5.0) {
+            var t = std.math.ceil(start / 1000.0) * 1000.0;
+            while (t <= end) : (t += 1000.0) {
+                const delta = t - start;
+                const frame_x: usize = @intFromFloat(delta / @as(f64, @floatCast(pixels_per_ms)));
+                drawLine(bmp, frame_x, 0, @intCast(gutter_height), color_seconds);
+                drawLine(bmp, frame_x, @intCast(bmp_height - gutter_height), @intCast(bmp_height), color_seconds);
+            }
+        }
+        // Draw quarter-second hashes at half-gutter-height
+        if (pixels_per_sec >= 20.0) {
+            var t = std.math.ceil(start / 250.0) * 250.0;
+            while (t <= end) : (t += 250.0) {
+                if (@rem(t, 1000) == 0) continue; // Skip whole seconds
+                const delta = t - start;
+                const frame_x: usize = @intFromFloat(delta / @as(f64, @floatCast(pixels_per_ms)));
+                drawLine(bmp, frame_x, 0, @intCast(gutter_half), color_qseconds);
+                drawLine(bmp, frame_x, @intCast(bmp_height - gutter_half), @intCast(bmp_height), color_qseconds);
+            }
+        }
+
         // Draw keyframes behind the spectrum
         for (g_ctx.*.ffms.kf_timecodes) |kf| {
             const kf_ms: f64 = @floatFromInt(kf);
             if (kf_ms >= start and kf_ms <= end) {
                 const delta = kf_ms - start;
-                const frame_x: usize = @intFromFloat(delta / pixel_ms);
+                const frame_x: usize = @intFromFloat(delta / pixels_per_ms);
 
-                drawLine(bmp, frame_x, 0, @intCast(bmp_height), 0xffe1e1e1); // grey
+                drawLine(bmp, frame_x, 0, @intCast(bmp_height), color_kf);
             }
         }
 
-        // Draw the spectrum
+        // Draw the waveform
         var current_sample: usize = @intFromFloat(start * @as(f64, sr / 1000.0));
 
         var x: usize = 0;
@@ -104,15 +137,15 @@ pub fn RenderWaveform(
             const scaled_min: i16 = @intFromFloat(@max((min_f * amplitude_scale * mid_f) / 0x8000, -mid_f));
             const scaled_max: i16 = @intFromFloat(@min((max_f * amplitude_scale * mid_f) / 0x8000, mid_f));
 
-            drawLine(bmp, x, bmp_mid - scaled_min, bmp_mid - scaled_max, 0xff00ff00); // green
+            drawLine(bmp, x, bmp_mid - scaled_min, bmp_mid - scaled_max, color_waveform);
         }
 
-        // Draw frame time over the spectrum
+        // Draw playhead over the spectrum
         if (frame_time >= start and frame_time <= end) {
             const delta = frame_time - start;
-            const frame_x: usize = @intFromFloat(delta / pixel_ms);
+            const frame_x: usize = @intFromFloat(delta / pixels_per_ms);
 
-            drawLine(bmp, frame_x, 0, @intCast(bmp_height), 0xffff0000); // red
+            drawLine(bmp, frame_x, 0, @intCast(bmp_height), color_playhead);
         }
     }
 }
