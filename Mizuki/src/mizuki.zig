@@ -141,8 +141,8 @@ pub export fn GetVisualization(
     g_ctx: *context.GlobalContext,
     width: c_int,
     height: c_int,
-    pixel_ms: f32,
-    amplitude_scale: f32,
+    pixel_ms: f64,
+    amplitude_scale: f64,
     start_time: c_longlong,
     frame_time: c_longlong,
 ) ?*frames.Bitmap {

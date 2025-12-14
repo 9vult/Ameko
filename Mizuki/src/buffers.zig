@@ -125,8 +125,8 @@ pub fn ProcVizualizationFrame(
     g_ctx: *context.GlobalContext,
     width: c_int,
     height: c_int,
-    pixel_ms: f32,
-    amplitude_scale: f32,
+    pixel_ms: f64,
+    amplitude_scale: f64,
     start_time: f64,
     frame_time: f64,
 ) !*frames.Bitmap {

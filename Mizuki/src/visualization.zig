@@ -17,31 +17,32 @@ const color_kf = 0xffe1e1e1;
 pub fn RenderWaveform(
     g_ctx: *context.GlobalContext,
     bmp: *frames.Bitmap,
-    pixels_per_ms: f32,
-    amplitude_scale: f32,
+    pixels_per_ms: f64,
+    amplitude_scale: f64,
     start_time: f64,
     frame_time: f64,
 ) void {
     const audio_data = g_ctx.*.buffers.audio_buffer;
     const stereo = g_ctx.*.ffms.channel_count == 2;
-    const sr: f32 = @floatFromInt(g_ctx.*.ffms.sample_rate);
+    const sr: f64 = @floatFromInt(g_ctx.*.ffms.sample_rate);
 
     const pixel_samples: usize = @intFromFloat(pixels_per_ms * sr / 1000.0);
 
-    const bmp_width: usize = @intCast(bmp.*.width);
-    const bmp_height: usize = @intCast(bmp.*.height);
-    const bmp_mid: i16 = @intCast(@divFloor(bmp_height, 2));
-    const bmp_pitch: usize = @intCast(bmp.*.pitch);
-    const wfv_height: i16 = @intCast(@divFloor(bmp_height * 9, 10)); // 90% height
-    const wvf_mid: i16 = @divFloor(wfv_height, 2);
-    const gutter_height: usize = @divFloor(bmp_height, 20); // 5% height
-    const gutter_half: usize = @divFloor(gutter_height, 2);
+    const bmp_width_u: usize = @intCast(bmp.*.width);
+    const bmp_height_u: usize = @intCast(bmp.*.height);
+    const bmp_pitch_u: usize = @intCast(bmp.*.pitch);
+    const bmp_height: i32 = @intCast(bmp_height_u);
+    const bmp_mid: i32 = @divFloor(bmp_height, 2);
+    const wfv_height: i32 = @divFloor(bmp_height * 9, 10); // 90% height
+    const wvf_mid: i32 = @divFloor(wfv_height, 2);
+    const gutter_height: i32 = @divFloor(bmp_height, 20); // 5% height
+    const gutter_half: i32 = @divFloor(gutter_height, 2);
 
     if (audio_data) |audio| {
         const effective_length: usize = if (stereo) audio.len / 2 else audio.len;
 
-        const visible_ms: f64 = @as(f64, @floatFromInt(bmp_width)) * @as(f64, @floatCast(pixels_per_ms));
-        const duration_ms: f64 = (@as(f32, @floatFromInt(effective_length)) * 1000.0) / sr;
+        const visible_ms: f64 = @as(f64, @floatFromInt(bmp_width_u)) * @as(f64, @floatCast(pixels_per_ms));
+        const duration_ms: f64 = (@as(f64, @floatFromInt(effective_length)) * 1000.0) / sr;
 
         // Calculate start and end times
         var start = start_time;
@@ -57,17 +58,17 @@ pub fn RenderWaveform(
         const end = start + visible_ms;
 
         // Clear
-        @memset(bmp.*.data[0 .. bmp_height * bmp_pitch], 0);
+        @memset(bmp.*.data[0 .. bmp_height_u * bmp_pitch_u], 0);
 
         // Draw second hashes in the gutter
-        const pixels_per_sec: f64 = 1000.0 / @as(f64, @floatCast(pixels_per_ms));
+        const pixels_per_sec: f64 = 1000.0 / pixels_per_ms;
         if (pixels_per_sec >= 5.0) {
             var t = std.math.ceil(start / 1000.0) * 1000.0;
             while (t <= end) : (t += 1000.0) {
                 const delta = t - start;
-                const frame_x: usize = @intFromFloat(delta / @as(f64, @floatCast(pixels_per_ms)));
-                drawLine(bmp, frame_x, 0, @intCast(gutter_height), color_seconds);
-                drawLine(bmp, frame_x, @intCast(bmp_height - gutter_height), @intCast(bmp_height), color_seconds);
+                const frame_x: usize = @intFromFloat(delta / pixels_per_ms);
+                drawLine(bmp, frame_x, 0, gutter_height, color_seconds);
+                drawLine(bmp, frame_x, bmp_height - gutter_height, bmp_height, color_seconds);
             }
         }
         // Draw quarter-second hashes at half-gutter-height
@@ -76,9 +77,9 @@ pub fn RenderWaveform(
             while (t <= end) : (t += 250.0) {
                 if (@rem(t, 1000) == 0) continue; // Skip whole seconds
                 const delta = t - start;
-                const frame_x: usize = @intFromFloat(delta / @as(f64, @floatCast(pixels_per_ms)));
-                drawLine(bmp, frame_x, 0, @intCast(gutter_half), color_qseconds);
-                drawLine(bmp, frame_x, @intCast(bmp_height - gutter_half), @intCast(bmp_height), color_qseconds);
+                const frame_x: usize = @intFromFloat(delta / pixels_per_ms);
+                drawLine(bmp, frame_x, 0, gutter_half, color_qseconds);
+                drawLine(bmp, frame_x, bmp_height - gutter_half, bmp_height, color_qseconds);
             }
         }
 
@@ -89,15 +90,15 @@ pub fn RenderWaveform(
                 const delta = kf_ms - start;
                 const frame_x: usize = @intFromFloat(delta / pixels_per_ms);
 
-                drawLine(bmp, frame_x, 0, @intCast(bmp_height), color_kf);
+                drawLine(bmp, frame_x, 0, @intCast(bmp_height_u), color_kf);
             }
         }
 
         // Draw the waveform
-        var current_sample: usize = @intFromFloat(start * @as(f64, sr / 1000.0));
+        var current_sample: usize = @intFromFloat(start * sr / 1000.0);
 
         var x: usize = 0;
-        while (x < bmp_width) : (x += 1) {
+        while (x < bmp_width_u) : (x += 1) {
             const s0: usize = current_sample;
             const s1: usize = @min(s0 + pixel_samples, effective_length);
             current_sample += pixel_samples;
@@ -106,8 +107,8 @@ pub fn RenderWaveform(
                 break;
             }
 
-            var peak_min: i16 = 0x7fff; // Max i16
-            var peak_max: i16 = -0x8000; // Min i16
+            var peak_min: i32 = 0x7fff; // Max
+            var peak_max: i32 = -0x8000; // Min
 
             // Compute peaks
             var i = s0;
@@ -115,14 +116,14 @@ pub fn RenderWaveform(
                 while (i < s1) : (i += 1) {
                     const left = audio[2 * i];
                     const right = audio[2 * i + 1];
-                    const mono: i16 = @intCast((@as(i32, left) + @as(i32, right)) >> 1);
+                    const mono: i32 = (@as(i32, left) + @as(i32, right)) >> 1;
 
                     if (mono > peak_max) peak_max = mono;
                     if (mono < peak_min) peak_min = mono;
                 }
             } else { // Mono
                 while (i < s1) : (i += 1) {
-                    const mono = audio[i];
+                    const mono = @as(i32, audio[i]);
 
                     if (mono > peak_max) peak_max = mono;
                     if (mono < peak_min) peak_min = mono;
@@ -130,12 +131,12 @@ pub fn RenderWaveform(
             }
 
             // Scale to bitmap
-            const mid_f: f32 = @floatFromInt(wvf_mid);
-            const min_f: f32 = @floatFromInt(peak_min);
-            const max_f: f32 = @floatFromInt(peak_max);
+            const mid_f: f64 = @floatFromInt(wvf_mid);
+            const min_f: f64 = @floatFromInt(peak_min);
+            const max_f: f64 = @floatFromInt(peak_max);
 
-            const scaled_min: i16 = @intFromFloat(@max((min_f * amplitude_scale * mid_f) / 0x8000, -mid_f));
-            const scaled_max: i16 = @intFromFloat(@min((max_f * amplitude_scale * mid_f) / 0x8000, mid_f));
+            const scaled_min: i32 = @intFromFloat(@max((min_f * amplitude_scale * mid_f) / 0x8000, -mid_f));
+            const scaled_max: i32 = @intFromFloat(@min((max_f * amplitude_scale * mid_f) / 0x8000, mid_f));
 
             drawLine(bmp, x, bmp_mid - scaled_min, bmp_mid - scaled_max, color_waveform);
         }
@@ -145,7 +146,7 @@ pub fn RenderWaveform(
             const delta = frame_time - start;
             const frame_x: usize = @intFromFloat(delta / pixels_per_ms);
 
-            drawLine(bmp, frame_x, 0, @intCast(bmp_height), color_playhead);
+            drawLine(bmp, frame_x, 0, bmp_height, color_playhead);
         }
     }
 }
@@ -153,8 +154,8 @@ pub fn RenderWaveform(
 fn drawLine(
     bmp: *frames.Bitmap,
     x: usize,
-    y1_in: i16,
-    y2_in: i16,
+    y1_in: i32,
+    y2_in: i32,
     color: u32,
 ) void {
     const w: usize = @intCast(bmp.width);

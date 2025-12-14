@@ -79,8 +79,8 @@ public unsafe class NullSourceProvider : ISourceProvider
     public Bitmap* GetVisualization(
         int width,
         int height,
-        float pixelsPerMs,
-        float amplitudeScale,
+        double pixelsPerMs,
+        double amplitudeScale,
         long startTime,
         long frameTime
     )

@@ -143,7 +143,7 @@ public class MediaController : BindableBase
         }
     }
 
-    public float VisualizerHorizontalScale
+    public double VisualizerHorizontalScale
     {
         get;
         set
@@ -152,9 +152,9 @@ public class MediaController : BindableBase
             if (IsVideoLoaded)
                 RequestFrame(CurrentFrame);
         }
-    } = 2f;
+    } = 2d;
 
-    public float VisualizerVerticalScale
+    public double VisualizerVerticalScale
     {
         get;
         set
@@ -163,7 +163,7 @@ public class MediaController : BindableBase
             if (IsVideoLoaded)
                 RequestFrame(CurrentFrame);
         }
-    } = 2f;
+    } = 2d;
 
     public long VisualizerPositionMs
     {
