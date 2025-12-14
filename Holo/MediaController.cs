@@ -375,6 +375,7 @@ public class MediaController : BindableBase
         if (_isPlaying)
             Pause();
         CurrentFrame = VideoInfo.FrameFromTime(@event.Start);
+        VisualizerPositionMs = @event.Start.TotalMilliseconds;
         if (_isPaused)
             Resume();
     }
@@ -405,6 +406,7 @@ public class MediaController : BindableBase
         if (_isPlaying)
             Pause();
         CurrentFrame = VideoInfo.FrameFromTime(@event.Start);
+        VisualizerPositionMs = @event.Start.TotalMilliseconds;
         if (_isPaused)
             Resume();
     }
