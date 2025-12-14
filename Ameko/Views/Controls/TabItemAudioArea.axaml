@@ -5,16 +5,47 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              
+             xmlns:i18n="clr-namespace:Ameko.I18N"
+             
              xmlns:c="clr-namespace:Ameko.Views.Controls"
              xmlns:vm="clr-namespace:Ameko.ViewModels.Controls"
              
              x:Class="Ameko.Views.Controls.TabItemAudioArea"
              x:DataType="vm:TabItemViewModel">
-    <Grid RowDefinitions="*, Auto">
-        <c:Visualizer Grid.Row="0" MediaController="{Binding Workspace.MediaController}" />
-        <c:SeekSlider Grid.Row="1"
+    <Grid ColumnDefinitions="*, Auto"
+          RowDefinitions="*, Auto"
+          RowSpacing="5">
+        <c:Visualizer Grid.Column="0"
+                      Grid.Row="0"
+                      MediaController="{Binding Workspace.MediaController}" />
+        <c:SeekSlider Grid.Column="0"
+                      Grid.Row="1"
+                      Padding="1"
                       Minimum="0"
-                      Maximum="{Binding Workspace.MediaController.AudioInfo.Duration, FallbackValue=0}"
+                      Maximum="{Binding Workspace.MediaController.AudioInfo.Duration, FallbackValue=1}"
                       Value="{Binding Workspace.MediaController.VisualizerPositionMs, FallbackValue=0}"/>
+        <StackPanel Grid.Column="1"
+                    Grid.Row="0"
+                    Grid.RowSpan="2"
+                    Orientation="Horizontal">
+            <Slider Orientation="Vertical"
+                    Classes="Small"
+                    Padding="1"
+                    Minimum="0.1"
+                    Maximum="5.0"
+                    TickFrequency="0.1"
+                    IsSnapToTickEnabled="True"
+                    IsDirectionReversed="True"
+                    Value="{Binding Workspace.MediaController.VisualizerHorizontalScale, FallbackValue=2.0}"
+                    ToolTip.Tip="{x:Static i18n:Resources.Audio_HorizontalScale_ToolTip}" />
+            <Slider Orientation="Vertical"
+                    Classes="Small"
+                    Minimum="0.1"
+                    Maximum="5.0"
+                    TickFrequency="0.1"
+                    IsSnapToTickEnabled="True"
+                    Value="{Binding Workspace.MediaController.VisualizerVerticalScale, FallbackValue=2.0}"
+                    ToolTip.Tip="{x:Static i18n:Resources.Audio_VerticalScale_ToolTip}" />
+        </StackPanel>
     </Grid>
 </UserControl>

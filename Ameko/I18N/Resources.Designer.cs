@@ -728,5 +728,17 @@ namespace Ameko.I18N {
                 return ResourceManager.GetString("EventsGrid_Menu_InsertAfterAtVideoTime", resourceCulture);
             }
         }
+        
+        public static string Audio_HorizontalScale_ToolTip {
+            get {
+                return ResourceManager.GetString("Audio_HorizontalScale_ToolTip", resourceCulture);
+            }
+        }
+        
+        public static string Audio_VerticalScale_ToolTip {
+            get {
+                return ResourceManager.GetString("Audio_VerticalScale_ToolTip", resourceCulture);
+            }
+        }
     }
 }
