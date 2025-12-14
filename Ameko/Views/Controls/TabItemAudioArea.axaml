@@ -15,10 +15,12 @@
     <Grid ColumnDefinitions="*, Auto"
           RowDefinitions="*, Auto"
           RowSpacing="5"
-          Margin="2">
+          Margin="2"
+          IsEnabled="{Binding Workspace.MediaController.IsVideoLoaded}">
         <c:Visualizer Grid.Column="0"
                       Grid.Row="0"
-                      MediaController="{Binding Workspace.MediaController}" />
+                      MediaController="{Binding Workspace.MediaController}"
+                      IsVisible="{Binding Workspace.MediaController.IsVideoLoaded}" />
         <c:SeekSlider Grid.Column="0"
                       Grid.Row="1"
                       Padding="0 2"
