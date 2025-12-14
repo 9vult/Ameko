@@ -14,13 +14,14 @@
              x:DataType="vm:TabItemViewModel">
     <Grid ColumnDefinitions="*, Auto"
           RowDefinitions="*, Auto"
-          RowSpacing="5">
+          RowSpacing="5"
+          Margin="2">
         <c:Visualizer Grid.Column="0"
                       Grid.Row="0"
                       MediaController="{Binding Workspace.MediaController}" />
         <c:SeekSlider Grid.Column="0"
                       Grid.Row="1"
-                      Padding="1"
+                      Padding="0 2"
                       Minimum="0"
                       Maximum="{Binding Workspace.MediaController.AudioInfo.Duration, FallbackValue=1}"
                       Value="{Binding Workspace.MediaController.VisualizerPositionMs, FallbackValue=0}"/>
