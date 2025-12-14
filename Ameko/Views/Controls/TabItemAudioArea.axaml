@@ -17,10 +17,13 @@
           RowSpacing="5"
           Margin="2"
           IsEnabled="{Binding Workspace.MediaController.IsVideoLoaded}">
-        <c:Visualizer Grid.Column="0"
-                      Grid.Row="0"
-                      MediaController="{Binding Workspace.MediaController}"
-                      IsVisible="{Binding Workspace.MediaController.IsVideoLoaded}" />
+        <Panel Grid.Column="0"
+               Grid.Row="0"
+               Background="Transparent"
+               PointerWheelChanged="AudioTarget_OnPointerWheelChanged"
+               IsVisible="{Binding Workspace.MediaController.IsVideoLoaded}">
+            <c:Visualizer MediaController="{Binding Workspace.MediaController}" />
+        </Panel>
         <c:SeekSlider Grid.Column="0"
                       Grid.Row="1"
                       Padding="0 2"

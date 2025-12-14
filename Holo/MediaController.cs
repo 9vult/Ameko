@@ -170,8 +170,11 @@ public class MediaController : BindableBase
         get;
         set
         {
-            if (value <= 0 || value >= (AudioInfo?.Duration ?? 0))
-                return;
+            if (value <= 0)
+                value = 0;
+            if (value >= (AudioInfo?.Duration ?? 0))
+                value = AudioInfo?.Duration ?? 0;
+
             SetProperty(ref field, value);
             if (IsVideoLoaded)
                 RequestFrame(CurrentFrame);
