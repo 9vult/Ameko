@@ -241,9 +241,11 @@ pub fn LoadVideo(
     // Allocate ArrayLists
     var keyframes_list: std.ArrayList(c_int) = .empty;
     var timecodes_list: std.ArrayList(c_longlong) = .empty;
+    var kf_timecodes_list: std.ArrayList(c_longlong) = .empty;
     var intervals_list: std.ArrayList(c_longlong) = .empty;
 
     errdefer timecodes_list.deinit(common.allocator);
+    errdefer kf_timecodes_list.deinit(common.allocator);
     errdefer keyframes_list.deinit(common.allocator);
     errdefer intervals_list.deinit(common.allocator);
 
@@ -254,19 +256,21 @@ pub fn LoadVideo(
             return FfmsError.GetFrameInfoFailed;
         }
 
-        if (frame_info.*.KeyFrame != 0) {
-            try keyframes_list.append(common.allocator, frame_number);
-        }
-
         const wc_num = @as(f64, @floatFromInt(frame_info.*.PTS)) * @as(f64, @floatFromInt(time_base.*.Num));
         const wc_den = @as(f64, @floatFromInt(time_base.*.Den));
         const wallclock_ms = @as(c_longlong, @intFromFloat(wc_num / wc_den));
         try timecodes_list.append(common.allocator, wallclock_ms);
+
+        if (frame_info.*.KeyFrame != 0) {
+            try keyframes_list.append(common.allocator, frame_number);
+            try kf_timecodes_list.append(common.allocator, wallclock_ms);
+        }
     }
 
     // Get the slices (de-inits the ArrayLists)
     ctx.keyframes = keyframes_list.toOwnedSlice(common.allocator) catch unreachable;
     ctx.timecodes = timecodes_list.toOwnedSlice(common.allocator) catch unreachable;
+    ctx.kf_timecodes = kf_timecodes_list.toOwnedSlice(common.allocator) catch unreachable;
 
     // Calculate frame intervals
     var i: usize = 0;
@@ -326,6 +330,10 @@ pub fn CloseVideo(g_ctx: *context.GlobalContext) void {
     if (ctx.timecodes.len != 0) {
         common.allocator.free(ctx.timecodes);
         ctx.timecodes = undefined;
+    }
+    if (ctx.kf_timecodes.len != 0) {
+        common.allocator.free(ctx.kf_timecodes);
+        ctx.kf_timecodes = undefined;
     }
     if (ctx.frame_intervals.len != 0) {
         common.allocator.free(ctx.frame_intervals);

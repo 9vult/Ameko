@@ -49,6 +49,18 @@ pub fn RenderWaveform(
         // Clear
         @memset(bmp.*.data[0 .. bmp_height * bmp_pitch], 0);
 
+        // Draw keyframes behind the spectrum
+        for (g_ctx.*.ffms.kf_timecodes) |kf| {
+            const kf_ms: f64 = @floatFromInt(kf);
+            if (kf_ms >= start and kf_ms <= end) {
+                const delta = kf_ms - start;
+                const frame_x: usize = @intFromFloat(delta / pixel_ms);
+
+                drawLine(bmp, frame_x, 0, @intCast(bmp_height), 0xffe1e1e1); // grey
+            }
+        }
+
+        // Draw the spectrum
         var current_sample: usize = @intFromFloat(start * @as(f64, sr / 1000.0));
 
         var x: usize = 0;
@@ -95,7 +107,7 @@ pub fn RenderWaveform(
             drawLine(bmp, x, bmp_mid - scaled_min, bmp_mid - scaled_max, 0xff00ff00); // green
         }
 
-        // Draw frame time
+        // Draw frame time over the spectrum
         if (frame_time >= start and frame_time <= end) {
             const delta = frame_time - start;
             const frame_x: usize = @intFromFloat(delta / pixel_ms);
