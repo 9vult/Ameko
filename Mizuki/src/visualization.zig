@@ -6,23 +6,31 @@ const frames = @import("frames.zig");
 const logger = @import("logger.zig");
 const context = @import("context.zig");
 
-pub fn RenderWaveform(g_ctx: *context.GlobalContext, bmp: *frames.Bitmap, start_time: f64, frame_time: f64) void {
-    const ctx = &g_ctx.*.visualization;
-
+pub fn RenderWaveform(
+    g_ctx: *context.GlobalContext,
+    bmp: *frames.Bitmap,
+    pixel_ms: f32,
+    amplitude_scale: f32,
+    start_time: f64,
+    frame_time: f64,
+) void {
     const audio_data = g_ctx.*.buffers.audio_buffer;
     const stereo = g_ctx.*.ffms.channel_count == 2;
     const sr: f32 = @floatFromInt(g_ctx.*.ffms.sample_rate);
 
-    const pixel_samples: usize = @intFromFloat(ctx.pixel_ms * sr / 1000.0);
+    const pixel_samples: usize = @intFromFloat(pixel_ms * sr / 1000.0);
 
-    const width: usize = @intCast(bmp.*.width);
-    const pitch: usize = @intCast(bmp.*.pitch);
-    const mid: i16 = @intCast(@divFloor(bmp.*.height, 2));
+    const bmp_width: usize = @intCast(bmp.*.width);
+    const bmp_height: usize = @intCast(bmp.*.height);
+    const bmp_mid: i16 = @intCast(@divFloor(bmp_height, 2));
+    const bmp_pitch: usize = @intCast(bmp.*.pitch);
+    const wfv_height: i16 = @intCast(@divFloor(bmp_height * 9, 10));
+    const wvf_mid: i16 = @divFloor(wfv_height, 2);
 
     if (audio_data) |audio| {
         const effective_length: usize = if (stereo) audio.len / 2 else audio.len;
 
-        const visible_ms: f64 = @as(f64, @floatFromInt(width)) * @as(f64, @floatCast(ctx.pixel_ms));
+        const visible_ms: f64 = @as(f64, @floatFromInt(bmp_width)) * @as(f64, @floatCast(pixel_ms));
         const duration_ms: f64 = (@as(f32, @floatFromInt(effective_length)) * 1000.0) / sr;
 
         // Calculate start and end times
@@ -39,12 +47,12 @@ pub fn RenderWaveform(g_ctx: *context.GlobalContext, bmp: *frames.Bitmap, start_
         const end = start + visible_ms;
 
         // Clear
-        @memset(bmp.*.data[0 .. ctx.waveform_height * pitch], 0);
+        @memset(bmp.*.data[0 .. bmp_height * bmp_pitch], 0);
 
         var current_sample: usize = @intFromFloat(start * @as(f64, sr / 1000.0));
 
         var x: usize = 0;
-        while (x < width) : (x += 1) {
+        while (x < bmp_width) : (x += 1) {
             const s0: usize = current_sample;
             const s1: usize = @min(s0 + pixel_samples, effective_length);
             current_sample += pixel_samples;
@@ -77,22 +85,22 @@ pub fn RenderWaveform(g_ctx: *context.GlobalContext, bmp: *frames.Bitmap, start_
             }
 
             // Scale to bitmap
-            const mid_f: f32 = @floatFromInt(mid);
+            const mid_f: f32 = @floatFromInt(wvf_mid);
             const min_f: f32 = @floatFromInt(peak_min);
             const max_f: f32 = @floatFromInt(peak_max);
 
-            const scaled_min: i16 = @intFromFloat(@max((min_f * ctx.amplitude_scale * mid_f) / 0x8000, -mid_f));
-            const scaled_max: i16 = @intFromFloat(@min((max_f * ctx.amplitude_scale * mid_f) / 0x8000, mid_f));
+            const scaled_min: i16 = @intFromFloat(@max((min_f * amplitude_scale * mid_f) / 0x8000, -mid_f));
+            const scaled_max: i16 = @intFromFloat(@min((max_f * amplitude_scale * mid_f) / 0x8000, mid_f));
 
-            drawLine(bmp, x, mid - scaled_min, mid - scaled_max, 0xff00ff00); // green
+            drawLine(bmp, x, bmp_mid - scaled_min, bmp_mid - scaled_max, 0xff00ff00); // green
         }
 
         // Draw frame time
         if (frame_time >= start and frame_time <= end) {
             const delta = frame_time - start;
-            const frame_x: usize = @intFromFloat(delta / ctx.pixel_ms);
+            const frame_x: usize = @intFromFloat(delta / pixel_ms);
 
-            drawLine(bmp, frame_x, 0, @intCast(ctx.waveform_height), 0xffff0000); // red
+            drawLine(bmp, frame_x, 0, @intCast(bmp_height), 0xffff0000); // red
         }
     }
 }

@@ -89,10 +89,20 @@ public interface ISourceProvider
     /// Get a waveform bitmap for the specified time
     /// </summary>
     /// <param name="width">Width of the generated bitmap</param>
+    /// <param name="height">Height of the generated bitmap</param>
+    /// <param name="pixelsPerMs">Pixels per millisecond - Horizontal scale</param>
+    /// <param name="amplitudeScale">Amplitude scale factor - Vertical scale</param>
     /// <param name="startTime">Time to start at</param>
     /// <param name="frameTime">Timestamp of the current video frame</param>
     /// <returns>Output bitmap</returns>
-    unsafe Bitmap* GetVisualization(int width, long startTime, long frameTime);
+    unsafe Bitmap* GetVisualization(
+        int width,
+        int height,
+        float pixelsPerMs,
+        float amplitudeScale,
+        long startTime,
+        long frameTime
+    );
 
     /// <summary>
     /// Release a frame

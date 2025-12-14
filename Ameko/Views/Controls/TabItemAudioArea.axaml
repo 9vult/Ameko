@@ -15,6 +15,6 @@
         <c:SeekSlider Grid.Row="1"
                       Minimum="0"
                       Maximum="{Binding Workspace.MediaController.AudioInfo.Duration, FallbackValue=0}"
-                      Value="{Binding Workspace.MediaController.VisualizerPositionMs}"/>
+                      Value="{Binding Workspace.MediaController.VisualizerPositionMs, FallbackValue=0}"/>
     </Grid>
 </UserControl>

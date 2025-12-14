@@ -124,14 +124,46 @@ public class MediaController : BindableBase
     public int VisualizerWidth
     {
         get;
-        set => SetProperty(ref field, value);
-    } = 1000;
+        set
+        {
+            SetProperty(ref field, value);
+            if (IsVideoLoaded)
+                RequestFrame(CurrentFrame);
+        }
+    }
 
     public int VisualizerHeight
     {
         get;
-        set => SetProperty(ref field, value);
-    } = 120;
+        set
+        {
+            SetProperty(ref field, value);
+            if (IsVideoLoaded)
+                RequestFrame(CurrentFrame);
+        }
+    }
+
+    public float VisualizerHorizontalScale
+    {
+        get;
+        set
+        {
+            SetProperty(ref field, value);
+            if (IsVideoLoaded)
+                RequestFrame(CurrentFrame);
+        }
+    } = 2f;
+
+    public float VisualizerVerticalScale
+    {
+        get;
+        set
+        {
+            SetProperty(ref field, value);
+            if (IsVideoLoaded)
+                RequestFrame(CurrentFrame);
+        }
+    } = 2f;
 
     public long VisualizerPositionMs
     {
@@ -141,7 +173,8 @@ public class MediaController : BindableBase
             if (value <= 0 || value >= (AudioInfo?.Duration ?? 0))
                 return;
             SetProperty(ref field, value);
-            RequestFrame(CurrentFrame);
+            if (IsVideoLoaded)
+                RequestFrame(CurrentFrame);
         }
     } = 0;
 
@@ -454,7 +487,14 @@ public class MediaController : BindableBase
                 {
                     return false; // ??
                 }
-                _lastVizFrame = _provider.GetVisualization(VisualizerWidth, 0, 1000);
+                _lastVizFrame = _provider.GetVisualization(
+                    VisualizerWidth,
+                    VisualizerHeight,
+                    VisualizerHorizontalScale,
+                    VisualizerVerticalScale,
+                    0,
+                    0
+                );
             }
 
             IsVideoLoaded = true;
@@ -627,7 +667,14 @@ public class MediaController : BindableBase
         var time = VideoInfo?.MillisecondsFromFrame(frameToFetch) ?? 0;
 
         var frame = _provider.GetFrame(frameToFetch, time, false);
-        var vizFrame = _provider.GetVisualization(VisualizerWidth, VisualizerPositionMs, time);
+        var vizFrame = _provider.GetVisualization(
+            VisualizerWidth,
+            VisualizerHeight,
+            VisualizerHorizontalScale,
+            VisualizerVerticalScale,
+            VisualizerPositionMs,
+            time
+        );
         lock (_frameLock)
         {
             _nextFrame = frame;

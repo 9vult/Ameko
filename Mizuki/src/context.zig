@@ -92,32 +92,16 @@ pub const BuffersContext = struct {
     }
 };
 
-pub const VisualizationContext = struct {
-    waveform_height: usize,
-    amplitude_scale: f32,
-    pixel_ms: f32,
-
-    pub fn Init() VisualizationContext {
-        return VisualizationContext{
-            .waveform_height = 120,
-            .amplitude_scale = 2.0,
-            .pixel_ms = 2.0,
-        };
-    }
-};
-
 pub const GlobalContext = struct {
     ffms: FFMSContext,
     libass: LibassContext,
     buffers: BuffersContext,
-    visualization: VisualizationContext,
 
     pub fn Init() GlobalContext {
         return GlobalContext{
             .ffms = FFMSContext.Init(),
             .libass = LibassContext.Init(),
             .buffers = BuffersContext.Init(),
-            .visualization = VisualizationContext.Init(),
         };
     }
 

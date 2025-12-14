@@ -121,9 +121,16 @@ pub fn Deinit(g_ctx: *context.GlobalContext) void {
     ctx.viz_buffers.deinit(common.allocator);
 }
 
-pub fn ProcVizualizationFrame(g_ctx: *context.GlobalContext, width: c_int, start_time: f64, frame_time: f64) !*frames.Bitmap {
+pub fn ProcVizualizationFrame(
+    g_ctx: *context.GlobalContext,
+    width: c_int,
+    height: c_int,
+    pixel_ms: f32,
+    amplitude_scale: f32,
+    start_time: f64,
+    frame_time: f64,
+) !*frames.Bitmap {
     const ctx = &g_ctx.*.buffers;
-    const viz_ctx = &g_ctx.*.visualization;
 
     var buffers = ctx.viz_buffers;
     var result: ?*frames.Bitmap = null;
@@ -139,7 +146,14 @@ pub fn ProcVizualizationFrame(g_ctx: *context.GlobalContext, width: c_int, start
                 try buffers.insert(common.allocator, 0, buffer);
             }
 
-            viz.RenderWaveform(g_ctx, result.?, start_time, frame_time);
+            viz.RenderWaveform(
+                g_ctx,
+                result.?,
+                pixel_ms,
+                amplitude_scale,
+                start_time,
+                frame_time,
+            );
             return result.?;
         }
     }
@@ -163,16 +177,22 @@ pub fn ProcVizualizationFrame(g_ctx: *context.GlobalContext, width: c_int, start
     }
 
     // Allocate the buffer
-    const height = viz_ctx.waveform_height;
     if (result == null) { // Allocate a new buffer entirely
-        result = try AllocateVisualizationFrame(@intCast(width), height);
+        result = try AllocateVisualizationFrame(@intCast(width), @intCast(height));
     } else { // Allocate just the data field
         const pitch = width * 4; // BGRA
-        const total_bytes = height * @as(usize, @intCast(pitch));
+        const total_bytes = @as(usize, @intCast(height * pitch));
         try AllocateVisualizationBitmap(result.?, total_bytes);
     }
 
-    viz.RenderWaveform(g_ctx, result.?, start_time, frame_time);
+    viz.RenderWaveform(
+        g_ctx,
+        result.?,
+        pixel_ms,
+        amplitude_scale,
+        start_time,
+        frame_time,
+    );
     return result.?;
 }
 

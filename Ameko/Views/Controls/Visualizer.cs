@@ -165,6 +165,7 @@ public class Visualizer : OpenGlControlBase
     {
         base.OnSizeChanged(e);
         MediaController?.VisualizerWidth = (int)e.NewSize.Width;
+        MediaController?.VisualizerHeight = (int)e.NewSize.Height;
     }
 
     private void OnFrameReady()

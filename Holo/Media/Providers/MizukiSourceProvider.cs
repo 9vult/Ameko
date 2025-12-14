@@ -144,9 +144,24 @@ public unsafe class MizukiSourceProvider : ISourceProvider
     }
 
     /// <inheritdoc />
-    public Bitmap* GetVisualization(int width, long startTime, long frameTime)
+    public Bitmap* GetVisualization(
+        int width,
+        int height,
+        float pixelsPerMs,
+        float amplitudeScale,
+        long startTime,
+        long frameTime
+    )
     {
-        return External.GetVisualization(_context, width, startTime, frameTime);
+        return External.GetVisualization(
+            _context,
+            width,
+            height,
+            pixelsPerMs,
+            amplitudeScale,
+            startTime,
+            frameTime
+        );
     }
 
     /// <inheritdoc />
@@ -308,6 +323,9 @@ internal static unsafe partial class External
     internal static unsafe partial Bitmap* GetVisualization(
         GlobalContext* context,
         int width,
+        int height,
+        float pixelsPerMs,
+        float amplitudeScale,
         long startTime,
         long frameTime
     );

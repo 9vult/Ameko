@@ -140,12 +140,18 @@ pub export fn GetAudio(g_ctx: *context.GlobalContext, progress_cb: common.Progre
 pub export fn GetVisualization(
     g_ctx: *context.GlobalContext,
     width: c_int,
+    height: c_int,
+    pixel_ms: f32,
+    amplitude_scale: f32,
     start_time: c_longlong,
     frame_time: c_longlong,
 ) ?*frames.Bitmap {
     return buffers.ProcVizualizationFrame(
         g_ctx,
-        @intCast(width),
+        width,
+        height,
+        pixel_ms,
+        amplitude_scale,
         @floatFromInt(start_time),
         @floatFromInt(frame_time),
     ) catch {
