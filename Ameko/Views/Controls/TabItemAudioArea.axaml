@@ -35,7 +35,7 @@
                     Classes="Small"
                     Padding="1"
                     Minimum="0.1"
-                    Maximum="5.0"
+                    Maximum="10.0"
                     TickFrequency="0.1"
                     IsSnapToTickEnabled="True"
                     IsDirectionReversed="True"
