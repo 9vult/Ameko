@@ -95,7 +95,7 @@ pub export fn SetSubtitles(g_ctx: *context.GlobalContext, data: [*c]u8, data_len
 /// Allocate frame buffers
 pub export fn AllocateBuffers(g_ctx: *context.GlobalContext, num_buffers: c_int, max_cache_mb: c_int) c_int {
     const ffms_ctx = g_ctx.*.ffms;
-    buffers.Init(
+    buffers.InitVideo(
         g_ctx,
         @intCast(num_buffers),
         max_cache_mb,
@@ -112,6 +112,7 @@ pub export fn AllocateAudioBuffer(g_ctx: *context.GlobalContext) c_int {
     buffers.InitAudio(g_ctx) catch |err| {
         return errors.IntFromFfmsError(err);
     };
+    buffers.InitVisualization(g_ctx);
     return 0;
 }
 
@@ -123,7 +124,7 @@ pub export fn FreeBuffers(g_ctx: *context.GlobalContext) c_int {
 
 /// Get a frame
 pub export fn GetFrame(g_ctx: *context.GlobalContext, frame_number: c_int, timestamp: c_longlong, raw: c_int) ?*frames.FrameGroup {
-    return buffers.ProcFrame(g_ctx, frame_number, timestamp, raw) catch {
+    return buffers.ProcVideoFrame(g_ctx, frame_number, timestamp, raw) catch {
         return null;
     };
 }
@@ -131,6 +132,33 @@ pub export fn GetFrame(g_ctx: *context.GlobalContext, frame_number: c_int, times
 /// Get the audio
 pub export fn GetAudio(g_ctx: *context.GlobalContext, progress_cb: common.ProgressCallback) ?*frames.AudioFrame {
     return buffers.GetAudio(g_ctx, progress_cb) catch {
+        return null;
+    };
+}
+
+/// Get an audio visualization bitmap
+pub export fn GetVisualization(
+    g_ctx: *context.GlobalContext,
+    width: c_int,
+    height: c_int,
+    pixel_ms: f64,
+    amplitude_scale: f64,
+    start_time: i64,
+    frame_time: i64,
+    event_bounds: [*]i64,
+    event_bounds_len: usize,
+) ?*frames.Bitmap {
+    return buffers.ProcVizualizationFrame(
+        g_ctx,
+        width,
+        height,
+        pixel_ms,
+        amplitude_scale,
+        @floatFromInt(start_time),
+        @floatFromInt(frame_time),
+        event_bounds,
+        event_bounds_len,
+    ) catch {
         return null;
     };
 }
@@ -162,6 +190,21 @@ pub export fn GetFrameIntervals(g_ctx: *context.GlobalContext) common.LongArray 
         .ptr = g_ctx.*.ffms.frame_intervals.ptr,
         .len = g_ctx.*.ffms.frame_intervals.len,
     };
+}
+
+/// Get the number of channels in the audio
+pub export fn GetChannelCount(g_ctx: *context.GlobalContext) c_int {
+    return g_ctx.*.ffms.channel_count;
+}
+
+/// Get the audio's sample rate
+pub export fn GetSampleRate(g_ctx: *context.GlobalContext) c_int {
+    return g_ctx.*.ffms.sample_rate;
+}
+
+/// Get the number of samples in the audio
+pub export fn GetSampleCount(g_ctx: *context.GlobalContext) c_longlong {
+    return @intCast(g_ctx.*.ffms.sample_count);
 }
 
 /// Set the logging callback

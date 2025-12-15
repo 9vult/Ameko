@@ -76,6 +76,21 @@ public unsafe class NullSourceProvider : ISourceProvider
     }
 
     /// <inheritdoc />
+    public Bitmap* GetVisualization(
+        int width,
+        int height,
+        double pixelsPerMs,
+        double amplitudeScale,
+        long startTime,
+        long frameTime,
+        long* eventBounds,
+        int eventBoundsLength
+    )
+    {
+        return null;
+    }
+
+    /// <inheritdoc />
     public unsafe int ReleaseFrame(FrameGroup* frame)
     {
         return 0;
@@ -97,5 +112,23 @@ public unsafe class NullSourceProvider : ISourceProvider
     public long[] GetFrameIntervals()
     {
         return [];
+    }
+
+    /// <inheritdoc />
+    public int GetChannelCount()
+    {
+        return 2;
+    }
+
+    /// <inheritdoc />
+    public int GetSampleRate()
+    {
+        return 1;
+    }
+
+    /// <inheritdoc />
+    public long GetSampleCount()
+    {
+        return 1;
     }
 }

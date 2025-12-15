@@ -360,4 +360,10 @@
     <data name="EventsGrid_Menu_InsertAfterAtVideoTime" xml:space="preserve">
         <value>Insert After at Video Time</value>
     </data>
+    <data name="Audio_HorizontalScale_ToolTip" xml:space="preserve">
+        <value>Horizontal Scale</value>
+    </data>
+    <data name="Audio_VerticalScale_ToolTip" xml:space="preserve">
+        <value>Vertical Scale</value>
+    </data>
 </root>

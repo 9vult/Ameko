@@ -48,3 +48,12 @@ public struct AudioFrame
     public long DurationMillis;
     public int Valid;
 }
+
+[StructLayout(LayoutKind.Sequential)]
+public struct Bitmap
+{
+    public int Width;
+    public int Height;
+    public int Pitch;
+    public unsafe byte* Data;
+}

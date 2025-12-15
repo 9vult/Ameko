@@ -15,11 +15,16 @@ public class MediaController : BindableBase
     private readonly ILogger _logger;
     private readonly HighResolutionTimer _playback;
 
+    private readonly Lock _frameLock = new();
+    private readonly Lock _boundsLock = new();
+
     private unsafe FrameGroup* _lastFrame;
     private unsafe FrameGroup* _nextFrame;
     private unsafe AudioFrame* _audioFrame;
+    private unsafe Bitmap* _lastVizFrame;
+    private unsafe Bitmap* _nextVizFrame;
     private int _currentFrame;
-    private readonly Lock _frameLock = new();
+
     private Task? _fetchTask;
     private int _pendingFrame = -1;
     private bool _subtitlesChanged;
@@ -32,6 +37,8 @@ public class MediaController : BindableBase
 
     private int _destinationFrame;
 
+    private long[] _eventBounds = [];
+
     /// <summary>
     /// If media operations are to be enabled
     /// </summary>
@@ -41,6 +48,15 @@ public class MediaController : BindableBase
     /// Information about the loaded video
     /// </summary>
     public VideoInfo? VideoInfo
+    {
+        get;
+        private set => SetProperty(ref field, value);
+    }
+
+    /// <summary>
+    /// Information about the loaded audio
+    /// </summary>
+    public AudioInfo? AudioInfo
     {
         get;
         private set => SetProperty(ref field, value);
@@ -109,6 +125,66 @@ public class MediaController : BindableBase
         get;
         private set => SetProperty(ref field, value);
     }
+
+    public int VisualizerWidth
+    {
+        get;
+        set
+        {
+            SetProperty(ref field, value);
+            if (IsVideoLoaded)
+                RequestFrame(CurrentFrame);
+        }
+    }
+
+    public int VisualizerHeight
+    {
+        get;
+        set
+        {
+            SetProperty(ref field, value);
+            if (IsVideoLoaded)
+                RequestFrame(CurrentFrame);
+        }
+    }
+
+    public double VisualizerHorizontalScale
+    {
+        get;
+        set
+        {
+            SetProperty(ref field, value);
+            if (IsVideoLoaded)
+                RequestFrame(CurrentFrame);
+        }
+    } = 4d;
+
+    public double VisualizerVerticalScale
+    {
+        get;
+        set
+        {
+            SetProperty(ref field, value);
+            if (IsVideoLoaded)
+                RequestFrame(CurrentFrame);
+        }
+    } = 2d;
+
+    public long VisualizerPositionMs
+    {
+        get;
+        set
+        {
+            if (value <= 0)
+                value = 0;
+            if (value >= (AudioInfo?.Duration ?? 0))
+                value = AudioInfo?.Duration ?? 0;
+
+            SetProperty(ref field, value);
+            if (IsVideoLoaded)
+                RequestFrame(CurrentFrame);
+        }
+    } = 0;
 
     /// <summary>
     /// If we should automatically seek to the start of an event when the selection changes
@@ -307,6 +383,7 @@ public class MediaController : BindableBase
         if (_isPlaying)
             Pause();
         CurrentFrame = VideoInfo.FrameFromTime(@event.Start);
+        VisualizerPositionMs = @event.Start.TotalMilliseconds;
         if (_isPaused)
             Resume();
     }
@@ -337,6 +414,7 @@ public class MediaController : BindableBase
         if (_isPlaying)
             Pause();
         CurrentFrame = VideoInfo.FrameFromTime(@event.Start);
+        VisualizerPositionMs = @event.Start.TotalMilliseconds;
         if (_isPaused)
             Resume();
     }
@@ -390,7 +468,14 @@ public class MediaController : BindableBase
                     frameIntervals: _provider.GetFrameIntervals(),
                     keyframes: _provider.GetKeyframes(),
                     testFrame->VideoFrame->Width,
-                    testFrame->VideoFrame->Height
+                    testFrame->VideoFrame->Height,
+                    true // TODO
+                );
+
+                AudioInfo = new AudioInfo(
+                    channelCount: _provider.GetChannelCount(),
+                    sampleRate: _provider.GetSampleRate(),
+                    sampleCount: _provider.GetSampleCount()
                 );
 
                 _playback.Intervals = VideoInfo.FrameIntervals;
@@ -412,6 +497,16 @@ public class MediaController : BindableBase
                 {
                     return false; // ??
                 }
+                _lastVizFrame = _provider.GetVisualization(
+                    VisualizerWidth,
+                    VisualizerHeight,
+                    VisualizerHorizontalScale,
+                    VisualizerVerticalScale,
+                    0,
+                    0,
+                    null,
+                    0
+                );
             }
 
             IsVideoLoaded = true;
@@ -498,6 +593,28 @@ public class MediaController : BindableBase
         throw new InvalidOperationException("Frame is unavailable");
     }
 
+    public unsafe Bitmap* GetCurrentVizFrame()
+    {
+        if (!_provider.IsInitialized)
+            throw new InvalidOperationException("Provider is not initialized");
+        if (!IsVideoLoaded)
+            throw new InvalidOperationException("Video is not loaded");
+
+        lock (_frameLock)
+        {
+            if (_nextVizFrame is not null)
+            {
+                _lastVizFrame = _nextVizFrame;
+                _nextVizFrame = null;
+            }
+        }
+
+        if (_lastVizFrame is not null)
+            return _lastVizFrame;
+
+        throw new InvalidOperationException("Frame is unavailable");
+    }
+
     public unsafe AudioFrame* GetAudioFrame()
     {
         if (!_provider.IsInitialized)
@@ -525,6 +642,18 @@ public class MediaController : BindableBase
         {
             _provider.SetSubtitles(writer.Write(), null);
             _subtitlesChanged = true;
+        }
+
+        var events = document.EventManager.Events;
+
+        lock (_boundsLock)
+        {
+            _eventBounds = new long[events.Count * 2];
+            for (int i = 0, j = 0; i < events.Count; i++)
+            {
+                _eventBounds[j++] = events[i].Start.TotalMilliseconds;
+                _eventBounds[j++] = events[i].End.TotalMilliseconds;
+            }
         }
 
         RequestFrame(CurrentFrame);
@@ -561,11 +690,33 @@ public class MediaController : BindableBase
 
         var time = VideoInfo?.MillisecondsFromFrame(frameToFetch) ?? 0;
 
+        // Get video/subtitles
         var frame = _provider.GetFrame(frameToFetch, time, false);
+
+        // Get audio visualization
+        Bitmap* vizFrame;
+
+        lock (_boundsLock)
+        {
+            fixed (long* ptr = _eventBounds)
+            {
+                vizFrame = _provider.GetVisualization(
+                    VisualizerWidth,
+                    VisualizerHeight,
+                    VisualizerHorizontalScale,
+                    VisualizerVerticalScale,
+                    VisualizerPositionMs,
+                    time,
+                    ptr,
+                    _eventBounds.Length
+                );
+            }
+        }
+
         lock (_frameLock)
         {
-            // if (frameToFetch == _currentFrame || subtitlesChanged) // Do we want this gate?
             _nextFrame = frame;
+            _nextVizFrame = vizFrame;
 
             FrameReady?.Invoke();
 

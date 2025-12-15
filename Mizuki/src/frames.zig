@@ -42,3 +42,12 @@ pub const FrameGroup = extern struct {
     video_frame: *VideoFrame,
     subtitle_frame: *SubtitleFrame,
 };
+
+/// Generic bitmap
+pub const Bitmap = extern struct {
+    width: c_int,
+    height: c_int,
+    pitch: c_int,
+    data: [*]u8,
+    valid: c_int = 0, // bool
+};

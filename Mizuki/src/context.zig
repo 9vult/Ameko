@@ -21,6 +21,7 @@ pub const FFMSContext = struct {
     // Public
     keyframes: []c_int,
     timecodes: []c_longlong,
+    kf_timecodes: []c_longlong,
     frame_intervals: []c_longlong,
     frame_count: c_int,
 
@@ -43,6 +44,7 @@ pub const FFMSContext = struct {
             .video_color_range = -1,
             .keyframes = undefined,
             .timecodes = undefined,
+            .kf_timecodes = undefined,
             .frame_intervals = undefined,
             .frame_count = undefined,
             .frame_width = 0,
@@ -74,17 +76,20 @@ pub const LibassContext = struct {
 pub const BuffersContext = struct {
     max_size: i64,
     total_size: i64,
-    buffers: std.ArrayList(*frames.FrameGroup),
+    frame_buffers: std.ArrayList(*frames.FrameGroup),
     audio_buffer: ?[]i16,
     audio_frame: ?*frames.AudioFrame,
+    viz_buffers: std.ArrayList(*frames.Bitmap),
+    max_viz_buffers: usize = 8,
 
     pub fn Init() BuffersContext {
         return BuffersContext{
             .max_size = 0,
             .total_size = 0,
-            .buffers = undefined,
+            .frame_buffers = undefined,
             .audio_buffer = null,
             .audio_frame = null,
+            .viz_buffers = undefined,
         };
     }
 };

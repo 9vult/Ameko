@@ -25,6 +25,16 @@ public class StaticLoggerFactory
         return _factory?.CreateLogger<T>() ?? NullLogger<T>.Instance;
     }
 
+    /// <summary>
+    /// Get a named logger
+    /// </summary>
+    /// <param name="name">Name to give the logger</param>
+    /// <returns>Logger</returns>
+    public static ILogger GetLogger(string name)
+    {
+        return _factory?.CreateLogger(name) ?? NullLogger.Instance;
+    }
+
     public StaticLoggerFactory(ILoggerFactory factory)
     {
         _factory = factory;

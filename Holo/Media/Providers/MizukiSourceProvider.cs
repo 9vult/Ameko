@@ -6,6 +6,8 @@ using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
 using Holo.IO;
+using Holo.Providers;
+using Microsoft.Extensions.Logging;
 
 namespace Holo.Media.Providers;
 
@@ -16,6 +18,7 @@ public unsafe class MizukiSourceProvider : ISourceProvider
 {
     private static readonly External.LogCallback LogDelegate = Log;
 
+    private static readonly ILogger MizukiLogger = StaticLoggerFactory.GetLogger("Mizuki");
     private GlobalContext* _context = null;
     private GCHandle? _progressHandle;
 
@@ -141,6 +144,31 @@ public unsafe class MizukiSourceProvider : ISourceProvider
     }
 
     /// <inheritdoc />
+    public Bitmap* GetVisualization(
+        int width,
+        int height,
+        double pixelsPerMs,
+        double amplitudeScale,
+        long startTime,
+        long frameTime,
+        long* eventBounds,
+        int eventBoundsLength
+    )
+    {
+        return External.GetVisualization(
+            _context,
+            width,
+            height,
+            pixelsPerMs,
+            amplitudeScale,
+            startTime,
+            frameTime,
+            eventBounds,
+            eventBoundsLength
+        );
+    }
+
+    /// <inheritdoc />
     public int ReleaseFrame(FrameGroup* frame)
     {
         return External.ReleaseFrame(frame);
@@ -167,6 +195,24 @@ public unsafe class MizukiSourceProvider : ISourceProvider
         return ptr.ToLongArray();
     }
 
+    /// <inheritdoc />
+    public int GetChannelCount()
+    {
+        return External.GetChannelCount(_context);
+    }
+
+    /// <inheritdoc />
+    public int GetSampleRate()
+    {
+        return External.GetSampleRate(_context);
+    }
+
+    /// <inheritdoc />
+    public long GetSampleCount()
+    {
+        return External.GetSampleCount(_context);
+    }
+
     /// <summary>
     /// Callback for handling logs emitted by Mizuki
     /// </summary>
@@ -174,28 +220,27 @@ public unsafe class MizukiSourceProvider : ISourceProvider
     /// <param name="ptr">Pointer to the c-string</param>
     private static void Log(int level, nint ptr)
     {
-        // TODO: Re-implement once we have a proper SourceProvider factory or something
-
         var msg = Marshal.PtrToStringAnsi(ptr);
-        Console.WriteLine(msg);
-        // switch (level)
-        // {
-        //     case 0:
-        //         Logger.Trace(msg);
-        //         break;
-        //     case 1:
-        //         Logger.Debug(msg);
-        //         break;
-        //     case 2:
-        //         Logger.Info(msg);
-        //         break;
-        //     case 3:
-        //         Logger.Warn(msg);
-        //         break;
-        //     case 4:
-        //         Logger.Error(msg);
-        //         break;
-        // }
+        if (msg is null)
+            return;
+        switch (level)
+        {
+            case 0:
+                MizukiLogger.LogTrace("{MizukiMessage}", msg);
+                break;
+            case 1:
+                MizukiLogger.LogDebug("{MizukiMessage}", msg);
+                break;
+            case 2:
+                MizukiLogger.LogInformation("{MizukiMessage}", msg);
+                break;
+            case 3:
+                MizukiLogger.LogWarning("{MizukiMessage}", msg);
+                break;
+            case 4:
+                MizukiLogger.LogError("{MizukiMessage}", msg);
+                break;
+        }
     }
 
     /// <summary>
@@ -279,6 +324,19 @@ internal static unsafe partial class External
     );
 
     [LibraryImport("mizuki")]
+    internal static unsafe partial Bitmap* GetVisualization(
+        GlobalContext* context,
+        int width,
+        int height,
+        double pixelsPerMs,
+        double amplitudeScale,
+        long startTime,
+        long frameTime,
+        long* eventBounds,
+        int eventBoundsLength
+    );
+
+    [LibraryImport("mizuki")]
     internal static unsafe partial int ReleaseFrame(FrameGroup* frame);
 
     [LibraryImport("mizuki")]
@@ -289,6 +347,15 @@ internal static unsafe partial class External
 
     [LibraryImport("mizuki")]
     internal static partial UnmanagedArray GetTimecodes(GlobalContext* context);
+
+    [LibraryImport("mizuki")]
+    internal static partial int GetChannelCount(GlobalContext* context);
+
+    [LibraryImport("mizuki")]
+    internal static partial int GetSampleRate(GlobalContext* context);
+
+    [LibraryImport("mizuki")]
+    internal static partial long GetSampleCount(GlobalContext* context);
 
     [LibraryImport("mizuki")]
     internal static partial UnmanagedArray GetFrameIntervals(GlobalContext* context);

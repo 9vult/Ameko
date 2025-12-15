@@ -86,6 +86,29 @@ public interface ISourceProvider
     unsafe AudioFrame* GetAudio(IndexingProgressCallback? progressCallback = null);
 
     /// <summary>
+    /// Get a waveform bitmap for the specified time
+    /// </summary>
+    /// <param name="width">Width of the generated bitmap</param>
+    /// <param name="height">Height of the generated bitmap</param>
+    /// <param name="pixelsPerMs">Pixels per millisecond - Horizontal scale</param>
+    /// <param name="amplitudeScale">Amplitude scale factor - Vertical scale</param>
+    /// <param name="startTime">Time to start at</param>
+    /// <param name="frameTime">Timestamp of the current video frame</param>
+    /// <param name="eventBounds">Array of bounds of events to display, in milliseconds</param>
+    /// <param name="eventBoundsLength">Length of the <param name="eventBounds"> array</param></param>
+    /// <returns>Output bitmap</returns>
+    unsafe Bitmap* GetVisualization(
+        int width,
+        int height,
+        double pixelsPerMs,
+        double amplitudeScale,
+        long startTime,
+        long frameTime,
+        long* eventBounds,
+        int eventBoundsLength
+    );
+
+    /// <summary>
     /// Release a frame
     /// </summary>
     /// <param name="frame">Pointer to frame to release</param>
@@ -109,6 +132,24 @@ public interface ISourceProvider
     /// </summary>
     /// <returns></returns>
     long[] GetFrameIntervals();
+
+    /// <summary>
+    /// How many channels are in the audio
+    /// </summary>
+    /// <returns></returns>
+    int GetChannelCount();
+
+    /// <summary>
+    /// Sample rate of the audio
+    /// </summary>
+    /// <returns></returns>
+    int GetSampleRate();
+
+    /// <summary>
+    /// How many samples are in the audio
+    /// </summary>
+    /// <returns></returns>
+    long GetSampleCount();
 
     /// <summary>
     /// Indexing progress

@@ -26,6 +26,8 @@ namespace Ameko.Views.Controls;
 [PseudoClasses(":vertical", ":horizontal", ":pressed")]
 public sealed partial class SeekSlider : RangeBase
 {
+    protected override Type StyleKeyOverride => typeof(Slider);
+
     /// <summary>
     /// Defines the <see cref="Orientation"/> property.
     /// </summary>

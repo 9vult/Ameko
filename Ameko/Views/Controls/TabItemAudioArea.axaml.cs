@@ -6,6 +6,7 @@ using System.Reactive.Disposables;
 using Ameko.Renderers;
 using Ameko.ViewModels.Controls;
 using Avalonia;
+using Avalonia.Input;
 using Avalonia.ReactiveUI;
 using ReactiveUI;
 
@@ -36,5 +37,19 @@ public partial class TabItemAudioArea : ReactiveUserControl<TabItemViewModel>
                 })
                 .DisposeWith(disposables);
         });
+    }
+
+    private void AudioTarget_OnPointerWheelChanged(object? sender, PointerWheelEventArgs e)
+    {
+        if (ViewModel is null)
+        {
+            e.Handled = true;
+            return;
+        }
+        if (e.Delta.Y > 0)
+            ViewModel.Workspace.MediaController.VisualizerPositionMs -= 250; // Quarter second
+        if (e.Delta.Y < 0)
+            ViewModel.Workspace.MediaController.VisualizerPositionMs += 250;
+        e.Handled = true;
     }
 }
