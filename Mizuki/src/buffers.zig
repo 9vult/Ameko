@@ -118,15 +118,17 @@ pub fn Deinit(g_ctx: *context.GlobalContext) void {
     FreeAudioBuffer(g_ctx);
 
     // free visualization buffers
-    for (ctx.viz_buffers.items) |buffer| {
-        const total: usize = @intCast(buffer.*.height * buffer.*.pitch);
-        if (total != 0) {
-            common.allocator.free(buffer.*.data[0..total]);
+    if (ctx.viz_buffers) |viz_buffers| {
+        for (viz_buffers.items) |buffer| {
+            const total: usize = @intCast(buffer.*.height * buffer.*.pitch);
+            if (total != 0) {
+                common.allocator.free(buffer.*.data[0..total]);
+            }
+            common.allocator.destroy(buffer);
         }
-        common.allocator.destroy(buffer);
-    }
 
-    ctx.viz_buffers.deinit(common.allocator);
+        ctx.viz_buffers.?.deinit(common.allocator);
+    }
 }
 
 pub fn ProcVizualizationFrame(
@@ -142,7 +144,7 @@ pub fn ProcVizualizationFrame(
 ) !*frames.Bitmap {
     const ctx = &g_ctx.*.buffers;
 
-    var buffers = ctx.viz_buffers;
+    var buffers = ctx.viz_buffers.?;
     var result: ?*frames.Bitmap = null;
 
     // See if there's a buffer available with the correct width

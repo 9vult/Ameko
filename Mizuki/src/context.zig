@@ -83,7 +83,7 @@ pub const BuffersContext = struct {
     frame_buffers: std.ArrayList(*frames.FrameGroup),
     audio_buffer: ?[]i16,
     audio_frame: ?*frames.AudioFrame,
-    viz_buffers: std.ArrayList(*frames.Bitmap),
+    viz_buffers: ?std.ArrayList(*frames.Bitmap),
     max_viz_buffers: usize = 8,
 
     pub fn Init() BuffersContext {
@@ -93,7 +93,7 @@ pub const BuffersContext = struct {
             .frame_buffers = undefined,
             .audio_buffer = null,
             .audio_frame = null,
-            .viz_buffers = undefined,
+            .viz_buffers = null,
         };
     }
 };
