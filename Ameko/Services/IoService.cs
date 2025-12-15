@@ -444,8 +444,13 @@ public class IoService(
             );
             if (result != MsgBoxButton.Yes)
                 return true;
-            await workspace.MediaController.OpenVideoAsync(videoPath);
-            workspace.MediaController.SetSubtitles(workspace.Document);
+
+            await OpenVideoFileAsync(
+                new Uri(videoPath, UriKind.Absolute),
+                workspace,
+                progressCallback
+            );
+
             if (doc.GarbageManager.TryGetInt("Video Position", out var frame))
                 workspace.MediaController.SeekTo(frame.Value); // Seek for clamp safety
             return true;
