@@ -32,6 +32,18 @@ public unsafe class NullSourceProvider : ISourceProvider
     }
 
     /// <inheritdoc />
+    public int LoadAudio(string filename, int? trackNumber)
+    {
+        return 0;
+    }
+
+    /// <inheritdoc />
+    public TrackInfo[] GetAudioTrackInfo(string filename)
+    {
+        return [];
+    }
+
+    /// <inheritdoc />
     public int CloseVideo()
     {
         return 0;

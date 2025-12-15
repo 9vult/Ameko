@@ -85,6 +85,20 @@ public unsafe class MizukiSourceProvider : ISourceProvider
     }
 
     /// <inheritdoc />
+    public int LoadAudio(string filename, int? trackNumber)
+    {
+        var status = External.LoadAudio(_context, filename, GetCachePath(filename), (int)trackNumber!);
+        return status;
+    }
+
+    /// <inheritdoc />
+    public TrackInfo[] GetAudioTrackInfo(string filename)
+    {
+        var ptr = External.GetAudioTrackInfo(_context, filename);
+        return ptr.ToTrackInfoArray();
+    }
+
+    /// <inheritdoc />
     public int CloseVideo()
     {
         var result = External.CloseVideo(_context);
@@ -284,6 +298,20 @@ internal static unsafe partial class External
         string colorMatrix,
         IndexingProgressCallback? progressCallback
     );
+    
+    [LibraryImport("mizuki", StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial int LoadAudio(
+        GlobalContext* context,
+        string fileName,
+        string cacheFileName,
+        int trackNumber
+    );
+    
+    [LibraryImport("mizuki", StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial UnmanagedArray GetAudioTrackInfo(
+        GlobalContext* context,
+        string fileName
+    );
 
     [LibraryImport("mizuki")]
     internal static partial int CloseVideo(GlobalContext* context);
@@ -401,11 +429,33 @@ internal static class UnmanagedArrayExtensions
             return managed;
         }
 
+        /// <summary>
+        /// Copy an unmanaged <see cref="UnmanagedArray"/> to a managed <c>long[]</c>
+        /// </summary>
+        /// <returns>Managed array</returns>
         public long[] ToLongArray()
         {
             var managed = new long[array.Length];
             Marshal.Copy(array.Pointer, managed, 0, managed.Length);
             return managed;
         }
+
+        /// <summary>
+        /// Copy an unmanaged <see cref="UnmanagedArray"/> to a managed <c>TrackInfo[]</c>
+        /// </summary>
+        /// <returns>Managed array</returns>
+        public TrackInfo[] ToTrackInfoArray()
+        {
+            var managed = new TrackInfo[array.Length];
+            var size = Marshal.SizeOf<TrackInfo>();
+
+            for (var i = 0; i < (int)array.Length; i++)
+            {
+                var ptr = array.Pointer + (i * size);
+                managed[i] = Marshal.PtrToStructure<TrackInfo>(ptr);
+            }
+            return managed;
+        }
+        
     }
 }
