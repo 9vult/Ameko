@@ -4,8 +4,6 @@ using System;
 using System.Reactive;
 using System.Threading.Tasks;
 using Ameko.DataModels;
-using AssCS;
-using Avalonia.Input;
 using Holo;
 using Holo.Media.Providers;
 using ReactiveUI;
@@ -73,15 +71,15 @@ public interface IIoService
     /// <param name="interaction">Open File Dialog interaction</param>
     /// <param name="prj">Project to add the workspaces to</param>
     /// <returns><see langword="true"/> if successful</returns>
-    Task<bool> OpenSubtitleFiles(Interaction<Unit, Uri[]?> interaction, Project prj);
+    Task<Workspace[]> OpenSubtitleFilesAsync(Interaction<Unit, Uri[]?> interaction, Project prj);
 
     /// <summary>
-    /// Load a subtitle file into a Workspace
+    /// Load a subtitle file into a new Workspace
     /// </summary>
     /// <param name="uri">URI of the subtitle file</param>
     /// <param name="prj">Project to add the workspace to</param>
     /// <returns><see langword="true"/> if successful</returns>
-    Task<bool> OpenSubtitleFile(Uri uri, Project prj);
+    Task<Workspace?> OpenSubtitleFileAsync(Uri uri, Project prj);
 
     /// <summary>
     /// Open a project file
@@ -116,6 +114,19 @@ public interface IIoService
     Task<bool> AttachReferenceFile(Uri uri, Workspace wsp);
 
     /// <summary>
+    /// Parse a document's Project Garbage and act accordingly
+    /// </summary>
+    /// <param name="workspace">Workspace</param>
+    /// <param name="project">Project containing the <paramref name="workspace"/></param>
+    /// <param name="progressCallback">Indexing progress callback</param>
+    /// <returns><see langword="true"/> on success</returns>
+    Task<bool> ProcessProjectGarbageAsync(
+        Workspace workspace,
+        Project project,
+        ISourceProvider.IndexingProgressCallback? progressCallback = null
+    );
+
+    /// <summary>
     /// Open a video file and attach it to the <paramref name="workspace"/>
     /// </summary>
     /// <param name="interaction">Open File Dialog interaction</param>
@@ -124,17 +135,6 @@ public interface IIoService
     /// <returns><see langword="true"/> if successful</returns>
     Task<bool> OpenVideoFileAsync(
         Interaction<Unit, Uri?> interaction,
-        Workspace workspace,
-        ISourceProvider.IndexingProgressCallback? progressCallback = null
-    );
-
-    /// <summary>
-    /// Open a linked video file (From the <see cref="Document"/>), if it exists
-    /// </summary>
-    /// <param name="workspace">Workspace to open the video in</param>
-    /// <param name="progressCallback">Indexing progress callback</param>
-    /// <returns><see langword="true"/> if successful</returns>
-    Task<bool> OpenVideoFileAsync(
         Workspace workspace,
         ISourceProvider.IndexingProgressCallback? progressCallback = null
     );

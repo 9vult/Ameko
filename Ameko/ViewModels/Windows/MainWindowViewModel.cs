@@ -4,6 +4,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using Ameko.Messages;
 using Ameko.Services;
@@ -12,10 +13,12 @@ using Ameko.ViewModels.Controls;
 using Ameko.ViewModels.Dialogs;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
+using Avalonia.Threading;
 using DynamicData;
 using Holo;
 using Holo.Configuration;
 using Holo.Configuration.Keybinds;
+using Holo.Media.Providers;
 using Holo.Providers;
 using Microsoft.Extensions.Logging;
 using ReactiveUI;
@@ -228,7 +231,7 @@ public partial class MainWindowViewModel : ViewModelBase
     /// Set the <see cref="Project.WorkingSpace"/> to the selected workspace, opening it if needed
     /// </summary>
     /// <param name="workspaceId">ID to open</param>
-    public void TryLoadReferenced(int workspaceId)
+    public async Task TryLoadReferenced(int workspaceId)
     {
         var wsp = ProjectProvider.Current.LoadedWorkspaces.FirstOrDefault(w => w.Id == workspaceId);
         if (wsp is not null)
@@ -237,7 +240,29 @@ public partial class MainWindowViewModel : ViewModelBase
             return;
         }
 
-        ProjectProvider.Current.OpenDocument(workspaceId);
+        wsp = ProjectProvider.Current.OpenDocument(workspaceId);
+        if (wsp is null)
+            return;
+
+        ISourceProvider.IndexingProgressCallback? callback = null;
+        if (_tabFactory.TryGetViewModel(wsp, out var tabVm))
+        {
+            callback = (current, total) =>
+            {
+                var progress = (double)current / total;
+                Dispatcher.UIThread.Post(() => tabVm.IndexingProgress = progress);
+            };
+        }
+
+        try
+        {
+            Dispatcher.UIThread.Post(() => tabVm?.IsIndexing = true);
+            await IoService.ProcessProjectGarbageAsync(wsp, ProjectProvider.Current, callback);
+        }
+        finally
+        {
+            Dispatcher.UIThread.Post(() => tabVm?.IsIndexing = false);
+        }
     }
 
     private void GenerateScriptsMenu()

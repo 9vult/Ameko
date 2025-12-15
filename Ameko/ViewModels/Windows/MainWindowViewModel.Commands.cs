@@ -43,7 +43,37 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         return ReactiveCommand.CreateFromTask(async () =>
         {
-            _ = await IoService.OpenSubtitleFiles(OpenSubtitle, ProjectProvider.Current);
+            var workspaces = await IoService.OpenSubtitleFilesAsync(
+                OpenSubtitle,
+                ProjectProvider.Current
+            );
+
+            foreach (var wsp in workspaces)
+            {
+                ISourceProvider.IndexingProgressCallback? callback = null;
+                if (_tabFactory.TryGetViewModel(wsp, out var tabVm))
+                {
+                    callback = (current, total) =>
+                    {
+                        var progress = (double)current / total;
+                        Dispatcher.UIThread.Post(() => tabVm.IndexingProgress = progress);
+                    };
+                }
+
+                try
+                {
+                    Dispatcher.UIThread.Post(() => tabVm?.IsIndexing = true);
+                    await IoService.ProcessProjectGarbageAsync(
+                        wsp,
+                        ProjectProvider.Current,
+                        callback
+                    );
+                }
+                finally
+                {
+                    Dispatcher.UIThread.Post(() => tabVm?.IsIndexing = false);
+                }
+            }
         });
     }
 
@@ -56,7 +86,32 @@ public partial class MainWindowViewModel : ViewModelBase
         return ReactiveCommand.CreateFromTask(
             async (Uri uri) =>
             {
-                _ = await IoService.OpenSubtitleFile(uri, ProjectProvider.Current);
+                if (await IoService.OpenSubtitleFileAsync(uri, ProjectProvider.Current) is { } wsp)
+                {
+                    ISourceProvider.IndexingProgressCallback? callback = null;
+                    if (_tabFactory.TryGetViewModel(wsp, out var tabVm))
+                    {
+                        callback = (current, total) =>
+                        {
+                            var progress = (double)current / total;
+                            Dispatcher.UIThread.Post(() => tabVm.IndexingProgress = progress);
+                        };
+                    }
+
+                    try
+                    {
+                        Dispatcher.UIThread.Post(() => tabVm?.IsIndexing = true);
+                        await IoService.ProcessProjectGarbageAsync(
+                            wsp,
+                            ProjectProvider.Current,
+                            callback
+                        );
+                    }
+                    finally
+                    {
+                        Dispatcher.UIThread.Post(() => tabVm?.IsIndexing = false);
+                    }
+                }
             }
         );
     }
@@ -849,13 +904,13 @@ public partial class MainWindowViewModel : ViewModelBase
     /// </summary>
     private ReactiveCommand<int, Unit> CreateOpenDocumentCommand()
     {
-        return ReactiveCommand.Create(
-            (int id) =>
+        return ReactiveCommand.CreateFromTask(
+            async (int id) =>
             {
                 if (ProjectProvider.Current.FindItemById(id) is not DocumentItem docItem)
                     return;
 
-                TryLoadReferenced(docItem.Id);
+                await TryLoadReferenced(docItem.Id);
             }
         );
     }

@@ -374,7 +374,7 @@ public class Project : BindableBase
     /// A new <see cref="Workspace"/> containing the document and any supporting
     /// files will be created and set as the <see cref="WorkingSpace"/>
     /// </remarks>
-    public int OpenDocument(int id)
+    public Workspace? OpenDocument(int id)
     {
         _logger.LogTrace("Opening referenced document {Id}", id);
         try
@@ -383,19 +383,19 @@ public class Project : BindableBase
             if (item is null || item.Type != ProjectItemType.Document)
             {
                 _logger.LogError("A referenced document with id {Id} was not found", id);
-                return -1;
+                return null;
             }
 
             if (item.Type != ProjectItemType.Document)
             {
                 _logger.LogError("Failed to parse document reference with id {Id}", id);
-                return -1;
+                return null;
             }
 
             if (!item.IsSavedToFileSystem)
             {
                 _logger.LogError("Document item with id {Id} was not saved to file system", id);
-                return -1;
+                return null;
             }
 
             var parser = new AssParser();
@@ -404,12 +404,12 @@ public class Project : BindableBase
             item.Workspace = _workspaceFactory.Create(document, item.Id, item.Uri);
             _loadedWorkspaces.Add(item.Workspace);
             WorkingSpace = item.Workspace;
-            return item.Id;
+            return item.Workspace;
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to open document");
-            return -1;
+            return null;
         }
     }
 

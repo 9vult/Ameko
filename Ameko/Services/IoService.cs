@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
@@ -60,6 +61,7 @@ public class IoService(
             wsp.Document.GarbageManager.Set("Audio File", relPath);
             wsp.Document.GarbageManager.Set("Video Position", wsp.MediaController.CurrentFrame);
         }
+
         wsp.Document.GarbageManager.Set("Active Line", wsp.SelectionManager.ActiveEvent.Index - 1);
 
         var writer = new AssWriter(wsp.Document, ConsumerService.AmekoInfo);
@@ -74,6 +76,7 @@ public class IoService(
             if (projItem is not null)
                 projectProvider.Current.SetNameAndUri(projItem, wsp.Title, uri);
         }
+
         return true;
     }
 
@@ -91,6 +94,7 @@ public class IoService(
             wsp.Document.GarbageManager.Set("Audio File", relPath);
             wsp.Document.GarbageManager.Set("Video Position", wsp.MediaController.CurrentFrame);
         }
+
         wsp.Document.GarbageManager.Set("Active Line", wsp.SelectionManager.ActiveEvent.Index - 1);
 
         var writer = new AssWriter(wsp.Document, ConsumerService.AmekoInfo);
@@ -120,6 +124,7 @@ public class IoService(
             wsp.Document.GarbageManager.Set("Audio File", relPath);
             wsp.Document.GarbageManager.Set("Video Position", wsp.MediaController.CurrentFrame);
         }
+
         wsp.Document.GarbageManager.Set("Active Line", wsp.SelectionManager.ActiveEvent.Index - 1);
 
         var writer = new AssWriter(wsp.Document, ConsumerService.AmekoInfo);
@@ -203,6 +208,7 @@ public class IoService(
                     logger.LogInformation("Tab close operation aborted");
                     return false;
                 }
+
                 goto case MsgBoxButton.No; // lol
             case MsgBoxButton.No:
                 wsp.MediaController.CloseVideo();
@@ -234,18 +240,23 @@ public class IoService(
     }
 
     /// <inheritdoc />
-    public async Task<bool> OpenSubtitleFiles(Interaction<Unit, Uri[]?> interaction, Project prj)
+    public async Task<Workspace[]> OpenSubtitleFilesAsync(
+        Interaction<Unit, Uri[]?> interaction,
+        Project prj
+    )
     {
         var uris = await interaction.Handle(Unit.Default);
         if (uris is null || uris.Length == 0)
-            return false;
+            return [];
 
+        var workspaces = new List<Workspace>();
         foreach (var uri in uris)
         {
-            await OpenSubtitleFile(uri, prj);
+            var result = await OpenSubtitleFileAsync(uri, prj);
+            if (result is not null)
+                workspaces.Add(result);
         }
-
-        return true;
+        return workspaces.ToArray();
     }
 
     /// <summary>
@@ -255,7 +266,7 @@ public class IoService(
     /// <param name="prj">Project to add the workspace to</param>
     /// <returns>The created workspace</returns>
     /// <exception cref="ArgumentOutOfRangeException">If the format is invalid</exception>
-    public async Task<bool> OpenSubtitleFile(Uri uri, Project prj)
+    public async Task<Workspace?> OpenSubtitleFileAsync(Uri uri, Project prj)
     {
         logger.LogDebug("Opening subtitle file {Uri}", uri);
 
@@ -276,14 +287,6 @@ public class IoService(
             {
                 wsp = prj.AddWorkspace(doc, uri);
                 wsp.IsSaved = true;
-                if (doc.GarbageManager.TryGetInt("Active Line", out var lineIdx))
-                {
-                    var line = doc.EventManager.Events.FirstOrDefault(e => e.Index == lineIdx + 1);
-                    if (line is not null)
-                        wsp.SelectionManager.Select(line);
-                }
-
-                await OpenVideoFileAsync(wsp);
             }
             else
             {
@@ -294,7 +297,7 @@ public class IoService(
 
             logger.LogInformation("Opened subtitle file {WspTitle}", wsp.Title);
             prj.WorkingSpace = wsp;
-            return true;
+            return wsp;
         }
         catch (Exception ex)
         {
@@ -306,7 +309,7 @@ public class IoService(
                 MsgBoxButton.Ok,
                 MaterialIconKind.Error
             );
-            return false;
+            return null;
         }
     }
 
@@ -396,26 +399,23 @@ public class IoService(
     }
 
     /// <inheritdoc />
-    public async Task<bool> OpenVideoFileAsync(
-        Interaction<Unit, Uri?> interaction,
+    public async Task<bool> ProcessProjectGarbageAsync(
         Workspace workspace,
-        ISourceProvider.IndexingProgressCallback? progressCallback = null
-    )
-    {
-        var uri = await interaction.Handle(Unit.Default);
-        if (uri is null)
-            return false;
-
-        return await OpenVideoFileAsync(uri, workspace, progressCallback);
-    }
-
-    /// <inheritdoc />
-    public async Task<bool> OpenVideoFileAsync(
-        Workspace workspace,
+        Project project,
         ISourceProvider.IndexingProgressCallback? progressCallback = null
     )
     {
         var doc = workspace.Document;
+
+        // Active line
+        if (doc.GarbageManager.TryGetInt("Active Line", out var lineIdx))
+        {
+            var line = doc.EventManager.Events.FirstOrDefault(e => e.Index == lineIdx + 1);
+            if (line is not null)
+                workspace.SelectionManager.Select(line);
+        }
+
+        // Video
         if (!doc.GarbageManager.TryGetString("Video File", out var relVideoPath))
             return true;
         var videoPath = Path.GetFullPath(
@@ -424,18 +424,6 @@ public class IoService(
 
         if (fileSystem.File.Exists(videoPath))
         {
-            if (!workspace.MediaController.IsEnabled)
-            {
-                await messageBoxService.ShowAsync(
-                    I18N.Other.MsgBox_MediaDisabled_Title,
-                    I18N.Other.MsgBox_MediaDisabled_Body,
-                    MsgBoxButtonSet.Ok,
-                    MsgBoxButton.Ok,
-                    MaterialIconKind.Error
-                );
-                return true;
-            }
-
             var result = await messageBoxService.ShowAsync(
                 I18N.Other.MsgBox_LoadVideo_Title,
                 $"{I18N.Other.MsgBox_LoadVideo_Body}\n\n{relVideoPath}",
@@ -461,7 +449,21 @@ public class IoService(
             string.Format(I18N.Other.Message_VideoNotFound, Path.GetFileName(videoPath)),
             TimeSpan.FromSeconds(7)
         );
-        return false;
+        return true;
+    }
+
+    /// <inheritdoc />
+    public async Task<bool> OpenVideoFileAsync(
+        Interaction<Unit, Uri?> interaction,
+        Workspace workspace,
+        ISourceProvider.IndexingProgressCallback? progressCallback = null
+    )
+    {
+        var uri = await interaction.Handle(Unit.Default);
+        if (uri is null)
+            return false;
+
+        return await OpenVideoFileAsync(uri, workspace, progressCallback);
     }
 
     /// <inheritdoc />
@@ -495,6 +497,7 @@ public class IoService(
                 return false;
             }
 
+            progressCallback?.Invoke(0, 1); // Reset
             var audioTracks = await workspace.MediaController.GetAudioTrackInfoAsync(uri.LocalPath);
             if (audioTracks.Length > 0)
             {
@@ -521,6 +524,7 @@ public class IoService(
                 }
             }
             workspace.MediaController.SetSubtitles(workspace.Document);
+            progressCallback?.Invoke(0, 1); // Reset
             return true;
         }
         catch (Exception ex)
