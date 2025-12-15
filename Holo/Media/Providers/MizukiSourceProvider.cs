@@ -87,7 +87,12 @@ public unsafe class MizukiSourceProvider : ISourceProvider
     /// <inheritdoc />
     public int LoadAudio(string filename, int? trackNumber)
     {
-        var status = External.LoadAudio(_context, filename, GetCachePath(filename), (int)trackNumber!);
+        var status = External.LoadAudio(
+            _context,
+            filename,
+            GetCachePath(filename),
+            (int)trackNumber!
+        );
         return status;
     }
 
@@ -298,7 +303,7 @@ internal static unsafe partial class External
         string colorMatrix,
         IndexingProgressCallback? progressCallback
     );
-    
+
     [LibraryImport("mizuki", StringMarshalling = StringMarshalling.Utf8)]
     internal static partial int LoadAudio(
         GlobalContext* context,
@@ -306,7 +311,7 @@ internal static unsafe partial class External
         string cacheFileName,
         int trackNumber
     );
-    
+
     [LibraryImport("mizuki", StringMarshalling = StringMarshalling.Utf8)]
     internal static partial UnmanagedArray GetAudioTrackInfo(
         GlobalContext* context,
@@ -456,6 +461,5 @@ internal static class UnmanagedArrayExtensions
             }
             return managed;
         }
-        
     }
 }

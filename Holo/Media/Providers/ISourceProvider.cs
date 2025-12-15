@@ -42,7 +42,7 @@ public interface ISourceProvider
     /// <param name="trackNumber">Track number to load</param>
     /// <returns>0 on success</returns>
     int LoadAudio(string filename, int? trackNumber);
-    
+
     /// <summary>
     /// Get information about the audio tracks in a file
     /// </summary>

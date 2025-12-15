@@ -476,7 +476,30 @@ public class IoService(
 
         try
         {
-            await workspace.MediaController.OpenVideoAsync(uri.LocalPath, progressCallback);
+            var vLoaded = await workspace.MediaController.OpenVideoAsync(
+                uri.LocalPath,
+                progressCallback
+            );
+            if (!vLoaded)
+            {
+                logger.LogError("Failed to open video file");
+                return false;
+            }
+
+            var audioTracks = await workspace.MediaController.GetAudioTrackInfoAsync(uri.LocalPath);
+            if (audioTracks.Length > 0)
+            {
+                var aResult = await workspace.MediaController.OpenAudioAsync(
+                    uri.LocalPath,
+                    audioTracks[0].Index,
+                    progressCallback
+                );
+                if (!aResult)
+                {
+                    logger.LogError("Failed to open audio file");
+                }
+            }
+
             workspace.MediaController.SetSubtitles(workspace.Document);
             return true;
         }
