@@ -86,7 +86,7 @@ public partial class App : Application
         base.OnFrameworkInitializationCompleted();
 
         // Start long process loading in the background after GUI finishes loading
-        Dispatcher.UIThread.Invoke(() =>
+        Dispatcher.UIThread.InvokeAsync(async () =>
         {
             // Check if there's anything to open
             if (Program.Args.Length > 0)
