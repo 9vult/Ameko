@@ -33,6 +33,20 @@ pub const LongArray = extern struct {
     len: usize,
 };
 
+/// Basic information about a track
+pub const TrackInfo = extern struct {
+    index: usize,
+    codec: [*c]const u8,
+    // language: [*c]const u8,
+    // title: [*c]const u8,
+};
+
+// Interopable TrackInfo array
+pub const TrackInfoArray = extern struct {
+    ptr: [*c]TrackInfo,
+    len: usize,
+};
+
 /// Indexing progress callback
 pub const ProgressCallback = ?*const fn (
     current: i64,
