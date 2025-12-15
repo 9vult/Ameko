@@ -92,6 +92,7 @@ public partial class MainWindowViewModel : ViewModelBase
     [KeybindTarget("ameko.document.open", "Ctrl+O", KeybindContext.Global)]
     public ICommand OpenSubtitleCommand { get; }
     public ICommand OpenSubtitleNoGuiCommand { get; }
+    public ICommand OpenSubtitlesNoGuiCommand { get; }
 
     [KeybindTarget("ameko.document.save", "Ctrl+S", KeybindContext.Global)]
     public ICommand SaveSubtitleCommand { get; }
@@ -373,6 +374,7 @@ public partial class MainWindowViewModel : ViewModelBase
         NewCommand = CreateNewCommand();
         OpenSubtitleCommand = CreateOpenSubtitleCommand();
         OpenSubtitleNoGuiCommand = CreateOpenSubtitleNoGuiCommand();
+        OpenSubtitlesNoGuiCommand = CreateOpenSubtitlesNoGuiCommand();
         SaveSubtitleCommand = CreateSaveSubtitleCommand();
         SaveSubtitleAsCommand = CreateSaveSubtitleAsCommand();
         ExportSubtitleCommand = CreateExportSubtitleCommand();

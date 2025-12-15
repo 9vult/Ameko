@@ -11,20 +11,17 @@ using Ameko.Services;
 using Ameko.Utilities;
 using Ameko.ViewModels.Windows;
 using Ameko.Views.Windows;
-using AssCS.IO;
 using AssCS.Utilities;
 using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
-using Holo;
 using Holo.Configuration;
 using Holo.Configuration.Keybinds;
-using Holo.Models;
 using Holo.Providers;
 using Holo.Scripting;
-using Material.Icons;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -89,11 +86,11 @@ public partial class App : Application
         base.OnFrameworkInitializationCompleted();
 
         // Start long process loading in the background after GUI finishes loading
-        Dispatcher.UIThread.InvokeAsync(async () =>
+        Dispatcher.UIThread.Invoke(() =>
         {
             // Check if there's anything to open
             if (Program.Args.Length > 0)
-                await InitializeStartupProject(provider);
+                InitializeStartupProject(provider, desktop.MainWindow);
 
             InitializeKeybindService(provider);
             InitializeScriptService(provider);
@@ -216,12 +213,11 @@ public partial class App : Application
         });
     }
 
-    private async Task InitializeStartupProject(IServiceProvider provider)
+    private void InitializeStartupProject(IServiceProvider provider, Window mainWindow)
     {
         var fs = provider.GetRequiredService<IFileSystem>();
         var projectProvider = provider.GetRequiredService<IProjectProvider>();
-        var msgBoxService = provider.GetRequiredService<IMessageBoxService>();
-        var msgService = provider.GetRequiredService<IMessageService>();
+        var vm = provider.GetRequiredService<MainWindowViewModel>();
         List<Uri> subs = [];
         List<Uri> projects = [];
         foreach (var arg in Program.Args)
@@ -252,79 +248,13 @@ public partial class App : Application
         {
             projectProvider.Current = projectProvider.CreateFromFile(projects.First());
         }
-        foreach (var uri in subs)
+
+        if (subs.Count > 0)
         {
-            var ext = Path.GetExtension(uri.LocalPath);
-            var doc = ext switch
+            mainWindow.Opened += (_, _) =>
             {
-                ".ass" => new AssParser().Parse(fs, uri),
-                ".srt" => new SrtParser().Parse(fs, uri),
-                ".txt" => new TxtParser().Parse(fs, uri),
-                _ => throw new ArgumentOutOfRangeException(nameof(uri)),
+                vm.OpenSubtitlesNoGuiCommand.Execute(subs.ToArray());
             };
-
-            Workspace wsp;
-            if (ext == ".ass")
-            {
-                wsp = projectProvider.Current.AddWorkspace(doc, uri);
-                wsp.IsSaved = true;
-                if (doc.GarbageManager.TryGetInt("Active Line", out var lineIdx))
-                {
-                    var line = doc.EventManager.Events.FirstOrDefault(e => e.Index == lineIdx + 1);
-                    if (line is not null)
-                        wsp.SelectionManager.Select(line);
-                }
-            }
-            else
-            {
-                // Non-ass sourced documents need to be re-saved as an ass file
-                wsp = projectProvider.Current.AddWorkspace(doc);
-                wsp.IsSaved = false;
-            }
-
-            projectProvider.Current.WorkingSpace = wsp;
-
-            if (!doc.GarbageManager.TryGetString("Video File", out var relVideoPath))
-                continue;
-
-            if (!wsp.MediaController.IsEnabled)
-            {
-                await msgBoxService.ShowAsync(
-                    I18N.Other.MsgBox_MediaDisabled_Title,
-                    I18N.Other.MsgBox_MediaDisabled_Body,
-                    MsgBoxButtonSet.Ok,
-                    MsgBoxButton.Ok,
-                    MaterialIconKind.Error
-                );
-                continue;
-            }
-
-            var videoPath = Path.GetFullPath(
-                Path.Combine(Path.GetDirectoryName(uri.LocalPath) ?? "/", relVideoPath)
-            );
-            if (fs.File.Exists(videoPath))
-            {
-                var result = await msgBoxService.ShowAsync(
-                    I18N.Other.MsgBox_LoadVideo_Title,
-                    $"{I18N.Other.MsgBox_LoadVideo_Body}\n\n{relVideoPath}",
-                    MsgBoxButtonSet.YesNo,
-                    MsgBoxButton.Yes
-                );
-                if (result != MsgBoxButton.Yes)
-                    continue;
-                await wsp.MediaController.OpenVideoAsync(videoPath);
-                wsp.MediaController.SetSubtitles(wsp.Document);
-                if (doc.GarbageManager.TryGetInt("Video Position", out var frame))
-                    wsp.MediaController.SeekTo(frame.Value); // Seek for clamp safety
-            }
-            else
-            {
-                // Video not found
-                msgService.Enqueue(
-                    string.Format(I18N.Other.Message_VideoNotFound, Path.GetFileName(videoPath)),
-                    TimeSpan.FromSeconds(7)
-                );
-            }
         }
     }
 }

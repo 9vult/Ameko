@@ -259,6 +259,19 @@ public class IoService(
         return workspaces.ToArray();
     }
 
+    /// <inheritdoc />
+    public async Task<Workspace[]> OpenSubtitleFilesAsync(Uri[] uris, Project prj)
+    {
+        var workspaces = new List<Workspace>();
+        foreach (var uri in uris)
+        {
+            var result = await OpenSubtitleFileAsync(uri, prj);
+            if (result is not null)
+                workspaces.Add(result);
+        }
+        return workspaces.ToArray();
+    }
+
     /// <summary>
     /// Load a subtitle file into a Workspace
     /// </summary>

@@ -74,6 +74,14 @@ public interface IIoService
     Task<Workspace[]> OpenSubtitleFilesAsync(Interaction<Unit, Uri[]?> interaction, Project prj);
 
     /// <summary>
+    /// Load subtitle files into Workspaces
+    /// </summary>
+    /// <param name="uris">Uris to open</param>
+    /// <param name="prj">Project to add the workspaces to</param>
+    /// <returns><see langword="true"/> if successful</returns>
+    Task<Workspace[]> OpenSubtitleFilesAsync(Uri[] uris, Project prj);
+
+    /// <summary>
     /// Load a subtitle file into a new Workspace
     /// </summary>
     /// <param name="uri">URI of the subtitle file</param>

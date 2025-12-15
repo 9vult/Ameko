@@ -117,6 +117,49 @@ public partial class MainWindowViewModel : ViewModelBase
     }
 
     /// <summary>
+    /// Open subtitles without using a dialog
+    /// </summary>
+    /// <returns></returns>
+    private ReactiveCommand<Uri[], Unit> CreateOpenSubtitlesNoGuiCommand()
+    {
+        return ReactiveCommand.CreateFromTask(
+            async (Uri[] uris) =>
+            {
+                var workspaces = await IoService.OpenSubtitleFilesAsync(
+                    uris,
+                    ProjectProvider.Current
+                );
+                foreach (var wsp in workspaces)
+                {
+                    ISourceProvider.IndexingProgressCallback? callback = null;
+                    if (_tabFactory.TryGetViewModel(wsp, out var tabVm))
+                    {
+                        callback = (current, total) =>
+                        {
+                            var progress = (double)current / total;
+                            Dispatcher.UIThread.Post(() => tabVm.IndexingProgress = progress);
+                        };
+                    }
+
+                    try
+                    {
+                        Dispatcher.UIThread.Post(() => tabVm?.IsIndexing = true);
+                        await IoService.ProcessProjectGarbageAsync(
+                            wsp,
+                            ProjectProvider.Current,
+                            callback
+                        );
+                    }
+                    finally
+                    {
+                        Dispatcher.UIThread.Post(() => tabVm?.IsIndexing = false);
+                    }
+                }
+            }
+        );
+    }
+
+    /// <summary>
     /// Display either the Save Subtitle or Save Subtitle As dialog
     /// </summary>
     private ReactiveCommand<Unit, Unit> CreateSaveSubtitleCommand()
