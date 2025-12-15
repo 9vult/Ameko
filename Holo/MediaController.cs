@@ -478,12 +478,6 @@ public class MediaController : BindableBase
                     testFrame->VideoFrame->Height
                 );
 
-                AudioInfo = new AudioInfo(
-                    channelCount: _provider.GetChannelCount(),
-                    sampleRate: _provider.GetSampleRate(),
-                    sampleCount: _provider.GetSampleCount()
-                );
-
                 _playback.Intervals = VideoInfo.FrameIntervals;
             }
 
@@ -541,6 +535,12 @@ public class MediaController : BindableBase
                 {
                     return false; // ??
                 }
+
+                AudioInfo = new AudioInfo(
+                    channelCount: _provider.GetChannelCount(),
+                    sampleRate: _provider.GetSampleRate(),
+                    sampleCount: _provider.GetSampleCount()
+                );
 
                 IsAudioLoaded = true;
 

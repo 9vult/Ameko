@@ -19,18 +19,25 @@
              x:DataType="vm:TabItemViewModel">
     <Control.Resources>
         <converters:SeekSliderMaxConverter x:Key="MaxConverter" />
+        <converters:IsMediaIndexingConverter x:Key="IndexingConverter" />
     </Control.Resources>
     <DockPanel Margin="2">
         <Grid DockPanel.Dock="Bottom"
               ColumnDefinitions="Auto, *, Auto"
               RowDefinitions="Auto, Auto">
+            <!-- Indexing Indicator -->
             <Grid Grid.Column="0"
                   Grid.Row="0"
                   Grid.ColumnSpan="3"
                   Margin="2"
-                  IsVisible="{Binding IsIndexing}"
                   Name="IndexingInfo"
                   ColumnDefinitions="Auto, *">
+                <Grid.IsVisible>
+                    <MultiBinding Converter="{StaticResource IndexingConverter}">
+                        <Binding Path="IsIndexing" />
+                        <Binding Path="Workspace.MediaController.IsVideoLoaded" />
+                    </MultiBinding>
+                </Grid.IsVisible>
                 <TextBlock Grid.Column="0"
                            Text="{x:Static i18n:Resources.Video_Indexing}"
                            VerticalAlignment="Center"
@@ -44,11 +51,11 @@
                              VerticalAlignment="Center"
                              HorizontalAlignment="Stretch" />
             </Grid>
+            <!-- Seek Bar -->
             <c:SeekSlider Grid.Column="0"
                           Grid.Row="0"
                           Grid.ColumnSpan="3"
                           Padding="0 3"
-                          IsVisible="{Binding !IsIndexing}"
                           IsEnabled="{Binding Workspace.MediaController.IsVideoLoaded}" 
                           Name="SeekBar"
                           VerticalAlignment="Center"
@@ -60,7 +67,16 @@
                           Maximum="{Binding Workspace.MediaController.VideoInfo.FrameCount,
                                             Converter={StaticResource MaxConverter},
                                             FallbackValue=1}"
-                          Value="{Binding Workspace.MediaController.CurrentFrame}" />
+                          Value="{Binding Workspace.MediaController.CurrentFrame}">
+                <c:SeekSlider.IsVisible>
+                    <MultiBinding Converter="{StaticResource IndexingConverter}">
+                        <Binding Path="Workspace.MediaController.IsVideoLoaded" />
+                        <Binding Path="IsIndexing" />
+                    </MultiBinding>
+                </c:SeekSlider.IsVisible>
+            </c:SeekSlider>
+            
+            <!-- Video Controls -->
             <StackPanel Grid.Column="0"
                         Grid.Row="1"
                         IsEnabled="{Binding Workspace.MediaController.IsVideoLoaded}"
@@ -137,6 +153,8 @@
                 </ComboBox>
             </StackPanel>
         </Grid>
+        
+        <!-- Video Target -->
         <ScrollViewer IsEnabled="{Binding Workspace.MediaController.IsVideoLoaded}"
                       IsVisible="{Binding Workspace.MediaController.IsVideoLoaded}"
                       HorizontalScrollBarVisibility="Auto"
