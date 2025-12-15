@@ -89,7 +89,7 @@ pub fn RenderWaveform(
         }
 
         // Draw keyframes behind the spectrum
-        for (g_ctx.*.ffms.kf_timecodes) |kf| {
+        for (g_ctx.*.ffms.kf_timecodes.?) |kf| {
             const kf_ms: f64 = @floatFromInt(kf);
             if (kf_ms >= start and kf_ms <= end) {
                 const delta = kf_ms - start;

@@ -254,7 +254,7 @@ pub fn LoadVideo(
     // Calculate frame intervals
     var i: usize = 0;
     while (i + 1 < ctx.frame_count) : (i += 1) {
-        try intervals_list.append(common.allocator, ctx.timecodes[i + 1] - ctx.timecodes[i]);
+        try intervals_list.append(common.allocator, ctx.timecodes.?[i + 1] - ctx.timecodes.?[i]);
     }
 
     // Last interval is 0
@@ -375,21 +375,25 @@ pub fn CloseVideo(g_ctx: *context.GlobalContext) void {
         c.FFMS_DestroyIndex(index);
     }
 
-    if (ctx.keyframes.len != 0) {
-        common.allocator.free(ctx.keyframes);
-        ctx.keyframes = undefined;
+    if (ctx.keyframes) |keyframes| {
+        common.allocator.free(keyframes);
+        ctx.keyframes = null;
     }
-    if (ctx.timecodes.len != 0) {
-        common.allocator.free(ctx.timecodes);
-        ctx.timecodes = undefined;
+    if (ctx.timecodes) |timecodes| {
+        common.allocator.free(timecodes);
+        ctx.timecodes = null;
     }
-    if (ctx.kf_timecodes.len != 0) {
-        common.allocator.free(ctx.kf_timecodes);
-        ctx.kf_timecodes = undefined;
+    if (ctx.kf_timecodes) |kf_timecodes| {
+        common.allocator.free(kf_timecodes);
+        ctx.kf_timecodes = null;
     }
-    if (ctx.frame_intervals.len != 0) {
-        common.allocator.free(ctx.frame_intervals);
-        ctx.frame_intervals = undefined;
+    if (ctx.frame_intervals) |frame_intervals| {
+        common.allocator.free(frame_intervals);
+        ctx.frame_intervals = null;
+    }
+    if (ctx.track_info_arr) |track_info| {
+        common.allocator.free(track_info);
+        ctx.track_info_arr = null;
     }
 }
 
@@ -454,12 +458,6 @@ pub fn GetAudio(
     }
 }
 
-// TODO: This thing
-fn SetColorSpace(color_matrix: [*c]u8) void {
-    _ = color_matrix;
-    return;
-}
-
 /// Get tracks of the given type
 pub fn GetTracksOfType(indexer: ?*c.FFMS_Indexer, track_type: c.FFMS_TrackType) !std.AutoHashMap(c_int, [*c]const u8) {
     var track_list = std.AutoHashMap(c_int, [*c]const u8).init(common.allocator);
@@ -472,4 +470,60 @@ pub fn GetTracksOfType(indexer: ?*c.FFMS_Indexer, track_type: c.FFMS_TrackType) 
         }
     }
     return track_list;
+}
+
+/// Get basic information about audio tracks
+pub fn GetAudioTrackInfo(g_ctx: *context.GlobalContext, file_name: [*c]u8) FfmsError!common.TrackInfoArray {
+    var ctx = &g_ctx.*.ffms;
+    var tracks_list: std.ArrayList(common.TrackInfo) = .empty;
+    defer tracks_list.deinit(common.allocator);
+
+    const indexer = c.FFMS_CreateIndexer(file_name, &err_info);
+
+    if (indexer == null) {
+        if (err_info.SubType == c.FFMS_ERROR_FILE_READ) {
+            return FfmsError.FileNotFound;
+        } else {
+            return FfmsError.VideoNotSupported;
+        }
+    }
+
+    var audio_tracks = GetTracksOfType(indexer, c.FFMS_TYPE_AUDIO) catch |err| {
+        return err; // Theoretically this is an OutOfMemory error
+    };
+
+    if (audio_tracks.count() <= 0) {
+        return FfmsError.NoAudioTracks;
+    }
+
+    var itr = audio_tracks.iterator();
+    while (itr.next()) |entry| {
+        const track_number: c_int = entry.key_ptr.*;
+
+        const track: common.TrackInfo = .{
+            .index = @intCast(track_number),
+            .codec = c.FFMS_GetCodecNameI(indexer, track_number),
+        };
+
+        try tracks_list.append(common.allocator, track);
+    }
+
+    // Dealloc the array if it's already allocated
+    if (ctx.track_info_arr) |track_info| {
+        common.allocator.free(track_info);
+        ctx.track_info_arr = null;
+    }
+
+    ctx.track_info_arr = tracks_list.toOwnedSlice(common.allocator) catch unreachable;
+    const result: common.TrackInfoArray = .{
+        .ptr = ctx.track_info_arr.?.ptr,
+        .len = ctx.track_info_arr.?.len,
+    };
+    return result;
+}
+
+// TODO: This thing
+fn SetColorSpace(color_matrix: [*c]u8) void {
+    _ = color_matrix;
+    return;
 }
