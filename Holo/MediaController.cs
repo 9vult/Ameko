@@ -537,6 +537,7 @@ public class MediaController : BindableBase
                 }
 
                 AudioInfo = new AudioInfo(
+                    path: filePath,
                     channelCount: _provider.GetChannelCount(),
                     sampleRate: _provider.GetSampleRate(),
                     sampleCount: _provider.GetSampleCount()
@@ -576,7 +577,7 @@ public class MediaController : BindableBase
     }
 
     /// <summary>
-    /// Close the open video
+    /// Close the open video (includes audio)
     /// </summary>
     /// <returns><see langword="true"/> if successful</returns>
     /// <exception cref="InvalidOperationException">If the provider isn't initialized</exception>
@@ -606,6 +607,26 @@ public class MediaController : BindableBase
         RaisePropertyChanged(nameof(CurrentTime));
 
         return result;
+    }
+
+    /// <summary>
+    /// Close the open audio
+    /// </summary>
+    /// <returns><see langword="true"/> if successful</returns>
+    /// <exception cref="InvalidOperationException">If the provider isn't initialized</exception>
+    public bool CloseAudio()
+    {
+        if (!_provider.IsInitialized)
+            throw new InvalidOperationException("Provider is not initialized");
+
+        if (!IsAudioLoaded)
+            return true;
+
+        Stop();
+        IsAudioLoaded = false;
+
+        _logger.LogInformation("Closing audio {FilePath}", AudioInfo?.Path);
+        return _provider.CloseAudio() == 0;
     }
 
     /// <summary>
