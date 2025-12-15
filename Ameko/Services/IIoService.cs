@@ -160,6 +160,31 @@ public interface IIoService
     );
 
     /// <summary>
+    /// Open an audio file and attach it to the <paramref name="workspace"/>
+    /// </summary>
+    /// <param name="interaction">Open File Dialog interaction</param>
+    /// <param name="workspace">Workspace to open the audio in</param>
+    /// <param name="progressCallback">Indexing progress callback</param>
+    /// <returns><see langword="true"/> if successful</returns>
+    Task<bool> OpenAudioFileAsync(
+        Interaction<Unit, Uri?> interaction,
+        Workspace workspace,
+        ISourceProvider.IndexingProgressCallback? progressCallback = null
+    );
+
+    /// <summary>
+    /// Open an audio file and attach it to the <paramref name="workspace"/>
+    /// </summary>
+    /// <param name="uri">URI of the video file</param>
+    /// <param name="workspace">Workspace to open the audio in</param>
+    /// <param name="progressCallback">Indexing progress callback</param>
+    Task<bool> OpenAudioFileAsync(
+        Uri uri,
+        Workspace workspace,
+        ISourceProvider.IndexingProgressCallback? progressCallback = null
+    );
+
+    /// <summary>
     /// Save a frame to file
     /// </summary>
     /// <param name="interaction">Save File Dialog, if needed</param>

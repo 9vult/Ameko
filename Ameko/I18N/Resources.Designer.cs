@@ -740,5 +740,29 @@ namespace Ameko.I18N {
                 return ResourceManager.GetString("Audio_VerticalScale_ToolTip", resourceCulture);
             }
         }
+        
+        public static string Menu_Audio {
+            get {
+                return ResourceManager.GetString("Menu_Audio", resourceCulture);
+            }
+        }
+        
+        public static string Menu_OpenAudio {
+            get {
+                return ResourceManager.GetString("Menu_OpenAudio", resourceCulture);
+            }
+        }
+        
+        public static string Menu_CloseAudio {
+            get {
+                return ResourceManager.GetString("Menu_CloseAudio", resourceCulture);
+            }
+        }
+        
+        public static string Menu_ChangeTracks {
+            get {
+                return ResourceManager.GetString("Menu_ChangeTracks", resourceCulture);
+            }
+        }
     }
 }

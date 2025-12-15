@@ -184,6 +184,27 @@
                                     Command="{Binding ShowJumpDialogCommand}" />
                 </NativeMenu>
             </NativeMenuItem>
+            <NativeMenuItem Header="{x:Static i18n:Resources.Menu_Audio}">
+                <NativeMenu>
+                    <NativeMenuItem Header="{x:Static i18n:Resources.Menu_OpenAudio}"
+                                    Icon="{icons:MaterialIconExt Kind=Music}"
+                                    IsEnabled="{Binding ProjectProvider.Current.WorkingSpace.MediaController.IsVideoLoaded,
+                                          FallbackValue=false}"
+                                    Command="{Binding OpenAudioCommand}" />
+                    <NativeMenuItem Header="{x:Static i18n:Resources.Menu_CloseAudio}"
+                                    Icon="{icons:MaterialIconExt Kind=MusicOff}"
+                                    IsEnabled="{Binding ProjectProvider.Current.WorkingSpace.MediaController.IsAudioLoaded,
+                                                        FallbackValue=false}"
+                                    Command="{Binding CloseAudioCommand}" />
+                    <NativeMenuItemSeparator />
+                    <NativeMenuItem Header="{x:Static i18n:Resources.Menu_ChangeTracks}"
+                                    Icon="{icons:MaterialIconExt Kind=PlaylistMusic}"
+                                    IsEnabled="{Binding ProjectProvider.Current.WorkingSpace.MediaController.AudioInfo.TrackCount,
+                                                        Converter={StaticResource TrackCountConverter},
+                                                        FallbackValue=false}"
+                                    Command="{Binding ChangeTracksCommand}" />
+                </NativeMenu>
+            </NativeMenuItem>
             <NativeMenuItem Header="{x:Static i18n:Resources.Menu_Scripts}">
                 <NativeMenu />
             </NativeMenuItem>

@@ -2,9 +2,16 @@
 
 namespace Holo.Media;
 
-public class AudioInfo(string path, int channelCount, int sampleRate, long sampleCount)
+public class AudioInfo(
+    string path,
+    int trackCount,
+    int channelCount,
+    int sampleRate,
+    long sampleCount
+)
 {
     public string Path { get; } = path;
+    public int TrackCount { get; } = trackCount;
     public int ChannelCount { get; } = channelCount;
     public int SampleRate { get; } = sampleRate;
     public long SampleCount { get; } = sampleCount;

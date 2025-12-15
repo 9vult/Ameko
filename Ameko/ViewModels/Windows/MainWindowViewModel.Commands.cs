@@ -664,6 +664,92 @@ public partial class MainWindowViewModel : ViewModelBase
     }
 
     /// <summary>
+    /// Display the Open Audio dialog
+    /// </summary>
+    private ReactiveCommand<Unit, Unit> CreateOpenAudioCommand()
+    {
+        return ReactiveCommand.CreateFromTask(async () =>
+        {
+            var wsp = ProjectProvider.Current.WorkingSpace;
+            if (wsp is null)
+            {
+                ProjectProvider.Current.WorkingSpace = wsp = ProjectProvider.Current.AddWorkspace();
+            }
+
+            ISourceProvider.IndexingProgressCallback? callback = null;
+            if (_tabFactory.TryGetViewModel(wsp, out var tabVm))
+            {
+                callback = (current, total) =>
+                {
+                    var progress = (double)current / total;
+                    Dispatcher.UIThread.Post(() => tabVm.IndexingProgress = progress);
+                };
+            }
+
+            try
+            {
+                Dispatcher.UIThread.Post(() => tabVm?.IsIndexing = true);
+                await IoService.OpenAudioFileAsync(OpenAudio, wsp, callback);
+            }
+            finally
+            {
+                Dispatcher.UIThread.Post(() => tabVm?.IsIndexing = false);
+            }
+        });
+    }
+
+    /// <summary>
+    /// Close the open audio
+    /// </summary>
+    private ReactiveCommand<Unit, Unit> CreateCloseAudioCommand()
+    {
+        return ReactiveCommand.Create(() =>
+        {
+            var wsp = ProjectProvider.Current.WorkingSpace;
+            wsp?.MediaController.CloseAudio();
+        });
+    }
+
+    /// <summary>
+    /// Change audio tracks
+    /// </summary>
+    private ReactiveCommand<Unit, Unit> CreateChangeTracksCommand()
+    {
+        return ReactiveCommand.CreateFromTask(async () =>
+        {
+            var wsp = ProjectProvider.Current.WorkingSpace;
+            if (wsp is null)
+            {
+                ProjectProvider.Current.WorkingSpace = wsp = ProjectProvider.Current.AddWorkspace();
+            }
+
+            var path = wsp.MediaController.AudioInfo?.Path;
+            if (path is null)
+                return;
+
+            ISourceProvider.IndexingProgressCallback? callback = null;
+            if (_tabFactory.TryGetViewModel(wsp, out var tabVm))
+            {
+                callback = (current, total) =>
+                {
+                    var progress = (double)current / total;
+                    Dispatcher.UIThread.Post(() => tabVm.IndexingProgress = progress);
+                };
+            }
+
+            try
+            {
+                Dispatcher.UIThread.Post(() => tabVm?.IsIndexing = true);
+                await IoService.OpenAudioFileAsync(new Uri(path, UriKind.Absolute), wsp, callback);
+            }
+            finally
+            {
+                Dispatcher.UIThread.Post(() => tabVm?.IsIndexing = false);
+            }
+        });
+    }
+
+    /// <summary>
     /// Execute a Script
     /// </summary>
     private ReactiveCommand<string, Unit> CreateExecuteScriptCommand()

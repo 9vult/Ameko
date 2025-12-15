@@ -509,35 +509,9 @@ public class IoService(
                 logger.LogError("Failed to open video file");
                 return false;
             }
-
             progressCallback?.Invoke(0, 1); // Reset
-            var audioTracks = await workspace.MediaController.GetAudioTrackInfoAsync(uri.LocalPath);
-            if (audioTracks.Length > 0)
-            {
-                var index = audioTracks[0].Index;
-                if (audioTracks.Length > 1)
-                {
-                    // TODO: get this out of here, this sucks
-                    var dialogResult = await windowService.ShowDialogAsync<SelectTrackMessage>(
-                        new SelectTrackDialog
-                        {
-                            DataContext = new SelectTrackDialogViewModel(audioTracks),
-                        }
-                    );
-                    index = dialogResult?.TrackIndex ?? audioTracks[0].Index;
-                }
-                var aResult = await workspace.MediaController.OpenAudioAsync(
-                    uri.LocalPath,
-                    index,
-                    progressCallback
-                );
-                if (!aResult)
-                {
-                    logger.LogError("Failed to open audio file");
-                }
-            }
+            await OpenAudioFileAsync(uri, workspace, progressCallback);
             workspace.MediaController.SetSubtitles(workspace.Document);
-            progressCallback?.Invoke(0, 1); // Reset
             return true;
         }
         catch (Exception ex)
@@ -545,6 +519,57 @@ public class IoService(
             logger.LogError(ex, "Failed to open video file");
             return false;
         }
+    }
+
+    /// <inheritdoc />
+    public async Task<bool> OpenAudioFileAsync(
+        Interaction<Unit, Uri?> interaction,
+        Workspace workspace,
+        ISourceProvider.IndexingProgressCallback? progressCallback = null
+    )
+    {
+        var uri = await interaction.Handle(Unit.Default);
+        if (uri is null)
+            return false;
+
+        return await OpenAudioFileAsync(uri, workspace, progressCallback);
+    }
+
+    /// <inheritdoc />
+    public async Task<bool> OpenAudioFileAsync(
+        Uri uri,
+        Workspace workspace,
+        ISourceProvider.IndexingProgressCallback? progressCallback = null
+    )
+    {
+        var audioTracks = await workspace.MediaController.GetAudioTrackInfoAsync(uri.LocalPath);
+        if (audioTracks.Length > 0)
+        {
+            var index = audioTracks[0].Index;
+            if (audioTracks.Length > 1)
+            {
+                // TODO: get this out of here, this sucks
+                var dialogResult = await windowService.ShowDialogAsync<SelectTrackMessage>(
+                    new SelectTrackDialog
+                    {
+                        DataContext = new SelectTrackDialogViewModel(audioTracks),
+                    }
+                );
+                index = dialogResult?.TrackIndex ?? audioTracks[0].Index;
+            }
+            var aResult = await workspace.MediaController.OpenAudioAsync(
+                uri.LocalPath,
+                index,
+                audioTracks.Length,
+                progressCallback
+            );
+            if (!aResult)
+            {
+                logger.LogError("Failed to open audio file");
+            }
+        }
+        progressCallback?.Invoke(0, 1); // Reset
+        return true;
     }
 
     /// <inheritdoc />

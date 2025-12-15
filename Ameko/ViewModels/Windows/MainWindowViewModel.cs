@@ -68,6 +68,9 @@ public partial class MainWindowViewModel : ViewModelBase
     public Interaction<Unit, Uri?> OpenVideo { get; }
     public Interaction<JumpDialogViewModel, JumpDialogClosedMessage?> ShowJumpDialog { get; }
 
+    // Audio
+    public Interaction<Unit, Uri?> OpenAudio { get; }
+
     // Scripts
     public Interaction<PkgManWindowViewModel, Unit> ShowPackageManager { get; }
     public Interaction<PlaygroundWindowViewModel, Unit> ShowPlaygroundWindow { get; }
@@ -163,6 +166,15 @@ public partial class MainWindowViewModel : ViewModelBase
 
     [KeybindTarget("ameko.video.jump", "Ctrl+G", KeybindContext.Global)]
     public ICommand ShowJumpDialogCommand { get; }
+
+    [KeybindTarget("ameko.audio.open", KeybindContext.Global)]
+    public ICommand OpenAudioCommand { get; }
+
+    [KeybindTarget("ameko.audio.close", KeybindContext.Global)]
+    public ICommand CloseAudioCommand { get; }
+
+    [KeybindTarget("ameko.audio.changeTracks", KeybindContext.Global)]
+    public ICommand ChangeTracksCommand { get; }
 
     // Scripts
     // Command execution doesn't get a keybind. So sad :(
@@ -353,6 +365,8 @@ public partial class MainWindowViewModel : ViewModelBase
         // Video
         OpenVideo = new Interaction<Unit, Uri?>();
         ShowJumpDialog = new Interaction<JumpDialogViewModel, JumpDialogClosedMessage?>();
+        // Audio
+        OpenAudio = new Interaction<Unit, Uri?>();
         // Timing
         ShowShiftTimesDialog = new Interaction<ShiftTimesDialogViewModel, Unit>();
         // Scripts
@@ -403,6 +417,10 @@ public partial class MainWindowViewModel : ViewModelBase
         OpenVideoNoGuiCommand = CreateOpenVideoNoGuiCommand();
         CloseVideoCommand = CreateCloseVideoCommand();
         ShowJumpDialogCommand = CreateShowJumpDialogCommand();
+        // Audio
+        OpenAudioCommand = CreateOpenAudioCommand();
+        CloseAudioCommand = CreateCloseAudioCommand();
+        ChangeTracksCommand = CreateChangeTracksCommand();
         // Scripts
         ExecuteScriptCommand = CreateExecuteScriptCommand();
         ReloadScriptsCommand = CreateReloadScriptsCommand();

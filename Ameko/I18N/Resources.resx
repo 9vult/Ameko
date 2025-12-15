@@ -366,4 +366,16 @@
     <data name="Audio_VerticalScale_ToolTip" xml:space="preserve">
         <value>Vertical Scale</value>
     </data>
+    <data name="Menu_Audio" xml:space="preserve">
+        <value>_Audio</value>
+    </data>
+    <data name="Menu_OpenAudio" xml:space="preserve">
+        <value>_Open Audio...</value>
+    </data>
+    <data name="Menu_CloseAudio" xml:space="preserve">
+        <value>_Close Audio</value>
+    </data>
+    <data name="Menu_ChangeTracks" xml:space="preserve">
+        <value>Change _Tracks...</value>
+    </data>
 </root>

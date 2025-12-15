@@ -356,5 +356,17 @@ namespace Ameko.I18N {
                 return ResourceManager.GetString("SelectTrackDialog_Button_Load", resourceCulture);
             }
         }
+        
+        public static string FileDialog_OpenAudio_Title {
+            get {
+                return ResourceManager.GetString("FileDialog_OpenAudio_Title", resourceCulture);
+            }
+        }
+        
+        public static string FileDialog_FileType_Audio {
+            get {
+                return ResourceManager.GetString("FileDialog_FileType_Audio", resourceCulture);
+            }
+        }
     }
 }

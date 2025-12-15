@@ -174,4 +174,10 @@
     <data name="SelectTrackDialog_Button_Load" xml:space="preserve">
         <value>Load</value>
     </data>
+    <data name="FileDialog_OpenAudio_Title" xml:space="preserve">
+        <value>Open Audio File</value>
+    </data>
+    <data name="FileDialog_FileType_Audio" xml:space="preserve">
+        <value>Audio Files</value>
+    </data>
 </root>

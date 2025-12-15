@@ -490,6 +490,7 @@ public class MediaController : BindableBase
             unsafe
             {
                 _lastFrame = _provider.GetFrame(0, 0, false);
+                FrameReady?.Invoke();
             }
 
             return true;
@@ -501,17 +502,22 @@ public class MediaController : BindableBase
     /// </summary>
     /// <param name="filePath">Path to the audio to open</param>
     /// <param name="trackNumber">Track number to load</param>
+    /// <param name="totalTracks">Total number of audio tracks</param>
     /// <param name="progressCallback">Indexing progress callback (optional)</param>
     /// <returns><see langword="true"/> if successful</returns>
     /// <exception cref="InvalidOperationException">If the provider isn't initialized</exception>
     public async Task<bool> OpenAudioAsync(
         string filePath,
         int trackNumber,
+        int totalTracks,
         ISourceProvider.IndexingProgressCallback? progressCallback = null
     )
     {
         if (!_provider.IsInitialized)
             throw new InvalidOperationException("Provider is not initialized");
+
+        if (IsAudioLoaded)
+            CloseAudio();
 
         _logger.LogInformation("Opening audio {FilePath}", filePath);
         return await Task.Run(() =>
@@ -538,6 +544,7 @@ public class MediaController : BindableBase
 
                 AudioInfo = new AudioInfo(
                     path: filePath,
+                    trackCount: totalTracks,
                     channelCount: _provider.GetChannelCount(),
                     sampleRate: _provider.GetSampleRate(),
                     sampleCount: _provider.GetSampleCount()
