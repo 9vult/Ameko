@@ -113,6 +113,12 @@ public unsafe class MizukiSourceProvider : ISourceProvider
     }
 
     /// <inheritdoc />
+    public int CloseAudio()
+    {
+        return External.CloseAudio(_context);
+    }
+
+    /// <inheritdoc />
     public int SetSubtitles(string data, string? codePage)
     {
         var bytes = Encoding.UTF8.GetBytes(data);
@@ -320,6 +326,9 @@ internal static unsafe partial class External
 
     [LibraryImport("mizuki")]
     internal static partial int CloseVideo(GlobalContext* context);
+
+    [LibraryImport("mizuki")]
+    internal static partial int CloseAudio(GlobalContext* context);
 
     [LibraryImport("mizuki", StringMarshalling = StringMarshalling.Utf8)]
     internal static partial int SetSubtitles(

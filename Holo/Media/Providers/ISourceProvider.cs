@@ -51,10 +51,16 @@ public interface ISourceProvider
     TrackInfo[] GetAudioTrackInfo(string filename);
 
     /// <summary>
-    /// Close the open video
+    /// Close the open video (includes audio)
     /// </summary>
     /// <returns>0 on success</returns>
     int CloseVideo();
+
+    /// <summary>
+    /// Close the open audio
+    /// </summary>
+    /// <returns>0 on success</returns>
+    int CloseAudio();
 
     /// <summary>
     /// Set the subtitles to be parsed

@@ -50,6 +50,12 @@ public unsafe class NullSourceProvider : ISourceProvider
     }
 
     /// <inheritdoc />
+    public int CloseAudio()
+    {
+        return 0;
+    }
+
+    /// <inheritdoc />
     public int SetSubtitles(string data, string? codePage)
     {
         return 0;

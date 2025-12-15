@@ -103,11 +103,17 @@ pub export fn GetAudioTrackInfo(
     };
 }
 
-/// Close the open video file
+/// Close the open video file (includes audio)
 pub export fn CloseVideo(g_ctx: *context.GlobalContext) c_int {
     libass.CloseVideo(g_ctx);
     ffms.CloseVideo(g_ctx);
     buffers.Deinit(g_ctx);
+    return 0;
+}
+
+/// Close the open audio file
+pub export fn CloseAudio(g_ctx: *context.GlobalContext) c_int {
+    buffers.FreeAudioBuffer(g_ctx);
     return 0;
 }
 
