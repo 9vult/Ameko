@@ -590,6 +590,7 @@ public class MediaController : BindableBase
 
         Stop();
         IsVideoLoaded = false;
+        IsAudioLoaded = false;
 
         // Close
         _logger.LogInformation("Closing video {FilePath}", VideoInfo?.Path);

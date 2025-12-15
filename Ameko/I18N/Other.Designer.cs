@@ -338,5 +338,23 @@ namespace Ameko.I18N {
                 return ResourceManager.GetString("Message_AutosaveComplete", resourceCulture);
             }
         }
+        
+        public static string SelectTrackDialog_Title {
+            get {
+                return ResourceManager.GetString("SelectTrackDialog_Title", resourceCulture);
+            }
+        }
+        
+        public static string SelectTrackDialog_Body {
+            get {
+                return ResourceManager.GetString("SelectTrackDialog_Body", resourceCulture);
+            }
+        }
+        
+        public static string SelectTrackDialog_Button_Load {
+            get {
+                return ResourceManager.GetString("SelectTrackDialog_Button_Load", resourceCulture);
+            }
+        }
     }
 }

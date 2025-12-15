@@ -36,7 +36,7 @@ public interface IWindowService
     /// <param name="canResize">If the user can resize the window</param>
     /// <typeparam name="T">Type of object to return</typeparam>
     /// <returns>Returned object</returns>
-    Task<T> ShowDialogAsync<T>(
+    Task<T?> ShowDialogAsync<T>(
         object window,
         int? width = null,
         int? height = null,

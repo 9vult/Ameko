@@ -8,7 +8,10 @@ using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Ameko.DataModels;
+using Ameko.Messages;
 using Ameko.Utilities;
+using Ameko.ViewModels.Dialogs;
+using Ameko.Views.Dialogs;
 using AssCS.IO;
 using AssCS.Utilities;
 using Holo;
@@ -30,6 +33,7 @@ public class IoService(
     IFileSystem fileSystem,
     IMessageBoxService messageBoxService,
     IMessageService messageService,
+    IWindowService windowService,
     IConfiguration configuration,
     ILogger<IoService> logger
 ) : IIoService
@@ -489,9 +493,21 @@ public class IoService(
             var audioTracks = await workspace.MediaController.GetAudioTrackInfoAsync(uri.LocalPath);
             if (audioTracks.Length > 0)
             {
+                var index = audioTracks[0].Index;
+                if (audioTracks.Length > 1)
+                {
+                    // TODO: get this out of here, this sucks
+                    var dialogResult = await windowService.ShowDialogAsync<SelectTrackMessage>(
+                        new SelectTrackDialog
+                        {
+                            DataContext = new SelectTrackDialogViewModel(audioTracks),
+                        }
+                    );
+                    index = dialogResult?.TrackIndex ?? audioTracks[0].Index;
+                }
                 var aResult = await workspace.MediaController.OpenAudioAsync(
                     uri.LocalPath,
-                    audioTracks[0].Index,
+                    index,
                     progressCallback
                 );
                 if (!aResult)
@@ -499,7 +515,6 @@ public class IoService(
                     logger.LogError("Failed to open audio file");
                 }
             }
-
             workspace.MediaController.SetSubtitles(workspace.Document);
             return true;
         }

@@ -53,7 +53,7 @@ public class WindowService(MainWindow mainWindow) : IWindowService
     }
 
     /// <inheritdoc />
-    public async Task<T> ShowDialogAsync<T>(
+    public async Task<T?> ShowDialogAsync<T>(
         object window,
         int? width = null,
         int? height = null,
