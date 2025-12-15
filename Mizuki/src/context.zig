@@ -29,6 +29,7 @@ pub const FFMSContext = struct {
     frame_height: usize,
     frame_pitch: usize,
 
+    has_audio: bool,
     channel_count: c_int,
     sample_rate: c_int,
     sample_count: i64,
@@ -50,6 +51,7 @@ pub const FFMSContext = struct {
             .frame_width = 0,
             .frame_height = 0,
             .frame_pitch = 0,
+            .has_audio = false,
             .channel_count = -1,
             .sample_rate = -1,
             .sample_count = -1,
