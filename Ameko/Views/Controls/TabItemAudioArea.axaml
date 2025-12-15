@@ -38,11 +38,11 @@
                     Classes="Small"
                     Padding="1"
                     Minimum="0.1"
-                    Maximum="10.0"
+                    Maximum="15.0"
                     TickFrequency="0.1"
                     IsSnapToTickEnabled="True"
                     IsDirectionReversed="True"
-                    Value="{Binding Workspace.MediaController.VisualizerHorizontalScale, FallbackValue=2.0}"
+                    Value="{Binding Workspace.MediaController.VisualizerHorizontalScale, FallbackValue=4.0}"
                     ToolTip.Tip="{x:Static i18n:Resources.Audio_HorizontalScale_ToolTip}" />
             <Slider Orientation="Vertical"
                     Classes="Small"

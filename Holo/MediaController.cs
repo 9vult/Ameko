@@ -157,7 +157,7 @@ public class MediaController : BindableBase
             if (IsVideoLoaded)
                 RequestFrame(CurrentFrame);
         }
-    } = 2d;
+    } = 4d;
 
     public double VisualizerVerticalScale
     {
