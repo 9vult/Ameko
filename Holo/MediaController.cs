@@ -15,13 +15,16 @@ public class MediaController : BindableBase
     private readonly ILogger _logger;
     private readonly HighResolutionTimer _playback;
 
+    private readonly Lock _frameLock = new();
+    private readonly Lock _boundsLock = new();
+
     private unsafe FrameGroup* _lastFrame;
     private unsafe FrameGroup* _nextFrame;
     private unsafe AudioFrame* _audioFrame;
     private unsafe Bitmap* _lastVizFrame;
     private unsafe Bitmap* _nextVizFrame;
     private int _currentFrame;
-    private readonly Lock _frameLock = new();
+
     private Task? _fetchTask;
     private int _pendingFrame = -1;
     private bool _subtitlesChanged;
@@ -33,6 +36,8 @@ public class MediaController : BindableBase
     private bool _isPaused;
 
     private int _destinationFrame;
+
+    private long[] _eventBounds = [];
 
     /// <summary>
     /// If media operations are to be enabled
@@ -498,6 +503,8 @@ public class MediaController : BindableBase
                     VisualizerHorizontalScale,
                     VisualizerVerticalScale,
                     0,
+                    0,
+                    null,
                     0
                 );
             }
@@ -637,6 +644,18 @@ public class MediaController : BindableBase
             _subtitlesChanged = true;
         }
 
+        var events = document.EventManager.Events;
+
+        lock (_boundsLock)
+        {
+            _eventBounds = new long[events.Count * 2];
+            for (int i = 0, j = 0; i < events.Count; i++)
+            {
+                _eventBounds[j++] = events[i].Start.TotalMilliseconds;
+                _eventBounds[j++] = events[i].End.TotalMilliseconds;
+            }
+        }
+
         RequestFrame(CurrentFrame);
     }
 
@@ -671,15 +690,29 @@ public class MediaController : BindableBase
 
         var time = VideoInfo?.MillisecondsFromFrame(frameToFetch) ?? 0;
 
+        // Get video/subtitles
         var frame = _provider.GetFrame(frameToFetch, time, false);
-        var vizFrame = _provider.GetVisualization(
-            VisualizerWidth,
-            VisualizerHeight,
-            VisualizerHorizontalScale,
-            VisualizerVerticalScale,
-            VisualizerPositionMs,
-            time
-        );
+
+        // Get audio visualization
+        Bitmap* vizFrame;
+
+        lock (_boundsLock)
+        {
+            fixed (long* ptr = _eventBounds)
+            {
+                vizFrame = _provider.GetVisualization(
+                    VisualizerWidth,
+                    VisualizerHeight,
+                    VisualizerHorizontalScale,
+                    VisualizerVerticalScale,
+                    VisualizerPositionMs,
+                    time,
+                    ptr,
+                    _eventBounds.Length
+                );
+            }
+        }
+
         lock (_frameLock)
         {
             _nextFrame = frame;

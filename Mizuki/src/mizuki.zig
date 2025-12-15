@@ -143,8 +143,10 @@ pub export fn GetVisualization(
     height: c_int,
     pixel_ms: f64,
     amplitude_scale: f64,
-    start_time: c_longlong,
-    frame_time: c_longlong,
+    start_time: i64,
+    frame_time: i64,
+    event_bounds: [*]i64,
+    event_bounds_len: usize,
 ) ?*frames.Bitmap {
     return buffers.ProcVizualizationFrame(
         g_ctx,
@@ -154,6 +156,8 @@ pub export fn GetVisualization(
         amplitude_scale,
         @floatFromInt(start_time),
         @floatFromInt(frame_time),
+        event_bounds,
+        event_bounds_len,
     ) catch {
         return null;
     };

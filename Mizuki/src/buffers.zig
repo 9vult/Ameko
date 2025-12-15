@@ -129,6 +129,8 @@ pub fn ProcVizualizationFrame(
     amplitude_scale: f64,
     start_time: f64,
     frame_time: f64,
+    event_bounds: [*]i64,
+    event_bounds_len: usize,
 ) !*frames.Bitmap {
     const ctx = &g_ctx.*.buffers;
 
@@ -153,6 +155,8 @@ pub fn ProcVizualizationFrame(
                 amplitude_scale,
                 start_time,
                 frame_time,
+                event_bounds,
+                event_bounds_len,
             );
             return result.?;
         }
@@ -192,6 +196,8 @@ pub fn ProcVizualizationFrame(
         amplitude_scale,
         start_time,
         frame_time,
+        event_bounds,
+        event_bounds_len,
     );
     return result.?;
 }

@@ -150,7 +150,9 @@ public unsafe class MizukiSourceProvider : ISourceProvider
         double pixelsPerMs,
         double amplitudeScale,
         long startTime,
-        long frameTime
+        long frameTime,
+        long* eventBounds,
+        int eventBoundsLength
     )
     {
         return External.GetVisualization(
@@ -160,7 +162,9 @@ public unsafe class MizukiSourceProvider : ISourceProvider
             pixelsPerMs,
             amplitudeScale,
             startTime,
-            frameTime
+            frameTime,
+            eventBounds,
+            eventBoundsLength
         );
     }
 
@@ -327,7 +331,9 @@ internal static unsafe partial class External
         double pixelsPerMs,
         double amplitudeScale,
         long startTime,
-        long frameTime
+        long frameTime,
+        long* eventBounds,
+        int eventBoundsLength
     );
 
     [LibraryImport("mizuki")]

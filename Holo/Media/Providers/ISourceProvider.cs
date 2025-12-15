@@ -94,6 +94,8 @@ public interface ISourceProvider
     /// <param name="amplitudeScale">Amplitude scale factor - Vertical scale</param>
     /// <param name="startTime">Time to start at</param>
     /// <param name="frameTime">Timestamp of the current video frame</param>
+    /// <param name="eventBounds">Array of bounds of events to display, in milliseconds</param>
+    /// <param name="eventBoundsLength">Length of the <param name="eventBounds"> array</param></param>
     /// <returns>Output bitmap</returns>
     unsafe Bitmap* GetVisualization(
         int width,
@@ -101,7 +103,9 @@ public interface ISourceProvider
         double pixelsPerMs,
         double amplitudeScale,
         long startTime,
-        long frameTime
+        long frameTime,
+        long* eventBounds,
+        int eventBoundsLength
     );
 
     /// <summary>
