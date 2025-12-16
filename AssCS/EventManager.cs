@@ -3,7 +3,6 @@
 using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
-using System.Text;
 using AssCS.History;
 using AssCS.Utilities;
 
@@ -50,17 +49,21 @@ public class EventManager : BindableBase
     /// The order is determined by the internal LinkedList structure.
     /// This accessor also assigns each event its current <see cref="Event.Index"/> (1-based)
     /// </remarks>
-    public List<Event> Events =>
-        _chain
-            .Select(
-                (id, i) =>
-                {
-                    var e = _events[id].Event;
-                    e.Index = i + 1;
-                    return e;
-                }
-            )
-            .ToList();
+    public List<Event> Events
+    {
+        get
+        {
+            var result = new List<Event>(_events.Count);
+            var index = 1;
+            for (var node = _chain.First; node != null; node = node.Next)
+            {
+                var @event = _events[node.Value].Event;
+                @event.Index = index++;
+                result.Add(@event);
+            }
+            return result;
+        }
+    }
 
     /// <summary>
     /// The number of events currently in the document
@@ -80,38 +83,74 @@ public class EventManager : BindableBase
     /// <summary>
     /// A set of all the actor values currently present in the document
     /// </summary>
-    public HashSet<string> Actors =>
-        _events.Values.Select(l => l.Event.Actor).Where(a => !a.Equals(string.Empty)).ToHashSet();
+    public HashSet<string> Actors
+    {
+        get
+        {
+            var result = new HashSet<string>();
+            foreach (var entry in _events.Values)
+            {
+                var actor = entry.Event.Actor;
+                if (!string.IsNullOrEmpty(actor))
+                    result.Add(actor);
+            }
+            return result;
+        }
+    }
 
     /// <summary>
     /// A set of all the effect values currently present in the document
     /// </summary>
-    public HashSet<string> Effects =>
-        _events.Values.Select(l => l.Event.Effect).Where(e => !e.Equals(string.Empty)).ToHashSet();
+    public HashSet<string> Effects
+    {
+        get
+        {
+            var result = new HashSet<string>();
+            foreach (var entry in _events.Values)
+            {
+                var effect = entry.Event.Effect;
+                if (!string.IsNullOrEmpty(effect))
+                    result.Add(effect);
+            }
+            return result;
+        }
+    }
 
     /// <summary>
     /// The first event in the document
     /// </summary>
     /// <exception cref="ArgumentNullException">If the head is <see langword="null"/></exception>
-    public Event Head =>
-        _chain.First is null
-            ? throw new ArgumentNullException(
-                nameof(Head),
-                "Cannot access Head event because it is null"
-            )
-            : _events[_chain.First.Value].Event;
+    public Event Head
+    {
+        get
+        {
+            var first = _chain.First;
+            if (first is null)
+                throw new ArgumentException(
+                    "Cannot access Head event because it is null",
+                    nameof(Head)
+                );
+            return _events[first.Value].Event;
+        }
+    }
 
     /// <summary>
     /// The last event in the document
     /// </summary>
     /// <exception cref="ArgumentNullException">If the tail is <see langword="null"/></exception>
-    public Event Tail =>
-        _chain.Last is null
-            ? throw new ArgumentNullException(
-                nameof(Tail),
-                "Cannot access Tail event because it is null"
-            )
-            : _events[_chain.Last.Value].Event;
+    public Event Tail
+    {
+        get
+        {
+            var last = _chain.Last;
+            if (last is null)
+                throw new ArgumentException(
+                    "Cannot access Tail event because it is null",
+                    nameof(Tail)
+                );
+            return _events[last.Value].Event;
+        }
+    }
 
     #region Basic Actions
 
