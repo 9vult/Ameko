@@ -28,7 +28,16 @@ namespace Ameko.Views.Windows;
 public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
 {
     private static readonly string[] ScriptExtensions = [".ass", ".srt", ".txt"];
-    private static readonly string[] VideoExtensions = [".mkv", ".mp4"];
+    private static readonly string[] VideoExtensions = [".mkv", ".mp4", ".m4v", ".mov"];
+    private static readonly string[] AudioExtensions =
+    [
+        ".mkv",
+        ".mp4",
+        ".mp3",
+        ".flac",
+        ".ogg",
+        ".opus",
+    ];
     private const string ProjectExtension = ".aproj";
 
     private readonly ILogger _logger;
@@ -306,6 +315,30 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         interaction.SetOutput(null);
     }
 
+    private async Task DoShowOpenAudioDialogAsync(IInteractionContext<Unit, Uri?> interaction)
+    {
+        var files = await StorageProvider.OpenFilePickerAsync(
+            new FilePickerOpenOptions
+            {
+                Title = I18N.Other.FileDialog_OpenAudio_Title,
+                AllowMultiple = false,
+                FileTypeFilter =
+                [
+                    new FilePickerFileType(I18N.Other.FileDialog_FileType_Audio)
+                    {
+                        Patterns = ["*.mkv", "*.mp4", "*.mp3", "*.flac", "*.ogg", "*.opus"],
+                    },
+                ],
+            }
+        );
+        if (files.Count > 0)
+        {
+            interaction.SetOutput(files[0].Path);
+            return;
+        }
+        interaction.SetOutput(null);
+    }
+
     private async Task DoShowJumpDialogAsync(
         IInteractionContext<JumpDialogViewModel, JumpDialogClosedMessage?> interaction
     )
@@ -396,6 +429,8 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
                 // Video
                 ViewModel.OpenVideo.RegisterHandler(DoShowOpenVideoDialogAsync);
                 ViewModel.ShowJumpDialog.RegisterHandler(DoShowJumpDialogAsync);
+                // Audio
+                ViewModel.OpenAudio.RegisterHandler(DoShowOpenAudioDialogAsync);
                 // Scripts
                 ViewModel.ShowPackageManager.RegisterHandler(DoShowWindow<PkgManWindow, PkgManWindowViewModel>);
                 ViewModel.ShowPlaygroundWindow.RegisterHandler(DoShowWindow<PlaygroundWindow, PlaygroundWindowViewModel>);

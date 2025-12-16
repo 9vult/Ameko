@@ -165,4 +165,19 @@
     <data name="Message_AutosaveComplete" xml:space="preserve">
         <value>Autosave complete!</value>
     </data>
+    <data name="SelectTrackDialog_Title" xml:space="preserve">
+        <value>Select Track</value>
+    </data>
+    <data name="SelectTrackDialog_Body" xml:space="preserve">
+        <value>Select a track to load:</value>
+    </data>
+    <data name="SelectTrackDialog_Button_Load" xml:space="preserve">
+        <value>Load</value>
+    </data>
+    <data name="FileDialog_OpenAudio_Title" xml:space="preserve">
+        <value>Open Audio File</value>
+    </data>
+    <data name="FileDialog_FileType_Audio" xml:space="preserve">
+        <value>Audio Files</value>
+    </data>
 </root>

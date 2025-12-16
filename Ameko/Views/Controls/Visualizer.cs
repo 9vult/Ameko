@@ -109,7 +109,7 @@ public class Visualizer : OpenGlControlBase
         if (!IsInitialized)
             throw new OpenGlException("OpenGL is not initialized.");
 
-        if (MediaController is null || !MediaController.IsVideoLoaded)
+        if (MediaController is null || !MediaController.IsAudioLoaded)
         {
             _gl.ClearColor(0.2f, 0.3f, 0.3f, 1.0f);
             _gl.Clear(ClearBufferMask.ColorBufferBit);

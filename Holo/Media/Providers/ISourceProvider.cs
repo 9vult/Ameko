@@ -30,16 +30,37 @@ public interface ISourceProvider
     /// <summary>
     /// Load a video
     /// </summary>
-    /// <param name="filename">Path to the video to load</param>
+    /// <param name="filename">Path to the video file to load</param>
     /// <param name="progressCallback">Indexing progress callback</param>
     /// <returns>0 on success</returns>
     int LoadVideo(string filename, IndexingProgressCallback? progressCallback = null);
 
     /// <summary>
-    /// Close the open video
+    /// Load a video
+    /// </summary>
+    /// <param name="filename">Path to the audio file to load</param>
+    /// <param name="trackNumber">Track number to load</param>
+    /// <returns>0 on success</returns>
+    int LoadAudio(string filename, int? trackNumber);
+
+    /// <summary>
+    /// Get information about the audio tracks in a file
+    /// </summary>
+    /// <param name="filename">Path to the audio file to load</param>
+    /// <returns>Array of track information</returns>
+    TrackInfo[] GetAudioTrackInfo(string filename);
+
+    /// <summary>
+    /// Close the open video (includes audio)
     /// </summary>
     /// <returns>0 on success</returns>
     int CloseVideo();
+
+    /// <summary>
+    /// Close the open audio
+    /// </summary>
+    /// <returns>0 on success</returns>
+    int CloseAudio();
 
     /// <summary>
     /// Set the subtitles to be parsed

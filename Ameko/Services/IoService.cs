@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
@@ -8,7 +9,10 @@ using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Ameko.DataModels;
+using Ameko.Messages;
 using Ameko.Utilities;
+using Ameko.ViewModels.Dialogs;
+using Ameko.Views.Dialogs;
 using AssCS.IO;
 using AssCS.Utilities;
 using Holo;
@@ -30,6 +34,7 @@ public class IoService(
     IFileSystem fileSystem,
     IMessageBoxService messageBoxService,
     IMessageService messageService,
+    IWindowService windowService,
     IConfiguration configuration,
     ILogger<IoService> logger
 ) : IIoService
@@ -56,6 +61,7 @@ public class IoService(
             wsp.Document.GarbageManager.Set("Audio File", relPath);
             wsp.Document.GarbageManager.Set("Video Position", wsp.MediaController.CurrentFrame);
         }
+
         wsp.Document.GarbageManager.Set("Active Line", wsp.SelectionManager.ActiveEvent.Index - 1);
 
         var writer = new AssWriter(wsp.Document, ConsumerService.AmekoInfo);
@@ -70,6 +76,7 @@ public class IoService(
             if (projItem is not null)
                 projectProvider.Current.SetNameAndUri(projItem, wsp.Title, uri);
         }
+
         return true;
     }
 
@@ -87,6 +94,7 @@ public class IoService(
             wsp.Document.GarbageManager.Set("Audio File", relPath);
             wsp.Document.GarbageManager.Set("Video Position", wsp.MediaController.CurrentFrame);
         }
+
         wsp.Document.GarbageManager.Set("Active Line", wsp.SelectionManager.ActiveEvent.Index - 1);
 
         var writer = new AssWriter(wsp.Document, ConsumerService.AmekoInfo);
@@ -116,6 +124,7 @@ public class IoService(
             wsp.Document.GarbageManager.Set("Audio File", relPath);
             wsp.Document.GarbageManager.Set("Video Position", wsp.MediaController.CurrentFrame);
         }
+
         wsp.Document.GarbageManager.Set("Active Line", wsp.SelectionManager.ActiveEvent.Index - 1);
 
         var writer = new AssWriter(wsp.Document, ConsumerService.AmekoInfo);
@@ -199,6 +208,7 @@ public class IoService(
                     logger.LogInformation("Tab close operation aborted");
                     return false;
                 }
+
                 goto case MsgBoxButton.No; // lol
             case MsgBoxButton.No:
                 wsp.MediaController.CloseVideo();
@@ -230,18 +240,36 @@ public class IoService(
     }
 
     /// <inheritdoc />
-    public async Task<bool> OpenSubtitleFiles(Interaction<Unit, Uri[]?> interaction, Project prj)
+    public async Task<Workspace[]> OpenSubtitleFilesAsync(
+        Interaction<Unit, Uri[]?> interaction,
+        Project prj
+    )
     {
         var uris = await interaction.Handle(Unit.Default);
         if (uris is null || uris.Length == 0)
-            return false;
+            return [];
 
+        var workspaces = new List<Workspace>();
         foreach (var uri in uris)
         {
-            await OpenSubtitleFile(uri, prj);
+            var result = await OpenSubtitleFileAsync(uri, prj);
+            if (result is not null)
+                workspaces.Add(result);
         }
+        return workspaces.ToArray();
+    }
 
-        return true;
+    /// <inheritdoc />
+    public async Task<Workspace[]> OpenSubtitleFilesAsync(Uri[] uris, Project prj)
+    {
+        var workspaces = new List<Workspace>();
+        foreach (var uri in uris)
+        {
+            var result = await OpenSubtitleFileAsync(uri, prj);
+            if (result is not null)
+                workspaces.Add(result);
+        }
+        return workspaces.ToArray();
     }
 
     /// <summary>
@@ -251,7 +279,7 @@ public class IoService(
     /// <param name="prj">Project to add the workspace to</param>
     /// <returns>The created workspace</returns>
     /// <exception cref="ArgumentOutOfRangeException">If the format is invalid</exception>
-    public async Task<bool> OpenSubtitleFile(Uri uri, Project prj)
+    public async Task<Workspace?> OpenSubtitleFileAsync(Uri uri, Project prj)
     {
         logger.LogDebug("Opening subtitle file {Uri}", uri);
 
@@ -272,14 +300,6 @@ public class IoService(
             {
                 wsp = prj.AddWorkspace(doc, uri);
                 wsp.IsSaved = true;
-                if (doc.GarbageManager.TryGetInt("Active Line", out var lineIdx))
-                {
-                    var line = doc.EventManager.Events.FirstOrDefault(e => e.Index == lineIdx + 1);
-                    if (line is not null)
-                        wsp.SelectionManager.Select(line);
-                }
-
-                await OpenVideoFileAsync(wsp);
             }
             else
             {
@@ -290,7 +310,7 @@ public class IoService(
 
             logger.LogInformation("Opened subtitle file {WspTitle}", wsp.Title);
             prj.WorkingSpace = wsp;
-            return true;
+            return wsp;
         }
         catch (Exception ex)
         {
@@ -302,7 +322,7 @@ public class IoService(
                 MsgBoxButton.Ok,
                 MaterialIconKind.Error
             );
-            return false;
+            return null;
         }
     }
 
@@ -392,6 +412,60 @@ public class IoService(
     }
 
     /// <inheritdoc />
+    public async Task<bool> ProcessProjectGarbageAsync(
+        Workspace workspace,
+        Project project,
+        ISourceProvider.IndexingProgressCallback? progressCallback = null
+    )
+    {
+        var doc = workspace.Document;
+
+        // Active line
+        if (doc.GarbageManager.TryGetInt("Active Line", out var lineIdx))
+        {
+            var line = doc.EventManager.Events.FirstOrDefault(e => e.Index == lineIdx + 1);
+            if (line is not null)
+                workspace.SelectionManager.Select(line);
+        }
+
+        // Video
+        if (!doc.GarbageManager.TryGetString("Video File", out var relVideoPath))
+            return true;
+        var videoPath = Path.GetFullPath(
+            Path.Combine(Path.GetDirectoryName(workspace.SavePath?.LocalPath) ?? "/", relVideoPath)
+        );
+
+        if (fileSystem.File.Exists(videoPath))
+        {
+            var result = await messageBoxService.ShowAsync(
+                I18N.Other.MsgBox_LoadVideo_Title,
+                $"{I18N.Other.MsgBox_LoadVideo_Body}\n\n{relVideoPath}",
+                MsgBoxButtonSet.YesNo,
+                MsgBoxButton.Yes
+            );
+            if (result != MsgBoxButton.Yes)
+                return true;
+
+            await OpenVideoFileAsync(
+                new Uri(videoPath, UriKind.Absolute),
+                workspace,
+                progressCallback
+            );
+
+            if (doc.GarbageManager.TryGetInt("Video Position", out var frame))
+                workspace.MediaController.SeekTo(frame.Value); // Seek for clamp safety
+            return true;
+        }
+
+        // Video not found
+        messageService.Enqueue(
+            string.Format(I18N.Other.Message_VideoNotFound, Path.GetFileName(videoPath)),
+            TimeSpan.FromSeconds(7)
+        );
+        return true;
+    }
+
+    /// <inheritdoc />
     public async Task<bool> OpenVideoFileAsync(
         Interaction<Unit, Uri?> interaction,
         Workspace workspace,
@@ -403,56 +477,6 @@ public class IoService(
             return false;
 
         return await OpenVideoFileAsync(uri, workspace, progressCallback);
-    }
-
-    /// <inheritdoc />
-    public async Task<bool> OpenVideoFileAsync(
-        Workspace workspace,
-        ISourceProvider.IndexingProgressCallback? progressCallback = null
-    )
-    {
-        var doc = workspace.Document;
-        if (!doc.GarbageManager.TryGetString("Video File", out var relVideoPath))
-            return true;
-        var videoPath = Path.GetFullPath(
-            Path.Combine(Path.GetDirectoryName(workspace.SavePath?.LocalPath) ?? "/", relVideoPath)
-        );
-
-        if (fileSystem.File.Exists(videoPath))
-        {
-            if (!workspace.MediaController.IsEnabled)
-            {
-                await messageBoxService.ShowAsync(
-                    I18N.Other.MsgBox_MediaDisabled_Title,
-                    I18N.Other.MsgBox_MediaDisabled_Body,
-                    MsgBoxButtonSet.Ok,
-                    MsgBoxButton.Ok,
-                    MaterialIconKind.Error
-                );
-                return true;
-            }
-
-            var result = await messageBoxService.ShowAsync(
-                I18N.Other.MsgBox_LoadVideo_Title,
-                $"{I18N.Other.MsgBox_LoadVideo_Body}\n\n{relVideoPath}",
-                MsgBoxButtonSet.YesNo,
-                MsgBoxButton.Yes
-            );
-            if (result != MsgBoxButton.Yes)
-                return true;
-            await workspace.MediaController.OpenVideoAsync(videoPath);
-            workspace.MediaController.SetSubtitles(workspace.Document);
-            if (doc.GarbageManager.TryGetInt("Video Position", out var frame))
-                workspace.MediaController.SeekTo(frame.Value); // Seek for clamp safety
-            return true;
-        }
-
-        // Video not found
-        messageService.Enqueue(
-            string.Format(I18N.Other.Message_VideoNotFound, Path.GetFileName(videoPath)),
-            TimeSpan.FromSeconds(7)
-        );
-        return false;
     }
 
     /// <inheritdoc />
@@ -476,7 +500,17 @@ public class IoService(
 
         try
         {
-            await workspace.MediaController.OpenVideoAsync(uri.LocalPath, progressCallback);
+            var vLoaded = await workspace.MediaController.OpenVideoAsync(
+                uri.LocalPath,
+                progressCallback
+            );
+            if (!vLoaded)
+            {
+                logger.LogError("Failed to open video file");
+                return false;
+            }
+            progressCallback?.Invoke(0, 1); // Reset
+            await OpenAudioFileAsync(uri, workspace, progressCallback);
             workspace.MediaController.SetSubtitles(workspace.Document);
             return true;
         }
@@ -485,6 +519,57 @@ public class IoService(
             logger.LogError(ex, "Failed to open video file");
             return false;
         }
+    }
+
+    /// <inheritdoc />
+    public async Task<bool> OpenAudioFileAsync(
+        Interaction<Unit, Uri?> interaction,
+        Workspace workspace,
+        ISourceProvider.IndexingProgressCallback? progressCallback = null
+    )
+    {
+        var uri = await interaction.Handle(Unit.Default);
+        if (uri is null)
+            return false;
+
+        return await OpenAudioFileAsync(uri, workspace, progressCallback);
+    }
+
+    /// <inheritdoc />
+    public async Task<bool> OpenAudioFileAsync(
+        Uri uri,
+        Workspace workspace,
+        ISourceProvider.IndexingProgressCallback? progressCallback = null
+    )
+    {
+        var audioTracks = await workspace.MediaController.GetAudioTrackInfoAsync(uri.LocalPath);
+        if (audioTracks.Length > 0)
+        {
+            var index = audioTracks[0].Index;
+            if (audioTracks.Length > 1)
+            {
+                // TODO: get this out of here, this sucks
+                var dialogResult = await windowService.ShowDialogAsync<SelectTrackMessage>(
+                    new SelectTrackDialog
+                    {
+                        DataContext = new SelectTrackDialogViewModel(audioTracks),
+                    }
+                );
+                index = dialogResult?.TrackIndex ?? audioTracks[0].Index;
+            }
+            var aResult = await workspace.MediaController.OpenAudioAsync(
+                uri.LocalPath,
+                index,
+                audioTracks.Length,
+                progressCallback
+            );
+            if (!aResult)
+            {
+                logger.LogError("Failed to open audio file");
+            }
+        }
+        progressCallback?.Invoke(0, 1); // Reset
+        return true;
     }
 
     /// <inheritdoc />

@@ -194,7 +194,7 @@ public class ProjectTests
         var prj = CreateProject();
         var result = prj.OpenDocument(999);
 
-        await Assert.That(result).IsEqualTo(-1);
+        await Assert.That(result).IsNull();
     }
 
     [Test]

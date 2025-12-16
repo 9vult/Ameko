@@ -33,6 +33,7 @@
     <!-- </Design.DataContext> -->
     <Window.Resources>
         <converters:NullToBoolConverter x:Key="NullToBoolConverter" />
+        <converters:TrackCountConverter x:Key="TrackCountConverter" />
     </Window.Resources>
     
     <DockPanel>
@@ -182,6 +183,24 @@
                     <NativeMenuItemSeparator />
                     <NativeMenuItem Header="{x:Static i18n:Resources.Menu_JumpTo}"
                                     Command="{Binding ShowJumpDialogCommand}" />
+                </NativeMenu>
+            </NativeMenuItem>
+            <NativeMenuItem Header="{x:Static i18n:Resources.Menu_Audio}">
+                <NativeMenu>
+                    <NativeMenuItem Header="{x:Static i18n:Resources.Menu_OpenAudio}"
+                                    IsEnabled="{Binding ProjectProvider.Current.WorkingSpace.MediaController.IsVideoLoaded,
+                                          FallbackValue=false}"
+                                    Command="{Binding OpenAudioCommand}" />
+                    <NativeMenuItem Header="{x:Static i18n:Resources.Menu_CloseAudio}"
+                                    IsEnabled="{Binding ProjectProvider.Current.WorkingSpace.MediaController.IsAudioLoaded,
+                                                        FallbackValue=false}"
+                                    Command="{Binding CloseAudioCommand}" />
+                    <NativeMenuItemSeparator />
+                    <NativeMenuItem Header="{x:Static i18n:Resources.Menu_ChangeTracks}"
+                                    IsEnabled="{Binding ProjectProvider.Current.WorkingSpace.MediaController.AudioInfo.TrackCount,
+                                                        Converter={StaticResource TrackCountConverter},
+                                                        FallbackValue=false}"
+                                    Command="{Binding ChangeTracksCommand}" />
                 </NativeMenu>
             </NativeMenuItem>
             <NativeMenuItem Header="{x:Static i18n:Resources.Menu_Scripts}">

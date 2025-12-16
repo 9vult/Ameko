@@ -64,6 +64,9 @@ public class OpenAlAudioRenderer(MediaController mediaController) : IAudioRender
             _buffer = null;
         }
 
+        if (!mediaController.IsAudioLoaded)
+            return;
+
         unsafe
         {
             var frame = mediaController.GetAudioFrame();

@@ -43,7 +43,37 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         return ReactiveCommand.CreateFromTask(async () =>
         {
-            _ = await IoService.OpenSubtitleFiles(OpenSubtitle, ProjectProvider.Current);
+            var workspaces = await IoService.OpenSubtitleFilesAsync(
+                OpenSubtitle,
+                ProjectProvider.Current
+            );
+
+            foreach (var wsp in workspaces)
+            {
+                ISourceProvider.IndexingProgressCallback? callback = null;
+                if (_tabFactory.TryGetViewModel(wsp, out var tabVm))
+                {
+                    callback = (current, total) =>
+                    {
+                        var progress = (double)current / total;
+                        Dispatcher.UIThread.Post(() => tabVm.IndexingProgress = progress);
+                    };
+                }
+
+                try
+                {
+                    Dispatcher.UIThread.Post(() => tabVm?.IsIndexing = true);
+                    await IoService.ProcessProjectGarbageAsync(
+                        wsp,
+                        ProjectProvider.Current,
+                        callback
+                    );
+                }
+                finally
+                {
+                    Dispatcher.UIThread.Post(() => tabVm?.IsIndexing = false);
+                }
+            }
         });
     }
 
@@ -56,7 +86,75 @@ public partial class MainWindowViewModel : ViewModelBase
         return ReactiveCommand.CreateFromTask(
             async (Uri uri) =>
             {
-                _ = await IoService.OpenSubtitleFile(uri, ProjectProvider.Current);
+                if (await IoService.OpenSubtitleFileAsync(uri, ProjectProvider.Current) is { } wsp)
+                {
+                    ISourceProvider.IndexingProgressCallback? callback = null;
+                    if (_tabFactory.TryGetViewModel(wsp, out var tabVm))
+                    {
+                        callback = (current, total) =>
+                        {
+                            var progress = (double)current / total;
+                            Dispatcher.UIThread.Post(() => tabVm.IndexingProgress = progress);
+                        };
+                    }
+
+                    try
+                    {
+                        Dispatcher.UIThread.Post(() => tabVm?.IsIndexing = true);
+                        await IoService.ProcessProjectGarbageAsync(
+                            wsp,
+                            ProjectProvider.Current,
+                            callback
+                        );
+                    }
+                    finally
+                    {
+                        Dispatcher.UIThread.Post(() => tabVm?.IsIndexing = false);
+                    }
+                }
+            }
+        );
+    }
+
+    /// <summary>
+    /// Open subtitles without using a dialog
+    /// </summary>
+    /// <returns></returns>
+    private ReactiveCommand<Uri[], Unit> CreateOpenSubtitlesNoGuiCommand()
+    {
+        return ReactiveCommand.CreateFromTask(
+            async (Uri[] uris) =>
+            {
+                var workspaces = await IoService.OpenSubtitleFilesAsync(
+                    uris,
+                    ProjectProvider.Current
+                );
+                foreach (var wsp in workspaces)
+                {
+                    ISourceProvider.IndexingProgressCallback? callback = null;
+                    if (_tabFactory.TryGetViewModel(wsp, out var tabVm))
+                    {
+                        callback = (current, total) =>
+                        {
+                            var progress = (double)current / total;
+                            Dispatcher.UIThread.Post(() => tabVm.IndexingProgress = progress);
+                        };
+                    }
+
+                    try
+                    {
+                        Dispatcher.UIThread.Post(() => tabVm?.IsIndexing = true);
+                        await IoService.ProcessProjectGarbageAsync(
+                            wsp,
+                            ProjectProvider.Current,
+                            callback
+                        );
+                    }
+                    finally
+                    {
+                        Dispatcher.UIThread.Post(() => tabVm?.IsIndexing = false);
+                    }
+                }
             }
         );
     }
@@ -566,6 +664,92 @@ public partial class MainWindowViewModel : ViewModelBase
     }
 
     /// <summary>
+    /// Display the Open Audio dialog
+    /// </summary>
+    private ReactiveCommand<Unit, Unit> CreateOpenAudioCommand()
+    {
+        return ReactiveCommand.CreateFromTask(async () =>
+        {
+            var wsp = ProjectProvider.Current.WorkingSpace;
+            if (wsp is null)
+            {
+                ProjectProvider.Current.WorkingSpace = wsp = ProjectProvider.Current.AddWorkspace();
+            }
+
+            ISourceProvider.IndexingProgressCallback? callback = null;
+            if (_tabFactory.TryGetViewModel(wsp, out var tabVm))
+            {
+                callback = (current, total) =>
+                {
+                    var progress = (double)current / total;
+                    Dispatcher.UIThread.Post(() => tabVm.IndexingProgress = progress);
+                };
+            }
+
+            try
+            {
+                Dispatcher.UIThread.Post(() => tabVm?.IsIndexing = true);
+                await IoService.OpenAudioFileAsync(OpenAudio, wsp, callback);
+            }
+            finally
+            {
+                Dispatcher.UIThread.Post(() => tabVm?.IsIndexing = false);
+            }
+        });
+    }
+
+    /// <summary>
+    /// Close the open audio
+    /// </summary>
+    private ReactiveCommand<Unit, Unit> CreateCloseAudioCommand()
+    {
+        return ReactiveCommand.Create(() =>
+        {
+            var wsp = ProjectProvider.Current.WorkingSpace;
+            wsp?.MediaController.CloseAudio();
+        });
+    }
+
+    /// <summary>
+    /// Change audio tracks
+    /// </summary>
+    private ReactiveCommand<Unit, Unit> CreateChangeTracksCommand()
+    {
+        return ReactiveCommand.CreateFromTask(async () =>
+        {
+            var wsp = ProjectProvider.Current.WorkingSpace;
+            if (wsp is null)
+            {
+                ProjectProvider.Current.WorkingSpace = wsp = ProjectProvider.Current.AddWorkspace();
+            }
+
+            var path = wsp.MediaController.AudioInfo?.Path;
+            if (path is null)
+                return;
+
+            ISourceProvider.IndexingProgressCallback? callback = null;
+            if (_tabFactory.TryGetViewModel(wsp, out var tabVm))
+            {
+                callback = (current, total) =>
+                {
+                    var progress = (double)current / total;
+                    Dispatcher.UIThread.Post(() => tabVm.IndexingProgress = progress);
+                };
+            }
+
+            try
+            {
+                Dispatcher.UIThread.Post(() => tabVm?.IsIndexing = true);
+                await IoService.OpenAudioFileAsync(new Uri(path, UriKind.Absolute), wsp, callback);
+            }
+            finally
+            {
+                Dispatcher.UIThread.Post(() => tabVm?.IsIndexing = false);
+            }
+        });
+    }
+
+    /// <summary>
     /// Execute a Script
     /// </summary>
     private ReactiveCommand<string, Unit> CreateExecuteScriptCommand()
@@ -849,13 +1033,13 @@ public partial class MainWindowViewModel : ViewModelBase
     /// </summary>
     private ReactiveCommand<int, Unit> CreateOpenDocumentCommand()
     {
-        return ReactiveCommand.Create(
-            (int id) =>
+        return ReactiveCommand.CreateFromTask(
+            async (int id) =>
             {
                 if (ProjectProvider.Current.FindItemById(id) is not DocumentItem docItem)
                     return;
 
-                TryLoadReferenced(docItem.Id);
+                await TryLoadReferenced(docItem.Id);
             }
         );
     }

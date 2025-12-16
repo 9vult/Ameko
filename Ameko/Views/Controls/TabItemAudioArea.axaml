@@ -8,31 +8,58 @@
              xmlns:i18n="clr-namespace:Ameko.I18N"
              
              xmlns:c="clr-namespace:Ameko.Views.Controls"
+             xmlns:converters="clr-namespace:Ameko.Converters"
              xmlns:vm="clr-namespace:Ameko.ViewModels.Controls"
              
              x:Class="Ameko.Views.Controls.TabItemAudioArea"
              x:DataType="vm:TabItemViewModel">
-    <Grid ColumnDefinitions="*, Auto"
-          RowDefinitions="*, Auto"
-          RowSpacing="5"
-          Margin="2"
-          IsEnabled="{Binding Workspace.MediaController.IsVideoLoaded}">
-        <Panel Grid.Column="0"
-               Grid.Row="0"
-               Background="Transparent"
-               PointerWheelChanged="AudioTarget_OnPointerWheelChanged"
-               IsVisible="{Binding Workspace.MediaController.IsVideoLoaded}">
-            <c:Visualizer MediaController="{Binding Workspace.MediaController}" />
-        </Panel>
-        <c:SeekSlider Grid.Column="0"
-                      Grid.Row="1"
-                      Padding="0 2"
-                      Minimum="0"
-                      Maximum="{Binding Workspace.MediaController.AudioInfo.Duration, FallbackValue=1}"
-                      Value="{Binding Workspace.MediaController.VisualizerPositionMs, FallbackValue=0}"/>
-        <StackPanel Grid.Column="1"
-                    Grid.Row="0"
-                    Grid.RowSpan="2"
+    <Control.Resources>
+        <converters:IsMediaIndexingConverter x:Key="IndexingConverter" />
+    </Control.Resources>
+    <DockPanel Margin="2"
+               IsEnabled="{Binding Workspace.MediaController.IsAudioLoaded}">
+        <StackPanel DockPanel.Dock="Bottom">
+            <!-- Indexing Indicator -->
+            <Grid Margin="2"
+                  Name="IndexingInfo"
+                  ColumnDefinitions="Auto, *">
+                <Grid.IsVisible>
+                    <MultiBinding Converter="{StaticResource IndexingConverter}">
+                        <Binding Path="IsIndexing" />
+                        <Binding Path="Workspace.MediaController.IsAudioLoaded" />
+                        <Binding Path="Workspace.MediaController.IsVideoLoaded" />
+                    </MultiBinding>
+                </Grid.IsVisible>
+                <TextBlock Grid.Column="0"
+                           Text="{x:Static i18n:Resources.Video_Indexing}"
+                           VerticalAlignment="Center"
+                           Margin="0 0 5 0" />
+                <ProgressBar Grid.Column="1"
+                             Minimum="0"
+                             Maximum="1"
+                             Classes="Success"
+                             ShowProgressText="True"
+                             Value="{Binding IndexingProgress}"
+                             VerticalAlignment="Center"
+                             HorizontalAlignment="Stretch" />
+            </Grid>
+            <!-- Seek Bar -->
+            <c:SeekSlider Margin="2"
+                          Minimum="0"
+                          Maximum="{Binding Workspace.MediaController.AudioInfo.Duration, FallbackValue=1}"
+                          Value="{Binding Workspace.MediaController.VisualizerPositionMs, FallbackValue=0}">
+                <c:SeekSlider.IsVisible>
+                    <MultiBinding Converter="{StaticResource IndexingConverter}">
+                        <Binding Path="Workspace.MediaController.IsAudioLoaded" />
+                        <Binding Path="IsIndexing" />
+                        <Binding Path="Workspace.MediaController.IsVideoLoaded" />
+                    </MultiBinding>
+                </c:SeekSlider.IsVisible>
+            </c:SeekSlider>
+        </StackPanel>
+        
+        <!-- Zoom Controls -->
+        <StackPanel DockPanel.Dock="Right"
                     Orientation="Horizontal">
             <Slider Orientation="Vertical"
                     Classes="Small"
@@ -53,5 +80,12 @@
                     Value="{Binding Workspace.MediaController.VisualizerVerticalScale, FallbackValue=2.0}"
                     ToolTip.Tip="{x:Static i18n:Resources.Audio_VerticalScale_ToolTip}" />
         </StackPanel>
-    </Grid>
+        
+        <!-- Visualizer Target -->
+        <Panel Background="Transparent"
+               PointerWheelChanged="AudioTarget_OnPointerWheelChanged"
+               IsVisible="{Binding Workspace.MediaController.IsAudioLoaded}">
+            <c:Visualizer MediaController="{Binding Workspace.MediaController}" />
+        </Panel>
+    </DockPanel>
 </UserControl>

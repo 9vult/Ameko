@@ -71,6 +71,24 @@ pub fn GetAudio(g_ctx: *context.GlobalContext, progress_cb: common.ProgressCallb
     return ctx.audio_frame.?;
 }
 
+// Free the audio buffers
+// Public to facilitate switching audio tracks
+pub fn FreeAudioBuffer(g_ctx: *context.GlobalContext) void {
+    var ctx = &g_ctx.*.buffers;
+
+    // free audio buffer
+    if (ctx.audio_buffer) |audio_buffer| {
+        common.allocator.free(audio_buffer);
+        ctx.audio_buffer = null;
+    }
+
+    // destroy audio_frame
+    if (ctx.audio_frame) |audio_frame| {
+        common.allocator.destroy(audio_frame);
+        ctx.audio_frame = null;
+    }
+}
+
 /// Free the buffers
 pub fn Deinit(g_ctx: *context.GlobalContext) void {
     var ctx = &g_ctx.*.buffers;
@@ -97,28 +115,20 @@ pub fn Deinit(g_ctx: *context.GlobalContext) void {
 
     ctx.frame_buffers.deinit(common.allocator);
 
-    // free audio buffer
-    if (ctx.audio_buffer) |audio_buffer| {
-        common.allocator.free(audio_buffer);
-        ctx.audio_buffer = null;
-    }
-
-    // destroy audio_frame
-    if (ctx.audio_frame) |audio_frame| {
-        common.allocator.destroy(audio_frame);
-        ctx.audio_frame = null;
-    }
+    FreeAudioBuffer(g_ctx);
 
     // free visualization buffers
-    for (ctx.viz_buffers.items) |buffer| {
-        const total: usize = @intCast(buffer.*.height * buffer.*.pitch);
-        if (total != 0) {
-            common.allocator.free(buffer.*.data[0..total]);
+    if (ctx.viz_buffers) |viz_buffers| {
+        for (viz_buffers.items) |buffer| {
+            const total: usize = @intCast(buffer.*.height * buffer.*.pitch);
+            if (total != 0) {
+                common.allocator.free(buffer.*.data[0..total]);
+            }
+            common.allocator.destroy(buffer);
         }
-        common.allocator.destroy(buffer);
-    }
 
-    ctx.viz_buffers.deinit(common.allocator);
+        ctx.viz_buffers.?.deinit(common.allocator);
+    }
 }
 
 pub fn ProcVizualizationFrame(
@@ -134,7 +144,7 @@ pub fn ProcVizualizationFrame(
 ) !*frames.Bitmap {
     const ctx = &g_ctx.*.buffers;
 
-    var buffers = ctx.viz_buffers;
+    var buffers = ctx.viz_buffers.?;
     var result: ?*frames.Bitmap = null;
 
     // See if there's a buffer available with the correct width

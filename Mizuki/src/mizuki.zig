@@ -79,11 +79,41 @@ pub export fn LoadVideo(
     return 0;
 }
 
-/// Close the open video file
+/// Open an audio file
+pub export fn LoadAudio(
+    g_ctx: *context.GlobalContext,
+    file_name: [*c]u8,
+    cache_file_name: [*c]u8,
+    audio_track_number: c_int, // Nullable
+) c_int {
+    ffms.LoadAudio(g_ctx, file_name, cache_file_name, audio_track_number) catch |err| {
+        return errors.IntFromFfmsError(err);
+    };
+    return 0;
+}
+
+// Get audio track information
+pub export fn GetAudioTrackInfo(
+    g_ctx: *context.GlobalContext,
+    file_name: [*c]u8,
+) common.TrackInfoArray {
+    return ffms.GetAudioTrackInfo(g_ctx, file_name) catch return .{
+        .ptr = null,
+        .len = 0,
+    };
+}
+
+/// Close the open video file (includes audio)
 pub export fn CloseVideo(g_ctx: *context.GlobalContext) c_int {
     libass.CloseVideo(g_ctx);
     ffms.CloseVideo(g_ctx);
     buffers.Deinit(g_ctx);
+    return 0;
+}
+
+/// Close the open audio file
+pub export fn CloseAudio(g_ctx: *context.GlobalContext) c_int {
+    buffers.FreeAudioBuffer(g_ctx);
     return 0;
 }
 
@@ -171,24 +201,24 @@ pub export fn GetFrameCount(g_ctx: *context.GlobalContext) c_int {
 /// Get array of keyframes
 pub export fn GetKeyframes(g_ctx: *context.GlobalContext) common.IntArray {
     return .{
-        .ptr = g_ctx.*.ffms.keyframes.ptr,
-        .len = g_ctx.*.ffms.keyframes.len,
+        .ptr = g_ctx.*.ffms.keyframes.?.ptr,
+        .len = g_ctx.*.ffms.keyframes.?.len,
     };
 }
 
 /// Get array of timecodes
 pub export fn GetTimecodes(g_ctx: *context.GlobalContext) common.LongArray {
     return .{
-        .ptr = g_ctx.*.ffms.timecodes.ptr,
-        .len = g_ctx.*.ffms.timecodes.len,
+        .ptr = g_ctx.*.ffms.timecodes.?.ptr,
+        .len = g_ctx.*.ffms.timecodes.?.len,
     };
 }
 
 /// Get array of frame intervals
 pub export fn GetFrameIntervals(g_ctx: *context.GlobalContext) common.LongArray {
     return .{
-        .ptr = g_ctx.*.ffms.frame_intervals.ptr,
-        .len = g_ctx.*.ffms.frame_intervals.len,
+        .ptr = g_ctx.*.ffms.frame_intervals.?.ptr,
+        .len = g_ctx.*.ffms.frame_intervals.?.len,
     };
 }
 

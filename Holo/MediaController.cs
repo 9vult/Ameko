@@ -69,6 +69,13 @@ public class MediaController : BindableBase
         private set => SetProperty(ref field, value);
     }
 
+    [MemberNotNullWhen(true, nameof(AudioInfo))]
+    public bool IsAudioLoaded
+    {
+        get;
+        private set => SetProperty(ref field, value);
+    }
+
     /// <summary>
     /// Scale factor of the viewport
     /// </summary>
@@ -420,7 +427,7 @@ public class MediaController : BindableBase
     }
 
     /// <summary>
-    /// Open a video
+    /// Open a video file
     /// </summary>
     /// <param name="filePath">Path to the video to open</param>
     /// <param name="progressCallback">Indexing progress callback (optional)</param>
@@ -468,14 +475,7 @@ public class MediaController : BindableBase
                     frameIntervals: _provider.GetFrameIntervals(),
                     keyframes: _provider.GetKeyframes(),
                     testFrame->VideoFrame->Width,
-                    testFrame->VideoFrame->Height,
-                    true // TODO
-                );
-
-                AudioInfo = new AudioInfo(
-                    channelCount: _provider.GetChannelCount(),
-                    sampleRate: _provider.GetSampleRate(),
-                    sampleCount: _provider.GetSampleCount()
+                    testFrame->VideoFrame->Height
                 );
 
                 _playback.Intervals = VideoInfo.FrameIntervals;
@@ -483,6 +483,50 @@ public class MediaController : BindableBase
 
             DisplayWidth = VideoInfo.Width / _screenScaleFactor;
             DisplayHeight = VideoInfo.Height / _screenScaleFactor;
+
+            IsVideoLoaded = true;
+
+            // Re-fetch frame 0 with subtitles
+            unsafe
+            {
+                _lastFrame = _provider.GetFrame(0, 0, false);
+                FrameReady?.Invoke();
+            }
+
+            return true;
+        });
+    }
+
+    /// <summary>
+    /// Open an audio file
+    /// </summary>
+    /// <param name="filePath">Path to the audio to open</param>
+    /// <param name="trackNumber">Track number to load</param>
+    /// <param name="totalTracks">Total number of audio tracks</param>
+    /// <param name="progressCallback">Indexing progress callback (optional)</param>
+    /// <returns><see langword="true"/> if successful</returns>
+    /// <exception cref="InvalidOperationException">If the provider isn't initialized</exception>
+    public async Task<bool> OpenAudioAsync(
+        string filePath,
+        int trackNumber,
+        int totalTracks,
+        ISourceProvider.IndexingProgressCallback? progressCallback = null
+    )
+    {
+        if (!_provider.IsInitialized)
+            throw new InvalidOperationException("Provider is not initialized");
+
+        if (IsAudioLoaded)
+            CloseAudio();
+
+        _logger.LogInformation("Opening audio {FilePath}", filePath);
+        return await Task.Run(() =>
+        {
+            if (_provider.LoadAudio(filePath, trackNumber) != 0)
+            {
+                // TODO: Handle error
+                return false;
+            }
 
             // Audio time
             if (_provider.AllocateAudioBuffer() != 0)
@@ -497,6 +541,17 @@ public class MediaController : BindableBase
                 {
                     return false; // ??
                 }
+
+                AudioInfo = new AudioInfo(
+                    path: filePath,
+                    trackCount: totalTracks,
+                    channelCount: _provider.GetChannelCount(),
+                    sampleRate: _provider.GetSampleRate(),
+                    sampleCount: _provider.GetSampleCount()
+                );
+
+                IsAudioLoaded = true;
+
                 _lastVizFrame = _provider.GetVisualization(
                     VisualizerWidth,
                     VisualizerHeight,
@@ -509,20 +564,27 @@ public class MediaController : BindableBase
                 );
             }
 
-            IsVideoLoaded = true;
-
-            // Re-fetch frame 0 with subtitles
-            unsafe
-            {
-                _lastFrame = _provider.GetFrame(0, 0, false);
-            }
-
             return true;
         });
     }
 
     /// <summary>
-    /// Close the open video
+    /// Get information about the audio tracks in a file
+    /// </summary>
+    /// <param name="filePath">Path to the file potentially containing audio tracks</param>
+    /// <returns>Array of track information</returns>
+    /// <exception cref="InvalidOperationException">If the provider is not initialized</exception>
+    public async Task<TrackInfo[]> GetAudioTrackInfoAsync(string filePath)
+    {
+        if (!_provider.IsInitialized)
+            throw new InvalidOperationException("Provider is not initialized");
+        _logger.LogInformation("Getting audio track information for {FilePath}", filePath);
+
+        return await Task.Run(() => _provider.GetAudioTrackInfo(filePath));
+    }
+
+    /// <summary>
+    /// Close the open video (includes audio)
     /// </summary>
     /// <returns><see langword="true"/> if successful</returns>
     /// <exception cref="InvalidOperationException">If the provider isn't initialized</exception>
@@ -536,6 +598,7 @@ public class MediaController : BindableBase
 
         Stop();
         IsVideoLoaded = false;
+        IsAudioLoaded = false;
 
         // Close
         _logger.LogInformation("Closing video {FilePath}", VideoInfo?.Path);
@@ -551,6 +614,26 @@ public class MediaController : BindableBase
         RaisePropertyChanged(nameof(CurrentTime));
 
         return result;
+    }
+
+    /// <summary>
+    /// Close the open audio
+    /// </summary>
+    /// <returns><see langword="true"/> if successful</returns>
+    /// <exception cref="InvalidOperationException">If the provider isn't initialized</exception>
+    public bool CloseAudio()
+    {
+        if (!_provider.IsInitialized)
+            throw new InvalidOperationException("Provider is not initialized");
+
+        if (!IsAudioLoaded)
+            return true;
+
+        Stop();
+        IsAudioLoaded = false;
+
+        _logger.LogInformation("Closing audio {FilePath}", AudioInfo?.Path);
+        return _provider.CloseAudio() == 0;
     }
 
     /// <summary>
@@ -593,12 +676,17 @@ public class MediaController : BindableBase
         throw new InvalidOperationException("Frame is unavailable");
     }
 
+    /// <summary>
+    /// Get the current visualization frame
+    /// </summary>
+    /// <returns>Pointer to the frame</returns>
+    /// <exception cref="InvalidOperationException">If there is no frame</exception>
     public unsafe Bitmap* GetCurrentVizFrame()
     {
         if (!_provider.IsInitialized)
             throw new InvalidOperationException("Provider is not initialized");
-        if (!IsVideoLoaded)
-            throw new InvalidOperationException("Video is not loaded");
+        if (!IsAudioLoaded)
+            throw new InvalidOperationException("Audio is not loaded");
 
         lock (_frameLock)
         {
@@ -615,12 +703,17 @@ public class MediaController : BindableBase
         throw new InvalidOperationException("Frame is unavailable");
     }
 
+    /// <summary>
+    /// Get the audio frame
+    /// </summary>
+    /// <returns>Pointer to the frame</returns>
+    /// <exception cref="InvalidOperationException">If there is no frame</exception>
     public unsafe AudioFrame* GetAudioFrame()
     {
         if (!_provider.IsInitialized)
             throw new InvalidOperationException("Provider is not initialized");
-        if (!IsVideoLoaded)
-            throw new InvalidOperationException("Video is not loaded");
+        if (!IsAudioLoaded)
+            throw new InvalidOperationException("Audio is not loaded");
         return _audioFrame;
     }
 
@@ -694,22 +787,25 @@ public class MediaController : BindableBase
         var frame = _provider.GetFrame(frameToFetch, time, false);
 
         // Get audio visualization
-        Bitmap* vizFrame;
+        Bitmap* vizFrame = null;
 
-        lock (_boundsLock)
+        if (IsAudioLoaded)
         {
-            fixed (long* ptr = _eventBounds)
+            lock (_boundsLock)
             {
-                vizFrame = _provider.GetVisualization(
-                    VisualizerWidth,
-                    VisualizerHeight,
-                    VisualizerHorizontalScale,
-                    VisualizerVerticalScale,
-                    VisualizerPositionMs,
-                    time,
-                    ptr,
-                    _eventBounds.Length
-                );
+                fixed (long* ptr = _eventBounds)
+                {
+                    vizFrame = _provider.GetVisualization(
+                        VisualizerWidth,
+                        VisualizerHeight,
+                        VisualizerHorizontalScale,
+                        VisualizerVerticalScale,
+                        VisualizerPositionMs,
+                        time,
+                        ptr,
+                        _eventBounds.Length
+                    );
+                }
             }
         }
 

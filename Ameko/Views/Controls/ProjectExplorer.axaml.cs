@@ -22,6 +22,6 @@ public partial class ProjectExplorer : ReactiveUserControl<MainWindowViewModel>
         if (block.DataContext is null)
             return;
 
-        ViewModel?.TryLoadReferenced((block.DataContext as DocumentItem)!.Id);
+        _ = ViewModel?.TryLoadReferenced((block.DataContext as DocumentItem)!.Id);
     }
 }

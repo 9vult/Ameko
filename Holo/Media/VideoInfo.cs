@@ -12,8 +12,7 @@ public class VideoInfo(
     long[] frameIntervals,
     int[] keyframes,
     int width,
-    int height,
-    bool hasAudio
+    int height
 )
 {
     public string Path { get; } = path;
@@ -24,7 +23,6 @@ public class VideoInfo(
     public int[] Keyframes { get; } = keyframes;
     public int Width { get; } = width;
     public int Height { get; } = height;
-    public bool HasAudio { get; } = hasAudio;
 
     /// <summary>
     /// Gets the index of the frame with the largest timestamp ≤ <paramref name="millis"/>.

@@ -55,7 +55,7 @@ public interface IMessageBoxService
     /// <summary>
     /// Show boxes for <see cref="InstallationResult"/>s
     /// </summary>
-    /// <param name="result">iunstallation result</param>
+    /// <param name="result">installation result</param>
     /// <returns>Button that was clicked</returns>
     Task<MsgBoxButton?> ShowAsync(InstallationResult result);
 }

@@ -8,12 +8,16 @@
              d:DesignWidth="800"
              d:DesignHeight="450"
 
+             xmlns:converters="clr-namespace:Ameko.Converters"
              xmlns:i18n="clr-namespace:Ameko.I18N"
              xmlns:icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              xmlns:vm="clr-namespace:Ameko.ViewModels.Windows"
 
              x:Class="Ameko.Views.Controls.MenuStrip"
              x:DataType="vm:MainWindowViewModel">
+    <UserControl.Resources>
+        <converters:TrackCountConverter x:Key="TrackCountConverter" />
+    </UserControl.Resources>
     <Menu>
         <MenuItem Header="{x:Static i18n:Resources.Menu_File}">
             <MenuItem Header="{x:Static i18n:Resources.Menu_New}"
@@ -115,6 +119,25 @@
             <MenuItem Header="{x:Static i18n:Resources.Menu_JumpTo}"
                       Icon="{icons:MaterialIconExt Kind=BullseyeArrow}"
                       Command="{Binding ShowJumpDialogCommand}"/>
+        </MenuItem>
+        <MenuItem Header="{x:Static i18n:Resources.Menu_Audio}">
+            <MenuItem Header="{x:Static i18n:Resources.Menu_OpenAudio}"
+                      Icon="{icons:MaterialIconExt Kind=Music}"
+                      IsEnabled="{Binding ProjectProvider.Current.WorkingSpace.MediaController.IsVideoLoaded,
+                                          FallbackValue=false}"
+                      Command="{Binding OpenAudioCommand}" />
+            <MenuItem Header="{x:Static i18n:Resources.Menu_CloseAudio}"
+                      Icon="{icons:MaterialIconExt Kind=MusicOff}"
+                      IsEnabled="{Binding ProjectProvider.Current.WorkingSpace.MediaController.IsAudioLoaded,
+                                          FallbackValue=false}"
+                      Command="{Binding CloseAudioCommand}" />
+            <Separator />
+            <MenuItem Header="{x:Static i18n:Resources.Menu_ChangeTracks}"
+                      Icon="{icons:MaterialIconExt Kind=PlaylistMusic}"
+                      IsEnabled="{Binding ProjectProvider.Current.WorkingSpace.MediaController.AudioInfo.TrackCount,
+                                          Converter={StaticResource TrackCountConverter},
+                                          FallbackValue=false}"
+                      Command="{Binding ChangeTracksCommand}" />
         </MenuItem>
         <MenuItem Header="{x:Static i18n:Resources.Menu_Scripts}"
                   ItemsSource="{Binding ScriptMenuItems}" />

@@ -4,6 +4,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using Ameko.Messages;
 using Ameko.Services;
@@ -12,10 +13,12 @@ using Ameko.ViewModels.Controls;
 using Ameko.ViewModels.Dialogs;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
+using Avalonia.Threading;
 using DynamicData;
 using Holo;
 using Holo.Configuration;
 using Holo.Configuration.Keybinds;
+using Holo.Media.Providers;
 using Holo.Providers;
 using Microsoft.Extensions.Logging;
 using ReactiveUI;
@@ -65,6 +68,9 @@ public partial class MainWindowViewModel : ViewModelBase
     public Interaction<Unit, Uri?> OpenVideo { get; }
     public Interaction<JumpDialogViewModel, JumpDialogClosedMessage?> ShowJumpDialog { get; }
 
+    // Audio
+    public Interaction<Unit, Uri?> OpenAudio { get; }
+
     // Scripts
     public Interaction<PkgManWindowViewModel, Unit> ShowPackageManager { get; }
     public Interaction<PlaygroundWindowViewModel, Unit> ShowPlaygroundWindow { get; }
@@ -89,6 +95,7 @@ public partial class MainWindowViewModel : ViewModelBase
     [KeybindTarget("ameko.document.open", "Ctrl+O", KeybindContext.Global)]
     public ICommand OpenSubtitleCommand { get; }
     public ICommand OpenSubtitleNoGuiCommand { get; }
+    public ICommand OpenSubtitlesNoGuiCommand { get; }
 
     [KeybindTarget("ameko.document.save", "Ctrl+S", KeybindContext.Global)]
     public ICommand SaveSubtitleCommand { get; }
@@ -160,6 +167,15 @@ public partial class MainWindowViewModel : ViewModelBase
     [KeybindTarget("ameko.video.jump", "Ctrl+G", KeybindContext.Global)]
     public ICommand ShowJumpDialogCommand { get; }
 
+    [KeybindTarget("ameko.audio.open", KeybindContext.Global)]
+    public ICommand OpenAudioCommand { get; }
+
+    [KeybindTarget("ameko.audio.close", KeybindContext.Global)]
+    public ICommand CloseAudioCommand { get; }
+
+    [KeybindTarget("ameko.audio.changeTracks", KeybindContext.Global)]
+    public ICommand ChangeTracksCommand { get; }
+
     // Scripts
     // Command execution doesn't get a keybind. So sad :(
     public ICommand ExecuteScriptCommand { get; }
@@ -228,7 +244,7 @@ public partial class MainWindowViewModel : ViewModelBase
     /// Set the <see cref="Project.WorkingSpace"/> to the selected workspace, opening it if needed
     /// </summary>
     /// <param name="workspaceId">ID to open</param>
-    public void TryLoadReferenced(int workspaceId)
+    public async Task TryLoadReferenced(int workspaceId)
     {
         var wsp = ProjectProvider.Current.LoadedWorkspaces.FirstOrDefault(w => w.Id == workspaceId);
         if (wsp is not null)
@@ -237,7 +253,29 @@ public partial class MainWindowViewModel : ViewModelBase
             return;
         }
 
-        ProjectProvider.Current.OpenDocument(workspaceId);
+        wsp = ProjectProvider.Current.OpenDocument(workspaceId);
+        if (wsp is null)
+            return;
+
+        ISourceProvider.IndexingProgressCallback? callback = null;
+        if (_tabFactory.TryGetViewModel(wsp, out var tabVm))
+        {
+            callback = (current, total) =>
+            {
+                var progress = (double)current / total;
+                Dispatcher.UIThread.Post(() => tabVm.IndexingProgress = progress);
+            };
+        }
+
+        try
+        {
+            Dispatcher.UIThread.Post(() => tabVm?.IsIndexing = true);
+            await IoService.ProcessProjectGarbageAsync(wsp, ProjectProvider.Current, callback);
+        }
+        finally
+        {
+            Dispatcher.UIThread.Post(() => tabVm?.IsIndexing = false);
+        }
     }
 
     private void GenerateScriptsMenu()
@@ -327,6 +365,8 @@ public partial class MainWindowViewModel : ViewModelBase
         // Video
         OpenVideo = new Interaction<Unit, Uri?>();
         ShowJumpDialog = new Interaction<JumpDialogViewModel, JumpDialogClosedMessage?>();
+        // Audio
+        OpenAudio = new Interaction<Unit, Uri?>();
         // Timing
         ShowShiftTimesDialog = new Interaction<ShiftTimesDialogViewModel, Unit>();
         // Scripts
@@ -348,6 +388,7 @@ public partial class MainWindowViewModel : ViewModelBase
         NewCommand = CreateNewCommand();
         OpenSubtitleCommand = CreateOpenSubtitleCommand();
         OpenSubtitleNoGuiCommand = CreateOpenSubtitleNoGuiCommand();
+        OpenSubtitlesNoGuiCommand = CreateOpenSubtitlesNoGuiCommand();
         SaveSubtitleCommand = CreateSaveSubtitleCommand();
         SaveSubtitleAsCommand = CreateSaveSubtitleAsCommand();
         ExportSubtitleCommand = CreateExportSubtitleCommand();
@@ -376,6 +417,10 @@ public partial class MainWindowViewModel : ViewModelBase
         OpenVideoNoGuiCommand = CreateOpenVideoNoGuiCommand();
         CloseVideoCommand = CreateCloseVideoCommand();
         ShowJumpDialogCommand = CreateShowJumpDialogCommand();
+        // Audio
+        OpenAudioCommand = CreateOpenAudioCommand();
+        CloseAudioCommand = CreateCloseAudioCommand();
+        ChangeTracksCommand = CreateChangeTracksCommand();
         // Scripts
         ExecuteScriptCommand = CreateExecuteScriptCommand();
         ReloadScriptsCommand = CreateReloadScriptsCommand();

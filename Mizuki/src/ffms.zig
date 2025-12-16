@@ -27,6 +27,7 @@ pub const FfmsError = error{
     SettingOutputFormatFailed,
     AudioDataNotFound,
     DecodingAudioFailed,
+    IndexingFailed,
 };
 
 // Global
@@ -76,7 +77,7 @@ pub fn Initialize() void {
     }
 }
 
-/// Load a video
+/// Load video track
 pub fn LoadVideo(
     g_ctx: *context.GlobalContext,
     file_name: [*c]u8,
@@ -105,30 +106,15 @@ pub fn LoadVideo(
     var video_tracks = GetTracksOfType(indexer, c.FFMS_TYPE_VIDEO) catch |err| {
         return err; // Theoretically this is an OutOfMemory error
     };
-    var audio_tracks = GetTracksOfType(indexer, c.FFMS_TYPE_AUDIO) catch |err| {
-        return err; // Theoretically this is an OutOfMemory error
-    };
 
     if (video_tracks.count() <= 0) {
         return FfmsError.NoVideoTracks;
     }
 
-    const has_audio = audio_tracks.count() > 0;
-
     var video_track_number: c_int = -1;
     if (video_tracks.count() > 1) {
         // TODO: Ask which track should be opened!
         video_track_number = 0;
-    }
-
-    var audio_track_number: c_int = -1;
-    if (has_audio) {
-        // TODO: Ask which track should be opened!
-        // Get a random audio track lol
-        var itr = audio_tracks.iterator();
-        if (itr.next()) |entry| {
-            audio_track_number = entry.key_ptr.*;
-        }
     }
 
     // Check if there's a cached version of the index
@@ -145,22 +131,11 @@ pub fn LoadVideo(
         if (c.FFMS_GetNumFrames(temp_video_track) <= 0) {
             index = null;
         }
-
-        if (has_audio) {
-            const temp_audio_track = c.FFMS_GetTrackFromIndex(index, audio_track_number);
-            if (c.FFMS_GetNumFrames(temp_audio_track) <= 0) {
-                index = null;
-            }
-        }
     }
 
     // If we still don't have an index, index now
     if (index == null) {
         c.FFMS_TrackTypeIndexSettings(indexer, c.FFMS_TYPE_VIDEO, 1, 0);
-        if (has_audio) { // TODO: Option to index all audio tracks
-            c.FFMS_TrackIndexSettings(indexer, audio_track_number, 1, 0);
-        }
-
         index = c.FFMS_DoIndexing2(indexer, c.FFMS_IEH_ABORT, &err_info);
 
         // Write the index to the cache
@@ -170,6 +145,10 @@ pub fn LoadVideo(
         }
     } else {
         c.FFMS_CancelIndexing(indexer);
+    }
+
+    if (index == null) {
+        return FfmsError.IndexingFailed;
     }
 
     // TODO: Clean up the cache
@@ -275,7 +254,7 @@ pub fn LoadVideo(
     // Calculate frame intervals
     var i: usize = 0;
     while (i + 1 < ctx.frame_count) : (i += 1) {
-        try intervals_list.append(common.allocator, ctx.timecodes[i + 1] - ctx.timecodes[i]);
+        try intervals_list.append(common.allocator, ctx.timecodes.?[i + 1] - ctx.timecodes.?[i]);
     }
 
     // Last interval is 0
@@ -283,32 +262,105 @@ pub fn LoadVideo(
 
     ctx.frame_intervals = intervals_list.toOwnedSlice(common.allocator) catch unreachable;
 
-    if (has_audio) {
-        ctx.audio_source = c.FFMS_CreateAudioSource(file_name, audio_track_number, index, c.FFMS_DELAY_FIRST_VIDEO_TRACK, &err_info);
-        if (ctx.audio_source == null) {
-            return FfmsError.AudioTrackLoadingFailed;
-        }
-
-        // Get video properties
-        const audio_info = c.FFMS_GetAudioProperties(ctx.audio_source);
-
-        ctx.channel_count = audio_info.*.Channels;
-        ctx.sample_rate = audio_info.*.SampleRate;
-        ctx.sample_count = audio_info.*.NumSamples;
-
-        // Configure output
-        const rs_options = c.FFMS_CreateResampleOptions(ctx.audio_source);
-        defer c.FFMS_DestroyResampleOptions(rs_options);
-
-        rs_options.*.SampleFormat = c.FFMS_FMT_S16; // Use i16
-        if (ctx.channel_count > 2) { // Downmix to stereo
-            rs_options.*.ChannelLayout = c.FFMS_CH_FRONT_LEFT | c.FFMS_CH_FRONT_RIGHT;
-            ctx.channel_count = 2;
-        }
-        _ = c.FFMS_SetOutputFormatA(ctx.audio_source, rs_options, &err_info);
-    }
     c.FFMS_DestroyIndex(index);
     logger.Debug("[FFMS2] Successfully loaded video file");
+}
+
+/// Load audio track
+pub fn LoadAudio(
+    g_ctx: *context.GlobalContext,
+    file_name: [*c]u8,
+    cache_file_name: [*c]u8,
+    audio_track_number_: ?c_int,
+) FfmsError!void {
+    var ctx = &g_ctx.*.ffms;
+    var index = ctx.index;
+
+    const indexer = c.FFMS_CreateIndexer(file_name, &err_info);
+
+    if (indexer == null) {
+        if (err_info.SubType == c.FFMS_ERROR_FILE_READ) {
+            return FfmsError.FileNotFound;
+        } else {
+            return FfmsError.VideoNotSupported;
+        }
+    }
+
+    var audio_track_number: c_int = -1;
+    if (audio_track_number_ == null) {
+        var audio_tracks = GetTracksOfType(indexer, c.FFMS_TYPE_AUDIO) catch |err| {
+            return err; // Theoretically this is an OutOfMemory error
+        };
+
+        if (audio_tracks.count() <= 0) {
+            ctx.has_audio = false;
+            return;
+        }
+
+        var itr = audio_tracks.iterator();
+        if (itr.next()) |entry| {
+            audio_track_number = entry.key_ptr.*;
+        }
+    } else {
+        audio_track_number = audio_track_number_.?;
+    }
+
+    index = c.FFMS_ReadIndex(cache_file_name, &err_info);
+    if (index != null and c.FFMS_IndexBelongsToFile(index, file_name, &err_info) != 0) {
+        index = null;
+    }
+
+    if (index != null and audio_track_number >= 0) {
+        const temp_audio_track = c.FFMS_GetTrackFromIndex(index, audio_track_number);
+        if (temp_audio_track == null or c.FFMS_GetNumFrames(temp_audio_track) <= 0) {
+            index = null;
+        }
+    }
+
+    if (index == null) {
+        c.FFMS_TrackIndexSettings(indexer, audio_track_number, 1, 0);
+
+        index = c.FFMS_DoIndexing2(indexer, c.FFMS_IEH_ABORT, &err_info);
+        if (index != null) {
+            const write_result = c.FFMS_WriteIndex(cache_file_name, index, &err_info);
+            if (write_result != 0) {
+                logger.Error(err_info.Buffer[0..err_buffer.len]);
+            }
+        }
+    } else {
+        c.FFMS_CancelIndexing(indexer);
+    }
+
+    if (index == null) {
+        return FfmsError.IndexingFailed;
+    }
+
+    ctx.audio_source = c.FFMS_CreateAudioSource(file_name, audio_track_number, index, c.FFMS_DELAY_FIRST_VIDEO_TRACK, &err_info);
+    if (ctx.audio_source == null) {
+        return FfmsError.AudioTrackLoadingFailed;
+    }
+
+    // Get audio properties
+    const audio_info = c.FFMS_GetAudioProperties(ctx.audio_source);
+    ctx.channel_count = audio_info.*.Channels;
+    ctx.sample_rate = audio_info.*.SampleRate;
+    ctx.sample_count = audio_info.*.NumSamples;
+
+    // Configure resampler
+    const rs_options = c.FFMS_CreateResampleOptions(ctx.audio_source);
+    defer c.FFMS_DestroyResampleOptions(rs_options);
+
+    rs_options.*.SampleFormat = c.FFMS_FMT_S16; // Use i16
+    if (ctx.channel_count > 2) { // Downmix to stereo
+        rs_options.*.ChannelLayout = c.FFMS_CH_FRONT_LEFT | c.FFMS_CH_FRONT_RIGHT;
+        ctx.channel_count = 2;
+    }
+    _ = c.FFMS_SetOutputFormatA(ctx.audio_source, rs_options, &err_info);
+
+    ctx.has_audio = true;
+
+    c.FFMS_DestroyIndex(index);
+    logger.Debug("[FFMS2] Successfully loaded audio file");
 }
 
 pub fn CloseVideo(g_ctx: *context.GlobalContext) void {
@@ -323,21 +375,25 @@ pub fn CloseVideo(g_ctx: *context.GlobalContext) void {
         c.FFMS_DestroyIndex(index);
     }
 
-    if (ctx.keyframes.len != 0) {
-        common.allocator.free(ctx.keyframes);
-        ctx.keyframes = undefined;
+    if (ctx.keyframes) |keyframes| {
+        common.allocator.free(keyframes);
+        ctx.keyframes = null;
     }
-    if (ctx.timecodes.len != 0) {
-        common.allocator.free(ctx.timecodes);
-        ctx.timecodes = undefined;
+    if (ctx.timecodes) |timecodes| {
+        common.allocator.free(timecodes);
+        ctx.timecodes = null;
     }
-    if (ctx.kf_timecodes.len != 0) {
-        common.allocator.free(ctx.kf_timecodes);
-        ctx.kf_timecodes = undefined;
+    if (ctx.kf_timecodes) |kf_timecodes| {
+        common.allocator.free(kf_timecodes);
+        ctx.kf_timecodes = null;
     }
-    if (ctx.frame_intervals.len != 0) {
-        common.allocator.free(ctx.frame_intervals);
-        ctx.frame_intervals = undefined;
+    if (ctx.frame_intervals) |frame_intervals| {
+        common.allocator.free(frame_intervals);
+        ctx.frame_intervals = null;
+    }
+    if (ctx.track_info_arr) |track_info| {
+        common.allocator.free(track_info);
+        ctx.track_info_arr = null;
     }
 }
 
@@ -371,6 +427,8 @@ pub fn GetAudio(
 ) FfmsError!void {
     const ctx = &g_ctx.*.ffms;
 
+    if (!ctx.has_audio) return;
+
     const max_chunk_size: i64 = 4096;
     var current_chunk_size: i64 = 0;
     var decoded: i64 = 0;
@@ -400,12 +458,6 @@ pub fn GetAudio(
     }
 }
 
-// TODO: This thing
-fn SetColorSpace(color_matrix: [*c]u8) void {
-    _ = color_matrix;
-    return;
-}
-
 /// Get tracks of the given type
 pub fn GetTracksOfType(indexer: ?*c.FFMS_Indexer, track_type: c.FFMS_TrackType) !std.AutoHashMap(c_int, [*c]const u8) {
     var track_list = std.AutoHashMap(c_int, [*c]const u8).init(common.allocator);
@@ -418,4 +470,60 @@ pub fn GetTracksOfType(indexer: ?*c.FFMS_Indexer, track_type: c.FFMS_TrackType) 
         }
     }
     return track_list;
+}
+
+/// Get basic information about audio tracks
+pub fn GetAudioTrackInfo(g_ctx: *context.GlobalContext, file_name: [*c]u8) FfmsError!common.TrackInfoArray {
+    var ctx = &g_ctx.*.ffms;
+    var tracks_list: std.ArrayList(common.TrackInfo) = .empty;
+    defer tracks_list.deinit(common.allocator);
+
+    const indexer = c.FFMS_CreateIndexer(file_name, &err_info);
+
+    if (indexer == null) {
+        if (err_info.SubType == c.FFMS_ERROR_FILE_READ) {
+            return FfmsError.FileNotFound;
+        } else {
+            return FfmsError.VideoNotSupported;
+        }
+    }
+
+    var audio_tracks = GetTracksOfType(indexer, c.FFMS_TYPE_AUDIO) catch |err| {
+        return err; // Theoretically this is an OutOfMemory error
+    };
+
+    if (audio_tracks.count() <= 0) {
+        return FfmsError.NoAudioTracks;
+    }
+
+    var itr = audio_tracks.iterator();
+    while (itr.next()) |entry| {
+        const track_number: c_int = entry.key_ptr.*;
+
+        const track: common.TrackInfo = .{
+            .index = @intCast(track_number),
+            .codec = c.FFMS_GetCodecNameI(indexer, track_number),
+        };
+
+        try tracks_list.append(common.allocator, track);
+    }
+
+    // Dealloc the array if it's already allocated
+    if (ctx.track_info_arr) |track_info| {
+        common.allocator.free(track_info);
+        ctx.track_info_arr = null;
+    }
+
+    ctx.track_info_arr = tracks_list.toOwnedSlice(common.allocator) catch unreachable;
+    const result: common.TrackInfoArray = .{
+        .ptr = ctx.track_info_arr.?.ptr,
+        .len = ctx.track_info_arr.?.len,
+    };
+    return result;
+}
+
+// TODO: This thing
+fn SetColorSpace(color_matrix: [*c]u8) void {
+    _ = color_matrix;
+    return;
 }

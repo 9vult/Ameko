@@ -19,16 +19,18 @@ pub const FFMSContext = struct {
     video_color_range: c_int,
 
     // Public
-    keyframes: []c_int,
-    timecodes: []c_longlong,
-    kf_timecodes: []c_longlong,
-    frame_intervals: []c_longlong,
+    keyframes: ?[]c_int,
+    timecodes: ?[]c_longlong,
+    kf_timecodes: ?[]c_longlong,
+    frame_intervals: ?[]c_longlong,
     frame_count: c_int,
 
     frame_width: usize,
     frame_height: usize,
     frame_pitch: usize,
 
+    has_audio: bool,
+    track_info_arr: ?[]common.TrackInfo,
     channel_count: c_int,
     sample_rate: c_int,
     sample_count: i64,
@@ -42,14 +44,16 @@ pub const FFMSContext = struct {
             .color_space = undefined,
             .video_color_space = -1,
             .video_color_range = -1,
-            .keyframes = undefined,
-            .timecodes = undefined,
-            .kf_timecodes = undefined,
-            .frame_intervals = undefined,
+            .keyframes = null,
+            .timecodes = null,
+            .kf_timecodes = null,
+            .frame_intervals = null,
             .frame_count = undefined,
             .frame_width = 0,
             .frame_height = 0,
             .frame_pitch = 0,
+            .has_audio = false,
+            .track_info_arr = null,
             .channel_count = -1,
             .sample_rate = -1,
             .sample_count = -1,
@@ -79,7 +83,7 @@ pub const BuffersContext = struct {
     frame_buffers: std.ArrayList(*frames.FrameGroup),
     audio_buffer: ?[]i16,
     audio_frame: ?*frames.AudioFrame,
-    viz_buffers: std.ArrayList(*frames.Bitmap),
+    viz_buffers: ?std.ArrayList(*frames.Bitmap),
     max_viz_buffers: usize = 8,
 
     pub fn Init() BuffersContext {
@@ -89,7 +93,7 @@ pub const BuffersContext = struct {
             .frame_buffers = undefined,
             .audio_buffer = null,
             .audio_frame = null,
-            .viz_buffers = undefined,
+            .viz_buffers = null,
         };
     }
 };
