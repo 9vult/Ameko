@@ -142,7 +142,8 @@
                 </ComboBox>
                 <CheckBox Content="{x:Static i18n:Resources.Video_LockAR}"
                           ToolTip.Tip="{x:Static i18n:Resources.Video_LockAR_ToolTip}"
-                          VerticalAlignment="Center" />
+                          VerticalAlignment="Center"
+                          IsEnabled="False" />
                 <ComboBox ItemsSource="{x:Static holo:ScaleFactor.Scales}"
                           SelectedItem="{Binding Workspace.MediaController.ScaleFactor}"
                           Width="100"
