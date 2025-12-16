@@ -332,7 +332,7 @@ public class NumberTextBox : TextBox
         foreach (var c in input)
         {
             // Discard input if invalid character
-            if (c is (< '0' or > '9') and (not '.' or ','))
+            if (c is (< '0' or > '9') and not '.' and not ',' and not '-')
                 continue;
 
             if (!AllowDecimal && c is '.' or ',')
@@ -341,7 +341,7 @@ public class NumberTextBox : TextBox
             // Move forward if at punctuation
             if (CaretIndex < Text?.Length)
             {
-                var next = Text?[CaretIndex] ?? '-';
+                var next = Text?[CaretIndex] ?? '!';
                 if (c is '.' or ',' && next is '.' or ',')
                     CaretIndex += 1;
             }
