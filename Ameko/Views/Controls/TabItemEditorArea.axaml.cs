@@ -126,10 +126,22 @@ public partial class TabItemEditorArea : ReactiveUserControl<TabItemViewModel>
         var text = await clipboard.TryGetTextAsync();
         text = text?.Replace(Environment.NewLine, UseSoftLinebreaks ? @"\n" : @"\N");
 
-        if (text is not null)
+        if (text is not null && EditBox.Text is not null)
         {
-            EditBox.Text = EditBox.Text?.Insert(EditBox.CaretIndex, text);
-            EditBox.CaretIndex += text.Length;
+            // No selection → insert at caret
+            if (EditBox.SelectionStart == EditBox.SelectionEnd)
+            {
+                EditBox.Text = EditBox.Text?.Insert(EditBox.CaretIndex, text);
+                EditBox.CaretIndex += text.Length;
+            }
+            // Selection → replace selection
+            else
+            {
+                var start = EditBox.SelectionStart;
+                var end = EditBox.SelectionEnd;
+                EditBox.Text = EditBox.Text[..start] + text + EditBox.Text[end..];
+                EditBox.CaretIndex = start + text.Length;
+            }
         }
     }
 }
