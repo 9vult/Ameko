@@ -53,7 +53,9 @@ pub fn GetVersion() common.BackingVersion {
 /// Check if the library is available
 pub fn CheckAvailability() bool {
     if (builtin.target.os.tag == .linux) {
-        _ = std.DynLib.open("libffms2.so") catch return false;
+        _ = std.DynLib.open("libffms2.so") catch {
+            _ = std.DynLib.open("libffms2.so.5") catch return false;
+        };
         return true;
     }
     if (builtin.target.os.tag == .macos) {
