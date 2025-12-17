@@ -223,7 +223,12 @@ jobs:
           dotnet publish -c Release -p:SolutionDir=../ -r linux-x64 --self-contained true /p:PublishSingleFile=true /p:IncludeNativeLibrariesInSingleFile=true
           popd
           cp "Mizuki/zig-out/lib/libmizuki.so" "Ameko/bin/Release/net${{ env.DOTNET_VERSION }}/linux-x64/publish"
-          echo "You will need to install libass and ffms2 to run Ameko. Example: sudo apt install libass ffms2" > "Ameko/bin/Release/net${{ env.DOTNET_VERSION }}/linux-x64/publish/DEPENDENCIES.txt"
+          cat << EOF > "Ameko/bin/Release/net${{ env.DOTNET_VERSION }}/linux-x64/publish/DEPENDENCIES.txt"
+          You will need to install libass and ffms2 to run Ameko. Example: sudo apt install libass ffms2.
+          
+          Note: If video loading fails with log "Could not open video codec", you likely have an "ffmpeg-free" or similar variant installed.
+          Consult your distribution's guide for installing non-free FFmpeg and/or codec support.
+          EOF
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
