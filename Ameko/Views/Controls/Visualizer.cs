@@ -118,10 +118,8 @@ public class Visualizer : OpenGlControlBase
         }
 
         // Viewport size
-        // var vpWidth = (uint)(Bounds.Width);
-        // var vpHeight = (uint)(Bounds.Height);
-        var vpWidth = (uint)MediaController.VisualizerWidth;
-        var vpHeight = (uint)MediaController.VisualizerHeight;
+        var vpWidth = (uint)(MediaController.VisualizerWidth * _scaleFactor);
+        var vpHeight = (uint)(MediaController.VisualizerHeight * _scaleFactor);
 
         _gl.ClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         _gl.Clear(ClearBufferMask.ColorBufferBit);
