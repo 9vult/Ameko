@@ -140,10 +140,15 @@ pub fn LoadVideo(
         c.FFMS_TrackTypeIndexSettings(indexer, c.FFMS_TYPE_VIDEO, 1, 0);
         index = c.FFMS_DoIndexing2(indexer, c.FFMS_IEH_ABORT, &err_info);
 
-        // Write the index to the cache
-        const write_result = c.FFMS_WriteIndex(cache_file_name, index, &err_info);
-        if (write_result != 0) {
+        if (index == null) {
+            logger.Error("Indexing failed!");
             logger.Error(err_info.Buffer[0..err_buffer.len]);
+        } else {
+            // Write the index to the cache
+            const write_result = c.FFMS_WriteIndex(cache_file_name, index, &err_info);
+            if (write_result != 0) {
+                logger.Error(err_info.Buffer[0..err_buffer.len]);
+            }
         }
     } else {
         c.FFMS_CancelIndexing(indexer);
