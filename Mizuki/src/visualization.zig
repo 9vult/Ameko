@@ -21,112 +21,92 @@ pub fn RenderWaveform(
     pixels_per_ms: f64,
     amplitude_scale: f64,
     start_time: f64,
-    frame_time: f64,
+    playhead_ms: f64,
     event_bounds: [*]i64,
     event_bounds_len: usize,
 ) void {
     const audio_data = g_ctx.*.buffers.audio_buffer;
-    const stereo = g_ctx.*.ffms.channel_count == 2;
-    const sr: f64 = @floatFromInt(g_ctx.*.ffms.sample_rate);
-
-    const pixel_samples: usize = @intFromFloat(pixels_per_ms * sr / 1000.0);
+    const is_stereo = g_ctx.*.ffms.channel_count == 2;
+    const sample_rate: f64 = @floatFromInt(g_ctx.*.ffms.sample_rate);
 
     const bmp_width_u: usize = @intCast(bmp.*.width);
     const bmp_height_u: usize = @intCast(bmp.*.height);
     const bmp_pitch_u: usize = @intCast(bmp.*.pitch);
     const bmp_width_f: f64 = @floatFromInt(bmp.*.width);
-    const bmp_height: i32 = @intCast(bmp_height_u);
-    const bmp_mid: i32 = @divFloor(bmp_height, 2);
-    const wfv_height: i32 = @divFloor(bmp_height * 9, 10); // 90% height
-    const wvf_mid: i32 = @divFloor(wfv_height, 2);
-    const gutter_height: i32 = @divFloor(bmp_height, 20); // 5% height
-    const gutter_half: i32 = @divFloor(gutter_height, 2);
+    const bmp_height: u32 = @intCast(bmp_height_u);
+    const bmp_mid: u32 = @divFloor(bmp_height, 2);
+    const bmp_mid_i: i32 = @intCast(bmp_mid);
+    const wfv_height: u32 = @divFloor(bmp_height * 9, 10); // 90% height
+    const wvf_mid: u32 = @divFloor(wfv_height, 2);
+    const gutter_height: u32 = @divFloor(bmp_height, 20); // 5% height
+    const gutter_half: u32 = @divFloor(gutter_height, 2);
 
     if (bmp_height_u < 1 or bmp_width_u < 1 or bmp_pitch_u < 1) return;
 
     if (audio_data) |audio| {
-        const effective_length: usize = if (stereo) audio.len / 2 else audio.len;
-
-        const visible_ms: f64 = @as(f64, @floatFromInt(bmp_width_u)) * pixels_per_ms;
-        const duration_ms: f64 = (@as(f64, @floatFromInt(effective_length)) * 1000.0) / sr;
+        const samples_per_pixel: usize = @intFromFloat(pixels_per_ms * sample_rate / 1000.0);
+        const effective_arr_len: usize = if (is_stereo) audio.len / 2 else audio.len;
+        const total_duration_ms: f64 = (@as(f64, @floatFromInt(effective_arr_len)) * 1000.0) / sample_rate;
+        const visible_duration_ms = bmp_width_f * pixels_per_ms;
 
         // Calculate start and end times
-        var start = start_time;
+        var start_ms = start_time;
 
-        if (duration_ms > visible_ms) {
-            const max_start = duration_ms - visible_ms;
-            if (start > max_start) {
-                start = max_start;
+        if (total_duration_ms > visible_duration_ms) {
+            const max_start_ms = total_duration_ms - visible_duration_ms;
+            if (start_ms > max_start_ms) {
+                start_ms = max_start_ms;
             }
         } else {
-            start = 0; // Audio is shorter than the viewport
+            start_ms = 0.0; // Audio is shorter than the viewport
         }
-        const end = start + visible_ms;
 
-        // Clear
+        const end_ms = start_ms + visible_duration_ms;
+
+        // Clear the bitmap
         const bmp_total_bytes = bmp_height_u * bmp_pitch_u;
         @memset(bmp.*.data[0..bmp_total_bytes], 0);
 
-        // Draw second hashes in the gutter
-        const pixels_per_sec: f64 = 1000.0 / pixels_per_ms;
-        if (pixels_per_sec >= 5.0) {
-            var t = std.math.ceil(start / 1000.0) * 1000.0;
-            while (t <= end) : (t += 1000.0) {
-                const delta = t - start;
-                const frame_x_f: f64 = delta / pixels_per_ms;
-                if (frame_x_f >= 0 and frame_x_f < bmp_width_f) {
-                    const frame_x: usize = @intFromFloat(frame_x_f);
-                    drawLine(bmp, frame_x, 0, gutter_height, color_seconds);
-                    drawLine(bmp, frame_x, bmp_height - gutter_height, bmp_height, color_seconds);
-                }
-            }
-        }
-        // Draw quarter-second hashes at half-gutter-height
-        if (pixels_per_sec >= 20.0) {
-            var t = std.math.ceil(start / 250.0) * 250.0;
-            while (t <= end) : (t += 250.0) {
-                if (@rem(t, 1000) == 0) continue; // Skip whole seconds
-                const delta = t - start;
-                const frame_x_f: f64 = delta / pixels_per_ms;
-                if (frame_x_f >= 0 and frame_x_f < bmp_width_f) {
-                    const frame_x: usize = @intFromFloat(frame_x_f);
-                    drawLine(bmp, frame_x, 0, gutter_half, color_qseconds);
-                    drawLine(bmp, frame_x, bmp_height - gutter_half, bmp_height, color_qseconds);
-                }
-            }
-        }
+        // Draw hashes for seconds and quarter-seconds in the gutter
+        DrawTimeScale(
+            bmp,
+            bmp_width_f,
+            bmp_height,
+            gutter_height,
+            gutter_half,
+            pixels_per_ms,
+            start_ms,
+            end_ms,
+        );
 
-        // Draw keyframes behind the spectrum
-        for (g_ctx.*.ffms.kf_timecodes.?) |kf| {
-            const kf_ms: f64 = @floatFromInt(kf);
-            if (kf_ms >= start and kf_ms <= end) {
-                const delta = kf_ms - start;
-                const frame_x_f: f64 = delta / pixels_per_ms;
-                if (frame_x_f >= 0 and frame_x_f < bmp_width_f) {
-                    const frame_x: usize = @intFromFloat(frame_x_f);
-                    drawLine(bmp, frame_x, 0, @intCast(bmp_height_u), color_kf);
-                }
-            }
+        // Draw keyframe indicators behind the spectrum
+        if (g_ctx.*.ffms.kf_timecodes) |timecodes| {
+            DrawKeyframes(
+                bmp,
+                bmp_width_f,
+                bmp_height,
+                pixels_per_ms,
+                start_ms,
+                end_ms,
+                timecodes,
+            );
         }
 
         // Draw the waveform
-        var current_sample: usize = @intFromFloat(start * sr / 1000.0);
-
+        var current_sample: usize = @intFromFloat(start_ms * sample_rate / 1000.0);
         for (0..bmp_width_u) |x| {
             const s0: usize = current_sample;
-            const s1: usize = @min(s0 + pixel_samples, effective_length);
-            current_sample += pixel_samples;
+            const s1: usize = @min(s0 + samples_per_pixel, effective_arr_len);
+            current_sample += samples_per_pixel;
 
-            if (s0 >= effective_length) {
-                break;
-            }
+            if (s0 >= effective_arr_len) break;
 
-            var peak_min: i32 = 0x7fff; // Max
-            var peak_max: i32 = -0x8000; // Min
+            var peak_min: i32 = 0;
+            var peak_max: i32 = 0;
 
             // Compute peaks
             var i = s0;
-            if (stereo) { // Stereo, need to downmix
+            if (is_stereo) { // Stereo, need to downmix
                 while (i < s1) : (i += 1) {
                     const left = audio[2 * i];
                     const right = audio[2 * i + 1];
@@ -144,68 +124,186 @@ pub fn RenderWaveform(
                 }
             }
 
-            // Scale to bitmap
             const mid_f: f64 = @floatFromInt(wvf_mid);
             const min_f: f64 = @floatFromInt(peak_min);
             const max_f: f64 = @floatFromInt(peak_max);
 
-            const scaled_min: i32 = @intFromFloat(@max((min_f * amplitude_scale * mid_f) / 0x8000, -mid_f));
-            const scaled_max: i32 = @intFromFloat(@min((max_f * amplitude_scale * mid_f) / 0x8000, mid_f));
+            // Scale according to the amplitude
+            const scaled_min_f: f64 = (min_f * amplitude_scale * mid_f) / 0x8000;
+            const scaled_max_f: f64 = (max_f * amplitude_scale * mid_f) / 0x8000;
 
-            drawLine(bmp, x, bmp_mid - scaled_min, bmp_mid - scaled_max, color_waveform);
+            // Clamp
+            const clamped_min_i: i32 = @intFromFloat(std.math.clamp(scaled_min_f, -mid_f, mid_f));
+            const clamped_max_i: i32 = @intFromFloat(std.math.clamp(scaled_max_f, -mid_f, mid_f));
+
+            const min_y: u32 = @intCast(bmp_mid_i - clamped_min_i);
+            const max_y: u32 = @intCast(bmp_mid_i - clamped_max_i);
+
+            DrawLine(bmp, @intCast(x), min_y, max_y, color_waveform);
         }
 
         // Draw event bounds over the spectrum
-        var ei: usize = 0;
-        while (ei < event_bounds_len) : (ei += 2) {
-            const evt_start: f64 = @floatFromInt(event_bounds[ei]);
-            const evt_end: f64 = @floatFromInt(event_bounds[ei + 1]);
-
-            if ((evt_start < start and evt_end < start) or (evt_start > end and evt_end > end))
-                continue;
-
-            const start_x: isize = @intFromFloat((evt_start - start) / pixels_per_ms);
-            const end_x: isize = @intFromFloat((evt_end - start) / pixels_per_ms);
-
-            // Draw posts
-            if (start_x >= 0) {
-                drawLine(bmp, @intCast(start_x), 0, bmp_height, color_event);
-            }
-
-            if (evt_start == evt_end) continue; // Stop here if 0-duration
-
-            if (end_x < bmp_width_u) {
-                drawLine(bmp, @intCast(end_x), 0, bmp_height, color_event);
-            }
-
-            // Draw border
-            for (@max(0, start_x)..@min(bmp_width_u, @as(usize, @intCast(end_x)))) |x| {
-                drawLine(bmp, x, 0, 1, color_event);
-                drawLine(bmp, x, bmp_height - 1, bmp_height, color_event);
-            }
-        }
+        DrawEventBounds(
+            bmp,
+            bmp_width_f,
+            bmp_height,
+            pixels_per_ms,
+            start_ms,
+            end_ms,
+            event_bounds,
+            event_bounds_len,
+        );
 
         // Draw playhead over everything
-        if (frame_time >= start and frame_time <= end) {
-            const delta = frame_time - start;
-            const frame_x_f: f64 = delta / pixels_per_ms;
-            if (frame_x_f >= 0 and frame_x_f < bmp_width_f) {
-                const frame_x: usize = @intFromFloat(frame_x_f);
-                drawLine(bmp, frame_x, 0, bmp_height, color_playhead);
-            }
+        DrawPlayhead(
+            bmp,
+            bmp_width_f,
+            bmp_height,
+            pixels_per_ms,
+            start_ms,
+            end_ms,
+            playhead_ms,
+        );
+    }
+}
+
+/// Draw hashes for seconds and quarter-seconds in the gutter
+fn DrawTimeScale(
+    bmp: *frames.Bitmap,
+    bmp_width_f: f64,
+    bmp_height: u32,
+    gutter_height: u32,
+    gutter_half: u32,
+    pixels_per_ms: f64,
+    start_ms: f64,
+    end_ms: f64,
+) void {
+    // Draw seconds hashes
+    const pixels_per_sec = 1000.0 / pixels_per_ms;
+    if (pixels_per_sec < 5.0) return;
+
+    var t = std.math.ceil(start_ms / 1000.0) * 1000.0;
+    while (t <= end_ms) : (t += 1000.0) {
+        const delta = t - start_ms;
+        const x_f = delta / pixels_per_ms;
+        if (x_f >= 0 and x_f < bmp_width_f) {
+            const x: u32 = @intFromFloat(x_f);
+            DrawLine(bmp, x, 0, gutter_height, color_seconds);
+            DrawLine(bmp, x, bmp_height - gutter_height, bmp_height, color_seconds);
+        }
+    }
+
+    // Draw quarter-seconds hashes
+    if (pixels_per_sec < 20.0) return;
+
+    t = std.math.ceil(start_ms / 250.0) * 250.0;
+    while (t <= end_ms) : (t += 250.0) {
+        const delta = t - start_ms;
+        const x_f = delta / pixels_per_ms;
+        if (x_f >= 0 and x_f < bmp_width_f) {
+            const x: u32 = @intFromFloat(x_f);
+            DrawLine(bmp, x, 0, gutter_half, color_qseconds);
+            DrawLine(bmp, x, bmp_height - gutter_half, bmp_height, color_qseconds);
         }
     }
 }
 
-fn drawLine(
+/// Draw keyframe indicators
+fn DrawKeyframes(
     bmp: *frames.Bitmap,
-    x: usize,
-    y1_in: i32,
-    y2_in: i32,
+    bmp_width_f: f64,
+    bmp_height: u32,
+    pixels_per_ms: f64,
+    start_ms: f64,
+    end_ms: f64,
+    timecodes: []c_longlong,
+) void {
+    for (timecodes) |kf| {
+        const t: f64 = @floatFromInt(kf);
+        if (t < start_ms or t > end_ms) continue;
+
+        const delta = t - start_ms;
+        const x_f = delta / pixels_per_ms;
+        if (x_f >= 0 and x_f < bmp_width_f) {
+            const x: u32 = @intFromFloat(x_f);
+            DrawLine(bmp, x, 0, bmp_height, color_kf);
+        }
+    }
+}
+
+/// Draw event bounding boxes
+fn DrawEventBounds(
+    bmp: *frames.Bitmap,
+    bmp_width_f: f64,
+    bmp_height: u32,
+    pixels_per_ms: f64,
+    start_ms: f64,
+    end_ms: f64,
+    event_bounds: [*]i64,
+    event_bounds_len: usize,
+) void {
+    var ei: usize = 0;
+    while (ei < event_bounds_len) : (ei += 2) {
+        const evt_start_ms: f64 = @floatFromInt(event_bounds[ei]);
+        const evt_end_ms: f64 = @floatFromInt(event_bounds[ei + 1]);
+
+        if ((evt_start_ms < start_ms and evt_end_ms < start_ms) or (evt_start_ms > end_ms and evt_end_ms > end_ms))
+            continue;
+
+        const start_x = (evt_start_ms - start_ms) / pixels_per_ms;
+        const end_x = (evt_end_ms - start_ms) / pixels_per_ms;
+
+        // Draw posts
+        if (start_x >= 0) {
+            DrawLine(bmp, @intFromFloat(start_x), 0, bmp_height, color_event);
+        }
+
+        if (evt_start_ms == evt_end_ms) continue; // Stop here if 0-duration
+
+        if (end_x < bmp_width_f) {
+            DrawLine(bmp, @intFromFloat(end_x), 0, bmp_height, color_event);
+        }
+
+        const start_x_u: usize = @intFromFloat(@max(0, start_x));
+        const end_x_u: usize = @intFromFloat(@min(bmp_width_f, end_x));
+
+        // Draw border
+        for (start_x_u..end_x_u) |x| {
+            DrawLine(bmp, @intCast(x), 0, 1, color_event);
+            DrawLine(bmp, @intCast(x), bmp_height - 1, bmp_height, color_event);
+        }
+    }
+}
+
+fn DrawPlayhead(
+    bmp: *frames.Bitmap,
+    bmp_width_f: f64,
+    bmp_height: u32,
+    pixels_per_ms: f64,
+    start_ms: f64,
+    end_ms: f64,
+    playhead_ms: f64,
+) void {
+    if (playhead_ms < start_ms or playhead_ms > end_ms) return;
+
+    const delta = playhead_ms - start_ms;
+    const x_f = delta / pixels_per_ms;
+    if (x_f >= 0 and x_f < bmp_width_f) {
+        const x: u32 = @intFromFloat(x_f);
+        DrawLine(bmp, x, 0, bmp_height, color_playhead);
+    }
+}
+
+/// Draw a 1-px wide vertical line
+fn DrawLine(
+    bmp: *frames.Bitmap,
+    x: u32,
+    y1_in: u32,
+    y2_in: u32,
     color: u32,
 ) void {
     const w: usize = @intCast(bmp.width);
-    const h: i32 = @intCast(bmp.height);
+    const h: u32 = @intCast(bmp.height);
     const pitch: usize = @intCast(bmp.pitch);
 
     if (x >= w) return;
