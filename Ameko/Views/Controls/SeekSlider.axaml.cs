@@ -362,12 +362,14 @@ public sealed partial class SeekSlider : RangeBase
     private void TrackReleased(object? sender, PointerReleasedEventArgs e)
     {
         IsDragging = false;
+        DragEnded?.Invoke(this, EventArgs.Empty);
     }
 
     private void TrackPressed(object? sender, PointerPressedEventArgs e)
     {
         if (e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
         {
+            DragStarted?.Invoke(this, EventArgs.Empty);
             MoveToPoint(e.GetCurrentPoint(Track));
             IsDragging = true;
         }
