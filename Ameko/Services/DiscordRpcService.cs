@@ -69,7 +69,7 @@ public class DiscordRpcService
         _logger = logger;
 
         _client = new DiscordRpcClient("1209896771719921704");
-        _client.Logger = new ConsoleLogger { Level = LogLevel.Warning };
+        _client.Logger = new ConsoleLogger { Level = LogLevel.None };
         _client.Initialize();
         _timestamps = Timestamps.Now;
 
