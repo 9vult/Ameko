@@ -1,14 +1,13 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 using System;
-using System.Collections.Generic;
-using System.Reactive.Disposables;
+using System.Reactive.Disposables.Fluent;
 using Ameko.Renderers;
 using Ameko.ViewModels.Controls;
 using Avalonia;
 using Avalonia.Input;
-using Avalonia.ReactiveUI;
 using ReactiveUI;
+using ReactiveUI.Avalonia;
 
 namespace Ameko.Views.Controls;
 

@@ -3,16 +3,16 @@
 using System;
 using System.Linq;
 using System.Reactive;
-using System.Reactive.Disposables;
+using System.Reactive.Disposables.Fluent;
 using Ameko.ViewModels.Controls;
 using AssCS;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
-using Avalonia.ReactiveUI;
 using Avalonia.Threading;
 using ReactiveUI;
+using ReactiveUI.Avalonia;
 
 namespace Ameko.Views.Controls;
 

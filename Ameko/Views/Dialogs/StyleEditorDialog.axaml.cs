@@ -2,11 +2,11 @@
 
 using System;
 using System.Reactive.Disposables;
+using System.Reactive.Disposables.Fluent;
 using System.Threading.Tasks;
 using Ameko.ViewModels.Dialogs;
-using Avalonia.Media;
-using Avalonia.ReactiveUI;
 using ReactiveUI;
+using ReactiveUI.Avalonia;
 using Color = AssCS.Color;
 
 namespace Ameko.Views.Dialogs;

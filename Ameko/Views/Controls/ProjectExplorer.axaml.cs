@@ -3,8 +3,8 @@
 using Ameko.ViewModels.Windows;
 using Avalonia.Controls;
 using Avalonia.Input;
-using Avalonia.ReactiveUI;
 using Holo.Models;
+using ReactiveUI.Avalonia;
 
 namespace Ameko.Views.Controls;
 

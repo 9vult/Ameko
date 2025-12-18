@@ -15,7 +15,6 @@
     <PackageVersion Include="Avalonia.Diagnostics" Version="11.3.8" />
     <PackageVersion Include="Avalonia.Fonts.Inter" Version="11.3.8" />
     <PackageVersion Include="Avalonia.HtmlRenderer" Version="11.2.0" />
-    <PackageVersion Include="Avalonia.ReactiveUI" Version="11.3.8" />
     <PackageVersion Include="Avalonia.Themes.Fluent" Version="11.3.8" />
     <PackageVersion Include="Avalonia.Themes.Simple" Version="11.3.8" />
     <PackageVersion Include="AvaloniaEdit.TextMate" Version="11.3.0" />
@@ -39,6 +38,7 @@
     <PackageVersion Include="NLog" Version="6.0.6" />
     <PackageVersion Include="NLog.Extensions.Logging" Version="6.1.0" />
     <PackageVersion Include="NSubstitute" Version="5.3.0" />
+    <PackageVersion Include="ReactiveUI.Avalonia" Version="11.3.8" />
     <PackageVersion Include="RichardSzalay.MockHttp" Version="7.0.0" />
     <PackageVersion Include="Samboy063.Tomlet" Version="6.1.0" />
     <PackageVersion Include="Semi.Avalonia" Version="11.3.7" />

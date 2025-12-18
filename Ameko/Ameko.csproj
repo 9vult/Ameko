@@ -21,7 +21,6 @@
     <PackageReference Include="Avalonia.Controls.DataGrid" />
     <PackageReference Include="Avalonia.Desktop" />
     <PackageReference Include="Avalonia.HtmlRenderer" />
-    <PackageReference Include="Avalonia.ReactiveUI" />
     <PackageReference Include="Avalonia.Themes.Fluent" />
     <PackageReference Include="Avalonia.Fonts.Inter" />
     <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
@@ -52,6 +51,7 @@
     <PackageReference Include="Microsoft.Extensions.Logging" />
     <PackageReference Include="NLog" />
     <PackageReference Include="NLog.Extensions.Logging" />
+    <PackageReference Include="ReactiveUI.Avalonia" />
     <PackageReference Include="Semi.Avalonia" />
     <PackageReference Include="Semi.Avalonia.AvaloniaEdit" />
     <PackageReference Include="Semi.Avalonia.ColorPicker" />

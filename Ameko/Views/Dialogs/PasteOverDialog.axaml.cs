@@ -2,9 +2,10 @@
 
 using System;
 using System.Reactive.Disposables;
+using System.Reactive.Disposables.Fluent;
 using Ameko.ViewModels.Dialogs;
-using Avalonia.ReactiveUI;
 using ReactiveUI;
+using ReactiveUI.Avalonia;
 
 namespace Ameko.Views.Dialogs;
 

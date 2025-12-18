@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 using Ameko.ViewModels.Dialogs;
-using Avalonia.ReactiveUI;
+using ReactiveUI.Avalonia;
 
 namespace Ameko.Views.Dialogs;
 

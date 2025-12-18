@@ -4,7 +4,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Reactive;
-using System.Reactive.Disposables;
+using System.Reactive.Disposables.Fluent;
 using System.Threading.Tasks;
 using Ameko.Messages;
 using Ameko.ViewModels;
@@ -18,11 +18,11 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Input.Platform;
 using Avalonia.Platform.Storage;
-using Avalonia.ReactiveUI;
 using Avalonia.Threading;
 using Holo.Configuration.Keybinds;
 using Holo.Models;
 using ReactiveUI;
+using ReactiveUI.Avalonia;
 
 namespace Ameko.Views.Controls;
 

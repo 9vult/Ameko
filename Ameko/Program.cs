@@ -10,9 +10,9 @@ using AssCS.Utilities;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Platform;
-using Avalonia.ReactiveUI;
 using Holo.IO;
 using NLog;
+using ReactiveUI.Avalonia;
 #if !DEBUG
 using System.Threading.Tasks;
 using System.Reactive;
