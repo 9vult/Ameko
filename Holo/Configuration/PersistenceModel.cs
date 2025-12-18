@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 
 using System.Text.Json.Serialization;
+using Holo.Media;
 
 namespace Holo.Configuration;
 
@@ -16,4 +17,5 @@ public class PersistenceModel
     public required double VisualizationScaleY;
     public required string PlaygroundCs;
     public required string PlaygroundJs;
+    public required Dictionary<int, ScaleFactor> ScalesForRes;
 }

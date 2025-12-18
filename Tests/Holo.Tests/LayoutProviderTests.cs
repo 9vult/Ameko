@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.IO.Abstractions.TestingHelpers;
 using Holo.Configuration;
 using Holo.IO;
+using Holo.Media;
 using Holo.Providers;
 using Microsoft.Extensions.Logging.Abstractions;
 using static TestingUtils.TestableUri;
@@ -87,14 +88,39 @@ public class LayoutProviderTests
 
 file class MockPersistence : IPersistence
 {
+    private double _visualizationScaleX;
+    private double _visualizationScaleY;
     public string LayoutName { get; set; } = "ThunderClan Camp";
     public bool UseColorRing { get; set; } = true;
+
+    /// <inheritdoc />
+    public double VisualizationScaleX
+    {
+        get => _visualizationScaleX;
+        set => _visualizationScaleX = value;
+    }
+
+    /// <inheritdoc />
+    public double VisualizationScaleY
+    {
+        get => _visualizationScaleY;
+        set => _visualizationScaleY = value;
+    }
 
     /// <inheritdoc />
     public string PlaygroundCs { get; set; } = string.Empty;
 
     /// <inheritdoc />
     public string PlaygroundJs { get; set; } = string.Empty;
+
+    /// <inheritdoc />
+    public void SetScaleForRes(int height, ScaleFactor scaleFactor) { }
+
+    /// <inheritdoc />
+    public ScaleFactor GetScaleForRes(int height)
+    {
+        return ScaleFactor.Default;
+    }
 
     public bool Save()
     {

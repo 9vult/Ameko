@@ -3,6 +3,7 @@
 using System.IO.Abstractions;
 using System.IO.Abstractions.TestingHelpers;
 using AssCS;
+using Holo.Configuration;
 using Holo.Models;
 using Holo.Providers;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -18,6 +19,8 @@ public class ProjectTests
 
     public ProjectTests()
     {
+        var persist = new Persistence(new MockFileSystem(), NullLogger<Persistence>.Instance);
+
         _workspaceFactory
             .Create(Arg.Any<Document>(), Arg.Any<int>())
             .Returns(args => new Workspace(
@@ -25,7 +28,11 @@ public class ProjectTests
                 args.Arg<int>(),
                 null,
                 NullLogger<Workspace>.Instance,
-                new MediaController(new NullSourceProvider(), NullLogger<MediaController>.Instance)
+                new MediaController(
+                    new NullSourceProvider(),
+                    NullLogger<MediaController>.Instance,
+                    persist
+                )
             ));
 
         _workspaceFactory
@@ -35,7 +42,11 @@ public class ProjectTests
                 args.Arg<int>(),
                 args.Arg<Uri?>(),
                 NullLogger<Workspace>.Instance,
-                new MediaController(new NullSourceProvider(), NullLogger<MediaController>.Instance)
+                new MediaController(
+                    new NullSourceProvider(),
+                    NullLogger<MediaController>.Instance,
+                    persist
+                )
             ));
     }
 
@@ -56,12 +67,17 @@ public class ProjectTests
 
     private static Workspace CreateWorkspace(Document document, int id)
     {
+        var persist = new Persistence(new MockFileSystem(), NullLogger<Persistence>.Instance);
         return new Workspace(
             document,
             id,
             null,
             NullLogger<Workspace>.Instance,
-            new MediaController(new NullSourceProvider(), NullLogger<MediaController>.Instance)
+            new MediaController(
+                new NullSourceProvider(),
+                NullLogger<MediaController>.Instance,
+                persist
+            )
         );
     }
 

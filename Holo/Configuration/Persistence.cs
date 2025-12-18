@@ -7,6 +7,7 @@ using System.Text.Json.Serialization;
 using AssCS;
 using AssCS.Utilities;
 using Holo.IO;
+using Holo.Media;
 using Microsoft.Extensions.Logging;
 
 namespace Holo.Configuration;
@@ -35,6 +36,7 @@ public class Persistence : BindableBase, IPersistence
     private string _playgroundJs;
     private double _visualizationScaleX;
     private double _visualizationScaleY;
+    private Dictionary<int, ScaleFactor> _scalesForRes;
 
     /// <inheritdoc />
     public string LayoutName
@@ -79,6 +81,20 @@ public class Persistence : BindableBase, IPersistence
     }
 
     /// <inheritdoc />
+    public void SetScaleForRes(int height, ScaleFactor scaleFactor)
+    {
+        _scalesForRes[height] = scaleFactor;
+    }
+
+    /// <inheritdoc />
+    public ScaleFactor GetScaleForRes(int height)
+    {
+        if (_scalesForRes.TryGetValue(height, out var scaleFactor))
+            return scaleFactor;
+        return ScaleFactor.Default;
+    }
+
+    /// <inheritdoc />
     public bool Save()
     {
         var path = Paths.Persistence.LocalPath;
@@ -105,6 +121,7 @@ public class Persistence : BindableBase, IPersistence
                 VisualizationScaleY = _visualizationScaleY,
                 PlaygroundCs = StringEncoder.Base64Encode(_playgroundCs),
                 PlaygroundJs = StringEncoder.Base64Encode(_playgroundJs),
+                ScalesForRes = new Dictionary<int, ScaleFactor>(_scalesForRes),
             };
 
             var content = JsonSerializer.Serialize(model, JsonOptions);
@@ -154,6 +171,7 @@ public class Persistence : BindableBase, IPersistence
                 _visualizationScaleY = model.VisualizationScaleY,
                 _playgroundCs = StringEncoder.Base64Decode(model.PlaygroundCs),
                 _playgroundJs = StringEncoder.Base64Decode(model.PlaygroundJs),
+                _scalesForRes = new Dictionary<int, ScaleFactor>(model.ScalesForRes),
             };
             logger.LogInformation("Done!");
             return result;
@@ -174,6 +192,9 @@ public class Persistence : BindableBase, IPersistence
     {
         _fileSystem = fileSystem;
         _logger = logger;
+
+        _scalesForRes = [];
+
         _layoutName = "Default";
         _useColorRing = false;
         _visualizationScaleX = 4d;

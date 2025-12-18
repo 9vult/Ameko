@@ -90,6 +90,9 @@ public class MediaController : BindableBase
             DisplayWidth = (VideoInfo?.Width ?? 1) * _scaleFactor.Multiplier / _screenScaleFactor;
             DisplayHeight = (VideoInfo?.Height ?? 1) * _scaleFactor.Multiplier / _screenScaleFactor;
             FrameReady?.Invoke();
+
+            if (VideoInfo is not null)
+                _persistence.SetScaleForRes(VideoInfo.Height, value);
         }
     }
 
@@ -487,6 +490,8 @@ public class MediaController : BindableBase
                 _playback.Intervals = VideoInfo.FrameIntervals;
             }
 
+            ScaleFactor = _persistence.GetScaleForRes(VideoInfo.Height);
+
             DisplayWidth = VideoInfo.Width / _screenScaleFactor;
             DisplayHeight = VideoInfo.Height / _screenScaleFactor;
 
@@ -611,7 +616,6 @@ public class MediaController : BindableBase
         var result = _provider.CloseVideo() == 0;
 
         // Reset
-        ScaleFactor = ScaleFactor.Default;
         RotationalFactor = RotationalFactor.Default;
 
         // Reset the slider without triggering frame fetch

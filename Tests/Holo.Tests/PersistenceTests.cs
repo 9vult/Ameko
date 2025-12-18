@@ -83,8 +83,11 @@ public class PersistenceTests
             "Version": 1,
             "LayoutName": "Upside Down",
             "UseColorRing": true,
+            "VisualizationScaleX": 8.5,
+            "VisualizationScaleY": 3,
             "PlaygroundCs": "",
-            "PlaygroundJs": ""
+            "PlaygroundJs": "",
+            "ScalesForRes": {}
         }
         """;
 }

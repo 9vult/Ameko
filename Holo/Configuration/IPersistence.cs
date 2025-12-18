@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 
 using System.ComponentModel;
+using Holo.Media;
 using Holo.Models;
 
 namespace Holo.Configuration;
@@ -36,6 +37,20 @@ public interface IPersistence
     /// JavaScript Playground
     /// </summary>
     string PlaygroundJs { get; set; }
+
+    /// <summary>
+    /// Set the scale for a video resolution
+    /// </summary>
+    /// <param name="height">Height of the video in pixels</param>
+    /// <param name="scaleFactor">Scale factor to use</param>
+    void SetScaleForRes(int height, ScaleFactor scaleFactor);
+
+    /// <summary>
+    /// Get the scale factor for a video resolution
+    /// </summary>
+    /// <param name="height">Height of the video in pixels</param>
+    /// <returns>The scale factor (or default)</returns>
+    ScaleFactor GetScaleForRes(int height);
 
     /// <summary>
     /// Write the persistence data to file

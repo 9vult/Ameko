@@ -1,7 +1,9 @@
 ﻿// SPDX-License-Identifier: MPL-2.0
 
+using System.IO.Abstractions.TestingHelpers;
 using AssCS;
 using AssCS.History;
+using Holo.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
 using TestingUtils;
 
@@ -11,12 +13,17 @@ public class WorkspaceTests
 {
     private static Workspace CreateWorkspace(Document document, int id)
     {
+        var persist = new Persistence(new MockFileSystem(), NullLogger<Persistence>.Instance);
         return new Workspace(
             document,
             id,
             null,
             NullLogger<Workspace>.Instance,
-            new MediaController(new NullSourceProvider(), NullLogger<MediaController>.Instance)
+            new MediaController(
+                new NullSourceProvider(),
+                NullLogger<MediaController>.Instance,
+                persist
+            )
         );
     }
 
