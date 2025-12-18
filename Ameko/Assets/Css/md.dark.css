@@ -3,7 +3,7 @@ body {
     background-color: #0d1117; /* GitHub dark background */
     color: #c9d1d9; /* Light gray text */
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
-    line-height: 1.6;
+    line-height: 1.25;
 }
 
 /* Headings */
@@ -11,33 +11,27 @@ h1 {
     font-size: 2em;
     font-weight: 600;
     border-bottom: 1px solid #30363d;
-    padding-bottom: 0.3em;
-    margin-top: 1.5em;
-    margin-bottom: 1em;
+    margin-top: 1em;
 }
 h2 {
     font-size: 1.5em;
     font-weight: 600;
     border-bottom: 1px solid #30363d;
-    padding-bottom: 0.3em;
-    margin-top: 1.5em;
-    margin-bottom: 1em;
+    margin-top: 0.75em;
 }
 h3 {
     font-size: 1.25em;
     font-weight: 600;
-    margin-top: 1.2em;
-    margin-bottom: 0.8em;
+    margin-top: 0.65em;
 }
 h4, h5, h6 {
     font-weight: 600;
-    margin-top: 1em;
-    margin-bottom: 0.5em;
+    margin-top: 0.3em;
 }
 
 /* Paragraphs */
 p {
-    margin: 0.5em 0;
+    margin: 0.3em 0;
 }
 
 /* Links */
@@ -51,7 +45,7 @@ a:hover {
 
 /* Lists */
 ul, ol {
-    margin: 0.5em 0 0.5em 1.5em;
+    margin: 0.3em 0 0 0.5em;
 }
 
 /* Blockquotes */
@@ -59,7 +53,7 @@ blockquote {
     border-left: 4px solid #30363d;
     padding-left: 1em;
     color: #8b949e;
-    margin: 0.5em 0;
+    margin: 0.3em 0;
     background-color: #161b22;
 }
 

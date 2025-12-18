@@ -150,4 +150,7 @@
     <data name="PkgMan_Result_InvalidName" xml:space="preserve">
         <value>The package has an invalid name</value>
     </data>
+    <data name="PkgMan_Button_Changelog_ToolTip" xml:space="preserve">
+        <value>Show Changelog</value>
+    </data>
 </root>

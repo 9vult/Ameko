@@ -308,5 +308,11 @@ namespace Ameko.I18N {
                 return ResourceManager.GetString("PkgMan_Result_InvalidName", resourceCulture);
             }
         }
+        
+        public static string PkgMan_Button_Changelog_ToolTip {
+            get {
+                return ResourceManager.GetString("PkgMan_Button_Changelog_ToolTip", resourceCulture);
+            }
+        }
     }
 }

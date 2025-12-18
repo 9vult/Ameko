@@ -2,8 +2,11 @@
 
 using System;
 using System.Collections.ObjectModel;
+using System.Reactive;
 using System.Windows.Input;
 using Ameko.Services;
+using Ameko.Utilities;
+using Ameko.ViewModels.Dialogs;
 using Holo.Configuration;
 using Holo.Providers;
 using Holo.Scripting;
@@ -19,9 +22,12 @@ public partial class PkgManWindowViewModel : ViewModelBase
     private readonly IScriptService _scriptService;
     private readonly IConfiguration _configuration;
     private readonly IMessageBoxService _messageBoxService;
+    private readonly IViewModelFactory _viewModelFactory;
 
     private readonly ObservableCollection<Package> _updateCandidates;
     private string _repoUrlInput;
+
+    public Interaction<ChangelogDialogViewModel, Unit> ShowChangelog { get; }
 
     public ICommand InstallCommand { get; }
     public ICommand UninstallCommand { get; }
@@ -30,6 +36,7 @@ public partial class PkgManWindowViewModel : ViewModelBase
     public ICommand RefreshCommand { get; }
     public ICommand AddRepositoryCommand { get; }
     public ICommand RemoveRepositoryCommand { get; }
+    public ICommand ShowChangelogCommand { get; }
 
     public IPackageManager PackageManager { get; }
 
@@ -98,8 +105,9 @@ public partial class PkgManWindowViewModel : ViewModelBase
         IPackageManager packageManager,
         IScriptService scriptService,
         IConfiguration configuration,
-        ILogger<PkgManWindowViewModel> logger,
-        IMessageBoxService messageBoxService
+        IMessageBoxService messageBoxService,
+        IViewModelFactory viewModelFactory,
+        ILogger<PkgManWindowViewModel> logger
     )
     {
         PackageManager = packageManager;
@@ -107,11 +115,14 @@ public partial class PkgManWindowViewModel : ViewModelBase
         _scriptService = scriptService;
         _configuration = configuration;
         _messageBoxService = messageBoxService;
+        _viewModelFactory = viewModelFactory;
         _logger = logger;
 
         _repoUrlInput = string.Empty;
 
         _updateCandidates = new ObservableCollection<Package>(PackageManager.GetUpdateCandidates());
+
+        ShowChangelog = new Interaction<ChangelogDialogViewModel, Unit>();
 
         InstallCommand = CreateInstallCommand();
         UninstallCommand = CreateUninstallCommand();
@@ -120,5 +131,6 @@ public partial class PkgManWindowViewModel : ViewModelBase
         RefreshCommand = CreateRefreshCommand();
         AddRepositoryCommand = CreateAddRepositoryCommand();
         RemoveRepositoryCommand = CreateRemoveRepositoryCommand();
+        ShowChangelogCommand = CreateShowChangelogCommand();
     }
 }

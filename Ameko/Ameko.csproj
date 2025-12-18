@@ -197,6 +197,10 @@
       <DependentUpon>ProjectConfigDialog.axaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Views\Dialogs\ChangelogDialog.axaml.cs">
+      <DependentUpon>ChangelogDialog.axaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Update="I18N\Resources.resx">

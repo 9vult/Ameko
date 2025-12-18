@@ -62,6 +62,12 @@ public record Package
     public required Changelog[] Changelog { get; init; }
 
     /// <summary>
+    /// If the package has a changelog
+    /// </summary>
+    [JsonIgnore]
+    public bool HasChangelog => Changelog.Length > 0;
+
+    /// <summary>
     /// List of qualified package names this package depends on
     /// </summary>
     [JsonIgnore]
@@ -118,61 +124,56 @@ public record Package
             return string.Empty;
 
         StringBuilder sb = new();
-        sb.AppendLine($"# {DisplayName}\n");
+        sb.AppendLine($"# {DisplayName}");
 
         foreach (var entry in Changelog.OrderByDescending(e => e.Version))
         {
-            sb.AppendLine($"# {entry.Version}");
+            sb.AppendLine($"## {entry.Version}");
             sb.AppendLine();
 
             if (entry.Added?.Length > 0)
             {
-                sb.AppendLine("### Additions\n");
+                sb.AppendLine("### Additions");
                 foreach (var addition in entry.Added)
                 {
                     sb.AppendLine($"* {addition}");
                 }
-                sb.AppendLine();
             }
 
             if (entry.Fixed?.Length > 0)
             {
-                sb.AppendLine("### Fixes\n");
+                sb.AppendLine("### Fixes");
                 foreach (var fix in entry.Fixed)
                 {
                     sb.AppendLine($"* {fix}");
                 }
-                sb.AppendLine();
             }
 
             if (entry.Changed?.Length > 0)
             {
-                sb.AppendLine("### Changes\n");
+                sb.AppendLine("### Changes");
                 foreach (var change in entry.Changed)
                 {
                     sb.AppendLine($"* {change}");
                 }
-                sb.AppendLine();
             }
 
             if (entry.Removed?.Length > 0)
             {
-                sb.AppendLine("### Removals\n");
+                sb.AppendLine("### Removals");
                 foreach (var removal in entry.Removed)
                 {
                     sb.AppendLine($"* {removal}");
                 }
-                sb.AppendLine();
             }
 
             if (entry.Deprecated?.Length > 0)
             {
-                sb.AppendLine("### Deprecations\n");
+                sb.AppendLine("### Deprecations");
                 foreach (var change in entry.Deprecated)
                 {
                     sb.AppendLine($"* {change}");
                 }
-                sb.AppendLine();
             }
         }
         return sb.ToString();

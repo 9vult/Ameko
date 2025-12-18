@@ -29,20 +29,35 @@
                        FontSize="16"
                        Text="{x:Static i18n:PkgMan.PkgMan_PackageStore}" />
             <ListBox Margin="2"
+                     Classes="Small"
                      VerticalAlignment="Stretch"
                      SelectionMode="Single"
                      SelectedItem="{Binding SelectedStorePackage}"
                      ItemsSource="{Binding PackageManager.PackageStore, Mode=TwoWay}">
                 <ListBox.ItemTemplate>
                     <DataTemplate x:DataType="holo:Package">
-                        <Grid ColumnDefinitions="Auto, *, Auto"
+                        <Grid ColumnDefinitions="Auto, *, Auto, Auto"
+                              ColumnSpacing="2"
                               ToolTip.Tip="{Binding QualifiedName}">
                             <Image Grid.Column="0"
+                                   VerticalAlignment="Center"
                                    Source="{Binding Type, Converter={StaticResource IconConverter}}" />
                             <TextBlock Grid.Column="1"
+                                       VerticalAlignment="Center"
                                        Text="{Binding DisplayName}" />
                             <TextBlock Grid.Column="2"
+                                       VerticalAlignment="Center"
                                        Text="{Binding Version, StringFormat='v{0}'}" />
+                            <Button Grid.Column="3"
+                                    Margin="0"
+                                    Padding="0"
+                                    VerticalAlignment="Center"
+                                    IsEnabled="{Binding HasChangelog}"
+                                    Content="{icons:MaterialIconExt Kind=FormatListBulletedType}"
+                                    ToolTip.Tip="{x:Static i18n:PkgMan.PkgMan_Button_Changelog_ToolTip}"
+                                    Command="{Binding $parent[Window].((vm:PkgManWindowViewModel)DataContext).ShowChangelogCommand,
+                                                      FallbackValue=.}"
+                                    CommandParameter="{Binding .}" />
                         </Grid>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
@@ -61,25 +76,41 @@
                        FontSize="16"
                        Text="{x:Static i18n:PkgMan.PkgMan_InstalledPackages}" />
             <ListBox Margin="2"
+                     Classes="Small"
                      VerticalAlignment="Stretch"
                      SelectionMode="Single"
                      SelectedItem="{Binding SelectedInstalledPackage}"
                      ItemsSource="{Binding PackageManager.InstalledPackages}">
                 <ListBox.ItemTemplate>
                     <DataTemplate x:DataType="holo:Package">
-                        <Grid ColumnDefinitions="Auto, *, Auto, Auto"
+                        <Grid ColumnDefinitions="Auto, *, Auto, Auto, Auto"
+                              ColumnSpacing="2"
                               ToolTip.Tip="{Binding QualifiedName}">
                             <Image Grid.Column="0"
+                                   VerticalAlignment="Center"
                                    Source="{Binding Type, Converter={StaticResource IconConverter}}" />
                             <TextBlock Grid.Column="1"
+                                       VerticalAlignment="Center"
                                        Text="{Binding DisplayName}" />
-                            <icons:MaterialIcon Grid.Column="0"
+                            <icons:MaterialIcon Grid.Column="2"
                                                 Kind="ArrowUpThinCircleOutline"
                                                 Padding="0 0 5 0"
+                                                VerticalAlignment="Center"
                                                 IsVisible="{Binding ., Converter={StaticResource UpToDateConverter}}"
                                                 ToolTip.Tip="{x:Static i18n:PkgMan.PkgMan_Update_Available_ToolTip}" />
-                            <TextBlock Grid.Column="2"
+                            <TextBlock Grid.Column="3"
+                                       VerticalAlignment="Center"
                                        Text="{Binding Version, StringFormat='v{0}'}" />
+                            <Button Grid.Column="4"
+                                    Margin="0"
+                                    Padding="0"
+                                    VerticalAlignment="Center"
+                                    IsEnabled="{Binding HasChangelog}"
+                                    Content="{icons:MaterialIconExt Kind=FormatListBulletedType}"
+                                    ToolTip.Tip="{x:Static i18n:PkgMan.PkgMan_Button_Changelog_ToolTip}"
+                                    Command="{Binding $parent[Window].((vm:PkgManWindowViewModel)DataContext).ShowChangelogCommand,
+                                                      FallbackValue=.}"
+                                    CommandParameter="{Binding .}" />
                         </Grid>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
@@ -135,4 +166,10 @@
                     HorizontalAlignment="Stretch"/>
         </Grid>
     </Grid>
+    <UserControl.Styles>
+        <Style Selector="ListBoxItem">
+            <Setter Property="Padding" Value="1" />
+            <Setter Property="Margin" Value="1" />
+        </Style>
+    </UserControl.Styles>
 </UserControl>

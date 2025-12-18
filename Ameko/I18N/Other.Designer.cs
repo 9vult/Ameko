@@ -368,5 +368,17 @@ namespace Ameko.I18N {
                 return ResourceManager.GetString("FileDialog_FileType_Audio", resourceCulture);
             }
         }
+        
+        public static string ChangelogDialog_Title {
+            get {
+                return ResourceManager.GetString("ChangelogDialog_Title", resourceCulture);
+            }
+        }
+        
+        public static string Changelog_NoChangelog {
+            get {
+                return ResourceManager.GetString("Changelog_NoChangelog", resourceCulture);
+            }
+        }
     }
 }

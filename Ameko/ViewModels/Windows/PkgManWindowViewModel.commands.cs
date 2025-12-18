@@ -2,6 +2,8 @@
 
 using System;
 using System.Reactive;
+using System.Reactive.Linq;
+using Ameko.ViewModels.Dialogs;
 using DynamicData;
 using Holo.Models;
 using Holo.Scripting.Models;
@@ -255,5 +257,21 @@ public partial class PkgManWindowViewModel
             // Clean up
             SelectedRepository = null;
         });
+    }
+
+    /// <summary>
+    /// Remove a repository
+    /// </summary>
+    private ReactiveCommand<Package, Unit> CreateShowChangelogCommand()
+    {
+        return ReactiveCommand.CreateFromTask(
+            async (Package package) =>
+            {
+                var vm = _viewModelFactory.Create<ChangelogDialogViewModel>(
+                    package.GenerateChangelog()
+                );
+                await ShowChangelog.Handle(vm);
+            }
+        );
     }
 }
