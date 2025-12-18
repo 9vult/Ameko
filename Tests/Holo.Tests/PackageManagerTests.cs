@@ -546,6 +546,7 @@ public class PackageManagerTests
         Dependencies = [],
         Tags = [],
         Url = string.Empty,
+        Changelog = [],
     };
 
     private static readonly Package TestLibraryPackage = new Package
@@ -560,6 +561,7 @@ public class PackageManagerTests
         Dependencies = [],
         Tags = [],
         Url = string.Empty,
+        Changelog = [],
     };
 
     private static readonly Package TestScriptletPackage = new Package
@@ -574,6 +576,7 @@ public class PackageManagerTests
         Dependencies = [],
         Tags = [],
         Url = string.Empty,
+        Changelog = [],
     };
 
     private static readonly Package Script1 = new Package
@@ -588,6 +591,7 @@ public class PackageManagerTests
         Dependencies = [],
         Tags = ["Example", "Dialogue"],
         Url = "https://dc.ameko.moe/scripts/9volt/9volt.example1.cs",
+        Changelog = [],
     };
 
     private static readonly Package Script2 = new Package
@@ -602,6 +606,7 @@ public class PackageManagerTests
         Dependencies = [],
         Tags = ["Example", "Dialogue"],
         Url = "https://dc.ameko.moe/scripts/9volt/9volt.example2.cs",
+        Changelog = [],
     };
 
     private static readonly Package Lib1 = new Package
@@ -616,6 +621,7 @@ public class PackageManagerTests
         Dependencies = [],
         Tags = ["Calculator"],
         Url = "https://dc.ameko.moe/scripts/9volt/9volt.calculator.lib.cs",
+        Changelog = [],
     };
 
     private const string Repository1Json = """
@@ -635,7 +641,8 @@ public class PackageManagerTests
               "IsBetaChannel": false,
               "Dependencies": [],
               "Tags": [ "Example", "Dialogue" ],
-              "Url": "https://dc.ameko.moe/scripts/9volt/9volt.example1.cs"
+              "Url": "https://dc.ameko.moe/scripts/9volt/9volt.example1.cs",
+              "Changelog": []
             }
           ],
           "Repositories": []
@@ -659,7 +666,8 @@ public class PackageManagerTests
               "IsBetaChannel": false,
               "Dependencies": [],
               "Tags": [ "Example", "Dialogue" ],
-              "Url": "https://dc.ameko.moe/scripts/9volt/9volt.example1.cs"
+              "Url": "https://dc.ameko.moe/scripts/9volt/9volt.example1.cs",
+              "Changelog": []
             }
           ],
           "Repositories": []
@@ -683,7 +691,8 @@ public class PackageManagerTests
               "IsBetaChannel": false,
               "Dependencies": [ "9volt.calculator" ],
               "Tags": [ "Example", "Dialogue" ],
-              "Url": "https://dc.ameko.moe/scripts/9volt/9volt.example2.cs"
+              "Url": "https://dc.ameko.moe/scripts/9volt/9volt.example2.cs",
+              "Changelog": []
             },
             {
               "Type": "Library",
@@ -695,7 +704,8 @@ public class PackageManagerTests
               "IsBetaChannel": false,
               "Dependencies": [],
               "Tags": [ "Calculator" ],
-              "Url": "https://dc.ameko.moe/scripts/9volt/9volt.calculator.lib.cs"
+              "Url": "https://dc.ameko.moe/scripts/9volt/9volt.calculator.lib.cs",
+              "Changelog": []
             }
           ],
           "Repositories": []
@@ -742,7 +752,8 @@ public class PackageManagerTests
           "IsBetaChannel": false,
           "Dependencies": [],
           "Tags": [ "Example", "Dialogue" ],
-          "Url": "https://dc.ameko.moe/scripts/9volt/9volt.example1.cs"
+          "Url": "https://dc.ameko.moe/scripts/9volt/9volt.example1.cs",
+          "Changelog": []
         }
         """;
 }

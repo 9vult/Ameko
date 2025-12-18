@@ -1,6 +1,7 @@
 ﻿// SPDX-License-Identifier: MPL-2.0
 
 using System.Collections.Frozen;
+using System.Text;
 using System.Text.Json.Serialization;
 
 namespace Holo.Scripting.Models;
@@ -56,6 +57,11 @@ public record Package
     public required bool IsBetaChannel { get; init; }
 
     /// <summary>
+    /// List of changelog entries
+    /// </summary>
+    public required Changelog[] Changelog { get; init; }
+
+    /// <summary>
     /// List of qualified package names this package depends on
     /// </summary>
     [JsonIgnore]
@@ -100,6 +106,76 @@ public record Package
     public override int GetHashCode()
     {
         return HashCode.Combine((int)Type, QualifiedName, Author, IsBetaChannel);
+    }
+
+    /// <summary>
+    /// Generate a Markdown-formated changelog
+    /// </summary>
+    /// <returns>Markdown-formatted changelog</returns>
+    public string GenerateChangelog()
+    {
+        if (Changelog.Length == 0)
+            return string.Empty;
+
+        StringBuilder sb = new();
+        sb.AppendLine($"# {DisplayName}\n");
+
+        foreach (var entry in Changelog.OrderByDescending(e => e.Version))
+        {
+            sb.AppendLine($"# {entry.Version}");
+            sb.AppendLine();
+
+            if (entry.Added?.Length > 0)
+            {
+                sb.AppendLine("### Additions\n");
+                foreach (var addition in entry.Added)
+                {
+                    sb.AppendLine($"* {addition}");
+                }
+                sb.AppendLine();
+            }
+
+            if (entry.Fixed?.Length > 0)
+            {
+                sb.AppendLine("### Fixes\n");
+                foreach (var fix in entry.Fixed)
+                {
+                    sb.AppendLine($"* {fix}");
+                }
+                sb.AppendLine();
+            }
+
+            if (entry.Changed?.Length > 0)
+            {
+                sb.AppendLine("### Changes\n");
+                foreach (var change in entry.Changed)
+                {
+                    sb.AppendLine($"* {change}");
+                }
+                sb.AppendLine();
+            }
+
+            if (entry.Removed?.Length > 0)
+            {
+                sb.AppendLine("### Removals\n");
+                foreach (var removal in entry.Removed)
+                {
+                    sb.AppendLine($"* {removal}");
+                }
+                sb.AppendLine();
+            }
+
+            if (entry.Deprecated?.Length > 0)
+            {
+                sb.AppendLine("### Deprecations\n");
+                foreach (var change in entry.Deprecated)
+                {
+                    sb.AppendLine($"* {change}");
+                }
+                sb.AppendLine();
+            }
+        }
+        return sb.ToString();
     }
 
     #region Serialization fields
