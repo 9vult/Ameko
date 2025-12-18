@@ -1,6 +1,7 @@
 ﻿// SPDX-License-Identifier: GPL-3.0-only
 
 using System.Collections.ObjectModel;
+using Holo.Models;
 using Holo.Providers;
 using ReactiveUI;
 
@@ -16,7 +17,7 @@ public partial class LogWindowViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref field, value);
     }
 
-    public ReadOnlyObservableCollection<string> LogEntries => _logProvider.LogEntries;
+    public ReadOnlyObservableCollection<LogEntry> LogEntries => _logProvider.LogEntries;
 
     public LogWindowViewModel(ILogProvider logProvider)
     {

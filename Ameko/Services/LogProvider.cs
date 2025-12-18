@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Threading;
 using Holo.IO;
+using Holo.Models;
 using Holo.Providers;
 using NLog;
 using NLog.Config;
@@ -43,12 +44,12 @@ internal class LogProvider : ILogProvider
     };
 
     /// <inheritdoc />
-    public AssCS.Utilities.ReadOnlyObservableCollection<string> LogEntries { get; }
+    public AssCS.Utilities.ReadOnlyObservableCollection<LogEntry> LogEntries { get; }
 
     public LogProvider()
     {
-        ObservableCollection<string> entries = [];
-        LogEntries = new AssCS.Utilities.ReadOnlyObservableCollection<string>(entries);
+        ObservableCollection<LogEntry> entries = [];
+        LogEntries = new AssCS.Utilities.ReadOnlyObservableCollection<LogEntry>(entries);
 
         var config = new LoggingConfiguration();
         var consoleTarget = new ColoredConsoleTarget("console") { Layout = PrintLayout };
@@ -75,7 +76,7 @@ internal class LogProvider : ILogProvider
     }
 
     private sealed class ObservableCollectionTarget(
-        ObservableCollection<string> entries,
+        ObservableCollection<LogEntry> entries,
         int maxEntries = 500
     ) : TargetWithLayout
     {
@@ -84,18 +85,36 @@ internal class LogProvider : ILogProvider
         protected override void Write(LogEventInfo logEvent)
         {
             var message = Layout.Render(logEvent);
+            var logLevel = ConvertLogLevel(logEvent.Level);
 
             if (entries.Count >= maxEntries)
                 entries.RemoveAt(0); // Remove oldest
 
             if (_syncContext is not null)
             {
-                _syncContext.Post(_ => entries.Add(message), null);
+                _syncContext.Post(_ => entries.Add(new LogEntry(logLevel, message)), null);
             }
             else
             {
-                entries.Add(message); // Fallback
+                entries.Add(new LogEntry(logLevel, message)); // Fallback
             }
+        }
+
+        private static Microsoft.Extensions.Logging.LogLevel ConvertLogLevel(LogLevel input)
+        {
+            if (input == LogLevel.Info)
+                return Microsoft.Extensions.Logging.LogLevel.Information;
+            if (input == LogLevel.Debug)
+                return Microsoft.Extensions.Logging.LogLevel.Debug;
+            if (input == LogLevel.Trace)
+                return Microsoft.Extensions.Logging.LogLevel.Trace;
+            if (input == LogLevel.Warn)
+                return Microsoft.Extensions.Logging.LogLevel.Warning;
+            if (input == LogLevel.Error)
+                return Microsoft.Extensions.Logging.LogLevel.Error;
+            if (input == LogLevel.Fatal)
+                return Microsoft.Extensions.Logging.LogLevel.Critical;
+            return Microsoft.Extensions.Logging.LogLevel.None;
         }
     }
 }
