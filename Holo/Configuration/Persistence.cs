@@ -33,6 +33,8 @@ public class Persistence : BindableBase, IPersistence
     private bool _useColorRing;
     private string _playgroundCs;
     private string _playgroundJs;
+    private double _visualizationScaleX;
+    private double _visualizationScaleY;
 
     /// <inheritdoc />
     public string LayoutName
@@ -46,6 +48,20 @@ public class Persistence : BindableBase, IPersistence
     {
         get => _useColorRing;
         set => SetProperty(ref _useColorRing, value);
+    }
+
+    /// <inheritdoc />
+    public double VisualizationScaleX
+    {
+        get => _visualizationScaleX;
+        set => SetProperty(ref _visualizationScaleX, value);
+    }
+
+    /// <inheritdoc />
+    public double VisualizationScaleY
+    {
+        get => _visualizationScaleY;
+        set => SetProperty(ref _visualizationScaleY, value);
     }
 
     /// <inheritdoc />
@@ -85,6 +101,8 @@ public class Persistence : BindableBase, IPersistence
                 Version = PersistenceModel.CurrentApiVersion,
                 LayoutName = _layoutName,
                 UseColorRing = _useColorRing,
+                VisualizationScaleX = _visualizationScaleX,
+                VisualizationScaleY = _visualizationScaleY,
                 PlaygroundCs = StringEncoder.Base64Encode(_playgroundCs),
                 PlaygroundJs = StringEncoder.Base64Encode(_playgroundJs),
             };
@@ -132,6 +150,8 @@ public class Persistence : BindableBase, IPersistence
             {
                 _layoutName = model.LayoutName,
                 _useColorRing = model.UseColorRing,
+                _visualizationScaleX = model.VisualizationScaleX,
+                _visualizationScaleY = model.VisualizationScaleY,
                 _playgroundCs = StringEncoder.Base64Decode(model.PlaygroundCs),
                 _playgroundJs = StringEncoder.Base64Decode(model.PlaygroundJs),
             };
@@ -156,6 +176,8 @@ public class Persistence : BindableBase, IPersistence
         _logger = logger;
         _layoutName = "Default";
         _useColorRing = false;
+        _visualizationScaleX = 4d;
+        _visualizationScaleY = 2d;
         _playgroundCs = string.Empty;
         _playgroundJs = string.Empty;
     }

@@ -18,6 +18,16 @@ public interface IPersistence
     bool UseColorRing { get; set; }
 
     /// <summary>
+    /// Visualization scale in the X direction
+    /// </summary>
+    double VisualizationScaleX { get; set; }
+
+    /// <summary>
+    /// Visualization scale in the Y direction
+    /// </summary>
+    double VisualizationScaleY { get; set; }
+
+    /// <summary>
     /// C# Playground
     /// </summary>
     string PlaygroundCs { get; set; }

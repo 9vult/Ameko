@@ -3,6 +3,7 @@
 using System.Diagnostics.CodeAnalysis;
 using AssCS;
 using AssCS.IO;
+using Holo.Configuration;
 using Holo.Media;
 using Holo.Media.Providers;
 using Microsoft.Extensions.Logging;
@@ -13,6 +14,7 @@ public class MediaController : BindableBase
 {
     private readonly ISourceProvider _provider;
     private readonly ILogger _logger;
+    private readonly IPersistence _persistence;
     private readonly HighResolutionTimer _playback;
 
     private readonly Lock _frameLock = new();
@@ -155,27 +157,31 @@ public class MediaController : BindableBase
         }
     }
 
-    public double VisualizerHorizontalScale
+    public double VisualizerScaleX
     {
         get;
         set
         {
             SetProperty(ref field, value);
-            if (IsVideoLoaded)
-                RequestFrame(CurrentFrame);
-        }
-    } = 4d;
+            _persistence.VisualizationScaleX = value;
 
-    public double VisualizerVerticalScale
+            if (IsVideoLoaded)
+                RequestFrame(CurrentFrame);
+        }
+    }
+
+    public double VisualizerScaleY
     {
         get;
         set
         {
             SetProperty(ref field, value);
+            _persistence.VisualizationScaleY = value;
+
             if (IsVideoLoaded)
                 RequestFrame(CurrentFrame);
         }
-    } = 2d;
+    }
 
     public long VisualizerPositionMs
     {
@@ -555,8 +561,8 @@ public class MediaController : BindableBase
                 _lastVizFrame = _provider.GetVisualization(
                     VisualizerWidth,
                     VisualizerHeight,
-                    VisualizerHorizontalScale,
-                    VisualizerVerticalScale,
+                    VisualizerScaleX,
+                    VisualizerScaleY,
                     0,
                     0,
                     null,
@@ -798,8 +804,8 @@ public class MediaController : BindableBase
                     vizFrame = _provider.GetVisualization(
                         VisualizerWidth,
                         VisualizerHeight,
-                        VisualizerHorizontalScale,
-                        VisualizerVerticalScale,
+                        VisualizerScaleX,
+                        VisualizerScaleY,
                         VisualizerPositionMs,
                         time,
                         ptr,
@@ -826,12 +832,21 @@ public class MediaController : BindableBase
     /// </summary>
     /// <param name="provider">Source Provider to use</param>
     /// <param name="logger">Logger to use</param>
-    public MediaController(ISourceProvider provider, ILogger<MediaController> logger)
+    /// <param name="persistence">Persistence</param>
+    public MediaController(
+        ISourceProvider provider,
+        ILogger<MediaController> logger,
+        IPersistence persistence
+    )
     {
         _provider = provider;
         _logger = logger;
+        _persistence = persistence;
         _playback = new HighResolutionTimer();
         _playback.Elapsed += AdvanceFrame;
+
+        VisualizerScaleX = persistence.VisualizationScaleX;
+        VisualizerScaleY = persistence.VisualizationScaleY;
 
         var initResult = _provider.Initialize();
         IsEnabled = initResult == 0;
