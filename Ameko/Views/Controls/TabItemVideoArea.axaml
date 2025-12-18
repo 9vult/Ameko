@@ -96,12 +96,12 @@
                         ToolTip.Tip="{x:Static i18n:Resources.Video_Button_PlaySelection_ToolTip}"
                         Command="{Binding PlaySelectionCommand}"
                         Classes="Small" />
-                <Button Content="{icons:MaterialIconExt Kind=MotionPlayOutline}"
+                <Button Content="{icons:MaterialIconExt Kind=ArrowOscillatingOff}"
                         IsVisible="{Binding !Workspace.MediaController.IsAutoSeekEnabled}"
                         ToolTip.Tip="{x:Static i18n:Resources.Video_Button_EnableAutoSeek_ToolTip}"
                         Command="{Binding ToggleAutoSeekCommand}"
                         Classes="Small" />
-                <Button Content="{icons:MaterialIconExt Kind=MotionPlay}"
+                <Button Content="{icons:MaterialIconExt Kind=ArrowOscillating}"
                         IsVisible="{Binding Workspace.MediaController.IsAutoSeekEnabled}"
                         ToolTip.Tip="{x:Static i18n:Resources.Video_Button_DisableAutoSeek_ToolTip}"
                         Command="{Binding ToggleAutoSeekCommand}"
