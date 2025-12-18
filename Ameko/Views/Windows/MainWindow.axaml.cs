@@ -603,7 +603,10 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
     {
         if (ViewModel is null || _canClose)
         {
-            _logger.LogInformation("Shutting down...");
+            // Save persistence
+            ViewModel?.Persistence.Save();
+
+            _logger.LogInformation("See you next time...");
             return;
         }
 

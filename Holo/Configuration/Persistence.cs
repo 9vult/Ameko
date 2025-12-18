@@ -172,7 +172,6 @@ public class Persistence : BindableBase, IPersistence
 
         storage = value;
         RaisePropertyChanged(propertyName);
-        Save();
         return true;
     }
 }

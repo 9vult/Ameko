@@ -36,6 +36,7 @@ public partial class MainWindowViewModel : ViewModelBase
     private readonly ILogger _logger;
 
     public IConfiguration Configuration { get; }
+    public IPersistence Persistence { get; }
     public IScriptService ScriptService { get; }
     public ILayoutProvider LayoutProvider { get; }
 
@@ -317,6 +318,7 @@ public partial class MainWindowViewModel : ViewModelBase
     public MainWindowViewModel(
         ILogger<MainWindowViewModel> logger,
         IConfiguration configuration,
+        IPersistence persistence,
         IIoService ioService,
         ILayoutProvider layoutProvider,
         IProjectProvider projectProvider,
@@ -332,6 +334,7 @@ public partial class MainWindowViewModel : ViewModelBase
         _logger = logger;
 
         Configuration = configuration;
+        Persistence = persistence;
         IoService = ioService;
         LayoutProvider = layoutProvider;
         ProjectProvider = projectProvider;
