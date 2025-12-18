@@ -11,6 +11,8 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Platform;
 using Holo.IO;
+using Holo.Providers;
+using Microsoft.Extensions.Logging;
 using NLog;
 using ReactiveUI.Avalonia;
 #if !DEBUG
@@ -82,6 +84,11 @@ sealed class Program
     {
         try
         {
+            // Write log and hope for the best
+            var logger = StaticLoggerFactory.GetLogger<Program>();
+            logger.LogCritical(ex, "Unhandled exception");
+
+            // Write crash report
             var wittyComments = new StreamReader(
                 AssetLoader.Open(new Uri("avares://Ameko/Assets/Text/WittyComments.txt"))
             )
