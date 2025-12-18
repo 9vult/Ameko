@@ -394,16 +394,7 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         };
 
         Closing += async (sender, args) => await OnWindowClosing(sender, args);
-        Closed += (_, _) =>
-        {
-            if (
-                Application.Current?.ApplicationLifetime
-                is IClassicDesktopStyleApplicationLifetime desktop
-            )
-                desktop.Shutdown();
-            else
-                Environment.Exit(0);
-        };
+        Closed += OnWindowClosed;
 
         this.WhenActivated(disposables =>
         {
@@ -603,10 +594,7 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
     {
         if (ViewModel is null || _canClose)
         {
-            // Save persistence
-            ViewModel?.Persistence.Save();
-
-            _logger.LogInformation("See you next time...");
+            // Good to close
             return;
         }
 
@@ -629,5 +617,21 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
                 ViewModel.ProjectProvider.Current.LoadedWorkspaces.Count
             );
         }
+    }
+
+    private void OnWindowClosed(object? sender, EventArgs e)
+    {
+        // Save persistence
+        ViewModel?.Persistence.Save();
+        // Goodbye!
+        _logger.LogInformation("See you next time...");
+
+        if (
+            Application.Current?.ApplicationLifetime
+            is IClassicDesktopStyleApplicationLifetime desktop
+        )
+            desktop.Shutdown();
+        else
+            Environment.Exit(0);
     }
 }
