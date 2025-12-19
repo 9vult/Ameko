@@ -102,6 +102,7 @@ public class ConfigurationTests
             "SaveFrames": "WithSubtitles",
             "DefaultLayer": 0,
             "AutosaveInterval": 120,
+            "AutoloadAudioTracks": true,
             "LineWidthIncludesWhitespace": true,
             "LineWidthIncludesPunctuation": true,
             "RichPresenceLevel": "Enabled",
