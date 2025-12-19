@@ -22,9 +22,6 @@ namespace Holo.Configuration;
 /// In such cases, the project's value takes precedence, unless the
 /// project's value is <see langword="null"/>.
 /// </para>
-/// <para>
-/// <see cref="Save()"/> is automatically called when an option is changed.
-/// </para>
 /// </remarks>
 public partial class Configuration : BindableBase, IConfiguration
 {
@@ -406,7 +403,6 @@ public partial class Configuration : BindableBase, IConfiguration
 
         storage = value;
         RaisePropertyChanged(propertyName);
-        Save();
         return true;
     }
 }

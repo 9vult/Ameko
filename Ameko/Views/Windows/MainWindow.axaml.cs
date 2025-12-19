@@ -622,8 +622,10 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
 
     private void OnWindowClosed(object? sender, EventArgs e)
     {
-        // Save persistence
+        // Save configuration, etc.
+        ViewModel?.Configuration.Save();
         ViewModel?.Persistence.Save();
+
         // Goodbye!
         _logger.LogInformation("See you next time...");
 
