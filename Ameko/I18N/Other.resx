@@ -186,4 +186,7 @@
     <data name="Changelog_NoChangelog" xml:space="preserve">
         <value>No changelog available</value>
     </data>
+    <data name="Message_AudioAutoloaded" xml:space="preserve">
+        <value>Audio track {0} was autoloaded</value>
+    </data>
 </root>

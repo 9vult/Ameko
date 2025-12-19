@@ -296,5 +296,17 @@ namespace Ameko.I18N {
                 return ResourceManager.GetString("Config_CustomWordBox_Watermark", resourceCulture);
             }
         }
+        
+        public static string Config_Label_AutoloadAudioTracks {
+            get {
+                return ResourceManager.GetString("Config_Label_AutoloadAudioTracks", resourceCulture);
+            }
+        }
+        
+        public static string Config_Label_AutoloadAudioTracks_ToolTip {
+            get {
+                return ResourceManager.GetString("Config_Label_AutoloadAudioTracks_ToolTip", resourceCulture);
+            }
+        }
     }
 }

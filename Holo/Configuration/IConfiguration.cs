@@ -50,6 +50,11 @@ public interface IConfiguration
     uint AutosaveInterval { get; set; }
 
     /// <summary>
+    /// If the last-used audio track should be loaded automatically when there are multiple audio tracks
+    /// </summary>
+    bool AutoloadAudioTracks { get; set; }
+
+    /// <summary>
     /// If whitespace should be included in <see cref="Event.MaxLineWidth"/> calculation
     /// </summary>
     /// <remarks>This value may be overloaded by <see cref="Project.UseSoftLinebreaks"/>.</remarks>

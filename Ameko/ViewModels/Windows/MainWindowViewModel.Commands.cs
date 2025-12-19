@@ -740,7 +740,12 @@ public partial class MainWindowViewModel : ViewModelBase
             try
             {
                 Dispatcher.UIThread.Post(() => tabVm?.IsIndexing = true);
-                await IoService.OpenAudioFileAsync(new Uri(path, UriKind.Absolute), wsp, callback);
+                await IoService.OpenAudioFileAsync(
+                    new Uri(path, UriKind.Absolute),
+                    wsp,
+                    callback,
+                    allowAutoload: false
+                );
             }
             finally
             {

@@ -178,10 +178,12 @@ public interface IIoService
     /// <param name="uri">URI of the video file</param>
     /// <param name="workspace">Workspace to open the audio in</param>
     /// <param name="progressCallback">Indexing progress callback</param>
+    /// <param name="allowAutoload">Allow autoloading of audio track</param>
     Task<bool> OpenAudioFileAsync(
         Uri uri,
         Workspace workspace,
-        ISourceProvider.IndexingProgressCallback? progressCallback = null
+        ISourceProvider.IndexingProgressCallback? progressCallback = null,
+        bool allowAutoload = true
     );
 
     /// <summary>

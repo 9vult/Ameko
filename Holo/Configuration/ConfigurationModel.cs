@@ -17,6 +17,7 @@ internal record ConfigurationModel
     public required bool UseSoftLinebreaks;
     public required bool AutosaveEnabled;
     public required uint AutosaveInterval;
+    public required bool AutoloadAudioTracks;
     public required bool LineWidthIncludesWhitespace;
     public required bool LineWidthIncludesPunctuation;
     public required RichPresenceLevel RichPresenceLevel;

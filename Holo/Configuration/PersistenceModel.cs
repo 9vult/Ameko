@@ -18,4 +18,5 @@ public class PersistenceModel
     public required string PlaygroundCs;
     public required string PlaygroundJs;
     public required Dictionary<int, ScaleFactor> ScalesForRes;
+    public required Dictionary<string, int> AudioTrackForVideo;
 }

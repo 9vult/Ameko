@@ -37,6 +37,7 @@ public class Persistence : BindableBase, IPersistence
     private double _visualizationScaleX;
     private double _visualizationScaleY;
     private Dictionary<int, ScaleFactor> _scalesForRes;
+    private Dictionary<string, int> _audioTrackForVideo;
 
     /// <inheritdoc />
     public string LayoutName
@@ -89,9 +90,19 @@ public class Persistence : BindableBase, IPersistence
     /// <inheritdoc />
     public ScaleFactor GetScaleForRes(int height)
     {
-        if (_scalesForRes.TryGetValue(height, out var scaleFactor))
-            return scaleFactor;
-        return ScaleFactor.Default;
+        return _scalesForRes.GetValueOrDefault(height, ScaleFactor.Default);
+    }
+
+    /// <inheritdoc />
+    public void SetAudioTrackForVideo(string pathHash, int trackNumber)
+    {
+        _audioTrackForVideo[pathHash] = trackNumber;
+    }
+
+    /// <inheritdoc />
+    public int GetAudioTrackForVideo(string pathHash)
+    {
+        return _audioTrackForVideo.GetValueOrDefault(pathHash, -1);
     }
 
     /// <inheritdoc />
@@ -122,6 +133,7 @@ public class Persistence : BindableBase, IPersistence
                 PlaygroundCs = StringEncoder.Base64Encode(_playgroundCs),
                 PlaygroundJs = StringEncoder.Base64Encode(_playgroundJs),
                 ScalesForRes = new Dictionary<int, ScaleFactor>(_scalesForRes),
+                AudioTrackForVideo = new Dictionary<string, int>(_audioTrackForVideo),
             };
 
             var content = JsonSerializer.Serialize(model, JsonOptions);
@@ -172,6 +184,7 @@ public class Persistence : BindableBase, IPersistence
                 _playgroundCs = StringEncoder.Base64Decode(model.PlaygroundCs),
                 _playgroundJs = StringEncoder.Base64Decode(model.PlaygroundJs),
                 _scalesForRes = new Dictionary<int, ScaleFactor>(model.ScalesForRes),
+                _audioTrackForVideo = new Dictionary<string, int>(model.AudioTrackForVideo),
             };
             logger.LogInformation("Done!");
             return result;
@@ -194,6 +207,7 @@ public class Persistence : BindableBase, IPersistence
         _logger = logger;
 
         _scalesForRes = [];
+        _audioTrackForVideo = [];
 
         _layoutName = "Default";
         _useColorRing = false;

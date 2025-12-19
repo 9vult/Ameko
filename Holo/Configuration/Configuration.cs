@@ -43,9 +43,10 @@ public partial class Configuration : BindableBase, IConfiguration
     private uint _cps;
     private bool _cpsIncludesWhitespace;
     private bool _cpsIncludesPunctuation;
+    private bool _useSoftLinebreaks;
     private bool _autosaveEnabled;
     private uint _autosaveInterval;
-    private bool _useSoftLinebreaks;
+    private bool _autoloadAudioTracks;
     private bool _lineWidthIncludesWhitespace;
     private bool _lineWidthIncludesPunctuation;
     private RichPresenceLevel _richPresenceLevel;
@@ -109,6 +110,13 @@ public partial class Configuration : BindableBase, IConfiguration
     {
         get => _autosaveInterval;
         set => SetProperty(ref _autosaveInterval, value);
+    }
+
+    /// <inheritdoc />
+    public bool AutoloadAudioTracks
+    {
+        get => _autoloadAudioTracks;
+        set => SetProperty(ref _autoloadAudioTracks, value);
     }
 
     /// <inheritdoc />
@@ -257,6 +265,7 @@ public partial class Configuration : BindableBase, IConfiguration
                 UseSoftLinebreaks = _useSoftLinebreaks,
                 AutosaveEnabled = _autosaveEnabled,
                 AutosaveInterval = _autosaveInterval,
+                AutoloadAudioTracks = _autoloadAudioTracks,
                 LineWidthIncludesWhitespace = _lineWidthIncludesWhitespace,
                 LineWidthIncludesPunctuation = _lineWidthIncludesPunctuation,
                 RichPresenceLevel = _richPresenceLevel,
@@ -327,6 +336,7 @@ public partial class Configuration : BindableBase, IConfiguration
                 _useSoftLinebreaks = model.UseSoftLinebreaks,
                 _autosaveEnabled = model.AutosaveEnabled,
                 _autosaveInterval = model.AutosaveInterval,
+                _autoloadAudioTracks = model.AutoloadAudioTracks,
                 _lineWidthIncludesWhitespace = model.LineWidthIncludesWhitespace,
                 _lineWidthIncludesPunctuation = model.LineWidthIncludesPunctuation,
                 _richPresenceLevel = model.RichPresenceLevel,
@@ -368,6 +378,7 @@ public partial class Configuration : BindableBase, IConfiguration
         _saveFrames = SaveFrames.WithSubtitles;
         _autosaveEnabled = true;
         _autosaveInterval = 60;
+        _autoloadAudioTracks = true;
         _culture = "en-US";
         _spellcheckCulture = "en_US";
         _theme = Theme.Default;

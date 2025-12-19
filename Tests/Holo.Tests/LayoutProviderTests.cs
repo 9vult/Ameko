@@ -122,6 +122,15 @@ file class MockPersistence : IPersistence
         return ScaleFactor.Default;
     }
 
+    /// <inheritdoc />
+    public void SetAudioTrackForVideo(string pathHash, int trackNumber) { }
+
+    /// <inheritdoc />
+    public int GetAudioTrackForVideo(string pathHash)
+    {
+        return -1;
+    }
+
     public bool Save()
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(LayoutName)));

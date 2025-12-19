@@ -144,4 +144,10 @@
     <data name="Config_CustomWordBox_Watermark" xml:space="preserve">
         <value>Add a word to the dictionary</value>
     </data>
+    <data name="Config_Label_AutoloadAudioTracks" xml:space="preserve">
+        <value>Autoload audio tracks?</value>
+    </data>
+    <data name="Config_Label_AutoloadAudioTracks_ToolTip" xml:space="preserve">
+        <value>Automatically load the last-loaded track when there are multiple audio tracks available</value>
+    </data>
 </root>

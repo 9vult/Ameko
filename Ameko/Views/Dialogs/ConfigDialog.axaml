@@ -97,7 +97,7 @@
         <!-- Ameko Behavior -->
         <HeaderedContentControl Header="{x:Static i18n:Config.Config_Header_Behavior}">
             <Grid ColumnDefinitions="Auto, Auto, Auto"
-                  RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, Auto"
+                  RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto"
                   ColumnSpacing="10"
                   RowSpacing="2">
                 <Label Grid.Column="0"
@@ -181,6 +181,14 @@
                                  FormatString="0"
                                  HorizontalAlignment="Left"
                                  Value="{Binding Config.AutosaveInterval}" />
+                <Label Grid.Column="0"
+                       Grid.Row="7"
+                       VerticalAlignment="Center"
+                       Content="{x:Static i18n:Config.Config_Label_AutoloadAudioTracks}"
+                       ToolTip.Tip="{x:Static i18n:Config.Config_Label_AutoloadAudioTracks_ToolTip}" />
+                <CheckBox Grid.Column="1"
+                          Grid.Row="7"
+                          IsChecked="{Binding Config.AutoloadAudioTracks}" />
             </Grid>
         </HeaderedContentControl>
         

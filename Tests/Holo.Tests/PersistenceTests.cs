@@ -87,7 +87,8 @@ public class PersistenceTests
             "VisualizationScaleY": 3,
             "PlaygroundCs": "",
             "PlaygroundJs": "",
-            "ScalesForRes": {}
+            "ScalesForRes": {},
+            "AudioTrackForVideo": {},
         }
         """;
 }

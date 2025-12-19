@@ -1,12 +1,16 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 using System;
+using System.Buffers.Text;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 using Ameko.DataModels;
 using Ameko.Messages;
@@ -36,6 +40,7 @@ public class IoService(
     IMessageService messageService,
     IWindowService windowService,
     IConfiguration configuration,
+    IPersistence persistence,
     ILogger<IoService> logger
 ) : IIoService
 {
@@ -539,7 +544,8 @@ public class IoService(
     public async Task<bool> OpenAudioFileAsync(
         Uri uri,
         Workspace workspace,
-        ISourceProvider.IndexingProgressCallback? progressCallback = null
+        ISourceProvider.IndexingProgressCallback? progressCallback = null,
+        bool allowAutoload = true
     )
     {
         var audioTracks = await workspace.MediaController.GetAudioTrackInfoAsync(uri.LocalPath);
@@ -548,14 +554,29 @@ public class IoService(
             var index = audioTracks[0].Index;
             if (audioTracks.Length > 1)
             {
-                // TODO: get this out of here, this sucks
-                var dialogResult = await windowService.ShowDialogAsync<SelectTrackMessage>(
-                    new SelectTrackDialog
-                    {
-                        DataContext = new SelectTrackDialogViewModel(audioTracks),
-                    }
-                );
-                index = dialogResult?.TrackIndex ?? audioTracks[0].Index;
+                var hashedPath = GetHashedFilename(uri.LocalPath);
+                var savedIdx = persistence.GetAudioTrackForVideo(hashedPath);
+
+                if (allowAutoload && configuration.AutoloadAudioTracks && savedIdx != -1) // Autoload the track
+                {
+                    index = savedIdx;
+                    messageService.Enqueue(
+                        string.Format(I18N.Other.Message_AudioAutoloaded, index),
+                        TimeSpan.FromSeconds(5)
+                    );
+                }
+                else // Ask the user which track to load
+                {
+                    // TODO: get this out of here, this sucks
+                    var dialogResult = await windowService.ShowDialogAsync<SelectTrackMessage>(
+                        new SelectTrackDialog
+                        {
+                            DataContext = new SelectTrackDialogViewModel(audioTracks),
+                        }
+                    );
+                    index = dialogResult?.TrackIndex ?? audioTracks[0].Index;
+                    persistence.SetAudioTrackForVideo(hashedPath, index); // Save the index for next time
+                }
             }
             var aResult = await workspace.MediaController.OpenAudioAsync(
                 uri.LocalPath,
@@ -725,5 +746,21 @@ public class IoService(
         }
 
         return SKImage.FromBitmap(bmp).Encode(SKEncodedImageFormat.Png, 100);
+    }
+
+    /// <summary>
+    /// Hash a filename
+    /// </summary>
+    /// <param name="filePath">File being loaded</param>
+    /// <returns>Filepath</returns>
+    private static string GetHashedFilename(string filePath)
+    {
+        // Try to get the last-modified time
+        var modified = File.Exists(filePath)
+            ? new FileInfo(filePath).LastWriteTimeUtc.ToString(CultureInfo.InvariantCulture)
+            : string.Empty;
+
+        var bytes = MD5.HashData(Encoding.UTF8.GetBytes($"{filePath}-{modified}"));
+        return Base64Url.EncodeToString(bytes);
     }
 }

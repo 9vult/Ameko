@@ -380,5 +380,11 @@ namespace Ameko.I18N {
                 return ResourceManager.GetString("Changelog_NoChangelog", resourceCulture);
             }
         }
+        
+        public static string Message_AudioAutoloaded {
+            get {
+                return ResourceManager.GetString("Message_AudioAutoloaded", resourceCulture);
+            }
+        }
     }
 }
