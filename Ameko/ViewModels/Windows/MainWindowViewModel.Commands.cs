@@ -413,6 +413,7 @@ public partial class MainWindowViewModel : ViewModelBase
                 () =>
                 {
                     ProjectProvider.Current.WorkingSpace?.SelectionManager.EndSelectionChange();
+                    ProjectProvider.Current.EndSelectionChange();
                 },
                 DispatcherPriority.Background
             );
@@ -431,6 +432,7 @@ public partial class MainWindowViewModel : ViewModelBase
                 () =>
                 {
                     ProjectProvider.Current.WorkingSpace?.SelectionManager.EndSelectionChange();
+                    ProjectProvider.Current.EndSelectionChange();
                 },
                 DispatcherPriority.Background
             );

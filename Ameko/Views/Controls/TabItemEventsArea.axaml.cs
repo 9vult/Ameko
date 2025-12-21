@@ -71,6 +71,7 @@ public partial class TabItemEventsArea : ReactiveUserControl<TabItemViewModel>
             () =>
             {
                 ViewModel?.Workspace.SelectionManager.EndSelectionChange();
+                ViewModel?.ProjectProvider.Current.EndSelectionChange();
             },
             DispatcherPriority.Background
         );

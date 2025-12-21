@@ -59,6 +59,12 @@ public class Project : BindableBase
     private readonly ObservableCollection<string> _customWords;
 
     /// <summary>
+    /// Denotes if the selection is currently changing
+    /// </summary>
+    /// <remarks>GUIs can use this property to determine if a change should be reported</remarks>
+    public bool IsSelectionChanging { get; private set; } = true;
+
+    /// <summary>
     /// All items referenced by the project
     /// </summary>
     public System.Collections.ObjectModel.ReadOnlyObservableCollection<ProjectItem> ReferencedItems { get; }
@@ -114,6 +120,7 @@ public class Project : BindableBase
         get => _workingSpace;
         set
         {
+            BeginSelectionChange();
             _workingSpace?.SelectionManager.BeginSelectionChange();
             _workingSpace?.MediaController.Stop();
             value?.SelectionManager.BeginSelectionChange();
@@ -295,6 +302,7 @@ public class Project : BindableBase
                 _referencedItems.Add(docItem);
         }
 
+        BeginSelectionChange();
         _loadedWorkspaces.Add(wsp);
         WorkingSpace = wsp;
         return wsp;
@@ -361,6 +369,7 @@ public class Project : BindableBase
                     : AddWorkspace();
         }
 
+        BeginSelectionChange();
         _loadedWorkspaces.RemoveAll(w => w.Id == id);
         return RemoveItemById(id);
     }
@@ -401,6 +410,7 @@ public class Project : BindableBase
             var parser = new AssParser();
             var document = parser.Parse(_fileSystem, item.Uri!);
 
+            BeginSelectionChange();
             item.Workspace = _workspaceFactory.Create(document, item.Id, item.Uri);
             _loadedWorkspaces.Add(item.Workspace);
             WorkingSpace = item.Workspace;
@@ -465,6 +475,7 @@ public class Project : BindableBase
                 _referencedItems.Remove(referenced);
         }
 
+        BeginSelectionChange();
         if (WorkingSpace?.Id != id)
             return _loadedWorkspaces.RemoveAll(w => w.Id == id) != 0;
         if (_loadedWorkspaces.Count > 1)
@@ -586,6 +597,26 @@ public class Project : BindableBase
         item.Name = name;
         item.Uri = uri;
         IsSaved = false;
+    }
+
+    /// <summary>
+    /// Sets <see cref="IsSelectionChanging"/> to <see langword="true"/>
+    /// </summary>
+    private void BeginSelectionChange()
+    {
+        IsSelectionChanging = true;
+    }
+
+    /// <summary>
+    /// Sets <see cref="IsSelectionChanging"/> to <see langword="false"/>
+    /// </summary>
+    /// <remarks>
+    /// Not called from within the <see cref="Project"/>.
+    /// GUIs can use this method to signal that changes can be reported
+    /// </remarks>
+    public void EndSelectionChange()
+    {
+        IsSelectionChanging = false;
     }
 
     /// <summary>

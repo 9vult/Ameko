@@ -255,6 +255,7 @@ public partial class TabItem : ReactiveUserControl<TabItemViewModel>
                         () =>
                         {
                             vm.Workspace.SelectionManager.EndSelectionChange();
+                            vm.ProjectProvider.Current.EndSelectionChange();
                         },
                         DispatcherPriority.Background
                     );

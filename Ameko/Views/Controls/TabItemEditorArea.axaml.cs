@@ -56,7 +56,10 @@ public partial class TabItemEditorArea : ReactiveUserControl<TabItemViewModel>
     // TODO: These don't differentiate between user input and program input
     private void EditBox_OnTextChanged(object? sender, TextChangedEventArgs e)
     {
-        if (ViewModel?.Workspace.SelectionManager.IsSelectionChanging == true)
+        var blocked =
+            ViewModel?.Workspace.SelectionManager.IsSelectionChanging == true
+            || ViewModel?.ProjectProvider.Current.IsSelectionChanging == true;
+        if (blocked)
             return;
 
         ViewModel?.Workspace.Commit(
@@ -67,7 +70,10 @@ public partial class TabItemEditorArea : ReactiveUserControl<TabItemViewModel>
 
     private void AnyControl_EventMetaChanged(object? sender, RoutedEventArgs e)
     {
-        if (ViewModel?.Workspace.SelectionManager.IsSelectionChanging == true)
+        var blocked =
+            ViewModel?.Workspace.SelectionManager.IsSelectionChanging == true
+            || ViewModel?.ProjectProvider.Current.IsSelectionChanging == true;
+        if (blocked)
             return;
 
         ViewModel?.Workspace.Commit(
@@ -78,7 +84,10 @@ public partial class TabItemEditorArea : ReactiveUserControl<TabItemViewModel>
 
     private void AnyControl_EventTimeChanged(object? sender, TextChangedEventArgs e)
     {
-        if (ViewModel?.Workspace.SelectionManager.IsSelectionChanging == true)
+        var blocked =
+            ViewModel?.Workspace.SelectionManager.IsSelectionChanging == true
+            || ViewModel?.ProjectProvider.Current.IsSelectionChanging == true;
+        if (blocked)
             return;
 
         ViewModel?.Workspace.Commit(
