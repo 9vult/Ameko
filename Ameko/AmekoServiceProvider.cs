@@ -4,8 +4,6 @@ using System;
 using System.IO.Abstractions;
 using Ameko.Services;
 using Ameko.Utilities;
-using Ameko.ViewModels.Controls;
-using Ameko.ViewModels.Dialogs;
 using Ameko.ViewModels.Windows;
 using Ameko.Views.Windows;
 using Holo;

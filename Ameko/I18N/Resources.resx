@@ -378,4 +378,13 @@
     <data name="Menu_ChangeTracks" xml:space="preserve">
         <value>Change _Tracks...</value>
     </data>
+    <data name="Menu_RecentSubtitles" xml:space="preserve">
+        <value>Recent Subtitl_es</value>
+    </data>
+    <data name="Menu_RecentProjects" xml:space="preserve">
+        <value>Recent Proje_cts</value>
+    </data>
+    <data name="Menu_RecentClear" xml:space="preserve">
+        <value>Clear</value>
+    </data>
 </root>

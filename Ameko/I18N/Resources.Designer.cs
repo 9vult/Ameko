@@ -764,5 +764,23 @@ namespace Ameko.I18N {
                 return ResourceManager.GetString("Menu_ChangeTracks", resourceCulture);
             }
         }
+        
+        public static string Menu_RecentSubtitles {
+            get {
+                return ResourceManager.GetString("Menu_RecentSubtitles", resourceCulture);
+            }
+        }
+        
+        public static string Menu_RecentProjects {
+            get {
+                return ResourceManager.GetString("Menu_RecentProjects", resourceCulture);
+            }
+        }
+        
+        public static string Menu_RecentClear {
+            get {
+                return ResourceManager.GetString("Menu_RecentClear", resourceCulture);
+            }
+        }
     }
 }
