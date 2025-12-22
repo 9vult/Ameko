@@ -48,7 +48,6 @@
     </Application.Styles>
              
     <Application.Resources>
-        <FontFamily x:Key="Figtree">avares://Ameko/Assets/Fonts/Figtree.ttf#Figtree</FontFamily>
         <FontFamily x:Key="MartianMono">avares://Ameko/Assets/Fonts/MartianMono.ttf#Martian Mono</FontFamily>
         <FontFamily x:Key="ZenKakuGothicNew">avares://Ameko/Assets/Fonts/ZenKakuGothicNew.ttf#Zen Kaku Gothic New</FontFamily>
     </Application.Resources>
