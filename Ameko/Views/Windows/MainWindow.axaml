@@ -20,7 +20,7 @@
         
         DragDrop.AllowDrop="True"
 
-        Width="1264"
+        Width="1335"
         Height="650"
         MinWidth="650"
         MinHeight="500"
@@ -128,7 +128,7 @@
                     <NativeMenuItem Header="{x:Static i18n:Resources.Menu_SaveProject}"
                                     Command="{Binding SaveProjectCommand} "/>
                     <NativeMenuItem Header="{x:Static i18n:Resources.Menu_RecentProjects}">
-                        <NativeMenu />
+                        
                     </NativeMenuItem>
                     <NativeMenuItemSeparator />
                     <NativeMenuItem Header="{x:Static i18n:Resources.Menu_CloseTab}"
