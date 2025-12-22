@@ -33,6 +33,8 @@
             <MenuItem Header="{x:Static i18n:Resources.Menu_SaveSubtitleAs}"
                       Icon="{icons:MaterialIconExt Kind=ContentSavePlusOutline}"
                       Command="{Binding SaveSubtitleAsCommand}" />
+            <MenuItem Header="{x:Static i18n:Resources.Menu_RecentSubtitles}"
+                      Icon="{icons:MaterialIconExt Kind=History}" />
             <Separator />
             <MenuItem Header="{x:Static i18n:Resources.Menu_ExportSubtitles}"
                       Icon="{icons:MaterialIconExt Kind=FileExportOutline}"
@@ -54,6 +56,8 @@
             <MenuItem Header="{x:Static i18n:Resources.Menu_CloseProject}"
                       Icon="{icons:MaterialIconExt Kind=ArchiveRemoveOutline}"
                       Command="{Binding CloseProjectCommand}" />
+            <MenuItem Header="{x:Static i18n:Resources.Menu_RecentProjects}"
+                      Icon="{icons:MaterialIconExt Kind=History}" />
             <Separator />
             <MenuItem Header="{x:Static i18n:Resources.Menu_Quit}"
                       Icon="{icons:MaterialIconExt Kind=ExitRun}"

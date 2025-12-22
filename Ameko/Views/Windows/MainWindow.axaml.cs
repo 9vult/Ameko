@@ -490,6 +490,55 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         }
     }
 
+    private void GenerateRecentsMenus()
+    {
+        if (ViewModel is null || ViewModel.DisplayInWindowMenu)
+            return;
+
+        _logger.LogDebug("Regenerating recents native menus...");
+        var subsMenuItems = RecentsMenuService.GenerateNativeMenuItemSource(
+            ViewModel.Persistence.RecentDocuments,
+            ViewModel.OpenSubtitleNoGuiCommand
+        );
+        var prjMenuItems = RecentsMenuService.GenerateNativeMenuItemSource(
+            ViewModel.Persistence.RecentProjects,
+            ViewModel.OpenProjectNoGuiCommand
+        );
+        var subsClearItem = RecentsMenuService.GenerateClearNativeMenuItem(
+            ViewModel.RefreshLayoutsCommand // TODO
+        );
+        var prjClearItem = RecentsMenuService.GenerateClearNativeMenuItem(
+            ViewModel.RefreshLayoutsCommand // TODO
+        );
+
+        var subsMenu = NativeMenu
+            .GetMenu(this)
+            ?.Items.OfType<NativeMenuItem>()
+            .FirstOrDefault(m => m.Header == I18N.Resources.Menu_RecentSubtitles)
+            ?.Menu;
+        var prjMenu = NativeMenu
+            .GetMenu(this)
+            ?.Items.OfType<NativeMenuItem>()
+            .FirstOrDefault(m => m.Header == I18N.Resources.Menu_RecentProjects)
+            ?.Menu;
+
+        if (subsMenu is null || prjMenu is null)
+            return;
+
+        subsMenu.Items.Clear();
+        subsMenu.Items.AddRange(subsMenuItems);
+        if (subsMenuItems.Count > 0)
+            subsMenu.Items.Add(new NativeMenuItemSeparator());
+        subsMenu.Items.Add(subsClearItem);
+
+        prjMenu.Items.Clear();
+        prjMenu.Items.AddRange(prjMenuItems);
+        if (prjMenuItems.Count > 0)
+            prjMenu.Items.Add(new NativeMenuItemSeparator());
+        prjMenu.Items.Add(prjClearItem);
+        _logger.LogDebug("Done!");
+    }
+
     private void GenerateLayoutsMenu()
     {
         if (ViewModel is null || ViewModel.DisplayInWindowMenu)

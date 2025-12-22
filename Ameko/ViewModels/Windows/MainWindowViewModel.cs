@@ -229,6 +229,8 @@ public partial class MainWindowViewModel : ViewModelBase
 
     public ObservableCollection<TemplatedControl> ScriptMenuItems { get; }
     public ObservableCollection<TemplatedControl> LayoutMenuItems { get; }
+    public ObservableCollection<TemplatedControl> RecentDocumentMenuItems { get; }
+    public ObservableCollection<TemplatedControl> RecentProjectMenuItems { get; }
 
     public string CurrentMessage
     {
@@ -312,6 +314,33 @@ public partial class MainWindowViewModel : ViewModelBase
         if (menuItems.Count > 0)
             LayoutMenuItems.Add(new Separator());
         LayoutMenuItems.Add(LayoutMenuService.GenerateReloadMenuItem(RefreshLayoutsCommand));
+        _logger.LogDebug("Done!");
+    }
+
+    private void GenerateRecentsMenus()
+    {
+        _logger.LogDebug("Regenerating recents menus...");
+        var subsMenuItems = RecentsMenuService.GenerateMenuItemSource(
+            Persistence.RecentDocuments,
+            OpenSubtitleNoGuiCommand
+        );
+        var prjMenuItems = RecentsMenuService.GenerateMenuItemSource(
+            Persistence.RecentProjects,
+            OpenProjectNoGuiCommand
+        );
+
+        RecentDocumentMenuItems.Clear();
+        RecentProjectMenuItems.Clear();
+        RecentDocumentMenuItems.AddRange(subsMenuItems);
+        RecentProjectMenuItems.AddRange(prjMenuItems);
+        if (RecentDocumentMenuItems.Count > 0)
+            RecentDocumentMenuItems.Add(new Separator());
+        if (RecentProjectMenuItems.Count > 0)
+            RecentProjectMenuItems.Add(new Separator());
+        RecentDocumentMenuItems.Add(
+            RecentsMenuService.GenerateClearMenuItem(RefreshLayoutsCommand)
+        ); // TODO
+        RecentProjectMenuItems.Add(RecentsMenuService.GenerateClearMenuItem(RefreshLayoutsCommand)); // TODO
         _logger.LogDebug("Done!");
     }
 
