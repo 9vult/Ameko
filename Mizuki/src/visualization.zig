@@ -198,6 +198,7 @@ fn DrawTimeScale(
 
     t = std.math.ceil(start_ms / 250.0) * 250.0;
     while (t <= end_ms) : (t += 250.0) {
+        if (@rem(t, 1000.0) == 0) continue;
         const delta = t - start_ms;
         const x_f = delta / pixels_per_ms;
         if (x_f >= 0 and x_f < bmp_width_f) {
