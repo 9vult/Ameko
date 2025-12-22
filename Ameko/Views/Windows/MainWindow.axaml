@@ -117,7 +117,9 @@
                                     Command="{Binding SaveSubtitleAsCommand} "/>
                     <NativeMenuItem Header="{x:Static i18n:Resources.Menu_ExportSubtitles}"
                                     Command="{Binding ExportSubtitleCommand} "/>
-                    <NativeMenuItem Header="{x:Static i18n:Resources.Menu_RecentSubtitles}" />
+                    <NativeMenuItem Header="{x:Static i18n:Resources.Menu_RecentSubtitles}">
+                        <NativeMenu />
+                    </NativeMenuItem>
                     <NativeMenuItemSeparator />
                     <NativeMenuItem Header="{x:Static i18n:Resources.Menu_OpenProject}"
                                     Command="{Binding OpenProjectCommand} "/>
@@ -125,7 +127,9 @@
                                     Command="{Binding OpenFolderAsProjectCommand} "/>
                     <NativeMenuItem Header="{x:Static i18n:Resources.Menu_SaveProject}"
                                     Command="{Binding SaveProjectCommand} "/>
-                    <NativeMenuItem Header="{x:Static i18n:Resources.Menu_RecentProjects}" />
+                    <NativeMenuItem Header="{x:Static i18n:Resources.Menu_RecentProjects}">
+                        <NativeMenu />
+                    </NativeMenuItem>
                     <NativeMenuItemSeparator />
                     <NativeMenuItem Header="{x:Static i18n:Resources.Menu_CloseTab}"
                                     Command="{Binding CloseTabCommand} "/>

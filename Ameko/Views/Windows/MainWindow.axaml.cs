@@ -453,6 +453,20 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
                 {
                     GenerateScriptsMenu();
                 };
+
+                // Generate recents menus
+                GenerateRecentsMenus();
+                ViewModel.Persistence.PropertyChanged += (_, args) =>
+                {
+                    var flag =
+                        args.PropertyName
+                        is nameof(ViewModel.Persistence.RecentDocuments)
+                            or nameof(ViewModel.Persistence.RecentProjects);
+                    if (flag)
+                    {
+                        GenerateRecentsMenus();
+                    }
+                };
             }
 
             ViewModel?.CheckSpellcheckDictionaryCommand.Execute(null);
@@ -505,20 +519,24 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
             ViewModel.OpenProjectNoGuiCommand
         );
         var subsClearItem = RecentsMenuService.GenerateClearNativeMenuItem(
-            ViewModel.RefreshLayoutsCommand // TODO
+            ViewModel.ClearRecentSubtitlesCommand
         );
         var prjClearItem = RecentsMenuService.GenerateClearNativeMenuItem(
-            ViewModel.RefreshLayoutsCommand // TODO
+            ViewModel.ClearRecentProjectsCommand
         );
 
         var subsMenu = NativeMenu
             .GetMenu(this)
             ?.Items.OfType<NativeMenuItem>()
+            .FirstOrDefault(m => m.Header == I18N.Resources.Menu_File)
+            ?.Menu?.Items.OfType<NativeMenuItem>()
             .FirstOrDefault(m => m.Header == I18N.Resources.Menu_RecentSubtitles)
             ?.Menu;
         var prjMenu = NativeMenu
             .GetMenu(this)
             ?.Items.OfType<NativeMenuItem>()
+            .FirstOrDefault(m => m.Header == I18N.Resources.Menu_File)
+            ?.Menu?.Items.OfType<NativeMenuItem>()
             .FirstOrDefault(m => m.Header == I18N.Resources.Menu_RecentProjects)
             ?.Menu;
 

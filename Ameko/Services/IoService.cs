@@ -77,6 +77,7 @@ public class IoService(
 
         if (uriChanged)
         {
+            persistence.AddRecentDocument(uri);
             var projItem = projectProvider.Current.FindItemById(wsp.Id);
             if (projItem is not null)
                 projectProvider.Current.SetNameAndUri(projItem, wsp.Title, uri);
@@ -144,6 +145,7 @@ public class IoService(
         {
             if (projItem is DocumentItem current)
             {
+                persistence.AddRecentDocument(uri);
                 var original = projectProvider.Current.Copy(current);
                 original.Workspace = null;
             }
@@ -305,6 +307,7 @@ public class IoService(
             {
                 wsp = prj.AddWorkspace(doc, uri);
                 wsp.IsSaved = true;
+                persistence.AddRecentDocument(uri);
             }
             else
             {
@@ -350,6 +353,7 @@ public class IoService(
         }
 
         projectProvider.Current = projectProvider.CreateFromFile(uri);
+        persistence.AddRecentProject(uri);
         logger.LogInformation("Loaded project file");
         return true;
     }

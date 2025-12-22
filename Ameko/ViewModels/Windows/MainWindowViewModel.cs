@@ -106,6 +106,7 @@ public partial class MainWindowViewModel : ViewModelBase
 
     [KeybindTarget("ameko.document.export", KeybindContext.Global)]
     public ICommand ExportSubtitleCommand { get; }
+    public ICommand ClearRecentSubtitlesCommand { get; }
 
     [KeybindTarget("ameko.project.open", KeybindContext.Global)]
     public ICommand OpenProjectCommand { get; }
@@ -116,6 +117,7 @@ public partial class MainWindowViewModel : ViewModelBase
 
     [KeybindTarget("ameko.project.save", KeybindContext.Global)]
     public ICommand SaveProjectCommand { get; }
+    public ICommand ClearRecentProjectsCommand { get; }
 
     [KeybindTarget("ameko.workspace.close", "Ctrl+W", KeybindContext.Global)]
     public ICommand CloseTabCommand { get; }
@@ -338,9 +340,11 @@ public partial class MainWindowViewModel : ViewModelBase
         if (RecentProjectMenuItems.Count > 0)
             RecentProjectMenuItems.Add(new Separator());
         RecentDocumentMenuItems.Add(
-            RecentsMenuService.GenerateClearMenuItem(RefreshLayoutsCommand)
-        ); // TODO
-        RecentProjectMenuItems.Add(RecentsMenuService.GenerateClearMenuItem(RefreshLayoutsCommand)); // TODO
+            RecentsMenuService.GenerateClearMenuItem(ClearRecentSubtitlesCommand)
+        );
+        RecentProjectMenuItems.Add(
+            RecentsMenuService.GenerateClearMenuItem(ClearRecentProjectsCommand)
+        );
         _logger.LogDebug("Done!");
     }
 
@@ -424,12 +428,14 @@ public partial class MainWindowViewModel : ViewModelBase
         SaveSubtitleCommand = CreateSaveSubtitleCommand();
         SaveSubtitleAsCommand = CreateSaveSubtitleAsCommand();
         ExportSubtitleCommand = CreateExportSubtitleCommand();
+        ClearRecentSubtitlesCommand = CreateClearRecentSubtitlesCommand();
         OpenProjectCommand = CreateOpenProjectCommand();
         OpenProjectNoGuiCommand = CreateOpenProjectNoGuiCommand();
         OpenFolderAsProjectCommand = CreateOpenFolderAsProjectCommand();
         SaveProjectCommand = CreateSaveProjectCommand();
         CloseTabCommand = CreateCloseTabCommand();
         CloseProjectCommand = CreateCloseProjectCommand();
+        ClearRecentProjectsCommand = CreateClearRecentProjectsCommand();
         QuitCommand = CreateQuitCommand();
         // Edit
         UndoCommand = CreateUndoCommand();
@@ -484,6 +490,20 @@ public partial class MainWindowViewModel : ViewModelBase
         LayoutMenuItems = [];
         LayoutProvider.OnLayoutChanged += (_, _) => GenerateLayoutsMenu();
         GenerateLayoutsMenu();
+
+        RecentDocumentMenuItems = [];
+        RecentProjectMenuItems = [];
+        Persistence.PropertyChanged += (_, args) =>
+        {
+            var flag =
+                args.PropertyName
+                is nameof(Persistence.RecentDocuments)
+                    or nameof(Persistence.RecentProjects);
+            if (flag)
+            {
+                GenerateRecentsMenus();
+            }
+        };
 
         _messageService.MessageReady += (_, msg) => CurrentMessage = msg.Content;
         _messageService.QueueDrained += (_, _) => CurrentMessage = string.Empty;

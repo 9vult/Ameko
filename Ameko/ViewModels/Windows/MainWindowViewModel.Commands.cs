@@ -211,6 +211,18 @@ public partial class MainWindowViewModel : ViewModelBase
     }
 
     /// <summary>
+    /// Clear the recent subtitles list
+    /// </summary>
+    /// <returns></returns>
+    private ReactiveCommand<Unit, Unit> CreateClearRecentSubtitlesCommand()
+    {
+        return ReactiveCommand.Create(() =>
+        {
+            Persistence.ClearRecentDocuments();
+        });
+    }
+
+    /// <summary>
     /// Display the Open Project File dialog
     /// </summary>
     private ReactiveCommand<Unit, Unit> CreateOpenProjectCommand()
@@ -365,6 +377,18 @@ public partial class MainWindowViewModel : ViewModelBase
 
             ProjectProvider.Current = ProjectProvider.Create();
             _logger.LogDebug("Successfully closed project and opened a new one");
+        });
+    }
+
+    /// <summary>
+    /// Clear the recent projects list
+    /// </summary>
+    /// <returns></returns>
+    private ReactiveCommand<Unit, Unit> CreateClearRecentProjectsCommand()
+    {
+        return ReactiveCommand.Create(() =>
+        {
+            Persistence.ClearRecentProjects();
         });
     }
 

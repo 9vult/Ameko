@@ -34,11 +34,12 @@
                       Icon="{icons:MaterialIconExt Kind=ContentSavePlusOutline}"
                       Command="{Binding SaveSubtitleAsCommand}" />
             <MenuItem Header="{x:Static i18n:Resources.Menu_RecentSubtitles}"
-                      Icon="{icons:MaterialIconExt Kind=History}" />
+                      Icon="{icons:MaterialIconExt Kind=History}"
+                      ItemsSource="{Binding RecentDocumentMenuItems}" />
             <Separator />
             <MenuItem Header="{x:Static i18n:Resources.Menu_ExportSubtitles}"
                       Icon="{icons:MaterialIconExt Kind=FileExportOutline}"
-                      Command="{Binding ExportSubtitleCommand}"/>
+                      Command="{Binding ExportSubtitleCommand}" />
             <Separator />
             <MenuItem Header="{x:Static i18n:Resources.Menu_OpenProject}"
                       Icon="{icons:MaterialIconExt Kind=ArchiveArrowUpOutline}"
@@ -49,6 +50,9 @@
             <MenuItem Header="{x:Static i18n:Resources.Menu_SaveProject}"
                       Icon="{icons:MaterialIconExt Kind=ArchiveArrowDownOutline}"
                       Command="{Binding SaveProjectCommand}" />
+            <MenuItem Header="{x:Static i18n:Resources.Menu_RecentProjects}"
+                      Icon="{icons:MaterialIconExt Kind=History}"
+                      ItemsSource="{Binding RecentProjectMenuItems}" />
             <Separator />
             <MenuItem Header="{x:Static i18n:Resources.Menu_CloseTab}"
                       Icon="{icons:MaterialIconExt Kind=TabRemove}"
@@ -56,8 +60,6 @@
             <MenuItem Header="{x:Static i18n:Resources.Menu_CloseProject}"
                       Icon="{icons:MaterialIconExt Kind=ArchiveRemoveOutline}"
                       Command="{Binding CloseProjectCommand}" />
-            <MenuItem Header="{x:Static i18n:Resources.Menu_RecentProjects}"
-                      Icon="{icons:MaterialIconExt Kind=History}" />
             <Separator />
             <MenuItem Header="{x:Static i18n:Resources.Menu_Quit}"
                       Icon="{icons:MaterialIconExt Kind=ExitRun}"
@@ -122,7 +124,7 @@
             <Separator />
             <MenuItem Header="{x:Static i18n:Resources.Menu_JumpTo}"
                       Icon="{icons:MaterialIconExt Kind=BullseyeArrow}"
-                      Command="{Binding ShowJumpDialogCommand}"/>
+                      Command="{Binding ShowJumpDialogCommand}" />
         </MenuItem>
         <MenuItem Header="{x:Static i18n:Resources.Menu_Audio}">
             <MenuItem Header="{x:Static i18n:Resources.Menu_OpenAudio}"
@@ -146,7 +148,7 @@
         <MenuItem Header="{x:Static i18n:Resources.Menu_Scripts}"
                   ItemsSource="{Binding ScriptMenuItems}" />
         <MenuItem Header="{x:Static i18n:Resources.Menu_Layouts}"
-                  ItemsSource="{Binding LayoutMenuItems}"/>
+                  ItemsSource="{Binding LayoutMenuItems}" />
         <MenuItem Header="{x:Static i18n:Resources.Menu_Help}">
             <MenuItem Header="{x:Static i18n:Resources.Menu_Help}"
                       Icon="{icons:MaterialIconExt Kind=HelpCircleOutline}"
