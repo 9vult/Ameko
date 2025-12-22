@@ -114,6 +114,12 @@ file class MockPersistence : IPersistence
     public string PlaygroundJs { get; set; } = string.Empty;
 
     /// <inheritdoc />
+    public IReadOnlyList<Uri> RecentDocuments { get; } = [];
+
+    /// <inheritdoc />
+    public IReadOnlyList<Uri> RecentProjects { get; } = [];
+
+    /// <inheritdoc />
     public void SetScaleForRes(int height, ScaleFactor scaleFactor) { }
 
     /// <inheritdoc />
@@ -130,6 +136,18 @@ file class MockPersistence : IPersistence
     {
         return -1;
     }
+
+    /// <inheritdoc />
+    public void AddRecentDocument(Uri document) { }
+
+    /// <inheritdoc />
+    public void ClearRecentDocuments() { }
+
+    /// <inheritdoc />
+    public void AddRecentProject(Uri project) { }
+
+    /// <inheritdoc />
+    public void ClearRecentProjects() { }
 
     public bool Save()
     {

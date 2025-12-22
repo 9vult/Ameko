@@ -38,6 +38,8 @@ public class Persistence : BindableBase, IPersistence
     private double _visualizationScaleY;
     private Dictionary<int, ScaleFactor> _scalesForRes;
     private Dictionary<string, int> _audioTrackForVideo;
+    private List<Uri> _recentDocuments;
+    private List<Uri> _recentProjects;
 
     /// <inheritdoc />
     public string LayoutName
@@ -82,6 +84,12 @@ public class Persistence : BindableBase, IPersistence
     }
 
     /// <inheritdoc />
+    public IReadOnlyList<Uri> RecentDocuments => _recentDocuments;
+
+    /// <inheritdoc />
+    public IReadOnlyList<Uri> RecentProjects => _recentProjects;
+
+    /// <inheritdoc />
     public void SetScaleForRes(int height, ScaleFactor scaleFactor)
     {
         _scalesForRes[height] = scaleFactor;
@@ -103,6 +111,40 @@ public class Persistence : BindableBase, IPersistence
     public int GetAudioTrackForVideo(string pathHash)
     {
         return _audioTrackForVideo.GetValueOrDefault(pathHash, -1);
+    }
+
+    /// <inheritdoc />
+    public void AddRecentDocument(Uri document)
+    {
+        _recentDocuments.Remove(document);
+        _recentDocuments.Insert(0, document);
+        if (_recentDocuments.Count > 10)
+            _recentDocuments.RemoveAt(_recentDocuments.Count - 1);
+        RaisePropertyChanged(nameof(RecentDocuments));
+    }
+
+    /// <inheritdoc />
+    public void ClearRecentDocuments()
+    {
+        _recentDocuments.Clear();
+        RaisePropertyChanged(nameof(RecentDocuments));
+    }
+
+    /// <inheritdoc />
+    public void AddRecentProject(Uri project)
+    {
+        _recentProjects.Remove(project);
+        _recentProjects.Insert(0, project);
+        if (_recentProjects.Count > 10)
+            _recentProjects.RemoveAt(_recentProjects.Count - 1);
+        RaisePropertyChanged(nameof(RecentProjects));
+    }
+
+    /// <inheritdoc />
+    public void ClearRecentProjects()
+    {
+        _recentProjects.Clear();
+        RaisePropertyChanged(nameof(RecentProjects));
     }
 
     /// <inheritdoc />
@@ -134,6 +176,8 @@ public class Persistence : BindableBase, IPersistence
                 PlaygroundJs = StringEncoder.Base64Encode(_playgroundJs),
                 ScalesForRes = new Dictionary<int, ScaleFactor>(_scalesForRes),
                 AudioTrackForVideo = new Dictionary<string, int>(_audioTrackForVideo),
+                RecentDocuments = [.. _recentDocuments],
+                RecentProjects = [.. _recentProjects],
             };
 
             var content = JsonSerializer.Serialize(model, JsonOptions);
@@ -185,6 +229,8 @@ public class Persistence : BindableBase, IPersistence
                 _playgroundJs = StringEncoder.Base64Decode(model.PlaygroundJs),
                 _scalesForRes = new Dictionary<int, ScaleFactor>(model.ScalesForRes),
                 _audioTrackForVideo = new Dictionary<string, int>(model.AudioTrackForVideo),
+                _recentDocuments = [.. model.RecentDocuments],
+                _recentProjects = [.. model.RecentProjects],
             };
             logger.LogInformation("Done!");
             return result;
@@ -208,6 +254,8 @@ public class Persistence : BindableBase, IPersistence
 
         _scalesForRes = [];
         _audioTrackForVideo = [];
+        _recentDocuments = [];
+        _recentProjects = [];
 
         _layoutName = "Default";
         _useColorRing = false;

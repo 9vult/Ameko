@@ -39,6 +39,16 @@ public interface IPersistence
     string PlaygroundJs { get; set; }
 
     /// <summary>
+    /// Paths to recently-opened documents
+    /// </summary>
+    IReadOnlyList<Uri> RecentDocuments { get; }
+
+    /// <summary>
+    /// Paths to recently-opened projects
+    /// </summary>
+    IReadOnlyList<Uri> RecentProjects { get; }
+
+    /// <summary>
     /// Set the scale for a video resolution
     /// </summary>
     /// <param name="height">Height of the video in pixels</param>
@@ -65,6 +75,28 @@ public interface IPersistence
     /// <param name="pathHash">Hashed video path</param>
     /// <returns>The scale factor (or -1)</returns>
     int GetAudioTrackForVideo(string pathHash);
+
+    /// <summary>
+    /// Add a document to the recents list
+    /// </summary>
+    /// <param name="document">Path to the document</param>
+    void AddRecentDocument(Uri document);
+
+    /// <summary>
+    /// Clear the recent documents list
+    /// </summary>
+    void ClearRecentDocuments();
+
+    /// <summary>
+    /// Add a project to the recents list
+    /// </summary>
+    /// <param name="project">Path to the project</param>
+    void AddRecentProject(Uri project);
+
+    /// <summary>
+    /// Clear the recent projects list
+    /// </summary>
+    void ClearRecentProjects();
 
     /// <summary>
     /// Write the persistence data to file

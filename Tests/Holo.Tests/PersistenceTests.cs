@@ -88,7 +88,9 @@ public class PersistenceTests
             "PlaygroundCs": "",
             "PlaygroundJs": "",
             "ScalesForRes": {},
-            "AudioTrackForVideo": {}
+            "AudioTrackForVideo": {},
+            "RecentDocuments": [],
+            "RecentProjects": []
         }
         """;
 }
