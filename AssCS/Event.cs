@@ -22,7 +22,7 @@ public partial class Event(int id) : BindableBase, IEntry
     private Time _end = Time.FromSeconds(5);
     private string _style = "Default";
     private string _actor = string.Empty;
-    private Margins _margins = new(20, 20, 20);
+    private Margins _margins = new(0, 0, 0);
     private string _effect = string.Empty;
     private string _text = string.Empty;
 
