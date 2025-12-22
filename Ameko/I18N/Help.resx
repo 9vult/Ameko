@@ -27,4 +27,7 @@
     <data name="Help_Tab_Scripts" xml:space="preserve">
         <value>Scripts</value>
     </data>
+    <data name="Help_Section_UserInterface" xml:space="preserve">
+        <value>User Interface</value>
+    </data>
 </root>

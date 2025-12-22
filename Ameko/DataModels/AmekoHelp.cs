@@ -2,7 +2,7 @@
 
 namespace Ameko.DataModels;
 
-public class ScriptHelp
+public class AmekoHelp
 {
     public required string DisplayName { get; init; }
     public required string Content { get; init; }

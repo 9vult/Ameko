@@ -7,6 +7,7 @@ using System.IO.Abstractions;
 using System.Linq;
 using Ameko.DataModels;
 using Avalonia.Platform;
+using Holo.Configuration;
 using Holo.Scripting;
 using Markdig;
 using Markdown.ColorCode;
@@ -14,8 +15,11 @@ using ReactiveUI;
 
 namespace Ameko.ViewModels.Windows;
 
-public partial class HelpWindowViewModel(IPackageManager packageManager, IFileSystem fileSystem)
-    : ViewModelBase
+public partial class HelpWindowViewModel(
+    IPackageManager packageManager,
+    IFileSystem fileSystem,
+    IConfiguration config
+) : ViewModelBase
 {
     private static readonly MarkdownPipeline Pipeline = new MarkdownPipelineBuilder()
         .UseAdvancedExtensions()
@@ -26,17 +30,61 @@ public partial class HelpWindowViewModel(IPackageManager packageManager, IFileSy
         AssetLoader.Open(new Uri("avares://Ameko/Assets/Css/md.dark.css"))
     ).ReadToEnd();
 
-    public List<ScriptHelp> ScriptHelps =>
-        packageManager
-            .InstalledPackages.Where(m => !string.IsNullOrEmpty(m.HelpUrl))
-            .Select(m => new ScriptHelp
+    private static readonly HelpArticle[] HelpArticles =
+    [
+        new(I18N.Help.Help_Section_UserInterface, "user-interface.md"),
+    ];
+
+    public List<AmekoHelp> AmekoHelps
+    {
+        get
+        {
+            List<AmekoHelp> result = [];
+            var culture = config.Culture;
+
+            foreach (var article in HelpArticles)
             {
-                DisplayName = m.DisplayName,
-                Content = BuildScriptHelp(PackageManager.HelpPath(m)),
-            })
-            .ToList();
+                // Fall back to the English help if localized help for the article doesn't exist
+                var culturePath = new Uri(
+                    $"avares://Ameko/Assets/Help/{culture}/{article.FileName}"
+                );
+                var fallbackPath = new Uri($"avares://Ameko/Assets/Help/en-US/{article.FileName}");
+                var uri = AssetLoader.Exists(culturePath) ? culturePath : fallbackPath;
+
+                var md = new StreamReader(AssetLoader.Open(uri)).ReadToEnd();
+                var content =
+                    $"<style>\n{DarkCss}\n</style>\n<body>\n"
+                    + Markdig.Markdown.ToHtml(md, Pipeline)
+                    + "\n</body>";
+
+                result.Add(new AmekoHelp { DisplayName = article.Name, Content = content });
+            }
+            return result;
+        }
+    }
+
+    public List<ScriptHelp> ScriptHelps
+    {
+        get
+        {
+            return packageManager
+                .InstalledPackages.Where(m => !string.IsNullOrEmpty(m.HelpUrl))
+                .Select(m => new ScriptHelp
+                {
+                    DisplayName = m.DisplayName,
+                    Content = BuildScriptHelp(PackageManager.HelpPath(m)),
+                })
+                .ToList();
+        }
+    }
 
     public ScriptHelp? SelectedScriptHelp
+    {
+        get;
+        set => this.RaiseAndSetIfChanged(ref field, value);
+    }
+
+    public AmekoHelp? SelectedAmekoHelp
     {
         get;
         set => this.RaiseAndSetIfChanged(ref field, value);
@@ -57,4 +105,6 @@ public partial class HelpWindowViewModel(IPackageManager packageManager, IFileSy
             + Markdig.Markdown.ToHtml(raw, Pipeline)
             + "\n</body>";
     }
+
+    private record HelpArticle(string Name, string FileName);
 }

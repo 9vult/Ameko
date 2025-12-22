@@ -48,6 +48,10 @@ ul, ol {
     margin: 0.3em 0 0 0.5em;
 }
 
+ul ul li {
+    list-style-type: disc;
+}
+
 /* Blockquotes */
 blockquote {
     border-left: 4px solid #30363d;

@@ -26,7 +26,13 @@
         Title="{x:Static i18n:Help.Help_WindowTitle}">
     <TabControl TabStripPlacement="Bottom">
         <TabItem Header="{x:Static i18n:Help.Help_Tab_Ameko}">
-            
+            <DockPanel>
+                <ListBox DockPanel.Dock="Left"
+                         ItemsSource="{Binding AmekoHelps}"
+                         SelectedItem="{Binding SelectedAmekoHelp}"
+                         DisplayMemberBinding="{Binding DisplayName}" />
+                <HtmlPanel Name="HtmlPanel" Text="{Binding SelectedAmekoHelp.Content, FallbackValue=''}" />                
+            </DockPanel>
         </TabItem>
         <TabItem Header="{x:Static i18n:Help.Help_Tab_Scripts}">
             <DockPanel>
