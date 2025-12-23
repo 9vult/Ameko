@@ -165,7 +165,7 @@ public partial class PackageManager : IPackageManager
                 }
             }
 
-            _installedPackages.Add(package);
+            AssCS.Utilities.ListExtensions.AddSorted(_installedPackages, package);
             _logger.LogInformation(
                 "Successfully installed package {Package}",
                 package.QualifiedName
@@ -415,7 +415,7 @@ public partial class PackageManager : IPackageManager
                     continue;
                 }
                 _packageMap.Add(package.QualifiedName, package);
-                _packageStore.Add(package);
+                AssCS.Utilities.ListExtensions.AddSorted(_packageStore, package);
 
                 if (!IsPackageInstalled(package))
                     continue;
@@ -432,7 +432,10 @@ public partial class PackageManager : IPackageManager
                         var sidecar = JsonSerializer.Deserialize<Package>(sidecarFs, JsonOptions);
                         if (sidecar is null)
                             _logger.LogWarning("Failed to read sidecar {S}", sidecarPath);
-                        _installedPackages.Add(sidecar ?? package);
+                        AssCS.Utilities.ListExtensions.AddSorted(
+                            _installedPackages,
+                            sidecar ?? package
+                        );
                     }
                     catch (Exception e)
                     {
@@ -441,12 +444,12 @@ public partial class PackageManager : IPackageManager
                             sidecarPath,
                             e
                         );
-                        _installedPackages.Add(package);
+                        AssCS.Utilities.ListExtensions.AddSorted(_installedPackages, package);
                     }
                 }
                 else
                 {
-                    _installedPackages.Add(package);
+                    AssCS.Utilities.ListExtensions.AddSorted(_installedPackages, package);
                 }
             }
         }

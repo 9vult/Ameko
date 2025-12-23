@@ -10,7 +10,7 @@ namespace Holo.Scripting.Models;
 /// A Package is an entry in a <see cref="Repository"/>
 /// for a <see cref="Scripting.HoloScript"/> or <see cref="Scripting.HoloLibrary"/>
 /// </summary>
-public record Package
+public record Package : IComparable<Package>
 {
     /// <summary>
     /// Type of package
@@ -123,11 +123,6 @@ public record Package
             && IsBetaChannel == other.IsBetaChannel;
     }
 
-    public override int GetHashCode()
-    {
-        return HashCode.Combine((int)Type, QualifiedName, Author, IsBetaChannel);
-    }
-
     /// <summary>
     /// Generate a Markdown-formated changelog
     /// </summary>
@@ -210,4 +205,17 @@ public record Package
     }
 
     #endregion Serialization fields
+
+    /// <inheritdoc />
+    public int CompareTo(Package? other)
+    {
+        if (other is not null)
+            return string.Compare(DisplayName, other.DisplayName, StringComparison.Ordinal);
+        return -1;
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine((int)Type, QualifiedName, Author, IsBetaChannel);
+    }
 }
