@@ -127,7 +127,8 @@
                                    Text="{Binding StagedFiles.Count}" />
                     </Grid>
                     <ListBox ItemsSource="{Binding StagedFiles}"
-                             BorderBrush="Transparent">
+                             BorderBrush="Transparent"
+                             Classes="Small">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <Grid ColumnDefinitions="*, Auto"
@@ -139,6 +140,7 @@
                                             Padding="0"
                                             Background="Transparent"
                                             BorderThickness="0"
+                                            Classes="Small"
                                             Content="{icons:MaterialIconExt Kind=Minus}"
                                             ToolTip.Tip="{x:Static i18n:Git.Git_Button_Unstage_ToolTip}"
                                             Command="{Binding $parent[StackPanel].((vm:GitToolboxViewModel)DataContext).UnstageCommand, FallbackValue=.}"
@@ -158,7 +160,8 @@
                                    Text="{Binding UnstagedFiles.Count}" />
                     </Grid>
                     <ListBox ItemsSource="{Binding UnstagedFiles}"
-                             BorderBrush="Transparent">
+                             BorderBrush="Transparent"
+                             Classes="Small">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <Grid ColumnDefinitions="*, Auto"
@@ -170,6 +173,7 @@
                                             Padding="0"
                                             Background="Transparent"
                                             BorderThickness="0"
+                                            Classes="Small"
                                             Content="{icons:MaterialIconExt Kind=Plus}"
                                             ToolTip.Tip="{x:Static i18n:Git.Git_Button_Stage_ToolTip}"
                                             Command="{Binding $parent[StackPanel].((vm:GitToolboxViewModel)DataContext).StageCommand, FallbackValue=.}"
