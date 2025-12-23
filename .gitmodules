@@ -1,0 +1,3 @@
+[submodule "Packaging/Ameko-Native-Bin"]
+	path = Packaging/Ameko-Native-Bin
+	url = https://github.com/AmekoProject/Ameko-Native-Bin.git
