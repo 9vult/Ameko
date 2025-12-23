@@ -39,6 +39,7 @@ jobs:
       - uses: actions/checkout@v5
         with:
           fetch-depth: 0
+          submodules: recursive
       - uses: mlugg/setup-zig@v2
         with:
           version: 0.15.1
@@ -46,15 +47,13 @@ jobs:
         with:
           dotnet-version: "${{ env.DOTNET_VERSION }}.x"
 
-      - name: Download dependencies
+      - name: Copy Dependencies
         shell: pwsh
         run: |
-          $url = "https://files.catbox.moe/s2oifh.zip"
-          $zip = "$env:RUNNER_TEMP/mizuki-deps.zip"
+          $origin = "Packaging/Ameko-Native-Bin/win-x64/*"
           $lib = "Mizuki/lib"
           New-Item -ItemType Directory -Path $lib -Force | Out-Null
-          Invoke-WebRequest -Uri $url -OutFile $zip
-          Expand-Archive -Path $zip -Destinationpath $lib -Force
+          Copy-Item -Path $origin -Destination $lib -Recurse -Force
 
       - name: Build Mizuki
         shell: pwsh
