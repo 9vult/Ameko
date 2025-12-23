@@ -30,4 +30,7 @@
     <data name="Help_Section_UserInterface" xml:space="preserve">
         <value>User Interface</value>
     </data>
+    <data name="Help_Section_Projects" xml:space="preserve">
+        <value>Projects</value>
+    </data>
 </root>

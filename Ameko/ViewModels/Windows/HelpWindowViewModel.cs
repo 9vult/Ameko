@@ -33,6 +33,7 @@ public partial class HelpWindowViewModel(
     private static readonly HelpArticle[] HelpArticles =
     [
         new(I18N.Help.Help_Section_UserInterface, "user-interface.md"),
+        new(I18N.Help.Help_Section_Projects, "projects.md"),
     ];
 
     public List<AmekoHelp> AmekoHelps

@@ -68,5 +68,11 @@ namespace Ameko.I18N {
                 return ResourceManager.GetString("Help_Section_UserInterface", resourceCulture);
             }
         }
+        
+        public static string Help_Section_Projects {
+            get {
+                return ResourceManager.GetString("Help_Section_Projects", resourceCulture);
+            }
+        }
     }
 }
