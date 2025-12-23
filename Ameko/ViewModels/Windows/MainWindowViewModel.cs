@@ -504,6 +504,7 @@ public partial class MainWindowViewModel : ViewModelBase
                 GenerateRecentsMenus();
             }
         };
+        GenerateRecentsMenus();
 
         _messageService.MessageReady += (_, msg) => CurrentMessage = msg.Content;
         _messageService.QueueDrained += (_, _) => CurrentMessage = string.Empty;
