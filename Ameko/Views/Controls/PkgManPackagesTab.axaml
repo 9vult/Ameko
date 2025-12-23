@@ -38,7 +38,13 @@
                     <DataTemplate x:DataType="holo:Package">
                         <Grid ColumnDefinitions="Auto, *, Auto, Auto"
                               ColumnSpacing="2"
-                              ToolTip.Tip="{Binding QualifiedName}">
+                              Background="Transparent">
+                            <ToolTip.Tip>
+                                <StackPanel Orientation="Horizontal" Spacing="5">
+                                    <TextBlock Text="{Binding QualifiedName}" />
+                                    <TextBlock Text="{Binding License, StringFormat='({0})'}" />
+                                </StackPanel>
+                            </ToolTip.Tip>
                             <Image Grid.Column="0"
                                    VerticalAlignment="Center"
                                    Source="{Binding Type, Converter={StaticResource IconConverter}}" />
@@ -86,7 +92,13 @@
                     <DataTemplate x:DataType="holo:Package">
                         <Grid ColumnDefinitions="Auto, *, Auto, Auto, Auto"
                               ColumnSpacing="2"
-                              ToolTip.Tip="{Binding QualifiedName}">
+                              Background="Transparent">
+                            <ToolTip.Tip>
+                                <StackPanel Orientation="Horizontal" Spacing="5">
+                                    <TextBlock Text="{Binding QualifiedName}" />
+                                    <TextBlock Text="{Binding License, StringFormat='({0})'}" />
+                                </StackPanel>
+                            </ToolTip.Tip>
                             <Image Grid.Column="0"
                                    VerticalAlignment="Center"
                                    Source="{Binding Type, Converter={StaticResource IconConverter}}" />

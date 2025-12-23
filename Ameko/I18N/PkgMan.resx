@@ -153,4 +153,7 @@
     <data name="PkgMan_Button_Changelog_ToolTip" xml:space="preserve">
         <value>Show Changelog</value>
     </data>
+    <data name="PkgMan_Info_License" xml:space="preserve">
+        <value>License</value>
+    </data>
 </root>
