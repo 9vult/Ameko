@@ -546,6 +546,7 @@ public class PackageManagerTests
         Dependencies = [],
         Tags = [],
         Url = string.Empty,
+        License = "MPL-2.0",
         Changelog = [],
     };
 
@@ -561,6 +562,7 @@ public class PackageManagerTests
         Dependencies = [],
         Tags = [],
         Url = string.Empty,
+        License = "MPL-2.0",
         Changelog = [],
     };
 
@@ -576,6 +578,7 @@ public class PackageManagerTests
         Dependencies = [],
         Tags = [],
         Url = string.Empty,
+        License = "MPL-2.0",
         Changelog = [],
     };
 
@@ -591,6 +594,7 @@ public class PackageManagerTests
         Dependencies = [],
         Tags = ["Example", "Dialogue"],
         Url = "https://dc.ameko.moe/scripts/9volt/9volt.example1.cs",
+        License = "MPL-2.0",
         Changelog = [],
     };
 
@@ -606,6 +610,7 @@ public class PackageManagerTests
         Dependencies = [],
         Tags = ["Example", "Dialogue"],
         Url = "https://dc.ameko.moe/scripts/9volt/9volt.example2.cs",
+        License = "MPL-2.0",
         Changelog = [],
     };
 
@@ -621,6 +626,7 @@ public class PackageManagerTests
         Dependencies = [],
         Tags = ["Calculator"],
         Url = "https://dc.ameko.moe/scripts/9volt/9volt.calculator.lib.cs",
+        License = "MPL-2.0",
         Changelog = [],
     };
 
@@ -639,6 +645,7 @@ public class PackageManagerTests
               "Author": "9volt",
               "Version": 0.1,
               "IsBetaChannel": false,
+              "License": "MPL-2.0",
               "Dependencies": [],
               "Tags": [ "Example", "Dialogue" ],
               "Url": "https://dc.ameko.moe/scripts/9volt/9volt.example1.cs",
@@ -664,6 +671,7 @@ public class PackageManagerTests
               "Author": "9volt",
               "Version": 0.5,
               "IsBetaChannel": false,
+              "License": "MPL-2.0",
               "Dependencies": [],
               "Tags": [ "Example", "Dialogue" ],
               "Url": "https://dc.ameko.moe/scripts/9volt/9volt.example1.cs",
@@ -689,6 +697,7 @@ public class PackageManagerTests
               "Author": "9volt",
               "Version": 0.1,
               "IsBetaChannel": false,
+              "License": "MPL-2.0",
               "Dependencies": [ "9volt.calculator" ],
               "Tags": [ "Example", "Dialogue" ],
               "Url": "https://dc.ameko.moe/scripts/9volt/9volt.example2.cs",
@@ -702,6 +711,7 @@ public class PackageManagerTests
               "Author": "9volt",
               "Version": 0.1,
               "IsBetaChannel": false,
+              "License": "MPL-2.0",
               "Dependencies": [],
               "Tags": [ "Calculator" ],
               "Url": "https://dc.ameko.moe/scripts/9volt/9volt.calculator.lib.cs",
@@ -714,7 +724,7 @@ public class PackageManagerTests
 
     private const string ScriptExample1Url = "https://dc.ameko.moe/scripts/9volt/9volt.example1.cs";
     private const string ScriptExample1 = """
-        // SPDX-License-Identifier: MIT
+        // SPDX-License-Identifier: MPL-2.0
         using AssCS;
         using Holo;
         using Holo.Scripting;
@@ -750,6 +760,7 @@ public class PackageManagerTests
           "Author": "9volt",
           "Version": 0.1,
           "IsBetaChannel": false,
+          "License": "MPL-2.0",
           "Dependencies": [],
           "Tags": [ "Example", "Dialogue" ],
           "Url": "https://dc.ameko.moe/scripts/9volt/9volt.example1.cs",

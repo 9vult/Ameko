@@ -57,6 +57,20 @@ public record Package
     public required bool IsBetaChannel { get; init; }
 
     /// <summary>
+    /// License the package is licensed under
+    /// </summary>
+    /// <remarks>
+    /// Use SPDX license identifiers: <see href="https://spdx.org/licenses/"/>
+    /// </remarks>
+    /// <example>
+    /// <list type="bullet">
+    /// <item>MPL-2.0</item>
+    /// <item>GPL-3.0-only</item>
+    /// </list>
+    /// </example>
+    public required string License { get; init; }
+
+    /// <summary>
     /// List of changelog entries
     /// </summary>
     public required Changelog[] Changelog { get; init; }
