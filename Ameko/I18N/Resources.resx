@@ -387,4 +387,10 @@
     <data name="Menu_RecentClear" xml:space="preserve">
         <value>Clear</value>
     </data>
+    <data name="Menu_SnapKf_Start" xml:space="preserve">
+        <value>Snap _Start to Keyframe (500ms)</value>
+    </data>
+    <data name="Menu_SnapKf_End" xml:space="preserve">
+        <value>Snap _End to Keyframe (500ms)</value>
+    </data>
 </root>

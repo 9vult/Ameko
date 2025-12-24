@@ -9,10 +9,12 @@ using Ameko.ViewModels.Dialogs;
 using Ameko.Views.Dialogs;
 using Ameko.Views.Windows;
 using AssCS;
+using AssCS.History;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Threading;
 using Holo;
+using Holo.Media;
 using Holo.Media.Providers;
 using Holo.Models;
 using Material.Icons;
@@ -581,6 +583,62 @@ public partial class MainWindowViewModel : ViewModelBase
     }
 
     /// <summary>
+    /// Snap start of active event to nearest keyframe
+    /// </summary>
+    /// <returns></returns>
+    private ReactiveCommand<Unit, Unit> CreateSnapStartToKeyframeCommand()
+    {
+        return ReactiveCommand.Create(() =>
+        {
+            var wsp = ProjectProvider.Current.WorkingSpace;
+            if (wsp is null)
+                return;
+
+            var mc = wsp.MediaController;
+            if (!mc.IsVideoLoaded)
+                return;
+            var @event = wsp.SelectionManager.ActiveEvent;
+            var startFrame = mc.VideoInfo.FrameFromTime(@event.Start);
+            var nearestKf = FindNearestKeyframeTo(startFrame, mc.VideoInfo);
+            var kfTime = mc.VideoInfo.TimeFromFrame(nearestKf);
+
+            if (Math.Abs((@event.Start - kfTime).TotalMilliseconds) > 500)
+                return;
+
+            @event.Start = kfTime;
+            wsp.Commit(@event, ChangeType.ModifyEventMeta, false);
+        });
+    }
+
+    /// <summary>
+    /// Snap end of active event to nearest keyframe
+    /// </summary>
+    /// <returns></returns>
+    private ReactiveCommand<Unit, Unit> CreateSnapEndToKeyframeCommand()
+    {
+        return ReactiveCommand.Create(() =>
+        {
+            var wsp = ProjectProvider.Current.WorkingSpace;
+            if (wsp is null)
+                return;
+
+            var mc = wsp.MediaController;
+            if (!mc.IsVideoLoaded)
+                return;
+            var @event = wsp.SelectionManager.ActiveEvent;
+            var endFrame = mc.VideoInfo.FrameFromTime(@event.End);
+            var nearestKf = FindNearestKeyframeTo(endFrame, mc.VideoInfo);
+            var kfTime = mc.VideoInfo.TimeFromFrame(nearestKf);
+
+            if (Math.Abs((@event.End - kfTime).TotalMilliseconds) > 500)
+                return;
+
+            @event.End = kfTime;
+            wsp.Commit(@event, ChangeType.ModifyEventMeta, false);
+        });
+    }
+
+    /// <summary>
     /// Display the Open Video dialog
     /// </summary>
     private ReactiveCommand<Unit, Unit> CreateOpenVideoCommand()
@@ -1101,5 +1159,31 @@ public partial class MainWindowViewModel : ViewModelBase
             else
                 _spellcheckService.RebuildDictionary(); // Installed
         });
+    }
+
+    /// <summary>
+    /// Finds the nearest keyframe to a frame
+    /// </summary>
+    /// <param name="frame">Starting frame</param>
+    /// <param name="video">Video information</param>
+    /// <returns>Nearest keyframe</returns>
+    private static int FindNearestKeyframeTo(int frame, VideoInfo video)
+    {
+        var keyframes = video.Keyframes;
+        var idx = keyframes.BinarySearch(frame);
+        if (idx >= 0)
+            return idx;
+
+        idx = ~idx;
+        if (idx <= 0)
+            return keyframes[0];
+        if (idx > keyframes.Length)
+            return keyframes[^1];
+
+        var before = keyframes[idx - 1];
+        var after = keyframes[idx];
+
+        // Return whichever is closer
+        return Math.Abs(frame - before) <= Math.Abs(after - frame) ? before : after;
     }
 }

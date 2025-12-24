@@ -159,6 +159,12 @@ public partial class MainWindowViewModel : ViewModelBase
     [KeybindTarget("ameko.document.shiftTimes", "Ctrl+I", KeybindContext.Global)]
     public ICommand ShowShiftTimesDialogCommand { get; }
 
+    [KeybindTarget("ameko.event.snap.startKf", KeybindContext.Global)]
+    public ICommand SnapStartToKeyframeCommand { get; }
+
+    [KeybindTarget("ameko.event.snap.endKf", KeybindContext.Global)]
+    public ICommand SnapEndToKeyframeCommand { get; }
+
     // Video
     [KeybindTarget("ameko.video.open", KeybindContext.Global)]
     public ICommand OpenVideoCommand { get; }
@@ -450,6 +456,8 @@ public partial class MainWindowViewModel : ViewModelBase
         ShowProjectConfigDialogCommand = CreateShowProjectConfigDialogCommand();
         // Timing
         ShowShiftTimesDialogCommand = CreateShowShiftTimesDialogCommand();
+        SnapStartToKeyframeCommand = CreateSnapStartToKeyframeCommand();
+        SnapEndToKeyframeCommand = CreateSnapEndToKeyframeCommand();
         // Video
         OpenVideoCommand = CreateOpenVideoCommand();
         OpenVideoNoGuiCommand = CreateOpenVideoNoGuiCommand();

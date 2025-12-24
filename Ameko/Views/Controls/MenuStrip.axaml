@@ -111,6 +111,13 @@
             <MenuItem Header="{x:Static i18n:Resources.Menu_ShiftTimes}"
                       Icon="{icons:MaterialIconExt Kind=SwapHorizontal}"
                       Command="{Binding ShowShiftTimesDialogCommand}" />
+            <Separator />
+            <MenuItem Header="{x:Static i18n:Resources.Menu_SnapKf_Start}"
+                      Icon="{icons:MaterialIconExt Kind=ArrowHorizontalLock}"
+                      Command="{Binding SnapStartToKeyframeCommand}" />
+            <MenuItem Header="{x:Static i18n:Resources.Menu_SnapKf_End}"
+                      Icon="{icons:MaterialIconExt Kind=ArrowHorizontalLock}"
+                      Command="{Binding SnapEndToKeyframeCommand}" />
         </MenuItem>
         <MenuItem Header="{x:Static i18n:Resources.Menu_Video}">
             <MenuItem Header="{x:Static i18n:Resources.Menu_OpenVideo}"
