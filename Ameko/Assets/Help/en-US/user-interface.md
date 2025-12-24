@@ -118,17 +118,26 @@ Right-click on the video to open the context menu.
 
 ![](../assets/audio-area.png)
 
-The audio area displays an audio visualization, keyframes, and event start/end times. The visualization does not scroll
-automatically with the video, but it will move to the start of the selected line if a seek (auto or manual) is
-performed.
+The audio area displays an audio visualization. The visualization does not scroll automatically with the video, but it
+will move to the start of the selected line if a seek (auto or manual) is performed.
 
-At the bottom is a seekbar, and to the right are controls for horizontal and vertical scale. The visualization contains
-the following information:
+Below the visualization is a seekbar and controls, and to the right are controls for horizontal and vertical scale. The
+visualization contains the following information:
 
 - Keyframes, indicated by a gray line.
 - Seconds and Quarter-seconds, indicated by short red ticks and shorter gray ticks at the top and bottom.
 - Current video frame, indicated by a red line.
+- Current audio position, indicated by a blue line (only displayed while audio is playing).
 - Subtitle lines, indicated by a purple box starting at the line's start time and ending at the line's end time.
+
+The audio playback controls, in order:
+
+- Play Active Event: Plays from the Start time to the End time. Also doubles as a pause button.
+- Play Before: Plays 500ms before the Start time of the active event.
+- Play First: Plays the first 500ms of the active event.
+- Play Surrounding: Plays the duration of the active event, plus 500ms before the Start time and after the End time.
+- Play Last: Plays the last 500ms of the active event.
+- Play After: Plays 500ms after the End time of the active event.
 
 ## Tabs
 
