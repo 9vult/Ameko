@@ -22,8 +22,15 @@ public partial class TabItemVideoArea : ReactiveUserControl<TabItemViewModel>
                 .WhereNotNull()
                 .Subscribe(vm =>
                 {
-                    SeekBar.DragStarted += (_, _) => vm.Workspace.MediaController.Pause();
-                    SeekBar.DragEnded += (_, _) => vm.Workspace.MediaController.Resume();
+                    SeekBar.DragStarted += (_, _) =>
+                    {
+                        vm.Workspace.MediaController.Pause();
+                    };
+                    SeekBar.DragEnded += (_, _) =>
+                    {
+                        if (vm.Workspace.MediaController.IsPaused)
+                            vm.Workspace.MediaController.Resume();
+                    };
                 })
                 .DisposeWith(disposables);
         });
