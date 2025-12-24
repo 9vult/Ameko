@@ -64,30 +64,35 @@
             <!-- Controls -->
             <StackPanel Orientation="Horizontal" Grid.Row="1"
                         Spacing="2">
-                <Button ToolTip.Tip="Play/Pause Audio"
-                        Command="{Binding PlayPauseCommand}"
+                <Button ToolTip.Tip="Play/Pause audio for the active line"
+                        Command="{Binding PlayPauseAudioEventCommand}"
                         Classes="Small">
                     <StackPanel>
-                        <icons:MaterialIcon Kind="Play"
-                                            IsVisible="{Binding !Workspace.MediaController.IsPlaying}" />
+                        <icons:MaterialIcon Kind="SkipNext"
+                                            IsVisible="{Binding !Workspace.MediaController.IsAudioPlaying}" />
                         <icons:MaterialIcon Kind="Pause"
-                                            IsVisible="{Binding Workspace.MediaController.IsPlaying, FallbackValue=False}" />
+                                            IsVisible="{Binding Workspace.MediaController.IsAudioPlaying, FallbackValue=False}" />
                     </StackPanel>
                 </Button>
-                <Button Content="{icons:MaterialIconExt Kind=SkipNext}"
-                        ToolTip.Tip="Play audio for the active line"
-                        Classes="Small" />
                 <Button Content="{icons:MaterialIconExt Kind=ArrowCollapseRight}"
                         ToolTip.Tip="Play 500ms of audio before the active line"
+                        Command="{Binding PlayAudioBeforeCommand}"
                         Classes="Small" />
                 <Button Content="{icons:MaterialIconExt Kind=ArrowExpandRight}"
                         ToolTip.Tip="Play first 500ms of audio from the active line"
+                        Command="{Binding PlayAudioFirstCommand}"
                         Classes="Small" />
-                <Button Content="{icons:MaterialIconExt Kind=ArrowExpandRight}"
-                        ToolTip.Tip="Play 500ms of audio after the active line"
+                <Button Content="{icons:MaterialIconExt Kind=ArrowSplitVertical}"
+                        ToolTip.Tip="Play 500ms of audio before and after the active line"
+                        Command="{Binding PlayAudioSurroundCommand}"
                         Classes="Small" />
                 <Button Content="{icons:MaterialIconExt Kind=ArrowCollapseRight}"
                         ToolTip.Tip="Play last 500ms of audio from the active line"
+                        Command="{Binding PlayAudioLastCommand}"
+                        Classes="Small" />
+                <Button Content="{icons:MaterialIconExt Kind=ArrowExpandRight}"
+                        ToolTip.Tip="Play 500ms of audio after the active line"
+                        Command="{Binding PlayAudioAfterCommand}"
                         Classes="Small" />
             </StackPanel>
         </Grid>

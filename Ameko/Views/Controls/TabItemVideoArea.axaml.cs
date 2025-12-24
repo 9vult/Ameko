@@ -53,7 +53,7 @@ public partial class TabItemVideoArea : ReactiveUserControl<TabItemViewModel>
             case KeyModifiers.Alt:
                 // Only seek if not playing
                 var controller = ViewModel.Workspace.MediaController;
-                if (!controller.IsPlaying)
+                if (!controller.IsVideoPlaying)
                     controller.SeekTo(controller.CurrentFrame - (int)e.Delta.Y); // Down = forwards
                 e.Handled = true;
                 break;

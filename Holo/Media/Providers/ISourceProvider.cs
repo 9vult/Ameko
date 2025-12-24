@@ -114,7 +114,8 @@ public interface ISourceProvider
     /// <param name="pixelsPerMs">Pixels per millisecond - Horizontal scale</param>
     /// <param name="amplitudeScale">Amplitude scale factor - Vertical scale</param>
     /// <param name="startTime">Time to start at</param>
-    /// <param name="frameTime">Timestamp of the current video frame</param>
+    /// <param name="videoTime">Timestamp of the current video frame</param>
+    /// <param name="audioTime">Timestamp of the current audio frame</param>
     /// <param name="eventBounds">Array of bounds of events to display, in milliseconds</param>
     /// <param name="eventBoundsLength">Length of the <param name="eventBounds"> array</param></param>
     /// <returns>Output bitmap</returns>
@@ -124,7 +125,8 @@ public interface ISourceProvider
         double pixelsPerMs,
         double amplitudeScale,
         long startTime,
-        long frameTime,
+        long videoTime,
+        long audioTime,
         long* eventBounds,
         int eventBoundsLength
     );

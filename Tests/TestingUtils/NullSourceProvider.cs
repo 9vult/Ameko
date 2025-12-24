@@ -100,7 +100,8 @@ public unsafe class NullSourceProvider : ISourceProvider
         double pixelsPerMs,
         double amplitudeScale,
         long startTime,
-        long frameTime,
+        long videoTime,
+        long audioTime,
         long* eventBounds,
         int eventBoundsLength
     )

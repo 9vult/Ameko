@@ -8,7 +8,8 @@ const context = @import("context.zig");
 
 // Colors
 const color_waveform: u32 = 0xff00ff00;
-const color_playhead: u32 = 0xffff0000;
+const color_v_playhead: u32 = 0xffff0000;
+const color_a_playhead: u32 = 0xff00aeff;
 const color_qseconds: u32 = 0xffd0d0d0;
 const color_seconds: u32 = 0xfff85797;
 const color_event: u32 = 0xff937df8;
@@ -21,7 +22,8 @@ pub fn RenderWaveform(
     pixels_per_ms: f64,
     amplitude_scale: f64,
     start_time: f64,
-    playhead_ms: f64,
+    v_playhead_ms: f64,
+    a_playhead_ms: f64,
     event_bounds: [*]i64,
     event_bounds_len: usize,
 ) void {
@@ -154,16 +156,28 @@ pub fn RenderWaveform(
             event_bounds_len,
         );
 
-        // Draw playhead over everything
-        DrawPlayhead(
+        // Draw playheads over everything
+        DrawVideoPlayhead(
             bmp,
             bmp_width_f,
             bmp_height,
             pixels_per_ms,
             start_ms,
             end_ms,
-            playhead_ms,
+            v_playhead_ms,
         );
+
+        if (a_playhead_ms >= 0 and a_playhead_ms != v_playhead_ms) {
+            DrawAudioPlayhead(
+                bmp,
+                bmp_width_f,
+                bmp_height,
+                pixels_per_ms,
+                start_ms,
+                end_ms,
+                a_playhead_ms,
+            );
+        }
     }
 }
 
@@ -276,7 +290,7 @@ fn DrawEventBounds(
     }
 }
 
-fn DrawPlayhead(
+fn DrawVideoPlayhead(
     bmp: *frames.Bitmap,
     bmp_width_f: f64,
     bmp_height: u32,
@@ -291,7 +305,26 @@ fn DrawPlayhead(
     const x_f = delta / pixels_per_ms;
     if (x_f >= 0 and x_f < bmp_width_f) {
         const x: u32 = @intFromFloat(x_f);
-        DrawLine(bmp, x, 0, bmp_height, color_playhead);
+        DrawLine(bmp, x, 0, bmp_height, color_v_playhead);
+    }
+}
+
+fn DrawAudioPlayhead(
+    bmp: *frames.Bitmap,
+    bmp_width_f: f64,
+    bmp_height: u32,
+    pixels_per_ms: f64,
+    start_ms: f64,
+    end_ms: f64,
+    playhead_ms: f64,
+) void {
+    if (playhead_ms < start_ms or playhead_ms > end_ms) return;
+
+    const delta = playhead_ms - start_ms;
+    const x_f = delta / pixels_per_ms;
+    if (x_f >= 0 and x_f < bmp_width_f) {
+        const x: u32 = @intFromFloat(x_f);
+        DrawLine(bmp, x, 0, bmp_height, color_a_playhead);
     }
 }
 

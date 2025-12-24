@@ -153,6 +153,26 @@ public partial class TabItemViewModel : ViewModelBase
     [KeybindTarget("ameko.video.rotate.counterclockwise", KeybindContext.Video)]
     public ICommand RotateCounterclockwiseCommand { get; }
 
+    // Audio
+    [KeybindTarget("ameko.audio.play.event", KeybindContext.Audio)]
+    public ICommand PlayPauseAudioEventCommand { get; }
+
+    [KeybindTarget("ameko.audio.play.before", KeybindContext.Audio)]
+    public ICommand PlayAudioBeforeCommand { get; }
+
+    [KeybindTarget("ameko.audio.play.first", KeybindContext.Audio)]
+    public ICommand PlayAudioFirstCommand { get; }
+
+    [KeybindTarget("ameko.audio.play.surround", KeybindContext.Audio)]
+    public ICommand PlayAudioSurroundCommand { get; }
+
+    [KeybindTarget("ameko.audio.play.last", KeybindContext.Audio)]
+    public ICommand PlayAudioLastCommand { get; }
+
+    [KeybindTarget("ameko.audio.play.after", KeybindContext.Audio)]
+    public ICommand PlayAudioAfterCommand { get; }
+
+    // References
     [KeybindTarget("ameko.reference.shift.forward", KeybindContext.Editor)]
     public ICommand ShiftReferenceForwardCommand { get; }
 
@@ -290,6 +310,14 @@ public partial class TabItemViewModel : ViewModelBase
         ZoomOutCommand = CreateZoomOutCommand();
         RotateClockwiseCommand = CreateRotateClockwiseCommand();
         RotateCounterclockwiseCommand = CreateRotateCounterclockwiseCommand();
+
+        // Audio
+        PlayPauseAudioEventCommand = CreatePlayPauseAudioEventCommand();
+        PlayAudioBeforeCommand = CreatePlayAudioBeforeCommand();
+        PlayAudioFirstCommand = CreatePlayAudioFirstCommand();
+        PlayAudioSurroundCommand = CreatePlayAudioSurroundCommand();
+        PlayAudioLastCommand = CreatePlayAudioLastCommand();
+        PlayAudioAfterCommand = CreatePlayAudioAfterCommand();
 
         // Frame Saving & Copying
         SaveFrameCommand = CreateSaveFrameCommand(SaveFrameMode.Full);

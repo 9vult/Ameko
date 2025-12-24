@@ -174,7 +174,8 @@ pub export fn GetVisualization(
     pixel_ms: f64,
     amplitude_scale: f64,
     start_time: i64,
-    frame_time: i64,
+    video_time: i64,
+    audio_time: i64,
     event_bounds: [*]i64,
     event_bounds_len: c_int,
 ) ?*frames.Bitmap {
@@ -185,7 +186,8 @@ pub export fn GetVisualization(
         pixel_ms,
         amplitude_scale,
         @floatFromInt(start_time),
-        @floatFromInt(frame_time),
+        @floatFromInt(video_time),
+        @floatFromInt(audio_time),
         event_bounds,
         @intCast(event_bounds_len),
     ) catch {

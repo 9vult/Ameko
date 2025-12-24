@@ -10,6 +10,7 @@ using Ameko.ViewModels.Dialogs;
 using AssCS;
 using AssCS.History;
 using Holo.Media;
+using Holo.Models;
 using ReactiveUI;
 
 namespace Ameko.ViewModels.Controls;
@@ -548,7 +549,7 @@ public partial class TabItemViewModel : ViewModelBase
         {
             if (!Workspace.MediaController.IsVideoLoaded)
                 return;
-            if (Workspace.MediaController.IsPlaying)
+            if (Workspace.MediaController.IsVideoPlaying)
                 Workspace.MediaController.Stop();
             else
                 Workspace.MediaController.PlayToEnd();
@@ -782,31 +783,90 @@ public partial class TabItemViewModel : ViewModelBase
         });
     }
 
-    /// <summary>
-    /// Save frame to disk
-    /// </summary>
-    /// <param name="mode">Save Frame Mode</param>
-    private ReactiveCommand<Unit, Unit> CreateSaveFrameCommand(SaveFrameMode mode)
+    private ReactiveCommand<Unit, Unit> CreatePlayPauseAudioEventCommand()
     {
-        return ReactiveCommand.CreateFromTask(async () =>
+        return ReactiveCommand.Create(() =>
         {
-            if (!Workspace.MediaController.IsVideoLoaded)
+            if (!Workspace.MediaController.IsAudioLoaded)
                 return;
-            _ = await _ioService.SaveFrameToFile(SaveFrameAs, Workspace, mode);
+
+            if (Workspace.MediaController.IsAudioPlaying)
+                Workspace.MediaController.Stop();
+            else
+                Workspace.MediaController.PlayAudioSelection(
+                    Workspace.SelectionManager.ActiveEvent,
+                    AudioPlaybackKind.Event
+                );
         });
     }
 
-    /// <summary>
-    /// Copy frame to clipboard
-    /// </summary>
-    /// <param name="mode"></param>
-    private ReactiveCommand<Unit, Unit> CreateCopyFrameCommand(SaveFrameMode mode)
+    private ReactiveCommand<Unit, Unit> CreatePlayAudioBeforeCommand()
     {
-        return ReactiveCommand.CreateFromTask(async () =>
+        return ReactiveCommand.Create(() =>
         {
-            if (!Workspace.MediaController.IsVideoLoaded)
+            if (!Workspace.MediaController.IsAudioLoaded)
                 return;
-            _ = await _ioService.CopyFrameToClipboard(CopyFrame, Workspace, mode);
+
+            Workspace.MediaController.PlayAudioSelection(
+                Workspace.SelectionManager.ActiveEvent,
+                AudioPlaybackKind.Before
+            );
+        });
+    }
+
+    private ReactiveCommand<Unit, Unit> CreatePlayAudioFirstCommand()
+    {
+        return ReactiveCommand.Create(() =>
+        {
+            if (!Workspace.MediaController.IsAudioLoaded)
+                return;
+
+            Workspace.MediaController.PlayAudioSelection(
+                Workspace.SelectionManager.ActiveEvent,
+                AudioPlaybackKind.First
+            );
+        });
+    }
+
+    private ReactiveCommand<Unit, Unit> CreatePlayAudioSurroundCommand()
+    {
+        return ReactiveCommand.Create(() =>
+        {
+            if (!Workspace.MediaController.IsAudioLoaded)
+                return;
+
+            Workspace.MediaController.PlayAudioSelection(
+                Workspace.SelectionManager.ActiveEvent,
+                AudioPlaybackKind.Surround
+            );
+        });
+    }
+
+    private ReactiveCommand<Unit, Unit> CreatePlayAudioLastCommand()
+    {
+        return ReactiveCommand.Create(() =>
+        {
+            if (!Workspace.MediaController.IsAudioLoaded)
+                return;
+
+            Workspace.MediaController.PlayAudioSelection(
+                Workspace.SelectionManager.ActiveEvent,
+                AudioPlaybackKind.Last
+            );
+        });
+    }
+
+    private ReactiveCommand<Unit, Unit> CreatePlayAudioAfterCommand()
+    {
+        return ReactiveCommand.Create(() =>
+        {
+            if (!Workspace.MediaController.IsAudioLoaded)
+                return;
+
+            Workspace.MediaController.PlayAudioSelection(
+                Workspace.SelectionManager.ActiveEvent,
+                AudioPlaybackKind.After
+            );
         });
     }
 
@@ -833,6 +893,34 @@ public partial class TabItemViewModel : ViewModelBase
             if (!Workspace.ReferenceFileManager.IsReferenceLoaded)
                 return;
             Workspace.ReferenceFileManager.Shift(-1);
+        });
+    }
+
+    /// <summary>
+    /// Save frame to disk
+    /// </summary>
+    /// <param name="mode">Save Frame Mode</param>
+    private ReactiveCommand<Unit, Unit> CreateSaveFrameCommand(SaveFrameMode mode)
+    {
+        return ReactiveCommand.CreateFromTask(async () =>
+        {
+            if (!Workspace.MediaController.IsVideoLoaded)
+                return;
+            _ = await _ioService.SaveFrameToFile(SaveFrameAs, Workspace, mode);
+        });
+    }
+
+    /// <summary>
+    /// Copy frame to clipboard
+    /// </summary>
+    /// <param name="mode"></param>
+    private ReactiveCommand<Unit, Unit> CreateCopyFrameCommand(SaveFrameMode mode)
+    {
+        return ReactiveCommand.CreateFromTask(async () =>
+        {
+            if (!Workspace.MediaController.IsVideoLoaded)
+                return;
+            _ = await _ioService.CopyFrameToClipboard(CopyFrame, Workspace, mode);
         });
     }
 }

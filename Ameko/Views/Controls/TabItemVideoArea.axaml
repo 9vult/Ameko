@@ -87,9 +87,9 @@
                         Classes="Small">
                     <StackPanel>
                         <icons:MaterialIcon Kind="Play"
-                                            IsVisible="{Binding !Workspace.MediaController.IsPlaying}" />
+                                            IsVisible="{Binding !Workspace.MediaController.IsVideoPlaying}" />
                         <icons:MaterialIcon Kind="Pause"
-                                            IsVisible="{Binding Workspace.MediaController.IsPlaying, FallbackValue=False}" />
+                                            IsVisible="{Binding Workspace.MediaController.IsVideoPlaying, FallbackValue=False}" />
                     </StackPanel>
                 </Button>
                 <Button Content="{icons:MaterialIconExt Kind=SkipNext}"

@@ -138,7 +138,8 @@ pub fn ProcVizualizationFrame(
     pixel_ms: f64,
     amplitude_scale: f64,
     start_time: f64,
-    frame_time: f64,
+    video_time: f64,
+    audio_time: f64,
     event_bounds: [*]i64,
     event_bounds_len: usize,
 ) !*frames.Bitmap {
@@ -164,7 +165,8 @@ pub fn ProcVizualizationFrame(
                 pixel_ms,
                 amplitude_scale,
                 start_time,
-                frame_time,
+                video_time,
+                audio_time,
                 event_bounds,
                 event_bounds_len,
             );
@@ -205,7 +207,8 @@ pub fn ProcVizualizationFrame(
         pixel_ms,
         amplitude_scale,
         start_time,
-        frame_time,
+        video_time,
+        audio_time,
         event_bounds,
         event_bounds_len,
     );

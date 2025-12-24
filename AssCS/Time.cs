@@ -220,6 +220,28 @@ public class Time : BindableBase, IComparable<Time>
         return 1;
     }
 
+    /// <summary>
+    /// Get the maximum value from a collection of <see cref="Time"/>s
+    /// </summary>
+    /// <param name="times">Times to compare</param>
+    /// <returns>Maximum time value</returns>
+    /// <exception cref="ArgumentNullException">If <paramref name="times"/> is null</exception>
+    public static Time Max(params Time[] times)
+    {
+        return times.Max() ?? throw new ArgumentNullException(nameof(times));
+    }
+
+    /// <summary>
+    /// Get the minimum value from a collection of <see cref="Time"/>s
+    /// </summary>
+    /// <param name="times">Times to compare</param>
+    /// <returns>Minimum time value</returns>
+    /// <exception cref="ArgumentNullException">If <paramref name="times"/> is null</exception>
+    public static Time Min(params Time[] times)
+    {
+        return times.Min() ?? throw new ArgumentNullException(nameof(times));
+    }
+
     #region Operators
 
     public static bool operator ==(Time? left, Time? right)

@@ -6,6 +6,7 @@ using AssCS.IO;
 using Holo.Configuration;
 using Holo.Media;
 using Holo.Media.Providers;
+using Holo.Models;
 using Microsoft.Extensions.Logging;
 
 namespace Holo;
@@ -15,7 +16,8 @@ public class MediaController : BindableBase
     private readonly ISourceProvider _provider;
     private readonly ILogger _logger;
     private readonly IPersistence _persistence;
-    private readonly HighResolutionTimer _playback;
+    private readonly HighResolutionTimer _videoPlayback;
+    private readonly HighResolutionTimer _audioPlayback;
 
     private readonly Lock _frameLock = new();
     private readonly Lock _boundsLock = new();
@@ -25,7 +27,8 @@ public class MediaController : BindableBase
     private unsafe AudioFrame* _audioFrame;
     private unsafe Bitmap* _lastVizFrame;
     private unsafe Bitmap* _nextVizFrame;
-    private int _currentFrame;
+    private int _currentVideoFrame;
+    private int _currentAudioFrame = -1;
 
     private Task? _fetchTask;
     private int _pendingFrame = -1;
@@ -34,7 +37,8 @@ public class MediaController : BindableBase
     private ScaleFactor _scaleFactor = ScaleFactor.Default;
     private double _screenScaleFactor = 1.0d;
 
-    private bool _isPlaying;
+    private bool _isVideoPlaying;
+    private bool _isAudioPlaying;
     private bool _isPaused;
 
     private int _destinationFrame;
@@ -216,10 +220,10 @@ public class MediaController : BindableBase
     /// </summary>
     public int CurrentFrame
     {
-        get => _currentFrame;
+        get => _currentVideoFrame;
         set
         {
-            SetProperty(ref _currentFrame, value);
+            SetProperty(ref _currentVideoFrame, value);
             RaisePropertyChanged(nameof(CurrentTime));
             RequestFrame(value);
         }
@@ -233,11 +237,25 @@ public class MediaController : BindableBase
     /// <summary>
     /// If video is currently playing
     /// </summary>
-    public bool IsPlaying
+    public bool IsVideoPlaying
     {
-        get => _isPlaying;
-        private set => SetProperty(ref _isPlaying, value);
+        get => _isVideoPlaying;
+        private set => SetProperty(ref _isVideoPlaying, value);
     }
+
+    /// <summary>
+    /// If audio is currently playing
+    /// </summary>
+    public bool IsAudioPlaying
+    {
+        get => _isAudioPlaying;
+        set => SetProperty(ref _isAudioPlaying, value);
+    }
+
+    /// <summary>
+    /// If only audio is playing
+    /// </summary>
+    public bool IsOnlyAudioPlaying => !_isVideoPlaying && _isAudioPlaying;
 
     /// <summary>
     /// If playback is paused
@@ -245,7 +263,7 @@ public class MediaController : BindableBase
     public bool IsPaused
     {
         get => _isPaused;
-        set => SetProperty(ref _isPaused, value);
+        private set => SetProperty(ref _isPaused, value);
     }
 
     /// <summary>
@@ -254,11 +272,13 @@ public class MediaController : BindableBase
     public void Stop()
     {
         _logger.LogDebug("Stopping playback");
-        if (!IsPlaying)
+        if (!IsVideoPlaying && !IsAudioPlaying)
             return;
-        IsPlaying = false;
+        IsVideoPlaying = false;
+        IsAudioPlaying = false;
         IsPaused = false;
-        _playback.Stop();
+        _videoPlayback.Stop();
+        _audioPlayback.Stop();
         OnPlaybackStop?.Invoke(this, EventArgs.Empty);
     }
 
@@ -268,11 +288,13 @@ public class MediaController : BindableBase
     public void Pause()
     {
         _logger.LogDebug("Pausing playback");
-        if (!IsPlaying)
+        if (!IsVideoPlaying && !IsAudioPlaying)
             return;
         IsPaused = true;
-        IsPlaying = false;
-        _playback.Stop();
+        IsVideoPlaying = false;
+        IsAudioPlaying = false;
+        _videoPlayback.Stop();
+        _audioPlayback.Stop();
         OnPlaybackStop?.Invoke(this, EventArgs.Empty);
     }
 
@@ -287,16 +309,19 @@ public class MediaController : BindableBase
         Stop();
         _logger.LogDebug("Playing to end");
         _destinationFrame = VideoInfo.FrameCount - 1;
-        _playback.IntervalIndex = _currentFrame;
+        _videoPlayback.IntervalIndex = _currentVideoFrame;
+        _currentAudioFrame = -1; // Hide
 
         var e = new PlaybackStartEventArgs(
-            VideoInfo.MillisecondsFromFrame(_currentFrame),
+            PlaybackTarget.Video,
+            VideoInfo.MillisecondsFromFrame(_currentVideoFrame),
             VideoInfo.MillisecondsFromFrame(_destinationFrame)
         );
         OnPlaybackStart?.Invoke(this, e);
 
-        _playback.Start();
-        IsPlaying = true;
+        _videoPlayback.Start();
+        IsVideoPlaying = true;
+        IsAudioPlaying = true;
         IsPaused = false;
     }
 
@@ -309,6 +334,7 @@ public class MediaController : BindableBase
         if (!IsVideoLoaded)
             throw new InvalidOperationException("Video is not loaded");
 
+        Stop();
         var startTime = selection.Min(e => e.Start);
         var endTime = selection.Max(e => e.End);
         _logger.LogDebug("Playing selection [{StartTime}, {EndTime}]", startTime, endTime);
@@ -321,16 +347,19 @@ public class MediaController : BindableBase
 
         CurrentFrame = startFrame;
         _destinationFrame = endFrame;
-        _playback.IntervalIndex = _currentFrame;
+        _videoPlayback.IntervalIndex = _currentVideoFrame;
+        _currentAudioFrame = -1; // Hide
 
         var e = new PlaybackStartEventArgs(
-            VideoInfo.MillisecondsFromFrame(_currentFrame),
+            PlaybackTarget.Video,
+            VideoInfo.MillisecondsFromFrame(_currentVideoFrame),
             VideoInfo.MillisecondsFromFrame(_destinationFrame)
         );
         OnPlaybackStart?.Invoke(this, e);
 
-        _playback.Start();
-        IsPlaying = true;
+        _videoPlayback.Start();
+        IsVideoPlaying = true;
+        IsAudioPlaying = true;
         IsPaused = false;
     }
 
@@ -343,18 +372,21 @@ public class MediaController : BindableBase
             throw new InvalidOperationException("Video is not loaded");
 
         _logger.LogDebug("Resuming playback");
-        _playback.IntervalIndex = _currentFrame;
+        _videoPlayback.IntervalIndex = _currentVideoFrame;
+        _currentAudioFrame = -1; // Hide
 
         OnPlaybackStart?.Invoke(
             this,
             new PlaybackStartEventArgs(
-                VideoInfo.MillisecondsFromFrame(_currentFrame),
+                PlaybackTarget.Video,
+                VideoInfo.MillisecondsFromFrame(_currentVideoFrame),
                 VideoInfo.MillisecondsFromFrame(_destinationFrame)
             )
         );
 
-        _playback.Start();
-        IsPlaying = true;
+        _videoPlayback.Start();
+        IsVideoPlaying = true;
+        IsAudioPlaying = true;
         IsPaused = false;
     }
 
@@ -366,7 +398,7 @@ public class MediaController : BindableBase
     {
         if (!IsVideoLoaded)
             return;
-        if (_isPlaying)
+        if (_isVideoPlaying || _isAudioPlaying)
             Pause();
         CurrentFrame = Math.Clamp(frameNumber, 0, VideoInfo.FrameCount - 1);
         if (_isPaused)
@@ -381,7 +413,7 @@ public class MediaController : BindableBase
     {
         if (!IsVideoLoaded)
             return;
-        if (_isPlaying)
+        if (_isVideoPlaying || _isAudioPlaying)
             Pause();
         CurrentFrame = VideoInfo.FrameFromTime(time);
         if (_isPaused)
@@ -396,7 +428,7 @@ public class MediaController : BindableBase
     {
         if (!IsVideoLoaded)
             return;
-        if (_isPlaying)
+        if (_isVideoPlaying || _isAudioPlaying)
             Pause();
         CurrentFrame = VideoInfo.FrameFromTime(@event.Start);
         VisualizerPositionMs = @event.Start.TotalMilliseconds;
@@ -412,7 +444,7 @@ public class MediaController : BindableBase
     {
         if (!IsVideoLoaded)
             return;
-        if (_isPlaying)
+        if (_isVideoPlaying || _isAudioPlaying)
             Pause();
         CurrentFrame = VideoInfo.FrameFromTime(@event.End) - 1;
         if (_isPaused)
@@ -427,12 +459,81 @@ public class MediaController : BindableBase
     {
         if (!IsVideoLoaded || !IsAutoSeekEnabled)
             return;
-        if (_isPlaying)
+        if (_isVideoPlaying || _isAudioPlaying)
             Pause();
         CurrentFrame = VideoInfo.FrameFromTime(@event.Start);
         VisualizerPositionMs = @event.Start.TotalMilliseconds;
         if (_isPaused)
             Resume();
+    }
+
+    /// <summary>
+    /// Play a selection of audio, without playing the video
+    /// </summary>
+    /// <param name="event">Active event</param>
+    /// <param name="kind">Kind of selection to play</param>
+    /// <exception cref="InvalidOperationException">If audio is not loaded</exception>
+    /// <exception cref="ArgumentOutOfRangeException">If <paramref name="kind"/> is invalid</exception>
+    public void PlayAudioSelection(Event @event, AudioPlaybackKind kind)
+    {
+        if (!IsVideoLoaded || !IsAudioLoaded)
+            throw new InvalidOperationException("Audio is not loaded");
+
+        Stop();
+
+        Time startTime;
+        Time endTime;
+        var dms = Time.FromMillis(500); // D = 500
+
+        switch (kind)
+        {
+            case AudioPlaybackKind.Event:
+                startTime = @event.Start;
+                endTime = @event.End;
+                break;
+            case AudioPlaybackKind.Before:
+                startTime = Time.Max(@event.Start - dms, Time.Zero);
+                endTime = @event.Start;
+                break;
+            case AudioPlaybackKind.First:
+                startTime = @event.Start;
+                endTime = Time.Min(@event.Start + dms, @event.End);
+                break;
+            case AudioPlaybackKind.Last:
+                startTime = Time.Max(@event.End - dms, @event.Start);
+                endTime = @event.End;
+                break;
+            case AudioPlaybackKind.After:
+                startTime = @event.End;
+                endTime = Time.Min(@event.End + dms, Time.FromMillis(AudioInfo.Duration));
+                break;
+            case AudioPlaybackKind.Surround:
+                startTime = Time.Max(@event.Start - dms, Time.Zero);
+                endTime = Time.Min(@event.End + dms, Time.FromMillis(AudioInfo.Duration));
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(kind), kind, null);
+        }
+
+        _logger.LogDebug("Playing audio selection [{StartTime}, {EndTime}]", startTime, endTime);
+
+        var startFrame = VideoInfo.FrameFromTime(startTime);
+        var endFrame = VideoInfo.FrameFromTime(endTime); // Stop on the last frame including the selection (not -1)
+
+        _currentAudioFrame = startFrame;
+        _destinationFrame = endFrame;
+        _audioPlayback.IntervalIndex = _currentAudioFrame;
+
+        var e = new PlaybackStartEventArgs(
+            PlaybackTarget.Audio,
+            VideoInfo.MillisecondsFromFrame(_currentAudioFrame),
+            VideoInfo.MillisecondsFromFrame(_destinationFrame)
+        );
+        OnPlaybackStart?.Invoke(this, e);
+
+        _audioPlayback.Start();
+        IsAudioPlaying = true;
+        IsPaused = false;
     }
 
     /// <summary>
@@ -487,7 +588,8 @@ public class MediaController : BindableBase
                     testFrame->VideoFrame->Height
                 );
 
-                _playback.Intervals = VideoInfo.FrameIntervals;
+                _videoPlayback.Intervals = VideoInfo.FrameIntervals;
+                _audioPlayback.Intervals = VideoInfo.FrameIntervals;
             }
 
             ScaleFactor = _persistence.GetScaleForRes(VideoInfo.Height);
@@ -570,6 +672,7 @@ public class MediaController : BindableBase
                     VisualizerScaleY,
                     0,
                     0,
+                    -1,
                     null,
                     0
                 );
@@ -619,7 +722,7 @@ public class MediaController : BindableBase
         RotationalFactor = RotationalFactor.Default;
 
         // Reset the slider without triggering frame fetch
-        _currentFrame = 0;
+        _currentVideoFrame = 0;
         RaisePropertyChanged(nameof(CurrentFrame));
         RaisePropertyChanged(nameof(CurrentTime));
 
@@ -647,14 +750,30 @@ public class MediaController : BindableBase
     }
 
     /// <summary>
-    /// Advance the current frame, or stop if the <see cref="_destinationFrame"/> has been reached
+    /// Advance the current video frame, or stop if the <see cref="_destinationFrame"/> has been reached
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
-    private void AdvanceFrame(object? sender, HighResolutionTimerElapsedEventArgs e)
+    private void AdvanceVideoFrame(object? sender, HighResolutionTimerElapsedEventArgs e)
     {
-        if (_currentFrame < _destinationFrame)
+        if (_currentVideoFrame < _destinationFrame)
             CurrentFrame++;
+        else
+            Stop();
+    }
+
+    /// <summary>
+    /// Advance the current frame for audio playback, or stop if the <see cref="_destinationFrame"/> has been reached
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private void AdvanceAudioFrame(object? sender, HighResolutionTimerElapsedEventArgs e)
+    {
+        if (_currentAudioFrame < _destinationFrame)
+        {
+            _currentAudioFrame++;
+            RequestFrame(CurrentFrame);
+        }
         else
             Stop();
     }
@@ -791,10 +910,11 @@ public class MediaController : BindableBase
             _subtitlesChanged = false;
         }
 
-        var time = VideoInfo?.MillisecondsFromFrame(frameToFetch) ?? 0;
+        var videoTime = VideoInfo?.MillisecondsFromFrame(frameToFetch) ?? 0;
+        var audioTime = VideoInfo?.MillisecondsFromFrame(_currentAudioFrame) ?? -1;
 
         // Get video/subtitles
-        var frame = _provider.GetFrame(frameToFetch, time, false);
+        var frame = _provider.GetFrame(frameToFetch, videoTime, false);
 
         // Get audio visualization
         Bitmap* vizFrame = null;
@@ -811,7 +931,8 @@ public class MediaController : BindableBase
                         VisualizerScaleX,
                         VisualizerScaleY,
                         VisualizerPositionMs,
-                        time,
+                        videoTime,
+                        audioTime,
                         ptr,
                         _eventBounds.Length
                     );
@@ -846,8 +967,11 @@ public class MediaController : BindableBase
         _provider = provider;
         _logger = logger;
         _persistence = persistence;
-        _playback = new HighResolutionTimer();
-        _playback.Elapsed += AdvanceFrame;
+
+        _videoPlayback = new HighResolutionTimer();
+        _audioPlayback = new HighResolutionTimer();
+        _videoPlayback.Elapsed += AdvanceVideoFrame;
+        _audioPlayback.Elapsed += AdvanceAudioFrame;
 
         VisualizerScaleX = persistence.VisualizationScaleX;
         VisualizerScaleY = persistence.VisualizationScaleY;

@@ -175,7 +175,8 @@ public unsafe class MizukiSourceProvider : ISourceProvider
         double pixelsPerMs,
         double amplitudeScale,
         long startTime,
-        long frameTime,
+        long videoTime,
+        long audioTime,
         long* eventBounds,
         int eventBoundsLength
     )
@@ -187,7 +188,8 @@ public unsafe class MizukiSourceProvider : ISourceProvider
             pixelsPerMs,
             amplitudeScale,
             startTime,
-            frameTime,
+            videoTime,
+            audioTime,
             eventBounds,
             eventBoundsLength
         );
@@ -374,6 +376,7 @@ internal static unsafe partial class External
         double amplitudeScale,
         long startTime,
         long frameTime,
+        long audioTime,
         long* eventBounds,
         int eventBoundsLength
     );
