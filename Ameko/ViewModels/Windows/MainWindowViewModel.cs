@@ -165,6 +165,9 @@ public partial class MainWindowViewModel : ViewModelBase
     [KeybindTarget("ameko.event.snap.endKf", KeybindContext.Global)]
     public ICommand SnapEndToKeyframeCommand { get; }
 
+    [KeybindTarget("ameko.event.timingButler", KeybindContext.Global)]
+    public ICommand TimingButlerCommand { get; }
+
     // Video
     [KeybindTarget("ameko.video.open", KeybindContext.Global)]
     public ICommand OpenVideoCommand { get; }
@@ -458,6 +461,7 @@ public partial class MainWindowViewModel : ViewModelBase
         ShowShiftTimesDialogCommand = CreateShowShiftTimesDialogCommand();
         SnapStartToKeyframeCommand = CreateSnapStartToKeyframeCommand();
         SnapEndToKeyframeCommand = CreateSnapEndToKeyframeCommand();
+        TimingButlerCommand = CreateTimingButlerCommand();
         // Video
         OpenVideoCommand = CreateOpenVideoCommand();
         OpenVideoNoGuiCommand = CreateOpenVideoNoGuiCommand();

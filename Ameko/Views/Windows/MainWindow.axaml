@@ -181,6 +181,11 @@
                                     Command="{Binding SnapStartToKeyframeCommand}" />
                     <NativeMenuItem Header="{x:Static i18n:Resources.Menu_SnapKf_End}"
                                     Command="{Binding SnapEndToKeyframeCommand}" />
+                    <NativeMenuItemSeparator />
+                    <NativeMenuItem Header="{x:Static i18n:Resources.Menu_TimingButler}"
+                                    Command="{Binding TimingButlerCommand}"
+                                    IsEnabled="{Binding ProjectProvider.Current.WorkingSpace.MediaController.IsVideoLoaded,
+                                          FallbackValue=false}" />
                 </NativeMenu>
             </NativeMenuItem>
             <NativeMenuItem Header="{x:Static i18n:Resources.Menu_Video}">

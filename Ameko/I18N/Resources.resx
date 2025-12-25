@@ -393,4 +393,7 @@
     <data name="Menu_SnapKf_End" xml:space="preserve">
         <value>Snap _End to Nearest Keyframe</value>
     </data>
+    <data name="Menu_TimingButler" xml:space="preserve">
+        <value>Call Timing _Butler</value>
+    </data>
 </root>

@@ -114,10 +114,20 @@
             <Separator />
             <MenuItem Header="{x:Static i18n:Resources.Menu_SnapKf_Start}"
                       Icon="{icons:MaterialIconExt Kind=ArrowHorizontalLock}"
-                      Command="{Binding SnapStartToKeyframeCommand}" />
+                      Command="{Binding SnapStartToKeyframeCommand}"
+                      IsEnabled="{Binding ProjectProvider.Current.WorkingSpace.MediaController.IsVideoLoaded,
+                                          FallbackValue=false}" />
             <MenuItem Header="{x:Static i18n:Resources.Menu_SnapKf_End}"
                       Icon="{icons:MaterialIconExt Kind=ArrowHorizontalLock}"
-                      Command="{Binding SnapEndToKeyframeCommand}" />
+                      Command="{Binding SnapEndToKeyframeCommand}"
+                      IsEnabled="{Binding ProjectProvider.Current.WorkingSpace.MediaController.IsVideoLoaded,
+                                          FallbackValue=false}" />
+            <Separator />
+            <MenuItem Header="{x:Static i18n:Resources.Menu_TimingButler}"
+                      Icon="{icons:MaterialIconExt Kind=RoomService}"
+                      Command="{Binding TimingButlerCommand}"
+                      IsEnabled="{Binding ProjectProvider.Current.WorkingSpace.MediaController.IsVideoLoaded,
+                                          FallbackValue=false}" />
         </MenuItem>
         <MenuItem Header="{x:Static i18n:Resources.Menu_Video}">
             <MenuItem Header="{x:Static i18n:Resources.Menu_OpenVideo}"

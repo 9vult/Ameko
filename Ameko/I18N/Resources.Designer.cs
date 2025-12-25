@@ -794,5 +794,11 @@ namespace Ameko.I18N {
                 return ResourceManager.GetString("Menu_SnapKf_End", resourceCulture);
             }
         }
+        
+        public static string Menu_TimingButler {
+            get {
+                return ResourceManager.GetString("Menu_TimingButler", resourceCulture);
+            }
+        }
     }
 }
