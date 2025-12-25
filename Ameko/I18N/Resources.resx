@@ -388,9 +388,9 @@
         <value>Clear</value>
     </data>
     <data name="Menu_SnapKf_Start" xml:space="preserve">
-        <value>Snap _Start to Keyframe (500ms)</value>
+        <value>Snap _Start to Nearest Keyframe</value>
     </data>
     <data name="Menu_SnapKf_End" xml:space="preserve">
-        <value>Snap _End to Keyframe (500ms)</value>
+        <value>Snap _End to Nearest Keyframe</value>
     </data>
 </root>

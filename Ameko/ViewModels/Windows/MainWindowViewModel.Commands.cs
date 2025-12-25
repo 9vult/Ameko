@@ -590,7 +590,8 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         return ReactiveCommand.Create(() =>
         {
-            var wsp = ProjectProvider.Current.WorkingSpace;
+            var prj = ProjectProvider.Current;
+            var wsp = prj.WorkingSpace;
             if (wsp is null)
                 return;
 
@@ -602,9 +603,23 @@ public partial class MainWindowViewModel : ViewModelBase
             var nearestKf = FindNearestKeyframeTo(startFrame, mc.VideoInfo);
             var kfTime = mc.VideoInfo.TimeFromFrame(nearestKf);
 
-            // var threshold = ProjectProvider.Current.
-            if (Math.Abs((@event.Start - kfTime).TotalMilliseconds) > 500)
-                return;
+            var delta = @event.Start.TotalMilliseconds - kfTime.TotalMilliseconds;
+            if (delta > 0) // Earlier
+            {
+                var threshold = prj.TimingButler.SnapStartEarlierThreshold;
+                if (threshold == 0)
+                    threshold = Configuration.TimingButler.SnapStartEarlierThreshold;
+                if (delta > threshold)
+                    return;
+            }
+            else // Later
+            {
+                var threshold = prj.TimingButler.SnapStartLaterThreshold;
+                if (threshold == 0)
+                    threshold = Configuration.TimingButler.SnapStartLaterThreshold;
+                if (Math.Abs(delta) > threshold)
+                    return;
+            }
 
             @event.Start = kfTime;
             wsp.Commit(@event, ChangeType.ModifyEventMeta, false);
@@ -619,7 +634,8 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         return ReactiveCommand.Create(() =>
         {
-            var wsp = ProjectProvider.Current.WorkingSpace;
+            var prj = ProjectProvider.Current;
+            var wsp = prj.WorkingSpace;
             if (wsp is null)
                 return;
 
@@ -631,8 +647,23 @@ public partial class MainWindowViewModel : ViewModelBase
             var nearestKf = FindNearestKeyframeTo(endFrame, mc.VideoInfo);
             var kfTime = mc.VideoInfo.TimeFromFrame(nearestKf);
 
-            if (Math.Abs((@event.End - kfTime).TotalMilliseconds) > 500)
-                return;
+            var delta = @event.End.TotalMilliseconds - kfTime.TotalMilliseconds;
+            if (delta > 0) // Earlier
+            {
+                var threshold = prj.TimingButler.SnapEndEarlierThreshold;
+                if (threshold == 0)
+                    threshold = Configuration.TimingButler.SnapEndEarlierThreshold;
+                if (delta > threshold)
+                    return;
+            }
+            else // Later
+            {
+                var threshold = prj.TimingButler.SnapEndLaterThreshold;
+                if (threshold == 0)
+                    threshold = Configuration.TimingButler.SnapEndLaterThreshold;
+                if (Math.Abs(delta) > threshold)
+                    return;
+            }
 
             @event.End = kfTime;
             wsp.Commit(@event, ChangeType.ModifyEventMeta, false);
