@@ -4,7 +4,7 @@ using AssCS;
 
 namespace Holo.Configuration;
 
-public class TimingButlerConfiguration : BindableBase
+public class TimingConfiguration : BindableBase
 {
     public uint LeadIn { get; set; }
     public uint LeadOut { get; set; }
@@ -12,5 +12,4 @@ public class TimingButlerConfiguration : BindableBase
     public uint SnapStartLaterThreshold { get; set; }
     public uint SnapEndEarlierThreshold { get; set; }
     public uint SnapEndLaterThreshold { get; set; }
-    public uint ChainThreshold { get; set; }
 }

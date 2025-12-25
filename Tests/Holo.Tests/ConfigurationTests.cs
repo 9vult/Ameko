@@ -115,7 +115,15 @@ public class ConfigurationTests
             "GridFontSize": 0.0,
             "ReferenceFontSize": 0.0,
             "RepositoryUrls": [],
-            "ScriptMenuOverrides": {}
+            "ScriptMenuOverrides": {},
+            "Timing": {
+                "LeadIn": 0,
+                "LeadOut": 0,
+                "SnapStartEarlierThreshold": 0,
+                "SnapStartLaterThreshold": 0,
+                "SnapEndEarlierThreshold": 0,
+                "SnapEndLaterThreshold": 0
+            }
         }
         """;
 }

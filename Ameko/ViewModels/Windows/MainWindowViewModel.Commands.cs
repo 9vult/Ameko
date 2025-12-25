@@ -606,17 +606,17 @@ public partial class MainWindowViewModel : ViewModelBase
             var delta = @event.Start.TotalMilliseconds - kfTime.TotalMilliseconds;
             if (delta > 0) // Earlier
             {
-                var threshold = prj.TimingButler.SnapStartEarlierThreshold;
+                var threshold = prj.Timing.SnapStartEarlierThreshold;
                 if (threshold == 0)
-                    threshold = Configuration.TimingButler.SnapStartEarlierThreshold;
+                    threshold = Configuration.Timing.SnapStartEarlierThreshold;
                 if (delta > threshold)
                     return;
             }
             else // Later
             {
-                var threshold = prj.TimingButler.SnapStartLaterThreshold;
+                var threshold = prj.Timing.SnapStartLaterThreshold;
                 if (threshold == 0)
-                    threshold = Configuration.TimingButler.SnapStartLaterThreshold;
+                    threshold = Configuration.Timing.SnapStartLaterThreshold;
                 if (Math.Abs(delta) > threshold)
                     return;
             }
@@ -650,17 +650,17 @@ public partial class MainWindowViewModel : ViewModelBase
             var delta = @event.End.TotalMilliseconds - kfTime.TotalMilliseconds;
             if (delta > 0) // Earlier
             {
-                var threshold = prj.TimingButler.SnapEndEarlierThreshold;
+                var threshold = prj.Timing.SnapEndEarlierThreshold;
                 if (threshold == 0)
-                    threshold = Configuration.TimingButler.SnapEndEarlierThreshold;
+                    threshold = Configuration.Timing.SnapEndEarlierThreshold;
                 if (delta > threshold)
                     return;
             }
             else // Later
             {
-                var threshold = prj.TimingButler.SnapEndLaterThreshold;
+                var threshold = prj.Timing.SnapEndLaterThreshold;
                 if (threshold == 0)
-                    threshold = Configuration.TimingButler.SnapEndLaterThreshold;
+                    threshold = Configuration.Timing.SnapEndLaterThreshold;
                 if (Math.Abs(delta) > threshold)
                     return;
             }

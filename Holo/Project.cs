@@ -213,7 +213,7 @@ public class Project : BindableBase
     /// </summary>
     public AssCS.Utilities.ReadOnlyObservableCollection<string> CustomWords => new(_customWords);
 
-    public TimingButlerConfiguration TimingButler { get; } = new();
+    public TimingConfiguration Timing { get; } = new();
 
     /// <summary>
     /// Project title/name
@@ -531,15 +531,14 @@ public class Project : BindableBase
                 DefaultLayer = _defaultLayer,
                 SpellcheckCulture = _spellcheckCulture,
                 CustomWords = _customWords.ToArray(),
-                TimingButler = new TimingButlerModel
+                Timing = new TimingModel
                 {
-                    LeadIn = TimingButler.LeadIn,
-                    LeadOut = TimingButler.LeadOut,
-                    SnapStartEarlierThreshold = TimingButler.SnapStartEarlierThreshold,
-                    SnapStartLaterThreshold = TimingButler.SnapStartLaterThreshold,
-                    SnapEndEarlierThreshold = TimingButler.SnapEndEarlierThreshold,
-                    SnapEndLaterThreshold = TimingButler.SnapEndLaterThreshold,
-                    ChainThreshold = TimingButler.ChainThreshold,
+                    LeadIn = Timing.LeadIn,
+                    LeadOut = Timing.LeadOut,
+                    SnapStartEarlierThreshold = Timing.SnapStartEarlierThreshold,
+                    SnapStartLaterThreshold = Timing.SnapStartLaterThreshold,
+                    SnapEndEarlierThreshold = Timing.SnapEndEarlierThreshold,
+                    SnapEndLaterThreshold = Timing.SnapEndLaterThreshold,
                 },
             };
 
@@ -840,15 +839,14 @@ public class Project : BindableBase
                 _spellcheckCulture = model.SpellcheckCulture;
                 _customWords = new ObservableCollection<string>(model.CustomWords);
 
-                TimingButler = new TimingButlerConfiguration
+                Timing = new TimingConfiguration
                 {
-                    LeadIn = model.TimingButler.LeadIn,
-                    LeadOut = model.TimingButler.LeadOut,
-                    SnapStartEarlierThreshold = model.TimingButler.SnapStartEarlierThreshold,
-                    SnapStartLaterThreshold = model.TimingButler.SnapStartLaterThreshold,
-                    SnapEndEarlierThreshold = model.TimingButler.SnapEndEarlierThreshold,
-                    SnapEndLaterThreshold = model.TimingButler.SnapEndLaterThreshold,
-                    ChainThreshold = model.TimingButler.ChainThreshold,
+                    LeadIn = model.Timing.LeadIn,
+                    LeadOut = model.Timing.LeadOut,
+                    SnapStartEarlierThreshold = model.Timing.SnapStartEarlierThreshold,
+                    SnapStartLaterThreshold = model.Timing.SnapStartLaterThreshold,
+                    SnapEndEarlierThreshold = model.Timing.SnapEndEarlierThreshold,
+                    SnapEndLaterThreshold = model.Timing.SnapEndLaterThreshold,
                 };
 
                 model

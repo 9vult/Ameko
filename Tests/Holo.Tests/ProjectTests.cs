@@ -324,7 +324,15 @@ public class ProjectTests
              "CpsIncludesPunctuation": null,
              "UseSoftLinebreaks": null,
              "SpellcheckCulture": null,
-             "CustomWords": []
+             "CustomWords": [],
+             "Timing": {
+                "LeadIn": 0,
+                "LeadOut": 0,
+                "SnapStartEarlierThreshold": 0,
+                "SnapStartLaterThreshold": 0,
+                "SnapEndEarlierThreshold": 0,
+                "SnapEndLaterThreshold": 0
+            }
          }
         """;
 }

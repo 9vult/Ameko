@@ -129,7 +129,7 @@ public interface IConfiguration
     /// <summary>
     /// Timing Butler configuration
     /// </summary>
-    TimingButlerConfiguration TimingButler { get; }
+    TimingConfiguration Timing { get; }
 
     /// <summary>
     /// Add a repository
