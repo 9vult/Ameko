@@ -332,7 +332,8 @@ public class ProjectTests
                 "SnapStartLaterThreshold": 0,
                 "SnapEndEarlierThreshold": 0,
                 "SnapEndLaterThreshold": 0
-            }
+            },
+            "ScriptConfiguration": {}
          }
         """;
 }
