@@ -1,5 +1,6 @@
 ﻿// SPDX-License-Identifier: MPL-2.0
 
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using Holo.Configuration;
 
@@ -25,4 +26,5 @@ internal record ProjectModel
     public required string? SpellcheckCulture;
     public required string[] CustomWords;
     public required TimingModel Timing;
+    public required Dictionary<string, Dictionary<string, JsonElement>> ScriptConfiguration;
 }

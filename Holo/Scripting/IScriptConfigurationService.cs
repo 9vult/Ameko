@@ -10,4 +10,14 @@ public interface IScriptConfigurationService
     void Set<T>(IHoloExecutable caller, string key, T value);
     bool Remove(IHoloExecutable caller, string key);
     bool Contains(IHoloExecutable caller, string key);
+
+    bool TryGet<T>(
+        IHoloExecutable caller,
+        Project project,
+        string key,
+        [NotNullWhen(true)] out T? value
+    );
+    void Set<T>(IHoloExecutable caller, Project project, string key, T value);
+    bool Remove(IHoloExecutable caller, Project project, string key);
+    bool Contains(IHoloExecutable caller, Project project, string key);
 }

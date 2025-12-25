@@ -96,7 +96,7 @@ public class Project : BindableBase
     public bool IsSaved
     {
         get;
-        private set => SetProperty(ref field, value);
+        internal set => SetProperty(ref field, value);
     }
 
     /// <summary>
@@ -214,6 +214,11 @@ public class Project : BindableBase
     public AssCS.Utilities.ReadOnlyObservableCollection<string> CustomWords => new(_customWords);
 
     public TimingConfiguration Timing { get; } = new();
+
+    /// <summary>
+    /// Script configuration
+    /// </summary>
+    internal Dictionary<string, Dictionary<string, JsonElement>> ScriptConfiguration { get; } = [];
 
     /// <summary>
     /// Project title/name
@@ -540,6 +545,7 @@ public class Project : BindableBase
                     SnapEndEarlierThreshold = Timing.SnapEndEarlierThreshold,
                     SnapEndLaterThreshold = Timing.SnapEndLaterThreshold,
                 },
+                ScriptConfiguration = ScriptConfiguration,
             };
 
             var content = JsonSerializer.Serialize(model, JsonOptions);
@@ -848,6 +854,8 @@ public class Project : BindableBase
                     SnapEndEarlierThreshold = model.Timing.SnapEndEarlierThreshold,
                     SnapEndLaterThreshold = model.Timing.SnapEndLaterThreshold,
                 };
+
+                ScriptConfiguration = model.ScriptConfiguration;
 
                 model
                     .Styles.Select(s => Style.FromAss(StyleManager.NextId, s))

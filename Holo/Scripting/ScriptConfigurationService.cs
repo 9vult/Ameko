@@ -26,26 +26,23 @@ public class ScriptConfigurationService(
     /// <inheritdoc />
     public bool TryGet<T>(IHoloExecutable caller, string key, [NotNullWhen(true)] out T? value)
     {
+        value = default;
         var qName = caller.Info.QualifiedName;
         if (!_cache.TryGetValue(qName, out var data))
             data ??= Read(qName);
 
-        if (data.TryGetValue(key, out var element))
-        {
-            try
-            {
-                value = element.Deserialize<T>(JsonOptions);
-                return value is not null;
-            }
-            catch
-            {
-                value = default;
-                return false;
-            }
-        }
+        if (!data.TryGetValue(key, out var element))
+            return false;
 
-        value = default;
-        return false;
+        try
+        {
+            value = element.Deserialize<T>(JsonOptions);
+            return value is not null;
+        }
+        catch
+        {
+            return false;
+        }
     }
 
     /// <inheritdoc />
@@ -81,6 +78,68 @@ public class ScriptConfigurationService(
         var qName = caller.Info.QualifiedName;
         if (!_cache.TryGetValue(qName, out var data))
             _cache[qName] = data ??= Read(qName);
+        return data.ContainsKey(key);
+    }
+
+    /// <inheritdoc />
+    public bool TryGet<T>(
+        IHoloExecutable caller,
+        Project project,
+        string key,
+        [NotNullWhen(true)] out T? value
+    )
+    {
+        value = default;
+        var qName = caller.Info.QualifiedName;
+        if (!project.ScriptConfiguration.TryGetValue(qName, out var data))
+            return false;
+
+        if (!data.TryGetValue(key, out var element))
+            return false;
+
+        try
+        {
+            value = element.Deserialize<T>(JsonOptions);
+            return value is not null;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    /// <inheritdoc />
+    public void Set<T>(IHoloExecutable caller, Project project, string key, T value)
+    {
+        var qName = caller.Info.QualifiedName;
+        if (!project.ScriptConfiguration.TryGetValue(qName, out var data))
+            project.ScriptConfiguration[qName] = data ??= [];
+
+        var element = JsonSerializer.SerializeToElement(value, JsonOptions);
+        data[key] = element;
+        project.IsSaved = false;
+    }
+
+    /// <inheritdoc />
+    public bool Remove(IHoloExecutable caller, Project project, string key)
+    {
+        var qName = caller.Info.QualifiedName;
+        if (!project.ScriptConfiguration.TryGetValue(qName, out var data))
+            project.ScriptConfiguration[qName] = data ??= [];
+
+        var result = data.Remove(key);
+        if (result)
+            project.IsSaved = false;
+        return result;
+    }
+
+    /// <inheritdoc />
+    public bool Contains(IHoloExecutable caller, Project project, string key)
+    {
+        var qName = caller.Info.QualifiedName;
+        if (!project.ScriptConfiguration.TryGetValue(qName, out var data))
+            project.ScriptConfiguration[qName] = data ??= [];
+
         return data.ContainsKey(key);
     }
 
