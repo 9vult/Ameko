@@ -602,6 +602,7 @@ public partial class MainWindowViewModel : ViewModelBase
             var nearestKf = FindNearestKeyframeTo(startFrame, mc.VideoInfo);
             var kfTime = mc.VideoInfo.TimeFromFrame(nearestKf);
 
+            // var threshold = ProjectProvider.Current.
             if (Math.Abs((@event.Start - kfTime).TotalMilliseconds) > 500)
                 return;
 

@@ -7,6 +7,7 @@ using System.Text.Json;
 using AssCS;
 using AssCS.IO;
 using AssCS.Utilities;
+using Holo.Configuration;
 using Holo.Models;
 using Holo.Providers;
 using Microsoft.Extensions.Logging;
@@ -211,6 +212,8 @@ public class Project : BindableBase
     /// Custom spellcheck words for the project
     /// </summary>
     public AssCS.Utilities.ReadOnlyObservableCollection<string> CustomWords => new(_customWords);
+
+    public TimingButlerConfiguration TimingButler { get; } = new();
 
     /// <summary>
     /// Project title/name
@@ -528,6 +531,16 @@ public class Project : BindableBase
                 DefaultLayer = _defaultLayer,
                 SpellcheckCulture = _spellcheckCulture,
                 CustomWords = _customWords.ToArray(),
+                TimingButler = new TimingButlerModel
+                {
+                    LeadIn = TimingButler.LeadIn,
+                    LeadOut = TimingButler.LeadOut,
+                    SnapStartEarlierThreshold = TimingButler.SnapStartEarlierThreshold,
+                    SnapStartLaterThreshold = TimingButler.SnapStartLaterThreshold,
+                    SnapEndEarlierThreshold = TimingButler.SnapEndEarlierThreshold,
+                    SnapEndLaterThreshold = TimingButler.SnapEndLaterThreshold,
+                    ChainThreshold = TimingButler.ChainThreshold,
+                },
             };
 
             var content = JsonSerializer.Serialize(model, JsonOptions);
@@ -826,6 +839,17 @@ public class Project : BindableBase
                 _useSoftLinebreaks = model.UseSoftLinebreaks;
                 _spellcheckCulture = model.SpellcheckCulture;
                 _customWords = new ObservableCollection<string>(model.CustomWords);
+
+                TimingButler = new TimingButlerConfiguration
+                {
+                    LeadIn = model.TimingButler.LeadIn,
+                    LeadOut = model.TimingButler.LeadOut,
+                    SnapStartEarlierThreshold = model.TimingButler.SnapStartEarlierThreshold,
+                    SnapStartLaterThreshold = model.TimingButler.SnapStartLaterThreshold,
+                    SnapEndEarlierThreshold = model.TimingButler.SnapEndEarlierThreshold,
+                    SnapEndLaterThreshold = model.TimingButler.SnapEndLaterThreshold,
+                    ChainThreshold = model.TimingButler.ChainThreshold,
+                };
 
                 model
                     .Styles.Select(s => Style.FromAss(StyleManager.NextId, s))

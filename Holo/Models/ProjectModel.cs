@@ -1,6 +1,7 @@
 ﻿// SPDX-License-Identifier: MPL-2.0
 
 using System.Text.Json.Serialization;
+using Holo.Configuration;
 
 namespace Holo.Models;
 
@@ -23,4 +24,5 @@ internal record ProjectModel
     public required int? DefaultLayer;
     public required string? SpellcheckCulture;
     public required string[] CustomWords;
+    public required TimingButlerModel TimingButler;
 }

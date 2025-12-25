@@ -207,6 +207,9 @@ public partial class Configuration : BindableBase, IConfiguration
     public ReadOnlyDictionary<string, string> ScriptMenuOverrides { get; }
 
     /// <inheritdoc />
+    public TimingButlerConfiguration TimingButler { get; }
+
+    /// <inheritdoc />
     public void AddRepositoryUrl(string url)
     {
         _logger.LogDebug("Adding repository url {Url}", url);
@@ -278,6 +281,16 @@ public partial class Configuration : BindableBase, IConfiguration
                 PropagateFields = _propagateFields,
                 RepositoryUrls = RepositoryUrls.ToArray(),
                 ScriptMenuOverrides = ScriptMenuOverrides.ToDictionary(),
+                TimingButler = new TimingButlerModel
+                {
+                    LeadIn = TimingButler.LeadIn,
+                    LeadOut = TimingButler.LeadOut,
+                    SnapStartEarlierThreshold = TimingButler.SnapStartEarlierThreshold,
+                    SnapStartLaterThreshold = TimingButler.SnapStartLaterThreshold,
+                    SnapEndEarlierThreshold = TimingButler.SnapEndEarlierThreshold,
+                    SnapEndLaterThreshold = TimingButler.SnapEndLaterThreshold,
+                    ChainThreshold = TimingButler.ChainThreshold,
+                },
             };
 
             var content = JsonSerializer.Serialize(model, JsonOptions);
@@ -349,6 +362,16 @@ public partial class Configuration : BindableBase, IConfiguration
                 _propagateFields = model.PropagateFields,
                 _repositoryUrls = new RangeObservableCollection<string>(model.RepositoryUrls),
                 _scriptMenuOverrides = new Dictionary<string, string>(model.ScriptMenuOverrides),
+                TimingButler =
+                {
+                    LeadIn = model.TimingButler.LeadIn,
+                    LeadOut = model.TimingButler.LeadOut,
+                    SnapStartEarlierThreshold = model.TimingButler.SnapStartEarlierThreshold,
+                    SnapStartLaterThreshold = model.TimingButler.SnapStartLaterThreshold,
+                    SnapEndEarlierThreshold = model.TimingButler.SnapEndEarlierThreshold,
+                    SnapEndLaterThreshold = model.TimingButler.SnapEndLaterThreshold,
+                    ChainThreshold = model.TimingButler.ChainThreshold,
+                },
             };
             logger.LogInformation("Done!");
             return result;
@@ -386,6 +409,17 @@ public partial class Configuration : BindableBase, IConfiguration
         _propagateFields = PropagateFields.NonText;
         _repositoryUrls = [];
         _scriptMenuOverrides = [];
+
+        TimingButler = new TimingButlerConfiguration
+        {
+            LeadIn = 120,
+            LeadOut = 400,
+            SnapStartEarlierThreshold = 350,
+            SnapStartLaterThreshold = 100,
+            SnapEndEarlierThreshold = 300,
+            SnapEndLaterThreshold = 900,
+            ChainThreshold = 620,
+        };
 
         RepositoryUrls = new ReadOnlyObservableCollection<string>(_repositoryUrls);
         ScriptMenuOverrides = new ReadOnlyDictionary<string, string>(_scriptMenuOverrides);

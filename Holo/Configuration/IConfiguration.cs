@@ -127,6 +127,11 @@ public interface IConfiguration
     ReadOnlyDictionary<string, string> ScriptMenuOverrides { get; }
 
     /// <summary>
+    /// Timing Butler configuration
+    /// </summary>
+    TimingButlerConfiguration TimingButler { get; }
+
+    /// <summary>
     /// Add a repository
     /// </summary>
     /// <param name="url">Repository to add</param>

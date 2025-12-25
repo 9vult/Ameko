@@ -33,4 +33,16 @@ internal record ConfigurationModel
     public required PropagateFields PropagateFields;
     public required string[] RepositoryUrls;
     public required Dictionary<string, string> ScriptMenuOverrides;
+    public required TimingButlerModel TimingButler;
+}
+
+internal record TimingButlerModel
+{
+    public required uint LeadIn;
+    public required uint LeadOut;
+    public required uint SnapStartEarlierThreshold;
+    public required uint SnapStartLaterThreshold;
+    public required uint SnapEndEarlierThreshold;
+    public required uint SnapEndLaterThreshold;
+    public required uint ChainThreshold;
 }
