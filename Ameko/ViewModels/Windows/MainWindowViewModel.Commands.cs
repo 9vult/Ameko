@@ -670,21 +670,6 @@ public partial class MainWindowViewModel : ViewModelBase
         });
     }
 
-    public ReactiveCommand<Unit, Unit> CreateTimingButlerCommand()
-    {
-        return ReactiveCommand.Create(() =>
-        {
-            var prj = ProjectProvider.Current;
-            var wsp = prj.WorkingSpace;
-            if (wsp is null)
-                return;
-
-            var mc = wsp.MediaController;
-            if (!mc.IsVideoLoaded)
-                return;
-        });
-    }
-
     /// <summary>
     /// Display the Open Video dialog
     /// </summary>
