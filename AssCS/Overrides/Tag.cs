@@ -8,137 +8,133 @@ public abstract class Tag
 {
     public abstract string Name { get; }
 
-    public class A(int value) : Tag
+    public class A(int? value) : Tag
     {
         public override string Name => Tags.A;
-        public int Value { get; set; } = value;
+        public int? Value { get; set; } = value;
 
         public override string ToString() => $@"\{Name}{Value}";
     }
 
-    public class A1(int value) : Tag
+    public class A1(string? value) : Tag
     {
         public override string Name => Tags.A1;
-        public int Value { get; set; } = value;
+        public string? Value { get; set; } = value;
 
-        public override string ToString() => $@"\{Name}{Value}";
+        public override string ToString() => Value is not null ? $@"\{Name}{Value}" : $@"\{Name}";
     }
 
-    public class A2(int value) : Tag
+    public class A2(string? value) : Tag
     {
         public override string Name => Tags.A2;
-        public int Value { get; set; } = value;
+        public string? Value { get; set; } = value;
 
-        public override string ToString() => $@"\{Name}{Value}";
+        public override string ToString() => Value is not null ? $@"\{Name}{Value}" : $@"\{Name}";
     }
 
-    public class A3(int value) : Tag
+    public class A3(string? value) : Tag
     {
         public override string Name => Tags.A3;
-        public int Value { get; set; } = value;
+        public string? Value { get; set; } = value;
 
-        public override string ToString() => $@"\{Name}{Value}";
+        public override string ToString() => Value is not null ? $@"\{Name}{Value}" : $@"\{Name}";
     }
 
-    public class A4(int value) : Tag
+    public class A4(string? value) : Tag
     {
         public override string Name => Tags.A4;
-        public int Value { get; set; } = value;
+        public string? Value { get; set; } = value;
 
-        public override string ToString() => $@"\{Name}{Value}";
+        public override string ToString() => Value is not null ? $@"\{Name}{Value}" : $@"\{Name}";
     }
 
-    public class Alpha(int? value) : Tag
+    public class Alpha(string? alpha) : Tag
     {
         public override string Name => Tags.Alpha;
-        public int? Value { get; set; } = value;
+        public string? Value { get; set; } = alpha;
 
         public override string ToString() => Value is not null ? $@"\{Name}{Value}" : $@"\{Name}";
     }
 
-    public class An(int value) : Tag
+    public class An(int? value) : Tag
     {
         public override string Name => Tags.An;
-        public int Value { get; set; } = value;
+        public int? Value { get; set; } = value;
 
-        public override string ToString() => $@"\{Name}{Value}";
+        public override string ToString() => Value is not null ? $@"\{Name}{Value}" : $@"\{Name}";
     }
 
-    public class B(bool value) : Tag
+    public class B(bool? value) : Tag
     {
         public override string Name => Tags.B;
-        public bool Value { get; set; } = value;
+        public bool? Value { get; set; } = value;
 
-        public override string ToString() => $@"\{Name}{(Value ? 1 : 0)}";
+        public override string ToString() =>
+            Value is not null ? $@"\{Name}{(Value is true ? 1 : 0)}" : $@"\{Name}";
     }
 
-    public class Be(int? value) : Tag
+    public class Be(double? value) : Tag
     {
         public override string Name => Tags.Be;
-        public int? Value { get; set; } = value;
+        public double? Value { get; set; } = value;
 
         public override string ToString() => Value is not null ? $@"\{Name}{Value}" : $@"\{Name}";
     }
 
-    public class Blur(int? value) : Tag
+    public class Blur(double? value) : Tag
     {
         public override string Name => Tags.Blur;
-        public int? Value { get; set; } = value;
+        public double? Value { get; set; } = value;
 
         public override string ToString() => Value is not null ? $@"\{Name}{Value}" : $@"\{Name}";
     }
 
-    public class Bord(int? value) : Tag
+    public class Bord(double? value) : Tag
     {
         public override string Name => Tags.Bord;
-        public int? Value { get; set; } = value;
+        public double? Value { get; set; } = value;
 
         public override string ToString() => Value is not null ? $@"\{Name}{Value}" : $@"\{Name}";
     }
 
-    public class C(Color? value) : Tag
+    public class C(string? value) : Tag
     {
         public override string Name => Tags.C;
-        public Color? Value { get; set; } = value;
+        public string? Value { get; set; } = value;
 
-        public override string ToString() =>
-            Value is not null ? $@"\{Name}{Value.AsOverrideColor()}" : $@"\{Name}";
+        public override string ToString() => Value is not null ? $@"\{Name}{Value}" : $@"\{Name}";
     }
 
-    public class C1(Color? value) : Tag
+    public class C1(string? value) : Tag
     {
         public override string Name => Tags.C1;
-        public Color? Value { get; set; } = value;
+        public string? Value { get; set; } = value;
 
-        public override string ToString() =>
-            Value is not null ? $@"\{Name}{Value.AsOverrideColor()}" : $@"\{Name}";
+        public override string ToString() => Value is not null ? $@"\{Name}{Value}" : $@"\{Name}";
     }
 
-    public class C2(Color? value) : Tag
+    public class C2(string? value) : Tag
     {
         public override string Name => Tags.C2;
-        public Color? Value { get; set; } = value;
+        public string? Value { get; set; } = value;
 
-        public override string ToString() =>
-            Value is not null ? $@"\{Name}{Value.AsOverrideColor()}" : $@"\{Name}";
+        public override string ToString() => Value is not null ? $@"\{Name}{Value}" : $@"\{Name}";
     }
 
-    public class C3(Color? value) : Tag
+    public class C3(string? value) : Tag
     {
         public override string Name => Tags.C3;
-        public Color? Value { get; set; } = value;
+        public string? Value { get; set; } = value;
 
-        public override string ToString() =>
-            Value is not null ? $@"\{Name}{Value.AsOverrideColor()}" : $@"\{Name}";
+        public override string ToString() => Value is not null ? $@"\{Name}{Value}" : $@"\{Name}";
     }
 
-    public class C4(Color? value) : Tag
+    public class C4(string? value) : Tag
     {
         public override string Name => Tags.C4;
-        public Color? Value { get; set; } = value;
+        public string? Value { get; set; } = value;
 
-        public override string ToString() =>
-            Value is not null ? $@"\{Name}{Value.AsOverrideColor()}" : $@"\{Name}";
+        public override string ToString() => Value is not null ? $@"\{Name}{Value}" : $@"\{Name}";
     }
 
     public class Clip(int x0, int y0, int x1, int y1) : Tag
@@ -152,74 +148,48 @@ public abstract class Tag
         public override string ToString() => $@"\{Name}({X0},{Y0},{X1},{Y1})";
     }
 
-    public class Fad : Tag
+    public class Fad(int t2, int t3) : Tag
     {
         public override string Name => Tags.Fad;
 
-        public bool IsShortVariant { get; }
+        public int T2 { get; set; } = t2;
+        public int T3 { get; set; } = t3;
 
-        public int A1 { get; set; } = 0xFF;
-        public int A2 { get; set; } = 0;
-        public int A3 { get; set; } = 0xFF;
-        public int T1 { get; set; } = -1;
-        public int T2 { get; set; }
-        public int T3 { get; set; }
-        public int T4 { get; set; } = -1;
-
-        public Fad(int t2, int t3)
-        {
-            IsShortVariant = true;
-            T2 = t2;
-            T3 = t3;
-        }
-
-        public Fad(int a1, int a2, int a3, int t1, int t2, int t3, int t4)
-        {
-            IsShortVariant = false;
-            A1 = a1;
-            A2 = a2;
-            A3 = a3;
-            T1 = t1;
-            T2 = t2;
-            T3 = t3;
-            T4 = t4;
-        }
-
-        public override string ToString() =>
-            IsShortVariant
-                ? $@"\{Name}({T2},{T3})"
-                : $@"\{Name}({A1},{A2},{A3},{T1},{T2},{T3},{T4})";
+        public override string ToString() => $@"\{Name}({T2},{T3})";
     }
 
-    public class Fade : Fad
+    public class Fade(int a1, int a2, int a3, int t1, int t2, int t3, int t4) : Tag
     {
         public override string Name => Tags.Fade;
 
-        /// <inheritdoc />
-        public Fade(int t2, int t3)
-            : base(t2, t3) { }
+        public int Alpha1 { get; set; } = a1;
+        public int Alpha2 { get; set; } = a2;
+        public int Alpha3 { get; set; } = a3;
+        public int T1 { get; set; } = t1;
+        public int T2 { get; set; } = t2;
+        public int T3 { get; set; } = t3;
+        public int T4 { get; set; } = t4;
 
-        /// <inheritdoc />
-        public Fade(int a1, int a2, int a3, int t1, int t2, int t3, int t4)
-            : base(a1, a2, a3, t1, t2, t3, t4) { }
+        public override string ToString() =>
+            $@"\{Name}({Alpha1},{Alpha2},{Alpha3},{T1},{T2},{T3},{T4})";
     }
 
-    public class FaX(double value) : Tag
+    public class FaX(double? value) : Tag
     {
         public override string Name => Tags.FaX;
 
-        public double Value { get; set; } = value;
+        public double? Value { get; set; } = value;
 
-        public override string ToString() => $@"\{Name}{Value}";
+        public override string ToString() => Value is not null ? $@"\{Name}{Value}" : $@"\{Name}";
     }
 
-    public class FaY(double value) : Tag
+    public class FaY(double? value) : Tag
     {
         public override string Name => Tags.FaY;
 
-        public double Value { get; set; } = value;
+        public double? Value { get; set; } = value;
 
-        public override string ToString() => $@"\{Name}{Value}";
+        public override string ToString() => Value is not null ? $@"\{Name}{Value}" : $@"\{Name}";
     }
 
     public class Fe(int? value) : Tag
@@ -319,12 +289,13 @@ public abstract class Tag
         public override string ToString() => Value is not null ? $@"\{Name}{Value}" : $@"\{Name}";
     }
 
-    public class I(bool value) : Tag
+    public class I(bool? value) : Tag
     {
         public override string Name => Tags.I;
-        public bool Value { get; set; } = value;
+        public bool? Value { get; set; } = value;
 
-        public override string ToString() => $@"\{Name}{(Value ? 1 : 0)}";
+        public override string ToString() =>
+            Value is not null ? $@"\{Name}{(Value is true ? 1 : 0)}" : $@"\{Name}";
     }
 
     public class IClip(int x0, int y0, int x1, int y1) : Tag
@@ -478,12 +449,13 @@ public abstract class Tag
         public override string ToString() => Style is not null ? $@"\{Name}{Style}" : $@"\{Name}";
     }
 
-    public class S(bool value) : Tag
+    public class S(bool? value) : Tag
     {
         public override string Name => Tags.S;
-        public bool Value { get; set; } = value;
+        public bool? Value { get; set; } = value;
 
-        public override string ToString() => $@"\{Name}{(Value ? 1 : 0)}";
+        public override string ToString() =>
+            Value is not null ? $@"\{Name}{(Value is true ? 1 : 0)}" : $@"\{Name}";
     }
 
     public class Shad(double? value) : Tag
@@ -528,12 +500,13 @@ public abstract class Tag
                 : $@"\{Name}({T1},{T2},{Acceleration},{Block.SubBlockText})";
     }
 
-    public class U(bool value) : Tag
+    public class U(bool? value) : Tag
     {
         public override string Name => Tags.U;
-        public bool Value { get; set; } = value;
+        public bool? Value { get; set; } = value;
 
-        public override string ToString() => $@"\{Name}{(Value ? 1 : 0)}";
+        public override string ToString() =>
+            Value is not null ? $@"\{Name}{(Value is true ? 1 : 0)}" : $@"\{Name}";
     }
 
     public class XBord(double? value) : Tag
@@ -573,5 +546,13 @@ public abstract class Tag
         /// <inheritdoc />
         public override string Name { get; } = name;
         public string[] Args { get; } = args;
+
+        public override string ToString() =>
+            Args.Length switch
+            {
+                0 => $@"\{Name}",
+                1 => $@"\{Name}{Args[0]}",
+                _ => $@"\{Name}({string.Join(',', Args)})",
+            };
     }
 }
