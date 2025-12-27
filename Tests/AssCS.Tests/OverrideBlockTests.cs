@@ -158,10 +158,10 @@ public class OverrideBlockTests
         await Assert.That(t).IsNotNull();
         await Assert.That(t.Variant).IsEqualTo(OverrideTag.T.TransformVariant.BlockOnly);
 
-        await Assert.That(t.Block.Count).IsEqualTo(2);
+        await Assert.That(t.Tags.Count).IsEqualTo(2);
 
-        var fscx = await Assert.That(t.Block[0]).IsTypeOf<OverrideTag.FscX>();
-        var fscy = await Assert.That(t.Block[1]).IsTypeOf<OverrideTag.FscY>();
+        var fscx = await Assert.That(t.Tags[0]).IsTypeOf<OverrideTag.FscX>();
+        var fscy = await Assert.That(t.Tags[1]).IsTypeOf<OverrideTag.FscY>();
 
         await Assert.That(fscx!.Value).IsEqualTo(120);
         await Assert.That(fscy!.Value).IsEqualTo(400);
@@ -180,10 +180,10 @@ public class OverrideBlockTests
         await Assert.That(t.Variant).IsEqualTo(OverrideTag.T.TransformVariant.AccelerationOnly);
 
         await Assert.That(t.Acceleration).IsEqualTo(1.5);
-        await Assert.That(t.Block.Count).IsEqualTo(2);
+        await Assert.That(t.Tags.Count).IsEqualTo(2);
 
-        var fscx = await Assert.That(t.Block[0]).IsTypeOf<OverrideTag.FscX>();
-        var fscy = await Assert.That(t.Block[1]).IsTypeOf<OverrideTag.FscY>();
+        var fscx = await Assert.That(t.Tags[0]).IsTypeOf<OverrideTag.FscX>();
+        var fscy = await Assert.That(t.Tags[1]).IsTypeOf<OverrideTag.FscY>();
 
         await Assert.That(fscx!.Value).IsEqualTo(120);
         await Assert.That(fscy!.Value).IsEqualTo(400);
@@ -203,10 +203,10 @@ public class OverrideBlockTests
 
         await Assert.That(t.T1).IsEqualTo(10);
         await Assert.That(t.T2).IsEqualTo(40);
-        await Assert.That(t.Block.Count).IsEqualTo(2);
+        await Assert.That(t.Tags.Count).IsEqualTo(2);
 
-        var fscx = await Assert.That(t.Block[0]).IsTypeOf<OverrideTag.FscX>();
-        var fscy = await Assert.That(t.Block[1]).IsTypeOf<OverrideTag.FscY>();
+        var fscx = await Assert.That(t.Tags[0]).IsTypeOf<OverrideTag.FscX>();
+        var fscy = await Assert.That(t.Tags[1]).IsTypeOf<OverrideTag.FscY>();
 
         await Assert.That(fscx!.Value).IsEqualTo(120);
         await Assert.That(fscy!.Value).IsEqualTo(400);
@@ -227,10 +227,10 @@ public class OverrideBlockTests
         await Assert.That(t.T1).IsEqualTo(10);
         await Assert.That(t.T2).IsEqualTo(40);
         await Assert.That(t.Acceleration).IsEqualTo(1.5);
-        await Assert.That(t.Block.Count).IsEqualTo(2);
+        await Assert.That(t.Tags.Count).IsEqualTo(2);
 
-        var fscx = await Assert.That(t.Block[0]).IsTypeOf<OverrideTag.FscX>();
-        var fscy = await Assert.That(t.Block[1]).IsTypeOf<OverrideTag.FscY>();
+        var fscx = await Assert.That(t.Tags[0]).IsTypeOf<OverrideTag.FscX>();
+        var fscy = await Assert.That(t.Tags[1]).IsTypeOf<OverrideTag.FscY>();
 
         await Assert.That(fscx!.Value).IsEqualTo(120);
         await Assert.That(fscy!.Value).IsEqualTo(400);
@@ -349,8 +349,8 @@ public class OverrideBlockTests
         await Assert.That(t.RawT1).IsEqualTo("$sstart");
         await Assert.That(t.RawT2).IsEqualTo("!$sstart+$sdur*0.3!");
 
-        await Assert.That(t.Block.Count).IsEqualTo(1);
-        var c = await Assert.That(t.Block[0]).IsTypeOf<OverrideTag.C>();
+        await Assert.That(t.Tags.Count).IsEqualTo(1);
+        var c = await Assert.That(t.Tags[0]).IsTypeOf<OverrideTag.C>();
 
         await Assert.That(c).IsNotNull();
         await Assert.That(c.Value).IsEqualTo("!gc(2)!");

@@ -4,17 +4,42 @@ using System.Globalization;
 using AssCS.Overrides.Blocks;
 using AssCS.Utilities;
 
+// ReSharper disable MemberCanBePrivate.Global
+// ReSharper disable MemberCanBeProtected.Global
+// ReSharper disable PropertyCanBeMadeInitOnly.Global
+
 namespace AssCS.Overrides;
 
 /// <summary>
 /// A component in an <see cref="OverrideBlock"/>
 /// </summary>
+/// <remarks>
+/// <para>
+/// Each tag has "raw" and "controlled" accessors. When working with a tag,
+/// you can choose which accessors to use based on your needs.
+/// </para><para>
+/// For example, if you are creating a tag with known values, you may choose
+/// to use the controlled accessors and constructor. On the other hand, the raw
+/// accessors may be more well-suited for parsing, or when inline code or
+/// variables are involved.
+/// </para><para>
+/// For each, the raw value is what will be used when generating the output
+/// string. The controlled values, then, are wrappers around the raw value that
+/// may perform additional parsing to get the "real type" from the raw string.
+/// </para>
+/// </remarks>
 public abstract class OverrideTag
 {
     /// <summary>
     /// Name of the tag, excluding the backslash <c>\</c>
     /// </summary>
     public abstract string Name { get; }
+
+    /// <summary>
+    /// ASS-formated representation of the tag and its components
+    /// </summary>
+    /// <returns></returns>
+    public override string ToString() => $@"\{Name}";
 
     /// <summary>
     /// Line alignment (legacy)
@@ -62,6 +87,7 @@ public abstract class OverrideTag
             RawValue = value;
         }
 
+        /// <inheritdoc />
         public override string ToString() => $@"\{Name}{RawValue}";
     }
 
@@ -80,6 +106,7 @@ public abstract class OverrideTag
         /// </summary>
         public string? Value { get; set; } = value;
 
+        /// <inheritdoc />
         public override string ToString() => Value is not null ? $@"\{Name}{Value}" : $@"\{Name}";
     }
 
@@ -98,6 +125,7 @@ public abstract class OverrideTag
         /// </summary>
         public string? Value { get; set; } = value;
 
+        /// <inheritdoc />
         public override string ToString() => Value is not null ? $@"\{Name}{Value}" : $@"\{Name}";
     }
 
@@ -116,6 +144,7 @@ public abstract class OverrideTag
         /// </summary>
         public string? Value { get; set; } = value;
 
+        /// <inheritdoc />
         public override string ToString() => Value is not null ? $@"\{Name}{Value}" : $@"\{Name}";
     }
 
@@ -134,6 +163,7 @@ public abstract class OverrideTag
         /// </summary>
         public string? Value { get; set; } = value;
 
+        /// <inheritdoc />
         public override string ToString() => Value is not null ? $@"\{Name}{Value}" : $@"\{Name}";
     }
 
@@ -152,6 +182,7 @@ public abstract class OverrideTag
         /// </summary>
         public string? Value { get; set; } = alpha;
 
+        /// <inheritdoc />
         public override string ToString() => Value is not null ? $@"\{Name}{Value}" : $@"\{Name}";
     }
 
@@ -196,6 +227,7 @@ public abstract class OverrideTag
             RawValue = value;
         }
 
+        /// <inheritdoc />
         public override string ToString() =>
             RawValue is not null ? $@"\{Name}{RawValue}" : $@"\{Name}";
     }
@@ -244,6 +276,7 @@ public abstract class OverrideTag
             RawValue = value;
         }
 
+        /// <inheritdoc />
         public override string ToString() =>
             RawValue is not null ? $@"\{Name}{RawValue}" : $@"\{Name}";
     }
@@ -292,6 +325,7 @@ public abstract class OverrideTag
             RawValue = value;
         }
 
+        /// <inheritdoc />
         public override string ToString() =>
             RawValue is not null ? $@"\{Name}{RawValue}" : $@"\{Name}";
     }
@@ -337,6 +371,7 @@ public abstract class OverrideTag
             RawValue = value;
         }
 
+        /// <inheritdoc />
         public override string ToString() =>
             RawValue is not null ? $@"\{Name}{RawValue}" : $@"\{Name}";
     }
@@ -345,6 +380,8 @@ public abstract class OverrideTag
     /// Border size
     /// </summary>
     /// <example>\bord2</example>
+    /// <seealso cref="OverrideTag.XBord"/>
+    /// <seealso cref="OverrideTag.YBord"/>
     public class Bord : OverrideTag
     {
         /// <inheritdoc />
@@ -382,6 +419,7 @@ public abstract class OverrideTag
             RawThickness = thickness;
         }
 
+        /// <inheritdoc />
         public override string ToString() =>
             RawThickness is not null ? $@"\{Name}{RawThickness}" : $@"\{Name}";
     }
@@ -402,6 +440,7 @@ public abstract class OverrideTag
         /// </summary>
         public string? Value { get; set; } = value;
 
+        /// <inheritdoc />
         public override string ToString() => Value is not null ? $@"\{Name}{Value}" : $@"\{Name}";
     }
 
@@ -421,6 +460,7 @@ public abstract class OverrideTag
         /// </summary>
         public string? Value { get; set; } = value;
 
+        /// <inheritdoc />
         public override string ToString() => Value is not null ? $@"\{Name}{Value}" : $@"\{Name}";
     }
 
@@ -439,6 +479,7 @@ public abstract class OverrideTag
         /// </summary>
         public string? Value { get; set; } = value;
 
+        /// <inheritdoc />
         public override string ToString() => Value is not null ? $@"\{Name}{Value}" : $@"\{Name}";
     }
 
@@ -457,6 +498,7 @@ public abstract class OverrideTag
         /// </summary>
         public string? Value { get; set; } = value;
 
+        /// <inheritdoc />
         public override string ToString() => Value is not null ? $@"\{Name}{Value}" : $@"\{Name}";
     }
 
@@ -475,6 +517,7 @@ public abstract class OverrideTag
         /// </summary>
         public string? Value { get; set; } = value;
 
+        /// <inheritdoc />
         public override string ToString() => Value is not null ? $@"\{Name}{Value}" : $@"\{Name}";
     }
 
@@ -633,6 +676,7 @@ public abstract class OverrideTag
             Drawing = drawing;
         }
 
+        /// <inheritdoc />
         public override string ToString() =>
             Variant switch
             {
@@ -712,6 +756,7 @@ public abstract class OverrideTag
             RawT2 = t2;
         }
 
+        /// <inheritdoc />
         public override string ToString() => $@"\{Name}({RawT1},{RawT2})";
     }
 
@@ -864,6 +909,7 @@ public abstract class OverrideTag
             RawT4 = t4;
         }
 
+        /// <inheritdoc />
         public override string ToString() =>
             $@"\{Name}({RawAlpha1},{RawAlpha2},{RawAlpha3},{RawT1},{RawT2},{RawT3},{RawT4})";
     }
@@ -909,6 +955,7 @@ public abstract class OverrideTag
             RawValue = value;
         }
 
+        /// <inheritdoc />
         public override string ToString() =>
             RawValue is not null ? $@"\{Name}{RawValue}" : $@"\{Name}";
     }
@@ -954,181 +1001,319 @@ public abstract class OverrideTag
             RawValue = value;
         }
 
+        /// <inheritdoc />
         public override string ToString() =>
             RawValue is not null ? $@"\{Name}{RawValue}" : $@"\{Name}";
     }
 
+    /// <summary>
+    /// Font encoding
+    /// </summary>
+    /// <remarks>
+    /// Using this is rarely a good idea
+    /// </remarks>
+    /// <example>\fe1</example>
     public class Fe : OverrideTag
     {
         /// <inheritdoc />
         public override string Name => OverrideTags.Fe;
 
+        /// <summary>
+        /// Font encoding id
+        /// </summary>
         public int? Value
         {
             get => RawValue?.ParseAssInt() ?? 0;
             set => RawValue = value?.ToString();
         }
 
+        /// <summary>
+        /// Font encoding id
+        /// </summary>
         public string? RawValue { get; set; }
 
+        /// <summary>
+        /// Create an <c>\fe</c> tag
+        /// </summary>
+        /// <param name="value">Encoding id</param>
         public Fe(int? value)
         {
             Value = value;
         }
 
+        /// <summary>
+        /// Create an <c>\fe</c> tag
+        /// </summary>
+        /// <param name="value">Encoding id</param>
         public Fe(string? value)
         {
             RawValue = value;
         }
 
+        /// <inheritdoc />
         public override string ToString() =>
             RawValue is not null ? $@"\{Name}{RawValue}" : $@"\{Name}";
     }
 
+    /// <summary>
+    /// Font name
+    /// </summary>
+    /// <param name="value">Name of the font</param>
+    /// <example>\fnTimes New Roman</example>
     public class Fn(string? value) : OverrideTag
     {
         /// <inheritdoc />
         public override string Name => OverrideTags.Fn;
 
+        /// <summary>
+        /// Name of the font
+        /// </summary>
         public string? Value { get; set; } = value;
 
+        /// <inheritdoc />
         public override string ToString() => Value is not null ? $@"\{Name}{Value}" : $@"\{Name}";
     }
 
+    /// <summary>
+    /// Rotation about the z-axis
+    /// </summary>
+    /// <example>\fr120</example>
+    /// <seealso cref="OverrideTag.FrZ"/>
     public class Fr : OverrideTag
     {
         /// <inheritdoc />
         public override string Name => OverrideTags.Fr;
 
+        /// <summary>
+        /// Rotation in degrees
+        /// </summary>
         public double? Value
         {
             get => RawValue?.ParseAssDouble() ?? 0;
             set => RawValue = value?.ToString();
         }
 
+        /// <summary>
+        /// Rotation
+        /// </summary>
         public string? RawValue { get; set; }
 
+        /// <summary>
+        /// Create an <c>\fr</c> tag
+        /// </summary>
+        /// <param name="value">Rotation</param>
         public Fr(double? value)
         {
             Value = value;
         }
 
+        /// <summary>
+        /// Create an <c>\fr</c> tag
+        /// </summary>
+        /// <param name="value">Rotation</param>
         public Fr(string? value)
         {
             RawValue = value;
         }
 
+        /// <inheritdoc />
         public override string ToString() =>
             RawValue is not null ? $@"\{Name}{RawValue}" : $@"\{Name}";
     }
 
+    /// <summary>
+    /// Rotation about the x-axis
+    /// </summary>
+    /// <example>\frx120</example>
     public class FrX : OverrideTag
     {
         /// <inheritdoc />
         public override string Name => OverrideTags.FrX;
 
+        /// <summary>
+        /// Rotation in degrees
+        /// </summary>
         public double? Value
         {
             get => RawValue?.ParseAssDouble() ?? 0;
             set => RawValue = value?.ToString();
         }
 
+        /// <summary>
+        /// Rotation
+        /// </summary>
         public string? RawValue { get; set; }
 
+        /// <summary>
+        /// Create an <c>\frx</c> tag
+        /// </summary>
+        /// <param name="value">Rotation</param>
         public FrX(double? value)
         {
             Value = value;
         }
 
+        /// <summary>
+        /// Create an <c>\frx</c> tag
+        /// </summary>
+        /// <param name="value">Rotation</param>
         public FrX(string? value)
         {
             RawValue = value;
         }
 
+        /// <inheritdoc />
         public override string ToString() =>
             RawValue is not null ? $@"\{Name}{RawValue}" : $@"\{Name}";
     }
 
+    /// <summary>
+    /// Rotation about the y-axis
+    /// </summary>
+    /// <example>\fry120</example>
     public class FrY : OverrideTag
     {
         /// <inheritdoc />
         public override string Name => OverrideTags.FrY;
 
+        /// <summary>
+        /// Rotation in degrees
+        /// </summary>
         public double? Value
         {
             get => RawValue?.ParseAssDouble() ?? 0;
             set => RawValue = value?.ToString();
         }
 
+        /// <summary>
+        /// Rotation
+        /// </summary>
         public string? RawValue { get; set; }
 
+        /// <summary>
+        /// Create an <c>\fry</c> tag
+        /// </summary>
+        /// <param name="value">Rotation</param>
         public FrY(double? value)
         {
             Value = value;
         }
 
+        /// <summary>
+        /// Create an <c>\fry</c> tag
+        /// </summary>
+        /// <param name="value">Rotation</param>
         public FrY(string? value)
         {
             RawValue = value;
         }
 
+        /// <inheritdoc />
         public override string ToString() =>
             RawValue is not null ? $@"\{Name}{RawValue}" : $@"\{Name}";
     }
 
+    /// <summary>
+    /// Rotation about the z-axis
+    /// </summary>
+    /// <example>\frz120</example>
+    /// <seealso cref="OverrideTag.Fr"/>
     public class FrZ : OverrideTag
     {
         /// <inheritdoc />
         public override string Name => OverrideTags.FrZ;
 
+        /// <summary>
+        /// Rotation in degrees
+        /// </summary>
         public double? Value
         {
             get => RawValue?.ParseAssDouble() ?? 0;
             set => RawValue = value?.ToString();
         }
 
+        /// <summary>
+        /// Rotation
+        /// </summary>
         public string? RawValue { get; set; }
 
+        /// <summary>
+        /// Create an <c>\frz</c> tag
+        /// </summary>
+        /// <param name="value">Rotation</param>
         public FrZ(double? value)
         {
             Value = value;
         }
 
+        /// <summary>
+        /// Create an <c>\frz</c> tag
+        /// </summary>
+        /// <param name="value">Rotation</param>
         public FrZ(string? value)
         {
             RawValue = value;
         }
 
+        /// <inheritdoc />
         public override string ToString() =>
             RawValue is not null ? $@"\{Name}{RawValue}" : $@"\{Name}";
     }
 
+    /// <summary>
+    /// Font size
+    /// </summary>
+    /// <remarks>
+    /// The font size is in script pixels (height)
+    /// </remarks>
+    /// <example>\fs72</example>
     public class Fs : OverrideTag
     {
         /// <inheritdoc />
         public override string Name => OverrideTags.Fs;
 
+        /// <summary>
+        /// Font size in pixel height
+        /// </summary>
         public double? Value
         {
             get => RawValue?.ParseAssDouble() ?? 0;
             set => RawValue = value?.ToString();
         }
 
+        /// <summary>
+        /// Font size
+        /// </summary>
         public string? RawValue { get; set; }
+
+        /// <summary>
+        /// Tag variant
+        /// </summary>
         public FsVariant Variant { get; set; }
 
+        /// <summary>
+        /// Create an <c>fs</c> tag
+        /// </summary>
+        /// <param name="value">Font size</param>
+        /// <param name="variant">Variant</param>
         public Fs(double? value, FsVariant variant)
         {
             Value = value;
             Variant = variant;
         }
 
+        /// <summary>
+        /// Create an <c>fs</c> tag
+        /// </summary>
+        /// <param name="value">Font size</param>
+        /// <param name="variant">Variant</param>
         public Fs(string? value, FsVariant variant)
         {
             RawValue = value;
             Variant = variant;
         }
 
+        /// <inheritdoc />
         public override string ToString()
         {
             if (Value is null)
@@ -1155,100 +1340,169 @@ public abstract class OverrideTag
         }
     }
 
+    /// <summary>
+    /// Reset font scale
+    /// </summary>
+    /// <example>\fsc</example>
     public class Fsc : OverrideTag
     {
         /// <inheritdoc />
         public override string Name => OverrideTags.Fsc;
 
+        /// <inheritdoc />
         public override string ToString() => $@"\{Name}";
     }
 
+    /// <summary>
+    /// Font scale in the x-direction
+    /// </summary>
+    /// <example>\fscx140</example>
     public class FscX : OverrideTag
     {
         /// <inheritdoc />
         public override string Name => OverrideTags.FscX;
 
+        /// <summary>
+        /// Scale percentage
+        /// </summary>
         public double? Value
         {
             get => RawValue?.ParseAssDouble() ?? 0;
             set => RawValue = value?.ToString();
         }
 
+        /// <summary>
+        /// Scale
+        /// </summary>
         public string? RawValue { get; set; }
 
+        /// <summary>
+        /// Create an <c>\fscx</c> tag
+        /// </summary>
+        /// <param name="value">Scale</param>
         public FscX(double? value)
         {
             Value = value;
         }
 
+        /// <summary>
+        /// Create an <c>\fscx</c> tag
+        /// </summary>
+        /// <param name="value">Scale</param>
         public FscX(string? value)
         {
             RawValue = value;
         }
 
+        /// <inheritdoc />
         public override string ToString() =>
             RawValue is not null ? $@"\{Name}{RawValue}" : $@"\{Name}";
     }
 
+    /// <summary>
+    /// Font scale in the y-direction
+    /// </summary>
+    /// <example>\fscy140</example>
     public class FscY : OverrideTag
     {
         /// <inheritdoc />
         public override string Name => OverrideTags.FscY;
 
+        /// <summary>
+        /// Scale percentage
+        /// </summary>
         public double? Value
         {
             get => RawValue?.ParseAssDouble() ?? 0;
             set => RawValue = value?.ToString();
         }
 
+        /// <summary>
+        /// Scale
+        /// </summary>
         public string? RawValue { get; set; }
 
+        /// <summary>
+        /// Create an <c>\fscy</c> tag
+        /// </summary>
+        /// <param name="value">Scale</param>
         public FscY(double? value)
         {
             Value = value;
         }
 
+        /// <summary>
+        /// Create an <c>\fscy</c> tag
+        /// </summary>
+        /// <param name="value">Scale</param>
         public FscY(string? value)
         {
             RawValue = value;
         }
 
+        /// <inheritdoc />
         public override string ToString() =>
             RawValue is not null ? $@"\{Name}{RawValue}" : $@"\{Name}";
     }
 
+    /// <summary>
+    /// Letter spacing
+    /// </summary>
+    /// <example>\fsp2</example>
     public class Fsp : OverrideTag
     {
         /// <inheritdoc />
         public override string Name => OverrideTags.Fsp;
 
+        /// <summary>
+        /// Spacing between characters in pixel width
+        /// </summary>
         public double? Value
         {
             get => RawValue?.ParseAssDouble() ?? 0;
             set => RawValue = value?.ToString();
         }
 
+        /// <summary>
+        /// Space between characters
+        /// </summary>
         public string? RawValue { get; set; }
 
+        /// <summary>
+        /// Create an <c>\fsp</c> tag
+        /// </summary>
+        /// <param name="value">Spacing</param>
         public Fsp(double? value)
         {
             Value = value;
         }
 
+        /// <summary>
+        /// Create an <c>\fsp</c> tag
+        /// </summary>
+        /// <param name="value">Spacing</param>
         public Fsp(string? value)
         {
             RawValue = value;
         }
 
+        /// <inheritdoc />
         public override string ToString() =>
             RawValue is not null ? $@"\{Name}{RawValue}" : $@"\{Name}";
     }
 
+    /// <summary>
+    /// Italics
+    /// </summary>
+    /// <example>\i1</example>
     public class I : OverrideTag
     {
         /// <inheritdoc />
         public override string Name => OverrideTags.I;
 
+        /// <summary>
+        /// If italics is enabled
+        /// </summary>
         public bool? Value
         {
             get => RawValue?.ParseAssInt().Equals(1);
@@ -1259,18 +1513,31 @@ public abstract class OverrideTag
                         : "0"
                     : null;
         }
+
+        /// <summary>
+        /// Italics
+        /// </summary>
         public string? RawValue { get; set; }
 
+        /// <summary>
+        /// Create an <c>\i</c> tag
+        /// </summary>
+        /// <param name="value">If italics are to be enabled</param>
         public I(bool? value)
         {
             Value = value;
         }
 
+        /// <summary>
+        /// Create an <c>\i</c> tag
+        /// </summary>
+        /// <param name="value">If italics are to be enabled</param>
         public I(string? value)
         {
             RawValue = value;
         }
 
+        /// <inheritdoc />
         public override string ToString() =>
             RawValue is not null ? $@"\{Name}{RawValue}" : $@"\{Name}";
     }
@@ -1430,6 +1697,7 @@ public abstract class OverrideTag
             Drawing = drawing;
         }
 
+        /// <inheritdoc />
         public override string ToString() =>
             Variant switch
             {
@@ -1450,139 +1718,290 @@ public abstract class OverrideTag
         }
     }
 
+    /// <summary>
+    /// Karaoke
+    /// </summary>
+    /// <remarks>
+    /// Color changes from secondary to primary instantly
+    /// </remarks>
+    /// <example>\k16</example>
     public class K : OverrideTag
     {
         /// <inheritdoc />
         public override string Name => OverrideTags.K;
 
+        /// <summary>
+        /// Duration in centiseconds
+        /// </summary>
         public double? Duration
         {
             get => RawDuration?.ParseAssDouble() ?? 0;
             set => RawDuration = value?.ToString();
         }
 
+        /// <summary>
+        /// Duration
+        /// </summary>
         public string? RawDuration { get; set; }
 
+        /// <summary>
+        /// Create a <c>\k</c> tag
+        /// </summary>
+        /// <param name="duration">Duration</param>
         public K(double? duration)
         {
             Duration = duration;
         }
 
+        /// <summary>
+        /// Create a <c>\k</c> tag
+        /// </summary>
+        /// <param name="duration">Duration</param>
         public K(string? duration)
         {
             RawDuration = duration;
         }
 
+        /// <inheritdoc />
         public override string ToString() =>
             RawDuration is not null ? $@"\{Name}{RawDuration}" : $@"\{Name}";
     }
 
+    /// <summary>
+    /// Karaoke
+    /// </summary>
+    /// <remarks>
+    /// Color changes from secondary to primary in an animated
+    /// sweep from left to right, over the full duration
+    /// </remarks>
+    /// <example>\kf16</example>
+    /// <seealso cref="OverrideTag.KUpper"/>
     public class Kf : K
     {
         /// <inheritdoc />
         public override string Name => OverrideTags.Kf;
 
+        /// <summary>
+        /// Create a <c>\kf</c> tag
+        /// </summary>
+        /// <param name="duration">Duration</param>
         public Kf(double? duration)
             : base(duration) { }
 
+        /// <summary>
+        /// Create a <c>\kf</c> tag
+        /// </summary>
+        /// <param name="duration">Duration</param>
         public Kf(string? duration)
             : base(duration) { }
 
+        /// <inheritdoc />
         public override string ToString() =>
             RawDuration is not null ? $@"\{Name}{RawDuration}" : $@"\{Name}";
     }
 
+    /// <summary>
+    /// Karaoke
+    /// </summary>
+    /// <remarks>
+    /// Outline color goes from invisible to visible instantly
+    /// </remarks>
+    /// <example>\ko16</example>
     public class Ko : K
     {
         /// <inheritdoc />
         public override string Name => OverrideTags.Ko;
 
+        /// <summary>
+        /// Create a <c>\ko</c> tag
+        /// </summary>
+        /// <param name="duration">Duration</param>
         public Ko(double? duration)
             : base(duration) { }
 
+        /// <summary>
+        /// Create a <c>\ko</c> tag
+        /// </summary>
+        /// <param name="duration">Duration</param>
         public Ko(string? duration)
             : base(duration) { }
 
+        /// <inheritdoc />
         public override string ToString() =>
             RawDuration is not null ? $@"\{Name}{RawDuration}" : $@"\{Name}";
     }
 
+    /// <summary>
+    /// Karaoke
+    /// </summary>
+    /// <remarks>
+    /// Sets the start time of the subsequent syllable
+    /// relative to the start time of the event. Syllable start
+    /// times are implicitly determined as sum(previous).
+    /// </remarks>
+    /// <example>\kt16</example>
     public class Kt : K
     {
         /// <inheritdoc />
         public override string Name => OverrideTags.Kt;
 
+        /// <summary>
+        /// Create a <c>\kt</c> tag
+        /// </summary>
+        /// <param name="duration">Duration</param>
         public Kt(double? duration)
             : base(duration) { }
 
+        /// <summary>
+        /// Create a <c>\kt</c> tag
+        /// </summary>
+        /// <param name="duration">Duration</param>
         public Kt(string? duration)
             : base(duration) { }
 
+        /// <inheritdoc />
         public override string ToString() =>
             RawDuration is not null ? $@"\{Name}{RawDuration}" : $@"\{Name}";
     }
 
+    /// <summary>
+    /// Karaoke
+    /// </summary>
+    /// <remarks>
+    /// Color changes from secondary to primary in an animated
+    /// sweep from left to right, over the full duration
+    /// </remarks>
+    /// <example>\K16</example>
+    /// <seealso cref="OverrideTag.Kf"/>
     public class KUpper : K
     {
         /// <inheritdoc />
         public override string Name => OverrideTags.KUpper;
 
+        /// <summary>
+        /// Create a <c>\K</c> tag
+        /// </summary>
+        /// <param name="duration">Duration</param>
         public KUpper(double? duration)
             : base(duration) { }
 
+        /// <summary>
+        /// Create a <c>\K</c> tag
+        /// </summary>
+        /// <param name="duration">Duration</param>
         public KUpper(string? duration)
             : base(duration) { }
 
+        /// <inheritdoc />
         public override string ToString() =>
             RawDuration is not null ? $@"\{Name}{RawDuration}" : $@"\{Name}";
     }
 
+    /// <summary>
+    /// Linear movement
+    /// </summary>
+    /// <example>\move(100,200,100,700)</example>
     public class Move : OverrideTag
     {
         /// <inheritdoc />
         public override string Name => OverrideTags.Move;
 
+        /// <summary>
+        /// Move variant
+        /// </summary>
         public bool IsShortVariant { get; }
 
+        /// <summary>
+        /// Initial x position
+        /// </summary>
         public double X1
         {
             get => RawX1?.ParseAssDouble() ?? 0;
             set => RawX1 = value.ToString(CultureInfo.InvariantCulture);
         }
+
+        /// <summary>
+        /// Initial y position
+        /// </summary>
         public double Y1
         {
             get => RawY1?.ParseAssDouble() ?? 0;
             set => RawY1 = value.ToString(CultureInfo.InvariantCulture);
         }
+
+        /// <summary>
+        /// Final x position
+        /// </summary>
         public double X2
         {
             get => RawX2?.ParseAssDouble() ?? 0;
             set => RawX2 = value.ToString(CultureInfo.InvariantCulture);
         }
+
+        /// <summary>
+        /// Final y position
+        /// </summary>
         public double Y2
         {
             get => RawY2?.ParseAssDouble() ?? 0;
             set => RawY2 = value.ToString(CultureInfo.InvariantCulture);
         }
+
+        /// <summary>
+        /// Start time
+        /// </summary>
         public int T1
         {
             get => RawT1?.ParseAssInt() ?? 0;
             set => RawT1 = value.ToString(CultureInfo.InvariantCulture);
         }
 
+        /// <summary>
+        /// End time
+        /// </summary>
         public int T2
         {
             get => RawT2?.ParseAssInt() ?? 0;
             set => RawT2 = value.ToString(CultureInfo.InvariantCulture);
         }
 
+        /// <summary>
+        /// Initial x position
+        /// </summary>
         public string? RawX1 { get; set; }
+
+        /// <summary>
+        /// Initial y position
+        /// </summary>
         public string? RawY1 { get; set; }
+
+        /// <summary>
+        /// Final x position
+        /// </summary>
         public string? RawX2 { get; set; }
+
+        /// <summary>
+        /// Final y position
+        /// </summary>
         public string? RawY2 { get; set; }
+
+        /// <summary>
+        /// Start time
+        /// </summary>
         public string? RawT1 { get; set; }
+
+        /// <summary>
+        /// End time
+        /// </summary>
         public string? RawT2 { get; set; }
 
+        /// <summary>
+        /// Create a <c>\move</c> tag
+        /// </summary>
+        /// <param name="x1">Initial x position</param>
+        /// <param name="y1">Initial y position</param>
+        /// <param name="x2">Final x position</param>
+        /// <param name="y2">Final y position</param>
         public Move(double x1, double y1, double x2, double y2)
         {
             IsShortVariant = true;
@@ -1594,6 +2013,15 @@ public abstract class OverrideTag
             T2 = 0;
         }
 
+        /// <summary>
+        /// Create a <c>\move</c> tag
+        /// </summary>
+        /// <param name="x1">Initial x position</param>
+        /// <param name="y1">Initial y position</param>
+        /// <param name="x2">Final x position</param>
+        /// <param name="y2">Final y position</param>
+        /// <param name="t1">Start time</param>
+        /// <param name="t2">End time</param>
         public Move(double x1, double y1, double x2, double y2, int t1, int t2)
         {
             IsShortVariant = false;
@@ -1605,6 +2033,13 @@ public abstract class OverrideTag
             T2 = t2;
         }
 
+        /// <summary>
+        /// Create a <c>\move</c> tag
+        /// </summary>
+        /// <param name="x1">Initial x position</param>
+        /// <param name="y1">Initial y position</param>
+        /// <param name="x2">Final x position</param>
+        /// <param name="y2">Final y position</param>
         public Move(string x1, string y1, string x2, string y2)
         {
             IsShortVariant = true;
@@ -1616,6 +2051,15 @@ public abstract class OverrideTag
             RawT2 = "0";
         }
 
+        /// <summary>
+        /// Create a <c>\move</c> tag
+        /// </summary>
+        /// <param name="x1">Initial x position</param>
+        /// <param name="y1">Initial y position</param>
+        /// <param name="x2">Final x position</param>
+        /// <param name="y2">Final y position</param>
+        /// <param name="t1">Start time</param>
+        /// <param name="t2">End time</param>
         public Move(string x1, string y1, string x2, string y2, string t1, string t2)
         {
             IsShortVariant = false;
@@ -1627,171 +2071,311 @@ public abstract class OverrideTag
             RawT2 = t2;
         }
 
+        /// <inheritdoc />
         public override string ToString() =>
             IsShortVariant
                 ? $@"\{Name}({RawX1},{RawY1},{RawX2},{RawY2})"
                 : $@"\{Name}({RawX1},{RawY1},{RawX2},{RawY2},{RawT1},{RawT2})";
     }
 
+    /// <summary>
+    /// Rotation origin
+    /// </summary>
+    /// <example>\org(100,300)</example>
     public class Org : OverrideTag
     {
         /// <inheritdoc />
         public override string Name => OverrideTags.Org;
 
+        /// <summary>
+        /// X position
+        /// </summary>
         public double X
         {
             get => RawX?.ParseAssDouble() ?? 0;
             set => RawX = value.ToString(CultureInfo.InvariantCulture);
         }
+
+        /// <summary>
+        /// Y position
+        /// </summary>
         public double Y
         {
             get => RawY?.ParseAssDouble() ?? 0;
             set => RawY = value.ToString(CultureInfo.InvariantCulture);
         }
+
+        /// <summary>
+        /// X position
+        /// </summary>
         public string? RawX { get; set; }
+
+        /// <summary>
+        /// Y position
+        /// </summary>
         public string? RawY { get; set; }
 
+        /// <summary>
+        /// Create an <c>\org</c> tag
+        /// </summary>
+        /// <param name="x">X position</param>
+        /// <param name="y">Y position</param>
         public Org(double x, double y)
         {
             X = x;
             Y = y;
         }
 
+        /// <summary>
+        /// Create an <c>\org</c> tag
+        /// </summary>
+        /// <param name="x">X position</param>
+        /// <param name="y">Y position</param>
         public Org(string x, string y)
         {
             RawX = x;
             RawY = y;
         }
 
+        /// <inheritdoc />
         public override string ToString() => $@"\{Name}({RawX},{RawY})";
     }
 
+    /// <summary>
+    /// Drawing mode
+    /// </summary>
+    /// <example>\p1</example>
+    /// <seealso cref="OverrideTag.Pbo"/>
     public class P : OverrideTag
     {
         /// <inheritdoc />
         public override string Name => OverrideTags.P;
 
+        /// <summary>
+        /// Drawing level
+        /// </summary>
+        /// <remarks>
+        /// Off=0, on=n. Use increasing integers for nesting.
+        /// </remarks>
         public int Level
         {
             get => RawLevel?.ParseAssInt() ?? 0;
             set => RawLevel = value.ToString();
         }
 
+        /// <summary>
+        /// Drawing level
+        /// </summary>
         public string? RawLevel { get; set; }
 
+        /// <summary>
+        /// Create a <c>\p</c> tag
+        /// </summary>
+        /// <param name="level">Drawing level</param>
         public P(int level)
         {
             Level = level;
         }
 
+        /// <summary>
+        /// Create a <c>\p</c> tag
+        /// </summary>
+        /// <param name="level">Drawing level</param>
         public P(string level)
         {
             RawLevel = level;
         }
 
+        /// <inheritdoc />
         public override string ToString() => $@"\{Name}{RawLevel}";
     }
 
+    /// <summary>
+    /// Baseline y-offset for drawings
+    /// </summary>
+    /// <seealso cref="OverrideTag.P"/>
+    /// <example>\pbo-100</example>
     public class Pbo : OverrideTag
     {
         /// <inheritdoc />
         public override string Name => OverrideTags.Pbo;
 
+        /// <summary>
+        /// Y-offset in pixels
+        /// </summary>
         public double Value
         {
             get => RawValue?.ParseAssDouble() ?? 0;
             set => RawValue = value.ToString(CultureInfo.InvariantCulture);
         }
 
+        /// <summary>
+        /// Y-offset
+        /// </summary>
         public string? RawValue { get; set; }
 
+        /// <summary>
+        /// Create a <c>\pbo</c> tag
+        /// </summary>
+        /// <param name="value">Y-offset</param>
         public Pbo(double value)
         {
             Value = value;
         }
 
+        /// <summary>
+        /// Create a <c>\pbo</c> tag
+        /// </summary>
+        /// <param name="value">Y-offset</param>
         public Pbo(string value)
         {
             RawValue = value;
         }
 
+        /// <inheritdoc />
         public override string ToString() => $@"\{Name}{RawValue}";
     }
 
+    /// <summary>
+    /// Line position
+    /// </summary>
+    /// <example>\pos(100,500)</example>
     public class Pos : OverrideTag
     {
         /// <inheritdoc />
         public override string Name => OverrideTags.Pos;
 
+        /// <summary>
+        /// X position
+        /// </summary>
         public double X
         {
             get => RawX?.ParseAssDouble() ?? 0;
             set => RawX = value.ToString(CultureInfo.InvariantCulture);
         }
+
+        /// <summary>
+        /// Y position
+        /// </summary>
         public double Y
         {
             get => RawY?.ParseAssDouble() ?? 0;
             set => RawY = value.ToString(CultureInfo.InvariantCulture);
         }
+
+        /// <summary>
+        /// X position
+        /// </summary>
         public string? RawX { get; set; }
+
+        /// <summary>
+        /// Y position
+        /// </summary>
         public string? RawY { get; set; }
 
+        /// <summary>
+        /// Create a <c>\pos</c> tag
+        /// </summary>
+        /// <param name="x">X position</param>
+        /// <param name="y">Y position</param>
         public Pos(double x, double y)
         {
             X = x;
             Y = y;
         }
 
+        /// <summary>
+        /// Create a <c>\pos</c> tag
+        /// </summary>
+        /// <param name="x">X position</param>
+        /// <param name="y">Y position</param>
         public Pos(string x, string y)
         {
             RawX = x;
             RawY = y;
         }
 
+        /// <inheritdoc />
         public override string ToString() => $@"\{Name}({RawX},{RawY})";
     }
 
+    /// <summary>
+    /// Wrap style
+    /// </summary>
+    /// <example>\q0</example>
     public class Q : OverrideTag
     {
         /// <inheritdoc />
         public override string Name => OverrideTags.Q;
 
+        /// <summary>
+        /// Wrap style setting
+        /// </summary>
         public int? Value
         {
             get => RawValue?.ParseAssInt() ?? 0;
             set => RawValue = value?.ToString();
         }
 
+        /// <summary>
+        /// Wrap style setting
+        /// </summary>
         public string? RawValue { get; set; }
 
+        /// <summary>
+        /// Create an <c>\q</c> tag
+        /// </summary>
+        /// <param name="value">Wrap style</param>
         public Q(int? value)
         {
             Value = value;
         }
 
+        /// <summary>
+        /// Create an <c>\q</c> tag
+        /// </summary>
+        /// <param name="value">Wrap style</param>
         public Q(string? value)
         {
             RawValue = value;
         }
 
+        /// <inheritdoc />
         public override string ToString() =>
             RawValue is not null ? $@"\{Name}{RawValue}" : $@"\{Name}";
     }
 
+    /// <summary>
+    /// Reset style
+    /// </summary>
+    /// <param name="style">Style to reset to (optional)</param>
+    /// <example>\r, \rStyleName</example>
     public class R(string? style) : OverrideTag
     {
         /// <inheritdoc />
         public override string Name => OverrideTags.R;
 
+        /// <summary>
+        /// Name of the style to reset to
+        /// </summary>
         public string? Style { get; set; } = style;
 
+        /// <inheritdoc />
         public override string ToString() => Style is not null ? $@"\{Name}{Style}" : $@"\{Name}";
     }
 
+    /// <summary>
+    /// Strikethrough
+    /// </summary>
+    /// <example>\s1</example>
     public class S : OverrideTag
     {
         /// <inheritdoc />
         public override string Name => OverrideTags.S;
+
+        /// <summary>
+        /// If strikethrough is enabled
+        /// </summary>
         public bool? Value
         {
             get => RawValue?.ParseAssInt().Equals(1);
@@ -1802,132 +2386,240 @@ public abstract class OverrideTag
                         : "0"
                     : null;
         }
+
+        /// <summary>
+        /// Strikethrough
+        /// </summary>
         public string? RawValue { get; set; }
 
+        /// <summary>
+        /// Create an <c>\s</c> tag
+        /// </summary>
+        /// <param name="value">If strikethrough is to be enabled</param>
         public S(bool? value)
         {
             Value = value;
         }
 
+        /// <summary>
+        /// Create an <c>\s</c> tag
+        /// </summary>
+        /// <param name="value">If strikethrough is to be enabled</param>
         public S(string? value)
         {
             RawValue = value;
         }
 
+        /// <inheritdoc />
         public override string ToString() =>
             RawValue is not null ? $@"\{Name}{RawValue}" : $@"\{Name}";
     }
 
+    /// <summary>
+    /// Shadow distance
+    /// </summary>
+    /// <remarks>Controls both X and Y shadows</remarks>
+    /// <example>\shad10</example>
     public class Shad : OverrideTag
     {
         /// <inheritdoc />
         public override string Name => OverrideTags.Shad;
+
+        /// <summary>
+        /// Shadow depth
+        /// </summary>
         public double? Value
         {
             get => RawValue?.ParseAssDouble() ?? 0;
             set => RawValue = value?.ToString();
         }
 
+        /// <summary>
+        /// Shadow depth
+        /// </summary>
         public string? RawValue { get; set; }
 
+        /// <summary>
+        /// Create a <c>\shad</c> tag
+        /// </summary>
+        /// <param name="value">Shadow depth</param>
         public Shad(double? value)
         {
             Value = value;
         }
 
+        /// <summary>
+        /// Create a <c>\shad</c> tag
+        /// </summary>
+        /// <param name="value">Shadow depth</param>
         public Shad(string? value)
         {
             RawValue = value;
         }
 
+        /// <inheritdoc />
         public override string ToString() =>
             RawValue is not null ? $@"\{Name}{RawValue}" : $@"\{Name}";
     }
 
+    /// <summary>
+    /// Animated Transform
+    /// </summary>
+    /// <example>\t(0,5000,\fscx120\fscy140)</example>
     public class T : OverrideTag
     {
         /// <inheritdoc />
         public override string Name => OverrideTags.T;
 
+        /// <summary>
+        /// Transform variant
+        /// </summary>
         public TransformVariant Variant { get; }
 
+        /// <summary>
+        /// Start time
+        /// </summary>
         public int T1
         {
             get => RawT1?.ParseAssInt() ?? 0;
             set => RawT1 = value.ToString();
         }
+
+        /// <summary>
+        /// End time
+        /// </summary>
         public int T2
         {
             get => RawT2?.ParseAssInt() ?? 0;
             set => RawT2 = value.ToString();
         }
+
+        /// <summary>
+        /// Acceleration multiplier
+        /// </summary>
         public double Acceleration
         {
             get => RawAcceleration?.ParseAssDouble() ?? 0;
             set => RawAcceleration = value.ToString(CultureInfo.InvariantCulture);
         }
-        public List<OverrideTag> Block { get; }
 
+        /// <summary>
+        /// Tags to apply during the transformation
+        /// </summary>
+        public List<OverrideTag> Tags { get; }
+
+        /// <summary>
+        /// Start time
+        /// </summary>
         public string? RawT1 { get; set; }
+
+        /// <summary>
+        /// End time
+        /// </summary>
         public string? RawT2 { get; set; }
+
+        /// <summary>
+        /// Acceleration multiplier
+        /// </summary>
         public string? RawAcceleration { get; set; }
 
-        public T(List<OverrideTag> block)
+        /// <summary>
+        /// Create a <c>\t</c> tag
+        /// </summary>
+        /// <param name="tags">Tags to apply during the transformation</param>
+        public T(List<OverrideTag> tags)
         {
             Variant = TransformVariant.BlockOnly;
-            Block = block;
+            Tags = tags;
         }
 
-        public T(double acceleration, List<OverrideTag> block)
+        /// <summary>
+        /// Create a <c>\t</c> tag
+        /// </summary>
+        /// <param name="acceleration">Acceleration multiplier</param>
+        /// <param name="tags">Tags to apply during the transformation</param>
+        public T(double acceleration, List<OverrideTag> tags)
         {
             Variant = TransformVariant.AccelerationOnly;
             Acceleration = acceleration;
-            Block = block;
+            Tags = tags;
         }
 
-        public T(double t1, double t2, List<OverrideTag> block)
+        /// <summary>
+        /// Create a <c>\t</c> tag
+        /// </summary>
+        /// <param name="t1">Start time</param>
+        /// <param name="t2">End time</param>
+        /// <param name="tags">Tags to apply during the transformation</param>
+        public T(double t1, double t2, List<OverrideTag> tags)
         {
             Variant = TransformVariant.TimeOnly;
             T1 = Convert.ToInt32(Math.Truncate(t1));
             T2 = Convert.ToInt32(Math.Truncate(t2));
-            Block = block;
+            Tags = tags;
         }
 
-        public T(int t1, int t2, double acceleration, List<OverrideTag> block)
+        /// <summary>
+        /// Create a <c>\t</c> tag
+        /// </summary>
+        /// <param name="t1">Start time</param>
+        /// <param name="t2">End time</param>
+        /// <param name="acceleration">Acceleration multiplier</param>
+        /// <param name="tags">Tags to apply during the transformation</param>
+        public T(int t1, int t2, double acceleration, List<OverrideTag> tags)
         {
             Variant = TransformVariant.Full;
             T1 = t1;
             T2 = t2;
             Acceleration = acceleration;
-            Block = block;
+            Tags = tags;
         }
 
-        public T(string acceleration, List<OverrideTag> block)
+        /// <summary>
+        /// Create a <c>\t</c> tag
+        /// </summary>
+        /// <param name="acceleration">Acceleration multiplier</param>
+        /// <param name="tags">Tags to apply during the transformation</param>
+        public T(string acceleration, List<OverrideTag> tags)
         {
             Variant = TransformVariant.AccelerationOnly;
             RawAcceleration = acceleration;
-            Block = block;
+            Tags = tags;
         }
 
-        public T(string t1, string t2, List<OverrideTag> block)
+        /// <summary>
+        /// Create a <c>\t</c> tag
+        /// </summary>
+        /// <param name="t1">Start time</param>
+        /// <param name="t2">End time</param>
+        /// <param name="tags">Tags to apply during the transformation</param>
+        public T(string t1, string t2, List<OverrideTag> tags)
         {
             Variant = TransformVariant.TimeOnly;
             RawT1 = t1;
             RawT2 = t2;
-            Block = block;
+            Tags = tags;
         }
 
-        public T(string t1, string t2, string acceleration, List<OverrideTag> block)
+        /// <summary>
+        /// Create a <c>\t</c> tag
+        /// </summary>
+        /// <param name="t1">Start time</param>
+        /// <param name="t2">End time</param>
+        /// <param name="acceleration">Acceleration multiplier</param>
+        /// <param name="tags">Tags to apply during the transformation</param>
+        public T(string t1, string t2, string acceleration, List<OverrideTag> tags)
         {
             Variant = TransformVariant.Full;
             RawT1 = t1;
             RawT2 = t2;
             RawAcceleration = acceleration;
-            Block = block;
+            Tags = tags;
         }
 
-        private string BlockString() => string.Join(string.Empty, Block.Select(x => x.ToString()));
+        private string BlockString() => string.Join(string.Empty, Tags.Select(x => x.ToString()));
 
+        /// <inheritdoc />
         public override string ToString() =>
             Variant switch
             {
@@ -1948,10 +2640,18 @@ public abstract class OverrideTag
         }
     }
 
+    /// <summary>
+    /// Underline
+    /// </summary>
+    /// <example>\u1</example>
     public class U : OverrideTag
     {
         /// <inheritdoc />
         public override string Name => OverrideTags.U;
+
+        /// <summary>
+        /// If underline is enabled
+        /// </summary>
         public bool? Value
         {
             get => RawValue?.ParseAssInt().Equals(1);
@@ -1962,127 +2662,232 @@ public abstract class OverrideTag
                         : "0"
                     : null;
         }
+
+        /// <summary>
+        /// Underline
+        /// </summary>
         public string? RawValue { get; set; }
 
+        /// <summary>
+        /// Create an <c>\u</c> tag
+        /// </summary>
+        /// <param name="value">If underline is enabled</param>
         public U(bool? value)
         {
             Value = value;
         }
 
+        /// <summary>
+        /// Create an <c>\u</c> tag
+        /// </summary>
+        /// <param name="value">If underline is enabled</param>
         public U(string? value)
         {
             RawValue = value;
         }
 
+        /// <inheritdoc />
         public override string ToString() =>
             RawValue is not null ? $@"\{Name}{RawValue}" : $@"\{Name}";
     }
 
+    /// <summary>
+    /// Border size on the x-axis
+    /// </summary>
+    /// <example>\xbord2</example>
+    /// <seealso cref="OverrideTag.Bord"/>
+    /// <seealso cref="OverrideTag.YBord"/>
     public class XBord : OverrideTag
     {
         /// <inheritdoc />
         public override string Name => OverrideTags.XBord;
 
+        /// <summary>
+        /// Border thickness
+        /// </summary>
         public double? Value
         {
             get => RawValue?.ParseAssDouble() ?? 0;
             set => RawValue = value?.ToString();
         }
 
+        /// <summary>
+        /// Border thickness
+        /// </summary>
         public string? RawValue { get; set; }
 
+        /// <summary>
+        /// Create an <c>\xbord</c> tag
+        /// </summary>
+        /// <param name="value">Border thickness</param>
         public XBord(double? value)
         {
             Value = value;
         }
 
+        /// <summary>
+        /// Create an <c>\xbord</c> tag
+        /// </summary>
+        /// <param name="value">Border thickness</param>
         public XBord(string? value)
         {
             RawValue = value;
         }
 
+        /// <inheritdoc />
         public override string ToString() =>
             RawValue is not null ? $@"\{Name}{RawValue}" : $@"\{Name}";
     }
 
+    /// <summary>
+    /// Shadow depth on the x-axis
+    /// </summary>
+    /// <example>\xshad10</example>
+    /// <seealso cref="OverrideTag.Shad"/>
+    /// <seealso cref="OverrideTag.YShad"/>
     public class XShad : OverrideTag
     {
         /// <inheritdoc />
         public override string Name => OverrideTags.XShad;
+
+        /// <summary>
+        /// Shadow depth
+        /// </summary>
         public double? Value
         {
             get => RawValue?.ParseAssDouble() ?? 0;
             set => RawValue = value?.ToString();
         }
 
+        /// <summary>
+        /// Shadow depth
+        /// </summary>
         public string? RawValue { get; set; }
 
+        /// <summary>
+        /// Create a <c>\xshad</c> tag
+        /// </summary>
+        /// <param name="value">X-shadow depth</param>
         public XShad(double? value)
         {
             Value = value;
         }
 
+        /// <summary>
+        /// Create a <c>\xshad</c> tag
+        /// </summary>
+        /// <param name="value">X-shadow depth</param>
         public XShad(string? value)
         {
             RawValue = value;
         }
 
+        /// <inheritdoc />
         public override string ToString() =>
             RawValue is not null ? $@"\{Name}{RawValue}" : $@"\{Name}";
     }
 
+    /// <summary>
+    /// Border size on the y-axis
+    /// </summary>
+    /// <example>\ybord2</example>
+    /// <seealso cref="OverrideTag.Bord"/>
+    /// <seealso cref="OverrideTag.XBord"/>
     public class YBord : OverrideTag
     {
         /// <inheritdoc />
         public override string Name => OverrideTags.YBord;
+
+        /// <summary>
+        /// Border thickness
+        /// </summary>
         public double? Value
         {
             get => RawValue?.ParseAssDouble() ?? 0;
             set => RawValue = value?.ToString();
         }
 
+        /// <summary>
+        /// Border thickness
+        /// </summary>
         public string? RawValue { get; set; }
 
+        /// <summary>
+        /// Create a <c>\ybord</c> tag
+        /// </summary>
+        /// <param name="value">Border thickness</param>
         public YBord(double? value)
         {
             Value = value;
         }
 
+        /// <summary>
+        /// Create a <c>\ybord</c> tag
+        /// </summary>
+        /// <param name="value">Border thickness</param>
         public YBord(string? value)
         {
             RawValue = value;
         }
 
+        /// <inheritdoc />
         public override string ToString() =>
             RawValue is not null ? $@"\{Name}{RawValue}" : $@"\{Name}";
     }
 
+    /// <summary>
+    /// Shadow depth on the y-axis
+    /// </summary>
+    /// <example>\yshad10</example>
+    /// <seealso cref="OverrideTag.Shad"/>
+    /// <seealso cref="OverrideTag.XShad"/>
     public class YShad : OverrideTag
     {
         /// <inheritdoc />
         public override string Name => OverrideTags.YShad;
+
+        /// <summary>
+        /// Shadow depth
+        /// </summary>
         public double? Value
         {
             get => RawValue?.ParseAssDouble() ?? 0;
             set => RawValue = value?.ToString();
         }
 
+        /// <summary>
+        /// Shadow depth
+        /// </summary>
         public string? RawValue { get; set; }
 
+        /// <summary>
+        /// Create a <c>\yshad</c> tag
+        /// </summary>
+        /// <param name="value">Y-shadow depth</param>
         public YShad(double? value)
         {
             Value = value;
         }
 
+        /// <summary>
+        /// Create a <c>\yshad</c> tag
+        /// </summary>
+        /// <param name="value">Y-shadow depth</param>
         public YShad(string? value)
         {
             RawValue = value;
         }
 
+        /// <inheritdoc />
         public override string ToString() =>
             RawValue is not null ? $@"\{Name}{RawValue}" : $@"\{Name}";
     }
 
+    /// <summary>
+    /// An unknown tag
+    /// </summary>
+    /// <param name="name">Name of the tag</param>
+    /// <param name="args">Tag arguments</param>
     public class Unknown(string name, params string[] args) : OverrideTag
     {
         /// <inheritdoc />
@@ -2090,6 +2895,7 @@ public abstract class OverrideTag
         public override string Name { get; } = name;
         public string[] Args { get; } = args;
 
+        /// <inheritdoc />
         public override string ToString() =>
             Args.Length switch
             {
