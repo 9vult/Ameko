@@ -403,13 +403,13 @@ public abstract class OverrideTag
         public override string ToString() => $@"\{Name}({X},{Y})";
     }
 
-    public class P(int value) : OverrideTag
+    public class P(int level) : OverrideTag
     {
         public override string Name => OverrideTags.P;
 
-        public int Value { get; set; } = value;
+        public int Level { get; set; } = level;
 
-        public override string ToString() => $@"\{Name}{Value}";
+        public override string ToString() => $@"\{Name}{Level}";
     }
 
     public class Pbo(double value) : OverrideTag
