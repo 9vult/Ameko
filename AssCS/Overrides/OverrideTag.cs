@@ -307,31 +307,30 @@ public abstract class OverrideTag
         public override string ToString() => $@"\{Name}({X0},{Y0},{X1},{Y1})";
     }
 
-    public class K(double? value) : OverrideTag
+    public class K(double? duration) : OverrideTag
     {
         public override string Name => OverrideTags.K;
 
-        public double? Value { get; set; } = value;
+        public double? Duration { get; set; } = duration;
 
-        public override string ToString() => Value is not null ? $@"\{Name}{Value}" : $@"\{Name}";
+        public override string ToString() =>
+            Duration is not null ? $@"\{Name}{Duration}" : $@"\{Name}";
     }
 
-    public class Kf(double? value) : OverrideTag
+    public class Kf(double? duration) : K(duration)
     {
         public override string Name => OverrideTags.Kf;
 
-        public double? Value { get; set; } = value;
-
-        public override string ToString() => Value is not null ? $@"\{Name}{Value}" : $@"\{Name}";
+        public override string ToString() =>
+            Duration is not null ? $@"\{Name}{Duration}" : $@"\{Name}";
     }
 
-    public class Ko(double? value) : OverrideTag
+    public class Ko(double? duration) : K(duration)
     {
         public override string Name => OverrideTags.Ko;
 
-        public double? Value { get; set; } = value;
-
-        public override string ToString() => Value is not null ? $@"\{Name}{Value}" : $@"\{Name}";
+        public override string ToString() =>
+            Duration is not null ? $@"\{Name}{Duration}" : $@"\{Name}";
     }
 
     public class Kt(double? value) : OverrideTag

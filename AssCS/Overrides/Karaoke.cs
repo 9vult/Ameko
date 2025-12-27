@@ -220,7 +220,7 @@ public class Karaoke
     /// <param name="syl">Syllable</param>
     private void ParseSyllables(Event line, Syllable syl)
     {
-        foreach (var block in line.ParseTags())
+        foreach (var block in line.ParseBlocks())
         {
             var text = block.Text;
             switch (block.Type)
@@ -238,22 +238,13 @@ public class Karaoke
 
                     foreach (var tag in b.Tags)
                     {
-                        if (
-                            tag.IsValid
-                            && tag.Name.StartsWith(
-                                @"\k",
-                                StringComparison.InvariantCultureIgnoreCase
-                            )
-                        )
+                        if (tag is OverrideTag.K kTag)
                         {
                             if (inTag)
                             {
                                 syl.OverrideTags[syl.Text.Length] += '}';
                                 inTag = false;
                             }
-                            // Convert \K to \kf for convenience
-                            if (tag.Name == @"\K")
-                                tag.Name = @"\kf";
 
                             // Exclude zero syllables
                             if (syl.Duration > 0 || syl.Text.Length != 0)
@@ -268,9 +259,9 @@ public class Karaoke
                                 };
                             }
 
-                            syl.TagType = tag.Name;
+                            syl.TagType = kTag.Name;
                             syl.Start += Time.FromMillis(syl.Duration);
-                            syl.Duration = tag.Parameters[0].GetInt() * 10;
+                            syl.Duration = (long)(kTag.Duration ?? 0) * 10;
                         }
                         else
                         {

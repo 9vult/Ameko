@@ -43,7 +43,7 @@ public class Syllable
         var sb = new StringBuilder();
 
         if (includeKTag)
-            sb.Append($"{{{TagType}{(Duration + 5) / 10}}}");
+            sb.Append($"{{\\{TagType}{(Duration + 5) / 10}}}");
 
         int i = 0;
         foreach (var pair in OverrideTags)

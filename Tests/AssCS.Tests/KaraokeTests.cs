@@ -21,7 +21,7 @@ public class KaraokeTests
         var karaoke = new Karaoke();
         var evt = CreateEventWithSyllables(@"{\kf10}One");
         karaoke.SetLine(evt, autoSplit: false, normalize: false);
-        await Assert.That(karaoke.TagType).IsEqualTo(@"\kf");
+        await Assert.That(karaoke.TagType).IsEqualTo(@"kf");
     }
 
     [Test]
@@ -31,7 +31,7 @@ public class KaraokeTests
         var evt = CreateEventWithSyllables(@"{\k10}One {\k10}Two");
         karaoke.SetLine(evt, autoSplit: false, normalize: false);
 
-        karaoke.TagType = @"\kf";
+        karaoke.TagType = @"kf";
         await Assert.That(karaoke.Text).IsEqualTo(@"{\kf10}One {\kf10}Two");
     }
 
