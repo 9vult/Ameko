@@ -701,63 +701,26 @@ public abstract class OverrideTag
     /// Simple fade
     /// </summary>
     /// <example>\fad(100,100)</example>
-    public class Fad : OverrideTag
+    public class Fad : Fade
     {
         /// <inheritdoc />
         public override string Name => OverrideTags.Fad;
 
-        /// <summary>
-        /// Fade-in duration in milliseconds
-        /// </summary>
-        public int T1
-        {
-            get => RawT1?.ParseAssInt() ?? 0;
-            set => RawT1 = value.ToString();
-        }
-
-        /// <summary>
-        /// Fade-out duration in milliseconds
-        /// </summary>
-        public int T2
-        {
-            get => RawT2?.ParseAssInt() ?? 0;
-            set => RawT2 = value.ToString();
-        }
-
-        /// <summary>
-        /// Fade-in duration
-        /// </summary>
-        public string? RawT1 { get; set; }
-
-        /// <summary>
-        /// Fade-out duration
-        /// </summary>
-        public string? RawT2 { get; set; }
-
-        /// <summary>
-        /// Create a <c>\fad</c> tag
-        /// </summary>
-        /// <param name="t1">Fade-in duration</param>
-        /// <param name="t2">Fade-out duration</param>
-        public Fad(int t1, int t2)
-        {
-            T1 = t1;
-            T2 = t2;
-        }
-
-        /// <summary>
-        /// Create a <c>\fad</c> tag
-        /// </summary>
-        /// <param name="t1">Fade-in duration</param>
-        /// <param name="t2">Fade-out duration</param>
-        public Fad(string t1, string t2)
-        {
-            RawT1 = t1;
-            RawT2 = t2;
-        }
+        /// <inheritdoc />
+        public Fad(int t2, int t3)
+            : base(t2, t3) { }
 
         /// <inheritdoc />
-        public override string ToString() => $@"\{Name}({RawT1},{RawT2})";
+        public Fad(string t2, string t3)
+            : base(t2, t3) { }
+
+        /// <inheritdoc />
+        public Fad(int a1, int a2, int a3, int t1, int t2, int t3, int t4)
+            : base(a1, a2, a3, t1, t2, t3, t4) { }
+
+        /// <inheritdoc />
+        public Fad(string a1, string a2, string a3, string t1, string t2, string t3, string t4)
+            : base(a1, a2, a3, t1, t2, t3, t4) { }
     }
 
     /// <summary>
@@ -768,6 +731,11 @@ public abstract class OverrideTag
     {
         /// <inheritdoc />
         public override string Name => OverrideTags.Fade;
+
+        /// <summary>
+        /// Fade variant
+        /// </summary>
+        public bool IsShortVariant { get; set; }
 
         /// <summary>
         /// Alpha before <see cref="T1"/>
@@ -870,6 +838,30 @@ public abstract class OverrideTag
         /// <summary>
         /// Create a <c>\fade</c> tag
         /// </summary>
+        /// <param name="t2">Fade-in duration</param>
+        /// <param name="t3">Fade-out duration</param>
+        public Fade(int t2, int t3)
+        {
+            IsShortVariant = true;
+            T2 = t2;
+            T3 = t3;
+        }
+
+        /// <summary>
+        /// Create a <c>\fad</c> tag
+        /// </summary>
+        /// <param name="t2">Fade-in duration</param>
+        /// <param name="t3">Fade-out duration</param>
+        public Fade(string t2, string t3)
+        {
+            IsShortVariant = true;
+            RawT2 = t2;
+            RawT3 = t3;
+        }
+
+        /// <summary>
+        /// Create a 5-part <c>\fade</c> tag
+        /// </summary>
         /// <param name="a1"></param>
         /// <param name="a2"></param>
         /// <param name="a3"></param>
@@ -879,6 +871,7 @@ public abstract class OverrideTag
         /// <param name="t4"></param>
         public Fade(int a1, int a2, int a3, int t1, int t2, int t3, int t4)
         {
+            IsShortVariant = false;
             Alpha1 = a1;
             Alpha2 = a2;
             Alpha3 = a3;
@@ -889,7 +882,7 @@ public abstract class OverrideTag
         }
 
         /// <summary>
-        /// Create a <c>\fade</c> tag
+        /// Create a 5-part <c>\fade</c> tag
         /// </summary>
         /// <param name="a1"></param>
         /// <param name="a2"></param>
@@ -900,6 +893,7 @@ public abstract class OverrideTag
         /// <param name="t4"></param>
         public Fade(string a1, string a2, string a3, string t1, string t2, string t3, string t4)
         {
+            IsShortVariant = false;
             RawAlpha1 = a1;
             RawAlpha2 = a2;
             RawAlpha3 = a3;
@@ -911,7 +905,9 @@ public abstract class OverrideTag
 
         /// <inheritdoc />
         public override string ToString() =>
-            $@"\{Name}({RawAlpha1},{RawAlpha2},{RawAlpha3},{RawT1},{RawT2},{RawT3},{RawT4})";
+            IsShortVariant
+                ? $@"\{Name}({RawT2},{RawT3})"
+                : $@"\{Name}({RawAlpha1},{RawAlpha2},{RawAlpha3},{RawT1},{RawT2},{RawT3},{RawT4})";
     }
 
     /// <summary>
@@ -1909,7 +1905,7 @@ public abstract class OverrideTag
         /// <summary>
         /// Move variant
         /// </summary>
-        public bool IsShortVariant { get; }
+        public bool IsShortVariant { get; set; }
 
         /// <summary>
         /// Initial x position
