@@ -237,4 +237,26 @@ public class OverrideBlockTests
     }
 
     #endregion Transform
+
+    [Test]
+    public async Task InlineCodeAndVariables()
+    {
+        const string body = @"\t($sstart,!$sstart+$sdur*0.3!,\c!gc(2)!)";
+        var block = new OverrideBlock(body);
+
+        await Assert.That(block.Tags.Count).IsEqualTo(1);
+        var t = await Assert.That(block.Tags[0]).IsTypeOf<OverrideTag.T>();
+
+        await Assert.That(t).IsNotNull();
+        await Assert.That(t.RawT1).IsEqualTo("$sstart");
+        await Assert.That(t.RawT2).IsEqualTo("!$sstart+$sdur*0.3!");
+
+        await Assert.That(t.Block.Count).IsEqualTo(1);
+        var c = await Assert.That(t.Block[0]).IsTypeOf<OverrideTag.C>();
+
+        await Assert.That(c).IsNotNull();
+        await Assert.That(c.Value).IsEqualTo("!gc(2)!");
+
+        await Assert.That(t.ToString()).IsEqualTo(body);
+    }
 }
