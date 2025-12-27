@@ -71,6 +71,7 @@ public class OverrideBlock(ReadOnlySpan<char> data) : Block(data.ToString(), Blo
                     if (r is ',')
                     {
                         args.Add(data[..q].ToString());
+                        data = data[(q + 1)..];
                     }
                     else
                     {
