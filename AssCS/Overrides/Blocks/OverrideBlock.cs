@@ -39,7 +39,7 @@ public class OverrideBlock(ReadOnlySpan<char> data) : Block(data.ToString(), Blo
                 q = data.Length;
             data = data[q..];
 
-            if (data[0] is not '\\')
+            if (data.IsEmpty || data[0] is not '\\')
                 break;
 
             // Get the name of the tag
@@ -57,7 +57,7 @@ public class OverrideBlock(ReadOnlySpan<char> data) : Block(data.ToString(), Blo
             var args = new List<string>(maxValidArgCount + 1);
             var hasBackslashArg = false;
             // Split parenthesized arguments
-            if (data[0] is '(')
+            if (!data.IsEmpty && data[0] is '(')
             {
                 data = data[1..];
 
@@ -118,7 +118,7 @@ public class OverrideBlock(ReadOnlySpan<char> data) : Block(data.ToString(), Blo
             {
                 tags.Add(new OverrideTag.FaY(args.Count > 0 ? args[0].ParseAssDouble() : null));
             }
-            else if (IsTag(OverrideTags.IClip))
+            else if (IsComplexTag(OverrideTags.IClip))
             {
                 if (args.Count == 4)
                     tags.Add(
@@ -160,7 +160,7 @@ public class OverrideBlock(ReadOnlySpan<char> data) : Block(data.ToString(), Blo
             {
                 tags.Add(new OverrideTag.Bord(args.Count > 0 ? args[0].ParseAssDouble() : null));
             }
-            else if (IsTag(OverrideTags.Move))
+            else if (IsComplexTag(OverrideTags.Move))
             {
                 if (args.Count == 4)
                     tags.Add(
@@ -220,7 +220,7 @@ public class OverrideBlock(ReadOnlySpan<char> data) : Block(data.ToString(), Blo
                 else
                     tags.Add(new OverrideTag.Unknown(OverrideTags.A));
             }
-            else if (IsTag(OverrideTags.Pos))
+            else if (IsComplexTag(OverrideTags.Pos))
             {
                 if (args.Count == 2)
                     tags.Add(
@@ -229,7 +229,7 @@ public class OverrideBlock(ReadOnlySpan<char> data) : Block(data.ToString(), Blo
                 else
                     tags.Add(new OverrideTag.Unknown(OverrideTags.Pos, args.ToArray()));
             }
-            else if (IsTag(OverrideTags.Fade))
+            else if (IsComplexTag(OverrideTags.Fade))
             {
                 if (args.Count == 7)
                     tags.Add(
@@ -246,14 +246,14 @@ public class OverrideBlock(ReadOnlySpan<char> data) : Block(data.ToString(), Blo
                 else
                     tags.Add(new OverrideTag.Unknown(OverrideTags.Fade, args.ToArray()));
             }
-            else if (IsTag(OverrideTags.Fad))
+            else if (IsComplexTag(OverrideTags.Fad))
             {
                 if (args.Count == 2)
                     tags.Add(new OverrideTag.Fad(args[0].ParseAssInt(), args[1].ParseAssInt()));
                 else
                     tags.Add(new OverrideTag.Unknown(OverrideTags.Fad, args.ToArray()));
             }
-            else if (IsTag(OverrideTags.Org))
+            else if (IsComplexTag(OverrideTags.Org))
             {
                 if (args.Count == 2)
                     tags.Add(
@@ -262,7 +262,7 @@ public class OverrideBlock(ReadOnlySpan<char> data) : Block(data.ToString(), Blo
                 else
                     tags.Add(new OverrideTag.Unknown(OverrideTags.Org, args.ToArray()));
             }
-            else if (IsTag(OverrideTags.T))
+            else if (IsComplexTag(OverrideTags.T))
             {
                 var blockIdx = args.Count - 1;
                 if (blockIdx is < 0 or > 3 || !hasBackslashArg)
@@ -304,7 +304,7 @@ public class OverrideBlock(ReadOnlySpan<char> data) : Block(data.ToString(), Blo
                         break;
                 }
             }
-            else if (IsTag(OverrideTags.Clip))
+            else if (IsComplexTag(OverrideTags.Clip))
             {
                 if (args.Count == 4)
                     tags.Add(
@@ -432,6 +432,16 @@ public class OverrideBlock(ReadOnlySpan<char> data) : Block(data.ToString(), Blo
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             bool IsTag(string query)
+            {
+                if (!tagName.StartsWith(query))
+                    return false;
+
+                if (tagName.Length > query.Length)
+                    args.Add(tagName[query.Length..]);
+                return true;
+            }
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            bool IsComplexTag(string query)
             {
                 return tagName.StartsWith(query);
             }

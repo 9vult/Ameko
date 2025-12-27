@@ -434,7 +434,7 @@ public partial class Event(int id) : BindableBase, IEntry
     /// Parse the event into a list of Blocks
     /// </summary>
     /// <returns>List of Blocks representing the event</returns>
-    public List<Block> ParseTags()
+    public List<Block> ParseText()
     {
         List<Block> blocks = [];
         if (_text.Length <= 0)
@@ -443,89 +443,55 @@ public partial class Event(int id) : BindableBase, IEntry
             return blocks;
         }
 
+        var data = _text.AsSpan();
         var drawingLevel = 0;
-        string text = new(_text);
 
-        for (int len = text.Length, cur = 0; cur < len; )
+        while (!data.IsEmpty)
         {
-            // Override block
-            string work;
-            int endPlain;
-            if (text[cur] == '{')
+            var p = data[0];
+
+            if (p is '{' && data.IndexOf('}') is var q and >= 0)
             {
-                var end = text.IndexOf('}', cur);
-                if (end == -1)
+                // Comment
+                if (data[..q].IndexOf('\\') < 0)
                 {
-                    // ----- Plain -----
-                    endPlain = text.IndexOf('{', cur + 1);
-                    if (endPlain == -1)
-                    {
-                        work = text[cur..];
-                        cur = len;
-                    }
-                    else
-                    {
-                        work = text[cur..endPlain];
-                        cur = endPlain;
-                    }
-                    if (drawingLevel == 0)
-                        blocks.Add(new PlainBlock(work));
-                    else
-                        blocks.Add(new DrawingBlock(work, drawingLevel));
-                    // ----- End Plain -----
+                    var block = new CommentBlock(data[1..q].ToString());
+                    blocks.Add(block);
+                    data = data[(q + 1)..];
                 }
+                // Override
                 else
                 {
-                    ++cur;
-                    // Get block contents
-                    work = text[cur..end];
-                    cur = end + 1;
+                    var block = new OverrideBlock(data[..q]);
+                    blocks.Add(block);
+                    data = data[(q + 1)..];
 
-                    if (work.Length > 0 && !work.Contains('\\'))
+                    // Search for drawings
+                    foreach (var pTag in block.Tags.OfType<OverrideTag.P>())
                     {
-                        // Comment
-                        blocks.Add(new CommentBlock(work));
+                        drawingLevel = pTag.Level;
                     }
-                    else
-                    {
-                        // Create block
-                        var block = new OverrideBlock(work);
-                        block.ParseTags();
-                        // Search for drawings
-                        foreach (var tag in block.Tags.Where(tag => tag.Name == "\\p"))
-                        {
-                            drawingLevel = tag.Parameters[0].GetInt();
-                        }
-                        blocks.Add(block);
-                    }
-                    continue;
                 }
             }
-            // ----- Plain 2 electric boogaloo -----
-            if (cur + 1 <= text.Length)
+            else if (drawingLevel != 0)
             {
-                endPlain = text.IndexOf('{', cur + 1);
-                if (endPlain == -1)
-                {
-                    work = text[cur..];
-                    cur = len;
-                }
-                else
-                {
-                    work = text[cur..endPlain];
-                    cur = endPlain;
-                }
-                if (drawingLevel == 0)
-                    blocks.Add(new PlainBlock(work));
-                else
-                    blocks.Add(new DrawingBlock(work, drawingLevel));
+                q = (p == '{' ? data[1..] : data).IndexOf('{');
+                if (q < 0)
+                    q = data.Length;
+                blocks.Add(new DrawingBlock(data[..q].ToString(), drawingLevel));
+                data = data[q..];
             }
             else
             {
-                cur += 1;
+                q = data.IndexOf('{');
+                if (q < 0)
+                    q = data.Length;
+
+                blocks.Add(new PlainBlock(data[..q].ToString()));
+                data = data[q..];
             }
-            // ----- End Plain -----
         }
+
         return blocks;
     }
 
@@ -536,7 +502,7 @@ public partial class Event(int id) : BindableBase, IEntry
     /// <returns>Stripped text content</returns>
     public string GetStrippedText()
     {
-        var blocks = ParseTags();
+        var blocks = ParseText();
         return string.Join(string.Empty, blocks.OfType<PlainBlock>().Select(b => b.Text));
     }
 
@@ -565,20 +531,44 @@ public partial class Event(int id) : BindableBase, IEntry
         var normSelStart = NormalizePos(selStart);
         var normSelEnd = NormalizePos(selEnd);
 
-        var state =
-            style is not null
-            && tag switch
-            {
-                "\\b" => style.IsBold,
-                "\\i" => style.IsItalic,
-                "\\u" => style.IsUnderline,
-                "\\s" => style.IsStrikethrough,
-                _ => false,
-            };
-
         var parsed = new ParsedEvent(this);
         var blockN = parsed.BlockAt(normSelStart);
-        state = parsed.FindTag(blockN, tag, "")?.Parameters[0].GetBool() ?? state;
+
+        var state = false;
+        // var (state, tagType) = tag switch
+        // {
+        //     "\\b" => (, typeof(OverrideTag.B)),
+        //     "\\i" => (style?.IsItalic, typeof(OverrideTag.I)),
+        //     "\\u" => (style?.IsUnderline, typeof(OverrideTag.U)),
+        //     "\\s" => (style?.IsStrikethrough, typeof(OverrideTag.S)),
+        //     _ => (false, typeof(OverrideTag.Unknown)),
+        // };
+        // state ??= false; // If style is null
+
+        var blockTag = parsed.FindTag(blockN, tag, "");
+        switch (tag)
+        {
+            case @"\b":
+                state = style?.IsBold ?? false;
+                if (blockTag is OverrideTag.B { Value: not null } b)
+                    state = b.Value.Value;
+                break;
+            case @"\i":
+                state = style?.IsItalic ?? false;
+                if (blockTag is OverrideTag.I { Value: not null } i)
+                    state = i.Value.Value;
+                break;
+            case @"\u":
+                state = style?.IsUnderline ?? false;
+                if (blockTag is OverrideTag.U { Value: not null } u)
+                    state = u.Value.Value;
+                break;
+            case @"\s":
+                state = style?.IsStrikethrough ?? false;
+                if (blockTag is OverrideTag.S { Value: not null } s)
+                    state = s.Value.Value;
+                break;
+        }
 
         var shift = parsed.SetTag(tag, state ? "0" : "1", normSelStart, selStart);
         if (selStart != selEnd)
@@ -699,7 +689,7 @@ public partial class Event(int id) : BindableBase, IEntry
         public ParsedEvent(Event line)
         {
             _line = line;
-            _blocks = _line.ParseTags();
+            _blocks = _line.ParseText();
         }
 
         /// <summary>
@@ -817,7 +807,7 @@ public partial class Event(int id) : BindableBase, IEntry
                     _line.Text.AsSpan(originPos)
                 );
                 shift += 2;
-                _blocks = _line.ParseTags();
+                _blocks = _line.ParseText();
             }
             else if (ovr is not null)
             {
@@ -839,12 +829,14 @@ public partial class Event(int id) : BindableBase, IEntry
                     }
                     else
                     {
-                        ovr.Tags[i].Parameters[0].Set(value);
+                        // TODO Reimplement
+                        // ovr.Tags[i].Parameters[0].Set(value);
                         found = true;
                     }
                 }
-                if (!found)
-                    ovr.AddTag(insert);
+                // TODO Reimplement
+                // if (!found)
+                //     ovr.AddTag(insert);
 
                 _line.UpdateText(_blocks);
             }
