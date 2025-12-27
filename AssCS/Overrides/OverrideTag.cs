@@ -483,6 +483,7 @@ public abstract class OverrideTag
         public T(double acceleration, List<OverrideTag> block)
         {
             Variant = TransformVariant.AccelerationOnly;
+            Acceleration = acceleration;
             Block = block;
         }
 
