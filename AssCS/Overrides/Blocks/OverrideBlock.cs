@@ -65,7 +65,17 @@ public class OverrideBlock(ReadOnlySpan<char> data) : Block(data.ToString(), Blo
                 {
                     data = data.TrimStart(); // Strip whitespace, if any
 
-                    for (q = 0; q < data.Length && data[q] is not (',' or '\\' or ')'); q++) { }
+                    var inlineCode = false; // We want to ignore inline code blocks
+                    for (q = 0; q < data.Length; q++)
+                    {
+                        if (data[q] is '!')
+                        {
+                            inlineCode = !inlineCode;
+                            continue;
+                        }
+                        if (data[q] is ',' or '\\' or ')' && !inlineCode)
+                            break;
+                    }
 
                     var r = data[q];
                     if (r is ',')
@@ -80,9 +90,17 @@ public class OverrideBlock(ReadOnlySpan<char> data) : Block(data.ToString(), Blo
                         if (r is '\\')
                         {
                             hasBackslashArg = true;
-                            q = data.IndexOf(')');
-                            if (q < 0)
-                                q = data.Length;
+                            inlineCode = false; // We want to ignore inline code blocks
+                            for (q = 0; q < data.Length; q++)
+                            {
+                                if (data[q] is '!')
+                                {
+                                    inlineCode = !inlineCode;
+                                    continue;
+                                }
+                                if (data[q] is ')' && !inlineCode)
+                                    break;
+                            }
                         }
                         args.Add(data[..q].ToString());
 
