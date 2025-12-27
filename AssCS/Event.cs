@@ -531,48 +531,55 @@ public partial class Event(int id) : BindableBase, IEntry
         var normSelStart = NormalizePos(selStart);
         var normSelEnd = NormalizePos(selEnd);
 
+        // Get style state
+        var state =
+            style is not null
+            && tag switch
+            {
+                "b" => style.IsBold,
+                "i" => style.IsItalic,
+                "u" => style.IsUnderline,
+                "s" => style.IsStrikethrough,
+                _ => false,
+            };
+
+        // Update to use local state
         var parsed = new ParsedEvent(this);
         var blockN = parsed.BlockAt(normSelStart);
 
-        var state = false;
-        // var (state, tagType) = tag switch
-        // {
-        //     "\\b" => (, typeof(OverrideTag.B)),
-        //     "\\i" => (style?.IsItalic, typeof(OverrideTag.I)),
-        //     "\\u" => (style?.IsUnderline, typeof(OverrideTag.U)),
-        //     "\\s" => (style?.IsStrikethrough, typeof(OverrideTag.S)),
-        //     _ => (false, typeof(OverrideTag.Unknown)),
-        // };
-        // state ??= false; // If style is null
+        OverrideTag? startTag = null;
+        OverrideTag? endTag = null;
 
-        var blockTag = parsed.FindTag(blockN, tag, "");
         switch (tag)
         {
-            case @"\b":
-                state = style?.IsBold ?? false;
-                if (blockTag is OverrideTag.B { Value: not null } b)
-                    state = b.Value.Value;
+            case "b":
+                state = (parsed.FindTag(blockN, tag, "") as OverrideTag.B)?.Value ?? state;
+                startTag = new OverrideTag.B(!state);
+                endTag = new OverrideTag.B(state);
                 break;
-            case @"\i":
-                state = style?.IsItalic ?? false;
-                if (blockTag is OverrideTag.I { Value: not null } i)
-                    state = i.Value.Value;
+            case "i":
+                state = (parsed.FindTag(blockN, tag, "") as OverrideTag.I)?.Value ?? state;
+                startTag = new OverrideTag.I(!state);
+                endTag = new OverrideTag.I(state);
                 break;
-            case @"\u":
-                state = style?.IsUnderline ?? false;
-                if (blockTag is OverrideTag.U { Value: not null } u)
-                    state = u.Value.Value;
+            case "u":
+                state = (parsed.FindTag(blockN, tag, "") as OverrideTag.U)?.Value ?? state;
+                startTag = new OverrideTag.U(!state);
+                endTag = new OverrideTag.U(state);
                 break;
-            case @"\s":
-                state = style?.IsStrikethrough ?? false;
-                if (blockTag is OverrideTag.S { Value: not null } s)
-                    state = s.Value.Value;
+            case "s":
+                state = (parsed.FindTag(blockN, tag, "") as OverrideTag.S)?.Value ?? state;
+                startTag = new OverrideTag.S(!state);
+                endTag = new OverrideTag.S(state);
                 break;
         }
 
-        var shift = parsed.SetTag(tag, state ? "0" : "1", normSelStart, selStart);
+        if (startTag is null || endTag is null)
+            return 0;
+
+        var shift = parsed.SetTag(startTag, normSelStart, selStart);
         if (selStart != selEnd)
-            parsed.SetTag(tag, state ? "1" : "0", normSelEnd, selEnd + shift);
+            parsed.SetTag(endTag, normSelEnd, selEnd + shift);
         return shift;
     }
 
@@ -695,7 +702,7 @@ public partial class Event(int id) : BindableBase, IEntry
         /// <summary>
         /// Find the tag with the given name
         /// </summary>
-        /// <param name="blockN">Block number to check</param>
+        /// <param name="blockN">Block index to check</param>
         /// <param name="tagName">Name of the tag</param>
         /// <param name="alt">Alternate name for the tag</param>
         /// <returns>The tag, or <see langword="null"/> if not found</returns>
@@ -717,6 +724,7 @@ public partial class Event(int id) : BindableBase, IEntry
         /// <returns>Block number</returns>
         public int BlockAt(int index)
         {
+            // TODO: Use block text lengths instead?
             var n = 0;
             var inside = false;
             for (var i = 0; i <= _line.Text.Length - 1; i++)
@@ -744,7 +752,7 @@ public partial class Event(int id) : BindableBase, IEntry
                             if (--index == 0)
                                 return n
                                     + (
-                                        (i < _line.Text.Length - 1 && _line.Text[i + 1] == '{')
+                                        i < _line.Text.Length - 1 && _line.Text[i + 1] == '{'
                                             ? 1
                                             : 0
                                     );
@@ -756,15 +764,27 @@ public partial class Event(int id) : BindableBase, IEntry
         }
 
         /// <summary>
+        /// Get the block
+        /// </summary>
+        /// <param name="index">Block index</param>
+        /// <returns>The block</returns>
+        /// <exception cref="ArgumentOutOfRangeException">If <paramref name="index"/> is out of range</exception>
+        public Block GetBlock(int index)
+        {
+            if (index < 0 || index >= _blocks.Count)
+                throw new ArgumentOutOfRangeException(nameof(index), index, null);
+            return _blocks[index];
+        }
+
+        /// <summary>
         /// Set the value of a tag
         /// </summary>
         /// <param name="tag">Tag to set</param>
-        /// <param name="value">New value</param>
         /// <param name="normPos">Normalized position</param>
         /// <param name="originPos">Original position</param>
         /// <exception cref="ArgumentOutOfRangeException">If the <see cref="BlockType"/> is invalid</exception>
         /// <returns>Number of characters to shift the caret</returns>
-        public int SetTag(string tag, string value, int normPos, int originPos)
+        public int SetTag(OverrideTag tag, int normPos, int originPos)
         {
             var blockN = BlockAt(normPos);
             PlainBlock? plain = null;
@@ -796,7 +816,7 @@ public partial class Event(int id) : BindableBase, IEntry
             if (blockN < 0)
                 originPos = 0;
 
-            var insert = tag + value;
+            var insert = tag.ToString() ?? string.Empty;
             var shift = insert.Length;
 
             if (plain is not null || blockN < 0)
@@ -812,16 +832,16 @@ public partial class Event(int id) : BindableBase, IEntry
             else if (ovr is not null)
             {
                 var alt = string.Empty;
-                if (tag == "\\c")
-                    alt = "\\1c";
+                if (tag.Name == OverrideTags.C)
+                    alt = OverrideTags.C1;
                 var found = false;
                 for (var i = 0; i < ovr.Tags.Count; i++)
                 {
                     var name = ovr.Tags[i].Name;
-                    if (tag != name && alt != name)
+                    if (tag.Name != name && alt != name)
                         continue;
 
-                    shift -= (ovr.Tags[i].ToString()).Length;
+                    shift -= ovr.Tags[i].ToString()?.Length ?? 0;
                     if (found)
                     {
                         ovr.Tags.RemoveAt(i);
@@ -829,14 +849,12 @@ public partial class Event(int id) : BindableBase, IEntry
                     }
                     else
                     {
-                        // TODO Reimplement
-                        // ovr.Tags[i].Parameters[0].Set(value);
+                        ovr.Tags[i] = tag;
                         found = true;
                     }
                 }
-                // TODO Reimplement
-                // if (!found)
-                //     ovr.AddTag(insert);
+                if (!found)
+                    ovr.Tags.Add(tag);
 
                 _line.UpdateText(_blocks);
             }

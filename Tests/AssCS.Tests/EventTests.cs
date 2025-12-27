@@ -462,7 +462,7 @@ public class EventTests
         var e = Event.FromAss(1, TagEvent);
         var s = new Style(1); // Default style
 
-        e.ToggleTag("\\i", s, 12, 16); // Inside the tag
+        e.ToggleTag("i", s, 12, 16); // Inside the tag
 
         await Assert.That(e.Text).IsEqualTo(@"You're {\i0}bald{\i1}, there's no point in fussing.");
     }
@@ -473,7 +473,7 @@ public class EventTests
         var e = Event.FromAss(1, TagEvent);
         var s = new Style(1); // Default style
 
-        e.ToggleTag("\\b", s, 12, 16); // Inside the tag
+        e.ToggleTag("b", s, 12, 16); // Inside the tag
 
         await Assert
             .That(e.Text)
@@ -486,7 +486,7 @@ public class EventTests
         var e = Event.FromAss(1, BasicEvent);
         var s = new Style(1); // Default style
 
-        e.ToggleTag("\\i", s, 0, 0);
+        e.ToggleTag("i", s, 0, 0);
 
         await Assert
             .That(e.Text)

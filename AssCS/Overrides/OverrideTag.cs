@@ -1,7 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
 
-using AssCS.Overrides.Blocks;
-
 namespace AssCS.Overrides;
 
 public abstract class OverrideTag
