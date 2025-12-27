@@ -115,53 +115,46 @@ public class OverrideBlock(ReadOnlySpan<char> data) : Block(data.ToString(), Blo
             // Tag/Arg parsing time
             if (IsTag(OverrideTags.XBord))
             {
-                tags.Add(new OverrideTag.XBord(args.Count > 0 ? args[0].ParseAssDouble() : null));
+                tags.Add(new OverrideTag.XBord(args.Count > 0 ? args[0] : null));
             }
             else if (IsTag(OverrideTags.YBord))
             {
-                tags.Add(new OverrideTag.YBord(args.Count > 0 ? args[0].ParseAssDouble() : null));
+                tags.Add(new OverrideTag.YBord(args.Count > 0 ? args[0] : null));
             }
             else if (IsTag(OverrideTags.XShad))
             {
-                tags.Add(new OverrideTag.XShad(args.Count > 0 ? args[0].ParseAssDouble() : null));
+                tags.Add(new OverrideTag.XShad(args.Count > 0 ? args[0] : null));
             }
             else if (IsTag(OverrideTags.YShad))
             {
-                tags.Add(new OverrideTag.YShad(args.Count > 0 ? args[0].ParseAssDouble() : null));
+                tags.Add(new OverrideTag.YShad(args.Count > 0 ? args[0] : null));
             }
             else if (IsTag(OverrideTags.FaX))
             {
-                tags.Add(new OverrideTag.FaX(args.Count > 0 ? args[0].ParseAssDouble() : null));
+                tags.Add(new OverrideTag.FaX(args.Count > 0 ? args[0] : null));
             }
             else if (IsTag(OverrideTags.FaY))
             {
-                tags.Add(new OverrideTag.FaY(args.Count > 0 ? args[0].ParseAssDouble() : null));
+                tags.Add(new OverrideTag.FaY(args.Count > 0 ? args[0] : null));
             }
             else if (IsComplexTag(OverrideTags.IClip))
             {
                 if (args.Count == 4)
-                    tags.Add(
-                        new OverrideTag.IClip(
-                            args[0].ParseAssInt(),
-                            args[1].ParseAssInt(),
-                            args[2].ParseAssInt(),
-                            args[3].ParseAssInt()
-                        )
-                    );
+                    tags.Add(new OverrideTag.IClip(args[0], args[1], args[2], args[3]));
                 else
                     tags.Add(new OverrideTag.Unknown(OverrideTags.IClip, args.ToArray()));
             }
             else if (IsTag(OverrideTags.Blur))
             {
-                tags.Add(new OverrideTag.Blur(args.Count > 0 ? args[0].ParseAssDouble() : null));
+                tags.Add(new OverrideTag.Blur(args.Count > 0 ? args[0] : null));
             }
             else if (IsTag(OverrideTags.FscX))
             {
-                tags.Add(new OverrideTag.FscX(args.Count > 0 ? args[0].ParseAssDouble() : null));
+                tags.Add(new OverrideTag.FscX(args.Count > 0 ? args[0] : null));
             }
             else if (IsTag(OverrideTags.FscY))
             {
-                tags.Add(new OverrideTag.FscY(args.Count > 0 ? args[0].ParseAssDouble() : null));
+                tags.Add(new OverrideTag.FscY(args.Count > 0 ? args[0] : null));
             }
             else if (IsTag(OverrideTags.Fsc))
             {
@@ -169,13 +162,13 @@ public class OverrideBlock(ReadOnlySpan<char> data) : Block(data.ToString(), Blo
             }
             else if (IsTag(OverrideTags.Fsp))
             {
-                tags.Add(new OverrideTag.Fsp(args.Count > 0 ? args[0].ParseAssDouble() : null));
+                tags.Add(new OverrideTag.Fsp(args.Count > 0 ? args[0] : null));
             }
             else if (IsTag(OverrideTags.Fs))
             {
                 if (args.Count == 0)
-                    tags.Add(new OverrideTag.Fs(null, OverrideTag.Fs.FsVariant.Absolute));
-                var value = args[0].ParseAssDouble();
+                    tags.Add(new OverrideTag.Fs((string)null!, OverrideTag.Fs.FsVariant.Absolute));
+                var value = args[0];
                 if (args[0].Length > 0 && args[0][0] is '+' or '-')
                     tags.Add(new OverrideTag.Fs(value, OverrideTag.Fs.FsVariant.Relative));
                 else
@@ -183,48 +176,34 @@ public class OverrideBlock(ReadOnlySpan<char> data) : Block(data.ToString(), Blo
             }
             else if (IsTag(OverrideTags.Bord))
             {
-                tags.Add(new OverrideTag.Bord(args.Count > 0 ? args[0].ParseAssDouble() : null));
+                tags.Add(new OverrideTag.Bord(args.Count > 0 ? args[0] : null));
             }
             else if (IsComplexTag(OverrideTags.Move))
             {
                 if (args.Count == 4)
-                    tags.Add(
-                        new OverrideTag.Move(
-                            args[0].ParseAssDouble(),
-                            args[1].ParseAssDouble(),
-                            args[2].ParseAssDouble(),
-                            args[3].ParseAssDouble()
-                        )
-                    );
+                    tags.Add(new OverrideTag.Move(args[0], args[1], args[2], args[3]));
                 else if (args.Count == 6)
                     tags.Add(
-                        new OverrideTag.Move(
-                            args[0].ParseAssDouble(),
-                            args[1].ParseAssDouble(),
-                            args[2].ParseAssDouble(),
-                            args[3].ParseAssDouble(),
-                            args[4].ParseAssInt(),
-                            args[5].ParseAssInt()
-                        )
+                        new OverrideTag.Move(args[0], args[1], args[2], args[3], args[4], args[5])
                     );
                 else
                     tags.Add(new OverrideTag.Unknown(OverrideTags.Move, args.ToArray()));
             }
             else if (IsTag(OverrideTags.FrX))
             {
-                tags.Add(new OverrideTag.FrX(args.Count > 0 ? args[0].ParseAssDouble() : null));
+                tags.Add(new OverrideTag.FrX(args.Count > 0 ? args[0] : null));
             }
             else if (IsTag(OverrideTags.FrY))
             {
-                tags.Add(new OverrideTag.FrY(args.Count > 0 ? args[0].ParseAssDouble() : null));
+                tags.Add(new OverrideTag.FrY(args.Count > 0 ? args[0] : null));
             }
             else if (IsTag(OverrideTags.FrZ))
             {
-                tags.Add(new OverrideTag.FrZ(args.Count > 0 ? args[0].ParseAssDouble() : null));
+                tags.Add(new OverrideTag.FrZ(args.Count > 0 ? args[0] : null));
             }
             else if (IsTag(OverrideTags.Fr))
             {
-                tags.Add(new OverrideTag.Fr(args.Count > 0 ? args[0].ParseAssDouble() : null));
+                tags.Add(new OverrideTag.Fr(args.Count > 0 ? args[0] : null));
             }
             else if (IsTag(OverrideTags.Fn))
             {
@@ -236,21 +215,19 @@ public class OverrideBlock(ReadOnlySpan<char> data) : Block(data.ToString(), Blo
             }
             else if (IsTag(OverrideTags.An))
             {
-                tags.Add(new OverrideTag.An(args.Count > 0 ? args[0].ParseAssInt() : null));
+                tags.Add(new OverrideTag.An(args.Count > 0 ? args[0] : null));
             }
             else if (IsTag(OverrideTags.A))
             {
                 if (args.Count > 0)
-                    tags.Add(new OverrideTag.A(args[0].ParseAssInt()));
+                    tags.Add(new OverrideTag.A(args[0]));
                 else
                     tags.Add(new OverrideTag.Unknown(OverrideTags.A));
             }
             else if (IsComplexTag(OverrideTags.Pos))
             {
                 if (args.Count == 2)
-                    tags.Add(
-                        new OverrideTag.Pos(args[0].ParseAssDouble(), args[1].ParseAssDouble())
-                    );
+                    tags.Add(new OverrideTag.Pos(args[0], args[1]));
                 else
                     tags.Add(new OverrideTag.Unknown(OverrideTags.Pos, args.ToArray()));
             }
@@ -259,13 +236,13 @@ public class OverrideBlock(ReadOnlySpan<char> data) : Block(data.ToString(), Blo
                 if (args.Count == 7)
                     tags.Add(
                         new OverrideTag.Fade(
-                            args[0].ParseAssInt(),
-                            args[1].ParseAssInt(),
-                            args[2].ParseAssInt(),
-                            args[3].ParseAssInt(),
-                            args[4].ParseAssInt(),
-                            args[5].ParseAssInt(),
-                            args[6].ParseAssInt()
+                            args[0],
+                            args[1],
+                            args[2],
+                            args[3],
+                            args[4],
+                            args[5],
+                            args[6]
                         )
                     );
                 else
@@ -274,16 +251,14 @@ public class OverrideBlock(ReadOnlySpan<char> data) : Block(data.ToString(), Blo
             else if (IsComplexTag(OverrideTags.Fad))
             {
                 if (args.Count == 2)
-                    tags.Add(new OverrideTag.Fad(args[0].ParseAssInt(), args[1].ParseAssInt()));
+                    tags.Add(new OverrideTag.Fad(args[0], args[1]));
                 else
                     tags.Add(new OverrideTag.Unknown(OverrideTags.Fad, args.ToArray()));
             }
             else if (IsComplexTag(OverrideTags.Org))
             {
                 if (args.Count == 2)
-                    tags.Add(
-                        new OverrideTag.Org(args[0].ParseAssDouble(), args[1].ParseAssDouble())
-                    );
+                    tags.Add(new OverrideTag.Org(args[0], args[1]));
                 else
                     tags.Add(new OverrideTag.Unknown(OverrideTags.Org, args.ToArray()));
             }
@@ -306,40 +281,26 @@ public class OverrideBlock(ReadOnlySpan<char> data) : Block(data.ToString(), Blo
                         tags.Add(new OverrideTag.T(blockTags));
                         break;
                     case 1: // \t(1.0,\xyz)
-                        tags.Add(new OverrideTag.T(args[0].ParseAssDouble(), blockTags));
+                        tags.Add(new OverrideTag.T(args[0], blockTags));
                         break;
                     case 2: // \t(1,10,\xyz)
                         tags.Add(
                             new OverrideTag.T(
-                                args[0].ParseAssDouble(), // VSFilter moment or something, idk
-                                args[1].ParseAssDouble(),
+                                args[0], // VSFilter moment or something, idk
+                                args[1],
                                 blockTags
                             )
                         );
                         break;
                     case 3: // \t(1,10,1.0,\xyz)
-                        tags.Add(
-                            new OverrideTag.T(
-                                args[0].ParseAssInt(),
-                                args[1].ParseAssInt(),
-                                args[2].ParseAssDouble(),
-                                blockTags
-                            )
-                        );
+                        tags.Add(new OverrideTag.T(args[0], args[1], args[2], blockTags));
                         break;
                 }
             }
             else if (IsComplexTag(OverrideTags.Clip))
             {
                 if (args.Count == 4)
-                    tags.Add(
-                        new OverrideTag.Clip(
-                            args[0].ParseAssInt(),
-                            args[1].ParseAssInt(),
-                            args[2].ParseAssInt(),
-                            args[3].ParseAssInt()
-                        )
-                    );
+                    tags.Add(new OverrideTag.Clip(args[0], args[1], args[2], args[3]));
                 else
                     tags.Add(new OverrideTag.Unknown(OverrideTags.Clip, args.ToArray()));
             }
@@ -385,69 +346,69 @@ public class OverrideBlock(ReadOnlySpan<char> data) : Block(data.ToString(), Blo
             }
             else if (IsTag(OverrideTags.Be))
             {
-                tags.Add(new OverrideTag.Be(args.Count > 0 ? args[0].ParseAssDouble() : null));
+                tags.Add(new OverrideTag.Be(args.Count > 0 ? args[0] : null));
             }
             else if (IsTag(OverrideTags.B))
             {
-                tags.Add(new OverrideTag.B(args.Count > 0 ? args[0].ParseAssInt() == 1 : null));
+                tags.Add(new OverrideTag.B(args.Count > 0 ? args[0] : null));
             }
             else if (IsTag(OverrideTags.I))
             {
-                tags.Add(new OverrideTag.I(args.Count > 0 ? args[0].ParseAssInt() == 1 : null));
+                tags.Add(new OverrideTag.I(args.Count > 0 ? args[0] : null));
             }
             else if (IsTag(OverrideTags.Kt))
             {
-                tags.Add(new OverrideTag.Kt(args.Count > 0 ? args[0].ParseAssDouble() : null));
+                tags.Add(new OverrideTag.Kt(args.Count > 0 ? args[0] : null));
             }
             else if (IsTag(OverrideTags.Kf))
             {
-                tags.Add(new OverrideTag.Kf(args.Count > 0 ? args[0].ParseAssDouble() : null));
+                tags.Add(new OverrideTag.Kf(args.Count > 0 ? args[0] : null));
             }
             else if (IsTag(OverrideTags.KUpper))
             {
-                tags.Add(new OverrideTag.KUpper(args.Count > 0 ? args[0].ParseAssDouble() : null));
+                tags.Add(new OverrideTag.KUpper(args.Count > 0 ? args[0] : null));
             }
             else if (IsTag(OverrideTags.Ko))
             {
-                tags.Add(new OverrideTag.Ko(args.Count > 0 ? args[0].ParseAssDouble() : null));
+                tags.Add(new OverrideTag.Ko(args.Count > 0 ? args[0] : null));
             }
             else if (IsTag(OverrideTags.K))
             {
-                tags.Add(new OverrideTag.K(args.Count > 0 ? args[0].ParseAssDouble() : null));
+                tags.Add(new OverrideTag.K(args.Count > 0 ? args[0] : null));
             }
             else if (IsTag(OverrideTags.Shad))
             {
-                tags.Add(new OverrideTag.Shad(args.Count > 0 ? args[0].ParseAssDouble() : null));
+                tags.Add(new OverrideTag.Shad(args.Count > 0 ? args[0] : null));
             }
             else if (IsTag(OverrideTags.S))
             {
-                tags.Add(new OverrideTag.S(args.Count > 0 ? args[0].ParseAssInt() == 1 : null));
+                tags.Add(new OverrideTag.S(args.Count > 0 ? args[0] : null));
             }
             else if (IsTag(OverrideTags.U))
             {
-                tags.Add(new OverrideTag.U(args.Count > 0 ? args[0].ParseAssInt() == 1 : null));
+                tags.Add(new OverrideTag.U(args.Count > 0 ? args[0] : null));
             }
             else if (IsTag(OverrideTags.Pbo))
             {
                 if (args.Count > 0)
-                    tags.Add(new OverrideTag.Pbo(args[0].ParseAssDouble()));
+                    tags.Add(new OverrideTag.Pbo(args[0]));
                 else
                     tags.Add(new OverrideTag.Unknown(OverrideTags.Pbo, args.ToArray()));
             }
             else if (IsTag(OverrideTags.P))
             {
                 if (args.Count > 0)
-                    tags.Add(new OverrideTag.P(args[0].ParseAssInt()));
+                    tags.Add(new OverrideTag.P(args[0]));
                 else
                     tags.Add(new OverrideTag.Unknown(OverrideTags.P, args.ToArray()));
             }
             else if (IsTag(OverrideTags.Q))
             {
-                tags.Add(new OverrideTag.Q(args.Count > 0 ? args[0].ParseAssInt() : null));
+                tags.Add(new OverrideTag.Q(args.Count > 0 ? args[0] : null));
             }
             else if (IsTag(OverrideTags.Fe))
             {
-                tags.Add(new OverrideTag.Fe(args.Count > 0 ? args[0].ParseAssInt() : null));
+                tags.Add(new OverrideTag.Fe(args.Count > 0 ? args[0] : null));
             }
             else
             {

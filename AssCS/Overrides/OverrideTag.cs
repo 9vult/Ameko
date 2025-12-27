@@ -626,7 +626,9 @@ public abstract class OverrideTag
                 case FsVariant.Relative when Value is < 0:
                     return $@"\{Name}{RawValue}";
                 case FsVariant.Relative:
-                    return $@"\{Name}+{RawValue}";
+                    if (RawValue is not null && RawValue[0] is not '+')
+                        return $@"\{Name}+{RawValue}";
+                    return $@"\{Name}{RawValue}"; // If RawValue already has a leading +
                 default:
                     return $@"\{Name}{RawValue}"; // ?
             }
