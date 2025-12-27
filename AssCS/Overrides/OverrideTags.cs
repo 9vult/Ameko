@@ -2,7 +2,7 @@
 
 namespace AssCS.Overrides;
 
-public static class Tags
+public static class OverrideTags
 {
     public const string A = "a";
     public const string A1 = "1a";
