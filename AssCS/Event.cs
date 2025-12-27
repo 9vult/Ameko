@@ -434,7 +434,7 @@ public partial class Event(int id) : BindableBase, IEntry
     /// Parse the event into a list of Blocks
     /// </summary>
     /// <returns>List of Blocks representing the event</returns>
-    public List<Block> ParseText()
+    public List<Block> ParseBlocks()
     {
         List<Block> blocks = [];
         if (_text.Length <= 0)
@@ -502,7 +502,7 @@ public partial class Event(int id) : BindableBase, IEntry
     /// <returns>Stripped text content</returns>
     public string GetStrippedText()
     {
-        var blocks = ParseText();
+        var blocks = ParseBlocks();
         return string.Join(string.Empty, blocks.OfType<PlainBlock>().Select(b => b.Text));
     }
 
@@ -696,7 +696,7 @@ public partial class Event(int id) : BindableBase, IEntry
         public ParsedEvent(Event line)
         {
             _line = line;
-            _blocks = _line.ParseText();
+            _blocks = _line.ParseBlocks();
         }
 
         /// <summary>
@@ -827,7 +827,7 @@ public partial class Event(int id) : BindableBase, IEntry
                     _line.Text.AsSpan(originPos)
                 );
                 shift += 2;
-                _blocks = _line.ParseText();
+                _blocks = _line.ParseBlocks();
             }
             else if (ovr is not null)
             {
