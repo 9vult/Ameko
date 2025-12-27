@@ -45,18 +45,44 @@ public static class StringExtensions
             if (string.IsNullOrWhiteSpace(str))
                 return 0;
 
-            // Hex number
-            if (str.Contains("0x", StringComparison.InvariantCultureIgnoreCase))
+            var data = str.AsSpan();
+            data = data.Trim(); // Trim whitespace
+
+            // Truncate multiple points
+            if (data.Count('.') > 1)
             {
-                var sign = str[0] == '-' ? -1 : 1;
-                if (str[0] == '+' || str[0] == '-')
-                    str = str[3..]; // -0x
+                var first = data.IndexOf('.') + 1;
+                var second = data[first..].IndexOf('.') + first;
+                data = data[..second];
+            }
+
+            // Truncate at first invalid char
+            for (var i = 0; i < data.Length; i++)
+            {
+                if (data[i] is >= '0' and <= '9' or '.' or 'e' or '+' or '-')
+                    continue;
+                if (i > 0 && data[i] is 'x' && data[i - 1] is '0')
+                    continue;
+
+                data = data[..i];
+                break;
+            }
+
+            if (data.IsEmpty)
+                return 0;
+
+            // Hex number
+            if (data.Contains("0x", StringComparison.InvariantCultureIgnoreCase))
+            {
+                var sign = data[0] == '-' ? -1 : 1;
+                if (data[0] == '+' || data[0] == '-')
+                    data = data[3..]; // -0x
                 else
-                    str = str[2..]; // 0x
+                    data = data[2..]; // 0x
 
                 if (
                     int.TryParse(
-                        str,
+                        data,
                         NumberStyles.HexNumber,
                         CultureInfo.InvariantCulture,
                         out var hex
@@ -67,7 +93,9 @@ public static class StringExtensions
             }
 
             // Exponential or Decimal number
-            if (double.TryParse(str, NumberStyles.Float, CultureInfo.InvariantCulture, out var flt))
+            if (
+                double.TryParse(data, NumberStyles.Float, CultureInfo.InvariantCulture, out var flt)
+            )
                 return flt;
             return 0;
         }
