@@ -244,13 +244,35 @@ public abstract class OverrideTag
         public override string ToString() => Value is not null ? $@"\{Name}{Value}" : $@"\{Name}";
     }
 
-    public class Fs(double? value) : OverrideTag
+    public class Fs(double? value, Fs.FsVariant variant) : OverrideTag
     {
         public override string Name => OverrideTags.Fs;
 
         public double? Value { get; set; } = value;
+        public FsVariant Variant { get; set; } = variant;
 
-        public override string ToString() => Value is not null ? $@"\{Name}{Value}" : $@"\{Name}";
+        public override string ToString()
+        {
+            if (Value is null)
+                return $@"\{Name}";
+
+            switch (Variant)
+            {
+                case FsVariant.Absolute:
+                case FsVariant.Relative when Value is < 0:
+                    return $@"\{Name}{Value}";
+                case FsVariant.Relative:
+                    return $@"\{Name}+{Value}";
+                default:
+                    return $@"\{Name}{Value}"; // ?
+            }
+        }
+
+        public enum FsVariant
+        {
+            Absolute,
+            Relative,
+        }
     }
 
     public class Fsc : OverrideTag

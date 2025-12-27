@@ -155,7 +155,13 @@ public class OverrideBlock(ReadOnlySpan<char> data) : Block(data.ToString(), Blo
             }
             else if (IsTag(OverrideTags.Fs))
             {
-                tags.Add(new OverrideTag.Fs(args.Count > 0 ? args[0].ParseAssDouble() : null));
+                if (args.Count == 0)
+                    tags.Add(new OverrideTag.Fs(null, OverrideTag.Fs.FsVariant.Absolute));
+                var value = args[0].ParseAssDouble();
+                if (args[0].Length > 0 && args[0][0] is '+' or '-')
+                    tags.Add(new OverrideTag.Fs(value, OverrideTag.Fs.FsVariant.Relative));
+                else
+                    tags.Add(new OverrideTag.Fs(value, OverrideTag.Fs.FsVariant.Absolute));
             }
             else if (IsTag(OverrideTags.Bord))
             {
