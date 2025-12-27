@@ -46,7 +46,18 @@ public class OverrideBlock(ReadOnlySpan<char> data) : Block(data.ToString(), Blo
             // Move in from the \, trimming any leading whitespace
             data = data[1..].TrimStart();
 
-            for (q = 0; q < data.Length && data[q] is not ('(' or '\\'); q++) { }
+            var inlineCode = false; // We want to ignore inline code blocks
+            for (q = 0; q < data.Length; q++)
+            {
+                if (data[q] is '!')
+                {
+                    inlineCode = !inlineCode;
+                    continue;
+                }
+                if (data[q] is '(' or '\\' && !inlineCode)
+                    break;
+            }
+
             if (q == 0)
                 continue;
 
@@ -65,7 +76,7 @@ public class OverrideBlock(ReadOnlySpan<char> data) : Block(data.ToString(), Blo
                 {
                     data = data.TrimStart(); // Strip whitespace, if any
 
-                    var inlineCode = false; // We want to ignore inline code blocks
+                    inlineCode = false; // We want to ignore inline code blocks
                     for (q = 0; q < data.Length; q++)
                     {
                         if (data[q] is '!')
