@@ -50,14 +50,10 @@ public class OverrideBlock(ReadOnlySpan<char> data) : Block(data.ToString(), Blo
             for (q = 0; q < data.Length; q++)
             {
                 if (data[q] is '!')
-                {
                     inlineCode = !inlineCode;
-                    continue;
-                }
-                if (data[q] is '(' or '\\' && !inlineCode)
+                else if (data[q] is '(' or '\\' && !inlineCode)
                     break;
             }
-
             if (q == 0)
                 continue;
 
@@ -80,11 +76,8 @@ public class OverrideBlock(ReadOnlySpan<char> data) : Block(data.ToString(), Blo
                     for (q = 0; q < data.Length; q++)
                     {
                         if (data[q] is '!')
-                        {
                             inlineCode = !inlineCode;
-                            continue;
-                        }
-                        if (data[q] is ',' or '\\' or ')' && !inlineCode)
+                        else if (data[q] is ',' or '\\' or ')' && !inlineCode)
                             break;
                     }
 
@@ -105,11 +98,8 @@ public class OverrideBlock(ReadOnlySpan<char> data) : Block(data.ToString(), Blo
                             for (q = 0; q < data.Length; q++)
                             {
                                 if (data[q] is '!')
-                                {
                                     inlineCode = !inlineCode;
-                                    continue;
-                                }
-                                if (data[q] is ')' && !inlineCode)
+                                else if (data[q] is ')' && !inlineCode)
                                     break;
                             }
                         }
