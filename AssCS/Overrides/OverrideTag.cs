@@ -1,17 +1,36 @@
 // SPDX-License-Identifier: MPL-2.0
 
+using System.Globalization;
+using AssCS.Utilities;
+
 namespace AssCS.Overrides;
 
 public abstract class OverrideTag
 {
     public abstract string Name { get; }
 
-    public class A(int? value) : OverrideTag
+    public class A : OverrideTag
     {
         public override string Name => OverrideTags.A;
-        public int? Value { get; set; } = value;
+        public int? Value
+        {
+            get => RawValue?.ParseAssInt() ?? 0;
+            set => RawValue = value?.ToString();
+        }
 
-        public override string ToString() => $@"\{Name}{Value}";
+        public string? RawValue { get; set; }
+
+        public A(int? value)
+        {
+            Value = value;
+        }
+
+        public A(string? value)
+        {
+            RawValue = value;
+        }
+
+        public override string ToString() => $@"\{Name}{RawValue}";
     }
 
     public class A1(string? value) : OverrideTag
@@ -54,45 +73,134 @@ public abstract class OverrideTag
         public override string ToString() => Value is not null ? $@"\{Name}{Value}" : $@"\{Name}";
     }
 
-    public class An(int? value) : OverrideTag
+    public class An : OverrideTag
     {
         public override string Name => OverrideTags.An;
-        public int? Value { get; set; } = value;
+        public int? Value
+        {
+            get => RawValue?.ParseAssInt() ?? 0;
+            set => RawValue = value?.ToString();
+        }
 
-        public override string ToString() => Value is not null ? $@"\{Name}{Value}" : $@"\{Name}";
-    }
+        public string? RawValue { get; set; }
 
-    public class B(bool? value) : OverrideTag
-    {
-        public override string Name => OverrideTags.B;
-        public bool? Value { get; set; } = value;
+        public An(int? value)
+        {
+            Value = value;
+        }
+
+        public An(string? value)
+        {
+            RawValue = value;
+        }
 
         public override string ToString() =>
-            Value is not null ? $@"\{Name}{(Value is true ? 1 : 0)}" : $@"\{Name}";
+            RawValue is not null ? $@"\{Name}{RawValue}" : $@"\{Name}";
     }
 
-    public class Be(double? value) : OverrideTag
+    public class B : OverrideTag
+    {
+        public override string Name => OverrideTags.B;
+
+        public bool? Value
+        {
+            get => RawValue?.ParseAssInt().Equals(1);
+            set =>
+                RawValue = value is not null
+                    ? value is true
+                        ? "1"
+                        : "0"
+                    : null;
+        }
+        public string? RawValue { get; set; }
+
+        public B(bool? value)
+        {
+            Value = value;
+        }
+
+        public B(string? value)
+        {
+            RawValue = value;
+        }
+
+        public override string ToString() =>
+            RawValue is not null ? $@"\{Name}{RawValue}" : $@"\{Name}";
+    }
+
+    public class Be : OverrideTag
     {
         public override string Name => OverrideTags.Be;
-        public double? Value { get; set; } = value;
+        public double? Value
+        {
+            get => RawValue?.ParseAssDouble() ?? 0;
+            set => RawValue = value?.ToString();
+        }
 
-        public override string ToString() => Value is not null ? $@"\{Name}{Value}" : $@"\{Name}";
+        public string? RawValue { get; set; }
+
+        public Be(double? value)
+        {
+            Value = value;
+        }
+
+        public Be(string? value)
+        {
+            RawValue = value;
+        }
+
+        public override string ToString() =>
+            RawValue is not null ? $@"\{Name}{RawValue}" : $@"\{Name}";
     }
 
-    public class Blur(double? value) : OverrideTag
+    public class Blur : OverrideTag
     {
         public override string Name => OverrideTags.Blur;
-        public double? Value { get; set; } = value;
+        public double? Value
+        {
+            get => RawValue?.ParseAssDouble() ?? 0;
+            set => RawValue = value?.ToString();
+        }
 
-        public override string ToString() => Value is not null ? $@"\{Name}{Value}" : $@"\{Name}";
+        public string? RawValue { get; set; }
+
+        public Blur(double? value)
+        {
+            Value = value;
+        }
+
+        public Blur(string? value)
+        {
+            RawValue = value;
+        }
+
+        public override string ToString() =>
+            RawValue is not null ? $@"\{Name}{RawValue}" : $@"\{Name}";
     }
 
-    public class Bord(double? value) : OverrideTag
+    public class Bord : OverrideTag
     {
         public override string Name => OverrideTags.Bord;
-        public double? Value { get; set; } = value;
+        public double? Value
+        {
+            get => RawValue?.ParseAssDouble() ?? 0;
+            set => RawValue = value?.ToString();
+        }
 
-        public override string ToString() => Value is not null ? $@"\{Name}{Value}" : $@"\{Name}";
+        public string? RawValue { get; set; }
+
+        public Bord(double? value)
+        {
+            Value = value;
+        }
+
+        public Bord(string? value)
+        {
+            RawValue = value;
+        }
+
+        public override string ToString() =>
+            RawValue is not null ? $@"\{Name}{RawValue}" : $@"\{Name}";
     }
 
     public class C(string? value) : OverrideTag
@@ -135,68 +243,238 @@ public abstract class OverrideTag
         public override string ToString() => Value is not null ? $@"\{Name}{Value}" : $@"\{Name}";
     }
 
-    public class Clip(int x0, int y0, int x1, int y1) : OverrideTag
+    public class Clip : OverrideTag
     {
         public override string Name => OverrideTags.Clip;
-        public int X0 { get; set; } = x0;
-        public int Y0 { get; set; } = y0;
-        public int X1 { get; set; } = x1;
-        public int Y1 { get; set; } = y1;
+        public int X0
+        {
+            get => RawX0?.ParseAssInt() ?? 0;
+            set => RawX0 = value.ToString();
+        }
 
-        public override string ToString() => $@"\{Name}({X0},{Y0},{X1},{Y1})";
+        public int Y0
+        {
+            get => RawY0?.ParseAssInt() ?? 0;
+            set => RawY0 = value.ToString();
+        }
+        public int X1
+        {
+            get => RawX1?.ParseAssInt() ?? 0;
+            set => RawX1 = value.ToString();
+        }
+        public int Y1
+        {
+            get => RawY1?.ParseAssInt() ?? 0;
+            set => RawY1 = value.ToString();
+        }
+
+        public string? RawX0 { get; set; }
+        public string? RawY0 { get; set; }
+        public string? RawX1 { get; set; }
+        public string? RawY1 { get; set; }
+
+        public Clip(int x0, int y0, int x1, int y1)
+        {
+            X0 = x0;
+            Y0 = y0;
+            X1 = x1;
+            Y1 = y1;
+        }
+
+        public Clip(string x0, string y0, string x1, string y1)
+        {
+            RawX0 = x0;
+            RawY0 = y0;
+            RawX1 = x1;
+            RawY1 = y1;
+        }
+
+        public override string ToString() => $@"\{Name}({RawX0},{RawY0},{RawX1},{RawY1})";
     }
 
-    public class Fad(int t2, int t3) : OverrideTag
+    public class Fad : OverrideTag
     {
         public override string Name => OverrideTags.Fad;
 
-        public int T2 { get; set; } = t2;
-        public int T3 { get; set; } = t3;
+        public int T2
+        {
+            get => RawT2?.ParseAssInt() ?? 0;
+            set => RawT2 = value.ToString();
+        }
+        public int T3
+        {
+            get => RawT3?.ParseAssInt() ?? 0;
+            set => RawT3 = value.ToString();
+        }
 
-        public override string ToString() => $@"\{Name}({T2},{T3})";
+        public string? RawT2 { get; set; }
+        public string? RawT3 { get; set; }
+
+        public Fad(int t2, int t3)
+        {
+            T2 = t2;
+            T3 = t3;
+        }
+
+        public Fad(string t2, string t3)
+        {
+            RawT2 = t2;
+            RawT3 = t3;
+        }
+
+        public override string ToString() => $@"\{Name}({RawT2},{RawT3})";
     }
 
-    public class Fade(int a1, int a2, int a3, int t1, int t2, int t3, int t4) : OverrideTag
+    public class Fade : OverrideTag
     {
         public override string Name => OverrideTags.Fade;
 
-        public int Alpha1 { get; set; } = a1;
-        public int Alpha2 { get; set; } = a2;
-        public int Alpha3 { get; set; } = a3;
-        public int T1 { get; set; } = t1;
-        public int T2 { get; set; } = t2;
-        public int T3 { get; set; } = t3;
-        public int T4 { get; set; } = t4;
+        public int Alpha1
+        {
+            get => RawAlpha1?.ParseAssInt() ?? 0;
+            set => RawAlpha1 = value.ToString();
+        }
+        public int Alpha2
+        {
+            get => RawAlpha2?.ParseAssInt() ?? 0;
+            set => RawAlpha2 = value.ToString();
+        }
+        public int Alpha3
+        {
+            get => RawAlpha3?.ParseAssInt() ?? 0;
+            set => RawAlpha3 = value.ToString();
+        }
+        public int T1
+        {
+            get => RawT1?.ParseAssInt() ?? 0;
+            set => RawT1 = value.ToString();
+        }
+        public int T2
+        {
+            get => RawT2?.ParseAssInt() ?? 0;
+            set => RawT2 = value.ToString();
+        }
+        public int T3
+        {
+            get => RawT3?.ParseAssInt() ?? 0;
+            set => RawT3 = value.ToString();
+        }
+        public int T4
+        {
+            get => RawT4?.ParseAssInt() ?? 0;
+            set => RawT4 = value.ToString();
+        }
+
+        public string? RawAlpha1 { get; set; }
+        public string? RawAlpha2 { get; set; }
+        public string? RawAlpha3 { get; set; }
+        public string? RawT1 { get; set; }
+        public string? RawT2 { get; set; }
+        public string? RawT3 { get; set; }
+        public string? RawT4 { get; set; }
+
+        public Fade(int a1, int a2, int a3, int t1, int t2, int t3, int t4)
+        {
+            Alpha1 = a1;
+            Alpha2 = a2;
+            Alpha3 = a3;
+            T1 = t1;
+            T2 = t2;
+            T3 = t3;
+            T4 = t4;
+        }
+
+        public Fade(string a1, string a2, string a3, string t1, string t2, string t3, string t4)
+        {
+            RawAlpha1 = a1;
+            RawAlpha2 = a2;
+            RawAlpha3 = a3;
+            RawT1 = t1;
+            RawT2 = t2;
+            RawT3 = t3;
+            RawT4 = t4;
+        }
 
         public override string ToString() =>
-            $@"\{Name}({Alpha1},{Alpha2},{Alpha3},{T1},{T2},{T3},{T4})";
+            $@"\{Name}({RawAlpha1},{RawAlpha2},{RawAlpha3},{RawT1},{RawT2},{RawT3},{RawT4})";
     }
 
-    public class FaX(double? value) : OverrideTag
+    public class FaX : OverrideTag
     {
         public override string Name => OverrideTags.FaX;
 
-        public double? Value { get; set; } = value;
+        public double? Value
+        {
+            get => RawValue?.ParseAssDouble() ?? 0;
+            set => RawValue = value?.ToString();
+        }
 
-        public override string ToString() => Value is not null ? $@"\{Name}{Value}" : $@"\{Name}";
+        public string? RawValue { get; set; }
+
+        public FaX(double? value)
+        {
+            Value = value;
+        }
+
+        public FaX(string? value)
+        {
+            RawValue = value;
+        }
+
+        public override string ToString() =>
+            RawValue is not null ? $@"\{Name}{RawValue}" : $@"\{Name}";
     }
 
-    public class FaY(double? value) : OverrideTag
+    public class FaY : OverrideTag
     {
         public override string Name => OverrideTags.FaY;
 
-        public double? Value { get; set; } = value;
+        public double? Value
+        {
+            get => RawValue?.ParseAssDouble() ?? 0;
+            set => RawValue = value?.ToString();
+        }
 
-        public override string ToString() => Value is not null ? $@"\{Name}{Value}" : $@"\{Name}";
+        public string? RawValue { get; set; }
+
+        public FaY(double? value)
+        {
+            Value = value;
+        }
+
+        public FaY(string? value)
+        {
+            RawValue = value;
+        }
+
+        public override string ToString() =>
+            RawValue is not null ? $@"\{Name}{RawValue}" : $@"\{Name}";
     }
 
-    public class Fe(int? value) : OverrideTag
+    public class Fe : OverrideTag
     {
         public override string Name => OverrideTags.Fe;
 
-        public int? Value { get; set; } = value;
+        public int? Value
+        {
+            get => RawValue?.ParseAssInt() ?? 0;
+            set => RawValue = value?.ToString();
+        }
 
-        public override string ToString() => Value is not null ? $@"\{Name}{Value}" : $@"\{Name}";
+        public string? RawValue { get; set; }
+
+        public Fe(int? value)
+        {
+            Value = value;
+        }
+
+        public Fe(string? value)
+        {
+            RawValue = value;
+        }
+
+        public override string ToString() =>
+            RawValue is not null ? $@"\{Name}{RawValue}" : $@"\{Name}";
     }
 
     public class Fn(string? value) : OverrideTag
@@ -208,48 +486,134 @@ public abstract class OverrideTag
         public override string ToString() => Value is not null ? $@"\{Name}{Value}" : $@"\{Name}";
     }
 
-    public class Fr(double? value) : OverrideTag
+    public class Fr : OverrideTag
     {
         public override string Name => OverrideTags.Fr;
 
-        public double? Value { get; set; } = value;
+        public double? Value
+        {
+            get => RawValue?.ParseAssDouble() ?? 0;
+            set => RawValue = value?.ToString();
+        }
 
-        public override string ToString() => Value is not null ? $@"\{Name}{Value}" : $@"\{Name}";
+        public string? RawValue { get; set; }
+
+        public Fr(double? value)
+        {
+            Value = value;
+        }
+
+        public Fr(string? value)
+        {
+            RawValue = value;
+        }
+
+        public override string ToString() =>
+            RawValue is not null ? $@"\{Name}{RawValue}" : $@"\{Name}";
     }
 
-    public class FrX(double? value) : OverrideTag
+    public class FrX : OverrideTag
     {
         public override string Name => OverrideTags.FrX;
 
-        public double? Value { get; set; } = value;
+        public double? Value
+        {
+            get => RawValue?.ParseAssDouble() ?? 0;
+            set => RawValue = value?.ToString();
+        }
 
-        public override string ToString() => Value is not null ? $@"\{Name}{Value}" : $@"\{Name}";
+        public string? RawValue { get; set; }
+
+        public FrX(double? value)
+        {
+            Value = value;
+        }
+
+        public FrX(string? value)
+        {
+            RawValue = value;
+        }
+
+        public override string ToString() =>
+            RawValue is not null ? $@"\{Name}{RawValue}" : $@"\{Name}";
     }
 
-    public class FrY(double? value) : OverrideTag
+    public class FrY : OverrideTag
     {
         public override string Name => OverrideTags.FrY;
 
-        public double? Value { get; set; } = value;
+        public double? Value
+        {
+            get => RawValue?.ParseAssDouble() ?? 0;
+            set => RawValue = value?.ToString();
+        }
 
-        public override string ToString() => Value is not null ? $@"\{Name}{Value}" : $@"\{Name}";
+        public string? RawValue { get; set; }
+
+        public FrY(double? value)
+        {
+            Value = value;
+        }
+
+        public FrY(string? value)
+        {
+            RawValue = value;
+        }
+
+        public override string ToString() =>
+            RawValue is not null ? $@"\{Name}{RawValue}" : $@"\{Name}";
     }
 
-    public class FrZ(double? value) : OverrideTag
+    public class FrZ : OverrideTag
     {
         public override string Name => OverrideTags.FrZ;
 
-        public double? Value { get; set; } = value;
+        public double? Value
+        {
+            get => RawValue?.ParseAssDouble() ?? 0;
+            set => RawValue = value?.ToString();
+        }
 
-        public override string ToString() => Value is not null ? $@"\{Name}{Value}" : $@"\{Name}";
+        public string? RawValue { get; set; }
+
+        public FrZ(double? value)
+        {
+            Value = value;
+        }
+
+        public FrZ(string? value)
+        {
+            RawValue = value;
+        }
+
+        public override string ToString() =>
+            RawValue is not null ? $@"\{Name}{RawValue}" : $@"\{Name}";
     }
 
-    public class Fs(double? value, Fs.FsVariant variant) : OverrideTag
+    public class Fs : OverrideTag
     {
         public override string Name => OverrideTags.Fs;
 
-        public double? Value { get; set; } = value;
-        public FsVariant Variant { get; set; } = variant;
+        public double? Value
+        {
+            get => RawValue?.ParseAssDouble() ?? 0;
+            set => RawValue = value?.ToString();
+        }
+
+        public string? RawValue { get; set; }
+        public FsVariant Variant { get; set; }
+
+        public Fs(double? value, FsVariant variant)
+        {
+            Value = value;
+            Variant = variant;
+        }
+
+        public Fs(string? value, FsVariant variant)
+        {
+            RawValue = value;
+            Variant = variant;
+        }
 
         public override string ToString()
         {
@@ -260,11 +624,11 @@ public abstract class OverrideTag
             {
                 case FsVariant.Absolute:
                 case FsVariant.Relative when Value is < 0:
-                    return $@"\{Name}{Value}";
+                    return $@"\{Name}{RawValue}";
                 case FsVariant.Relative:
-                    return $@"\{Name}+{Value}";
+                    return $@"\{Name}+{RawValue}";
                 default:
-                    return $@"\{Name}{Value}"; // ?
+                    return $@"\{Name}{RawValue}"; // ?
             }
         }
 
@@ -282,95 +646,243 @@ public abstract class OverrideTag
         public override string ToString() => $@"\{Name}";
     }
 
-    public class FscX(double? value) : OverrideTag
+    public class FscX : OverrideTag
     {
         public override string Name => OverrideTags.FscX;
 
-        public double? Value { get; set; } = value;
+        public double? Value
+        {
+            get => RawValue?.ParseAssDouble() ?? 0;
+            set => RawValue = value?.ToString();
+        }
 
-        public override string ToString() => Value is not null ? $@"\{Name}{Value}" : $@"\{Name}";
+        public string? RawValue { get; set; }
+
+        public FscX(double? value)
+        {
+            Value = value;
+        }
+
+        public FscX(string? value)
+        {
+            RawValue = value;
+        }
+
+        public override string ToString() =>
+            RawValue is not null ? $@"\{Name}{RawValue}" : $@"\{Name}";
     }
 
-    public class FscY(double? value) : OverrideTag
+    public class FscY : OverrideTag
     {
         public override string Name => OverrideTags.FscY;
 
-        public double? Value { get; set; } = value;
+        public double? Value
+        {
+            get => RawValue?.ParseAssDouble() ?? 0;
+            set => RawValue = value?.ToString();
+        }
 
-        public override string ToString() => Value is not null ? $@"\{Name}{Value}" : $@"\{Name}";
+        public string? RawValue { get; set; }
+
+        public FscY(double? value)
+        {
+            Value = value;
+        }
+
+        public FscY(string? value)
+        {
+            RawValue = value;
+        }
+
+        public override string ToString() =>
+            RawValue is not null ? $@"\{Name}{RawValue}" : $@"\{Name}";
     }
 
-    public class Fsp(double? value) : OverrideTag
+    public class Fsp : OverrideTag
     {
         public override string Name => OverrideTags.Fsp;
 
-        public double? Value { get; set; } = value;
+        public double? Value
+        {
+            get => RawValue?.ParseAssDouble() ?? 0;
+            set => RawValue = value?.ToString();
+        }
 
-        public override string ToString() => Value is not null ? $@"\{Name}{Value}" : $@"\{Name}";
-    }
+        public string? RawValue { get; set; }
 
-    public class I(bool? value) : OverrideTag
-    {
-        public override string Name => OverrideTags.I;
-        public bool? Value { get; set; } = value;
+        public Fsp(double? value)
+        {
+            Value = value;
+        }
+
+        public Fsp(string? value)
+        {
+            RawValue = value;
+        }
 
         public override string ToString() =>
-            Value is not null ? $@"\{Name}{(Value is true ? 1 : 0)}" : $@"\{Name}";
+            RawValue is not null ? $@"\{Name}{RawValue}" : $@"\{Name}";
     }
 
-    public class IClip(int x0, int y0, int x1, int y1) : OverrideTag
+    public class I : OverrideTag
+    {
+        public override string Name => OverrideTags.I;
+
+        public bool? Value
+        {
+            get => RawValue?.ParseAssInt().Equals(1);
+            set =>
+                RawValue = value is not null
+                    ? value is true
+                        ? "1"
+                        : "0"
+                    : null;
+        }
+        public string? RawValue { get; set; }
+
+        public I(bool? value)
+        {
+            Value = value;
+        }
+
+        public I(string? value)
+        {
+            RawValue = value;
+        }
+
+        public override string ToString() =>
+            RawValue is not null ? $@"\{Name}{RawValue}" : $@"\{Name}";
+    }
+
+    public class IClip : OverrideTag
     {
         public override string Name => OverrideTags.IClip;
-        public int X0 { get; set; } = x0;
-        public int Y0 { get; set; } = y0;
-        public int X1 { get; set; } = x1;
-        public int Y1 { get; set; } = y1;
 
-        public override string ToString() => $@"\{Name}({X0},{Y0},{X1},{Y1})";
+        public int X0
+        {
+            get => RawX0?.ParseAssInt() ?? 0;
+            set => RawX0 = value.ToString();
+        }
+        public int Y0
+        {
+            get => RawY0?.ParseAssInt() ?? 0;
+            set => RawY0 = value.ToString();
+        }
+        public int X1
+        {
+            get => RawX1?.ParseAssInt() ?? 0;
+            set => RawX1 = value.ToString();
+        }
+        public int Y1
+        {
+            get => RawY1?.ParseAssInt() ?? 0;
+            set => RawY1 = value.ToString();
+        }
+
+        public string? RawX0 { get; set; }
+        public string? RawX1 { get; set; }
+        public string? RawY0 { get; set; }
+        public string? RawY1 { get; set; }
+
+        public IClip(int x0, int y0, int x1, int y1)
+        {
+            X0 = x0;
+            Y0 = y0;
+            X1 = x1;
+            Y1 = y1;
+        }
+
+        public IClip(string x0, string y0, string x1, string y1)
+        {
+            RawX0 = x0;
+            RawX1 = x1;
+            RawY0 = y0;
+            RawY1 = y1;
+        }
+
+        public override string ToString() => $@"\{Name}({RawX0},{RawY0},{RawX1},{RawY1})";
     }
 
-    public class K(double? duration) : OverrideTag
+    public class K : OverrideTag
     {
         public override string Name => OverrideTags.K;
 
-        public double? Duration { get; set; } = duration;
+        public double? Duration
+        {
+            get => RawDuration?.ParseAssDouble() ?? 0;
+            set => RawDuration = value?.ToString();
+        }
+
+        public string? RawDuration { get; set; }
+
+        public K(double? duration)
+        {
+            Duration = duration;
+        }
+
+        public K(string? duration)
+        {
+            RawDuration = duration;
+        }
 
         public override string ToString() =>
-            Duration is not null ? $@"\{Name}{Duration}" : $@"\{Name}";
+            RawDuration is not null ? $@"\{Name}{RawDuration}" : $@"\{Name}";
     }
 
-    public class Kf(double? duration) : K(duration)
+    public class Kf : K
     {
         public override string Name => OverrideTags.Kf;
 
+        public Kf(double? duration)
+            : base(duration) { }
+
+        public Kf(string? duration)
+            : base(duration) { }
+
         public override string ToString() =>
-            Duration is not null ? $@"\{Name}{Duration}" : $@"\{Name}";
+            RawDuration is not null ? $@"\{Name}{RawDuration}" : $@"\{Name}";
     }
 
-    public class Ko(double? duration) : K(duration)
+    public class Ko : K
     {
         public override string Name => OverrideTags.Ko;
 
+        public Ko(double? duration)
+            : base(duration) { }
+
+        public Ko(string? duration)
+            : base(duration) { }
+
         public override string ToString() =>
-            Duration is not null ? $@"\{Name}{Duration}" : $@"\{Name}";
+            RawDuration is not null ? $@"\{Name}{RawDuration}" : $@"\{Name}";
     }
 
-    public class Kt(double? value) : OverrideTag
+    public class Kt : K
     {
         public override string Name => OverrideTags.Kt;
 
-        public double? Value { get; set; } = value;
+        public Kt(double? duration)
+            : base(duration) { }
 
-        public override string ToString() => Value is not null ? $@"\{Name}{Value}" : $@"\{Name}";
+        public Kt(string? duration)
+            : base(duration) { }
+
+        public override string ToString() =>
+            RawDuration is not null ? $@"\{Name}{RawDuration}" : $@"\{Name}";
     }
 
-    public class KUpper(double? value) : OverrideTag
+    public class KUpper : K
     {
         public override string Name => OverrideTags.KUpper;
 
-        public double? Value { get; set; } = value;
+        public KUpper(double? duration)
+            : base(duration) { }
 
-        public override string ToString() => Value is not null ? $@"\{Name}{Value}" : $@"\{Name}";
+        public KUpper(string? duration)
+            : base(duration) { }
+
+        public override string ToString() =>
+            RawDuration is not null ? $@"\{Name}{RawDuration}" : $@"\{Name}";
     }
 
     public class Move : OverrideTag
@@ -379,12 +891,44 @@ public abstract class OverrideTag
 
         public bool IsShortVariant { get; }
 
-        public double X1 { get; set; }
-        public double Y1 { get; set; }
-        public double X2 { get; set; }
-        public double Y2 { get; set; }
-        public int T1 { get; set; } = 0;
-        public int T2 { get; set; } = 0;
+        public double X1
+        {
+            get => RawX1?.ParseAssDouble() ?? 0;
+            set => RawX1 = value.ToString(CultureInfo.InvariantCulture);
+        }
+        public double Y1
+        {
+            get => RawY1?.ParseAssDouble() ?? 0;
+            set => RawY1 = value.ToString(CultureInfo.InvariantCulture);
+        }
+        public double X2
+        {
+            get => RawX2?.ParseAssDouble() ?? 0;
+            set => RawX2 = value.ToString(CultureInfo.InvariantCulture);
+        }
+        public double Y2
+        {
+            get => RawY2?.ParseAssDouble() ?? 0;
+            set => RawY2 = value.ToString(CultureInfo.InvariantCulture);
+        }
+        public int T1
+        {
+            get => RawT1?.ParseAssInt() ?? 0;
+            set => RawT1 = value.ToString(CultureInfo.InvariantCulture);
+        }
+
+        public int T2
+        {
+            get => RawT2?.ParseAssInt() ?? 0;
+            set => RawT2 = value.ToString(CultureInfo.InvariantCulture);
+        }
+
+        public string? RawX1 { get; set; }
+        public string? RawY1 { get; set; }
+        public string? RawX2 { get; set; }
+        public string? RawY2 { get; set; }
+        public string? RawT1 { get; set; }
+        public string? RawT2 { get; set; }
 
         public Move(double x1, double y1, double x2, double y2)
         {
@@ -393,6 +937,8 @@ public abstract class OverrideTag
             Y1 = y1;
             X2 = x2;
             Y2 = y2;
+            T1 = 0;
+            T2 = 0;
         }
 
         public Move(double x1, double y1, double x2, double y2, int t1, int t2)
@@ -406,57 +952,172 @@ public abstract class OverrideTag
             T2 = t2;
         }
 
+        public Move(string x1, string y1, string x2, string y2)
+        {
+            IsShortVariant = true;
+            RawX1 = x1;
+            RawY1 = y1;
+            RawX2 = x2;
+            RawY2 = y2;
+            RawT1 = "0";
+            RawT2 = "0";
+        }
+
+        public Move(string x1, string y1, string x2, string y2, string t1, string t2)
+        {
+            IsShortVariant = false;
+            RawX1 = x1;
+            RawY1 = y1;
+            RawX2 = x2;
+            RawY2 = y2;
+            RawT1 = t1;
+            RawT2 = t2;
+        }
+
         public override string ToString() =>
             IsShortVariant
-                ? $@"\{Name}({X1},{Y1},{X2},{Y2})"
-                : $@"\{Name}({X1},{Y1},{X2},{Y2},{T1},{T2})";
+                ? $@"\{Name}({RawX1},{RawY1},{RawX2},{RawY2})"
+                : $@"\{Name}({RawX1},{RawY1},{RawX2},{RawY2},{RawT1},{RawT2})";
     }
 
-    public class Org(double x, double y) : OverrideTag
+    public class Org : OverrideTag
     {
         public override string Name => OverrideTags.Org;
 
-        public double X { get; set; } = x;
-        public double Y { get; set; } = y;
+        public double X
+        {
+            get => RawX?.ParseAssDouble() ?? 0;
+            set => RawX = value.ToString(CultureInfo.InvariantCulture);
+        }
+        public double Y
+        {
+            get => RawY?.ParseAssDouble() ?? 0;
+            set => RawY = value.ToString(CultureInfo.InvariantCulture);
+        }
+        public string? RawX { get; set; }
+        public string? RawY { get; set; }
 
-        public override string ToString() => $@"\{Name}({X},{Y})";
+        public Org(double x, double y)
+        {
+            X = x;
+            Y = y;
+        }
+
+        public Org(string x, string y)
+        {
+            RawX = x;
+            RawY = y;
+        }
+
+        public override string ToString() => $@"\{Name}({RawX},{RawY})";
     }
 
-    public class P(int level) : OverrideTag
+    public class P : OverrideTag
     {
         public override string Name => OverrideTags.P;
 
-        public int Level { get; set; } = level;
+        public int Level
+        {
+            get => RawLevel?.ParseAssInt() ?? 0;
+            set => RawLevel = value.ToString();
+        }
 
-        public override string ToString() => $@"\{Name}{Level}";
+        public string? RawLevel { get; set; }
+
+        public P(int level)
+        {
+            Level = level;
+        }
+
+        public P(string level)
+        {
+            RawLevel = level;
+        }
+
+        public override string ToString() => $@"\{Name}{RawLevel}";
     }
 
-    public class Pbo(double value) : OverrideTag
+    public class Pbo : OverrideTag
     {
         public override string Name => OverrideTags.Pbo;
 
-        public double Value { get; set; } = value;
+        public double Value
+        {
+            get => RawValue?.ParseAssDouble() ?? 0;
+            set => RawValue = value.ToString(CultureInfo.InvariantCulture);
+        }
 
-        public override string ToString() => $@"\{Name}{Value}";
+        public string? RawValue { get; set; }
+
+        public Pbo(double value)
+        {
+            Value = value;
+        }
+
+        public Pbo(string value)
+        {
+            RawValue = value;
+        }
+
+        public override string ToString() => $@"\{Name}{RawValue}";
     }
 
-    public class Pos(double x, double y) : OverrideTag
+    public class Pos : OverrideTag
     {
         public override string Name => OverrideTags.Pos;
 
-        public double X { get; set; } = x;
-        public double Y { get; set; } = y;
+        public double X
+        {
+            get => RawX?.ParseAssDouble() ?? 0;
+            set => RawX = value.ToString(CultureInfo.InvariantCulture);
+        }
+        public double Y
+        {
+            get => RawY?.ParseAssDouble() ?? 0;
+            set => RawY = value.ToString(CultureInfo.InvariantCulture);
+        }
+        public string? RawX { get; set; }
+        public string? RawY { get; set; }
 
-        public override string ToString() => $@"\{Name}({X},{Y})";
+        public Pos(double x, double y)
+        {
+            X = x;
+            Y = y;
+        }
+
+        public Pos(string x, string y)
+        {
+            RawX = x;
+            RawY = y;
+        }
+
+        public override string ToString() => $@"\{Name}({RawX},{RawY})";
     }
 
-    public class Q(int? value) : OverrideTag
+    public class Q : OverrideTag
     {
         public override string Name => OverrideTags.Q;
 
-        public int? Value { get; set; } = value;
+        public int? Value
+        {
+            get => RawValue?.ParseAssInt() ?? 0;
+            set => RawValue = value?.ToString();
+        }
 
-        public override string ToString() => Value is not null ? $@"\{Name}{Value}" : $@"\{Name}";
+        public string? RawValue { get; set; }
+
+        public Q(int? value)
+        {
+            Value = value;
+        }
+
+        public Q(string? value)
+        {
+            RawValue = value;
+        }
+
+        public override string ToString() =>
+            RawValue is not null ? $@"\{Name}{RawValue}" : $@"\{Name}";
     }
 
     public class R(string? style) : OverrideTag
@@ -468,21 +1129,58 @@ public abstract class OverrideTag
         public override string ToString() => Style is not null ? $@"\{Name}{Style}" : $@"\{Name}";
     }
 
-    public class S(bool? value) : OverrideTag
+    public class S : OverrideTag
     {
         public override string Name => OverrideTags.S;
-        public bool? Value { get; set; } = value;
+        public bool? Value
+        {
+            get => RawValue?.ParseAssInt().Equals(1);
+            set =>
+                RawValue = value is not null
+                    ? value is true
+                        ? "1"
+                        : "0"
+                    : null;
+        }
+        public string? RawValue { get; set; }
+
+        public S(bool? value)
+        {
+            Value = value;
+        }
+
+        public S(string? value)
+        {
+            RawValue = value;
+        }
 
         public override string ToString() =>
-            Value is not null ? $@"\{Name}{(Value is true ? 1 : 0)}" : $@"\{Name}";
+            RawValue is not null ? $@"\{Name}{RawValue}" : $@"\{Name}";
     }
 
-    public class Shad(double? value) : OverrideTag
+    public class Shad : OverrideTag
     {
         public override string Name => OverrideTags.Shad;
-        public double? Value { get; set; } = value;
+        public double? Value
+        {
+            get => RawValue?.ParseAssDouble() ?? 0;
+            set => RawValue = value?.ToString();
+        }
 
-        public override string ToString() => Value is not null ? $@"\{Name}{Value}" : $@"\{Name}";
+        public string? RawValue { get; set; }
+
+        public Shad(double? value)
+        {
+            Value = value;
+        }
+
+        public Shad(string? value)
+        {
+            RawValue = value;
+        }
+
+        public override string ToString() =>
+            RawValue is not null ? $@"\{Name}{RawValue}" : $@"\{Name}";
     }
 
     public class T : OverrideTag
@@ -491,10 +1189,26 @@ public abstract class OverrideTag
 
         public TransformVariant Variant { get; }
 
-        public int T1 { get; set; }
-        public int T2 { get; set; }
-        public double Acceleration { get; set; }
+        public int T1
+        {
+            get => RawT1?.ParseAssInt() ?? 0;
+            set => RawT1 = value.ToString();
+        }
+        public int T2
+        {
+            get => RawT2?.ParseAssInt() ?? 0;
+            set => RawT2 = value.ToString();
+        }
+        public double Acceleration
+        {
+            get => RawAcceleration?.ParseAssDouble() ?? 0;
+            set => RawAcceleration = value.ToString(CultureInfo.InvariantCulture);
+        }
         public List<OverrideTag> Block { get; }
+
+        public string? RawT1 { get; set; }
+        public string? RawT2 { get; set; }
+        public string? RawAcceleration { get; set; }
 
         public T(List<OverrideTag> block)
         {
@@ -526,15 +1240,40 @@ public abstract class OverrideTag
             Block = block;
         }
 
+        public T(string acceleration, List<OverrideTag> block)
+        {
+            Variant = TransformVariant.AccelerationOnly;
+            RawAcceleration = acceleration;
+            Block = block;
+        }
+
+        public T(string t1, string t2, List<OverrideTag> block)
+        {
+            Variant = TransformVariant.TimeOnly;
+            RawT1 = t1;
+            RawT2 = t2;
+            Block = block;
+        }
+
+        public T(string t1, string t2, string acceleration, List<OverrideTag> block)
+        {
+            Variant = TransformVariant.Full;
+            RawT1 = t1;
+            RawT2 = t2;
+            RawAcceleration = acceleration;
+            Block = block;
+        }
+
         private string BlockString() => string.Join(string.Empty, Block.Select(x => x.ToString()));
 
         public override string ToString() =>
             Variant switch
             {
                 TransformVariant.BlockOnly => $@"\{Name}({BlockString()})",
-                TransformVariant.AccelerationOnly => $@"\{Name}({Acceleration},{BlockString()})",
-                TransformVariant.TimeOnly => $@"\{Name}({T1},{T2},{BlockString()})",
-                TransformVariant.Full => $@"\{Name}({T1},{T2},{Acceleration},{BlockString()})",
+                TransformVariant.AccelerationOnly => $@"\{Name}({RawAcceleration},{BlockString()})",
+                TransformVariant.TimeOnly => $@"\{Name}({RawT1},{RawT2},{BlockString()})",
+                TransformVariant.Full =>
+                    $@"\{Name}({RawT1},{RawT2},{RawAcceleration},{BlockString()})",
                 _ => throw new ArgumentOutOfRangeException(nameof(Variant), Variant, null),
             };
 
@@ -547,45 +1286,134 @@ public abstract class OverrideTag
         }
     }
 
-    public class U(bool? value) : OverrideTag
+    public class U : OverrideTag
     {
         public override string Name => OverrideTags.U;
-        public bool? Value { get; set; } = value;
+        public bool? Value
+        {
+            get => RawValue?.ParseAssInt().Equals(1);
+            set =>
+                RawValue = value is not null
+                    ? value is true
+                        ? "1"
+                        : "0"
+                    : null;
+        }
+        public string? RawValue { get; set; }
+
+        public U(bool? value)
+        {
+            Value = value;
+        }
+
+        public U(string? value)
+        {
+            RawValue = value;
+        }
 
         public override string ToString() =>
-            Value is not null ? $@"\{Name}{(Value is true ? 1 : 0)}" : $@"\{Name}";
+            RawValue is not null ? $@"\{Name}{RawValue}" : $@"\{Name}";
     }
 
-    public class XBord(double? value) : OverrideTag
+    public class XBord : OverrideTag
     {
         public override string Name => OverrideTags.XBord;
-        public double? Value { get; set; } = value;
 
-        public override string ToString() => Value is not null ? $@"\{Name}{Value}" : $@"\{Name}";
+        public double? Value
+        {
+            get => RawValue?.ParseAssDouble() ?? 0;
+            set => RawValue = value?.ToString();
+        }
+
+        public string? RawValue { get; set; }
+
+        public XBord(double? value)
+        {
+            Value = value;
+        }
+
+        public XBord(string? value)
+        {
+            RawValue = value;
+        }
+
+        public override string ToString() =>
+            RawValue is not null ? $@"\{Name}{RawValue}" : $@"\{Name}";
     }
 
-    public class XShad(double? value) : OverrideTag
+    public class XShad : OverrideTag
     {
         public override string Name => OverrideTags.XShad;
-        public double? Value { get; set; } = value;
+        public double? Value
+        {
+            get => RawValue?.ParseAssDouble() ?? 0;
+            set => RawValue = value?.ToString();
+        }
 
-        public override string ToString() => Value is not null ? $@"\{Name}{Value}" : $@"\{Name}";
+        public string? RawValue { get; set; }
+
+        public XShad(double? value)
+        {
+            Value = value;
+        }
+
+        public XShad(string? value)
+        {
+            RawValue = value;
+        }
+
+        public override string ToString() =>
+            RawValue is not null ? $@"\{Name}{RawValue}" : $@"\{Name}";
     }
 
-    public class YBord(double? value) : OverrideTag
+    public class YBord : OverrideTag
     {
         public override string Name => OverrideTags.YBord;
-        public double? Value { get; set; } = value;
+        public double? Value
+        {
+            get => RawValue?.ParseAssDouble() ?? 0;
+            set => RawValue = value?.ToString();
+        }
 
-        public override string ToString() => Value is not null ? $@"\{Name}{Value}" : $@"\{Name}";
+        public string? RawValue { get; set; }
+
+        public YBord(double? value)
+        {
+            Value = value;
+        }
+
+        public YBord(string? value)
+        {
+            RawValue = value;
+        }
+
+        public override string ToString() =>
+            RawValue is not null ? $@"\{Name}{RawValue}" : $@"\{Name}";
     }
 
-    public class YShad(double? value) : OverrideTag
+    public class YShad : OverrideTag
     {
         public override string Name => OverrideTags.YShad;
-        public double? Value { get; set; } = value;
+        public double? Value
+        {
+            get => RawValue?.ParseAssDouble() ?? 0;
+            set => RawValue = value?.ToString();
+        }
 
-        public override string ToString() => Value is not null ? $@"\{Name}{Value}" : $@"\{Name}";
+        public string? RawValue { get; set; }
+
+        public YShad(double? value)
+        {
+            Value = value;
+        }
+
+        public YShad(string? value)
+        {
+            RawValue = value;
+        }
+
+        public override string ToString() =>
+            RawValue is not null ? $@"\{Name}{RawValue}" : $@"\{Name}";
     }
 
     public class Unknown(string name, params string[] args) : OverrideTag
