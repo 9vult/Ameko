@@ -238,6 +238,104 @@ public class OverrideBlockTests
 
     #endregion Transform
 
+    #region Clip
+
+    [Test]
+    public async Task Clip_Rectangle()
+    {
+        const string body = @"\clip(0,20,100,120)";
+        var block = new OverrideBlock(body);
+
+        await Assert.That(block.Tags.Count).IsEqualTo(1);
+        var clip = await Assert.That(block.Tags[0]).IsTypeOf<OverrideTag.Clip>();
+
+        await Assert.That(clip).IsNotNull();
+        await Assert.That(clip.Variant).IsEqualTo(OverrideTag.Clip.ClipVariant.Rectangle);
+
+        await Assert.That(clip.X0).IsEqualTo(0);
+        await Assert.That(clip.Y0).IsEqualTo(20);
+        await Assert.That(clip.X1).IsEqualTo(100);
+        await Assert.That(clip.Y1).IsEqualTo(120);
+    }
+
+    [Test]
+    public async Task Clip_Drawing()
+    {
+        const string body = @"\clip(m 300 436 l 768 332 1056 596 660 700)";
+        var block = new OverrideBlock(body);
+
+        await Assert.That(block.Tags.Count).IsEqualTo(1);
+        var clip = await Assert.That(block.Tags[0]).IsTypeOf<OverrideTag.Clip>();
+
+        await Assert.That(clip).IsNotNull();
+        await Assert.That(clip.Variant).IsEqualTo(OverrideTag.Clip.ClipVariant.Drawing);
+        await Assert.That(clip.Drawing).IsEqualTo("m 300 436 l 768 332 1056 596 660 700");
+    }
+
+    [Test]
+    public async Task Clip_ScaledDrawing()
+    {
+        const string body = @"\clip(1.2,m 300 436 l 768 332 1056 596 660 700)";
+        var block = new OverrideBlock(body);
+
+        await Assert.That(block.Tags.Count).IsEqualTo(1);
+        var clip = await Assert.That(block.Tags[0]).IsTypeOf<OverrideTag.Clip>();
+
+        await Assert.That(clip).IsNotNull();
+        await Assert.That(clip.Variant).IsEqualTo(OverrideTag.Clip.ClipVariant.ScaledDrawing);
+        await Assert.That(clip.Drawing).IsEqualTo("m 300 436 l 768 332 1056 596 660 700");
+        await Assert.That(clip.Scale).IsEqualTo(1.2);
+    }
+
+    [Test]
+    public async Task IClip_Rectangle()
+    {
+        const string body = @"\iclip(0,20,100,120)";
+        var block = new OverrideBlock(body);
+
+        await Assert.That(block.Tags.Count).IsEqualTo(1);
+        var clip = await Assert.That(block.Tags[0]).IsTypeOf<OverrideTag.IClip>();
+
+        await Assert.That(clip).IsNotNull();
+        await Assert.That(clip.Variant).IsEqualTo(OverrideTag.IClip.IClipVariant.Rectangle);
+
+        await Assert.That(clip.X0).IsEqualTo(0);
+        await Assert.That(clip.Y0).IsEqualTo(20);
+        await Assert.That(clip.X1).IsEqualTo(100);
+        await Assert.That(clip.Y1).IsEqualTo(120);
+    }
+
+    [Test]
+    public async Task IClip_Drawing()
+    {
+        const string body = @"\iclip(m 300 436 l 768 332 1056 596 660 700)";
+        var block = new OverrideBlock(body);
+
+        await Assert.That(block.Tags.Count).IsEqualTo(1);
+        var clip = await Assert.That(block.Tags[0]).IsTypeOf<OverrideTag.IClip>();
+
+        await Assert.That(clip).IsNotNull();
+        await Assert.That(clip.Variant).IsEqualTo(OverrideTag.IClip.IClipVariant.Drawing);
+        await Assert.That(clip.Drawing).IsEqualTo("m 300 436 l 768 332 1056 596 660 700");
+    }
+
+    [Test]
+    public async Task IClip_ScaledDrawing()
+    {
+        const string body = @"\iclip(1.2,m 300 436 l 768 332 1056 596 660 700)";
+        var block = new OverrideBlock(body);
+
+        await Assert.That(block.Tags.Count).IsEqualTo(1);
+        var clip = await Assert.That(block.Tags[0]).IsTypeOf<OverrideTag.IClip>();
+
+        await Assert.That(clip).IsNotNull();
+        await Assert.That(clip.Variant).IsEqualTo(OverrideTag.IClip.IClipVariant.ScaledDrawing);
+        await Assert.That(clip.Drawing).IsEqualTo("m 300 436 l 768 332 1056 596 660 700");
+        await Assert.That(clip.Scale).IsEqualTo(1.2);
+    }
+
+    #endregion Clip
+
     [Test]
     public async Task InlineCodeAndVariables()
     {

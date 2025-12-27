@@ -528,7 +528,7 @@ public abstract class OverrideTag
         /// </summary>
         public double Scale
         {
-            get => RawScale?.ParseAssInt() ?? 0;
+            get => RawScale?.ParseAssDouble() ?? 0;
             set => RawScale = value.ToString(CultureInfo.InvariantCulture);
         }
 
@@ -1325,7 +1325,7 @@ public abstract class OverrideTag
         /// </summary>
         public double Scale
         {
-            get => RawScale?.ParseAssInt() ?? 0;
+            get => RawScale?.ParseAssDouble() ?? 0;
             set => RawScale = value.ToString(CultureInfo.InvariantCulture);
         }
 

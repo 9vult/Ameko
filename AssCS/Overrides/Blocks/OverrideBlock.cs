@@ -140,10 +140,21 @@ public class OverrideBlock(ReadOnlySpan<char> data) : Block(data.ToString(), Blo
             }
             else if (IsComplexTag(OverrideTags.IClip))
             {
-                if (args.Count == 4)
-                    tags.Add(new OverrideTag.IClip(args[0], args[1], args[2], args[3]));
-                else
-                    tags.Add(new OverrideTag.Unknown(OverrideTags.IClip, args.ToArray()));
+                switch (args.Count)
+                {
+                    case 4:
+                        tags.Add(new OverrideTag.IClip(args[0], args[1], args[2], args[3]));
+                        break;
+                    case 2:
+                        tags.Add(new OverrideTag.IClip(args[0], args[1]));
+                        break;
+                    case 1:
+                        tags.Add(new OverrideTag.IClip(args[0]));
+                        break;
+                    default:
+                        tags.Add(new OverrideTag.Unknown(OverrideTags.IClip, args.ToArray()));
+                        break;
+                }
             }
             else if (IsTag(OverrideTags.Blur))
             {
@@ -300,10 +311,21 @@ public class OverrideBlock(ReadOnlySpan<char> data) : Block(data.ToString(), Blo
             }
             else if (IsComplexTag(OverrideTags.Clip))
             {
-                if (args.Count == 4)
-                    tags.Add(new OverrideTag.Clip(args[0], args[1], args[2], args[3]));
-                else
-                    tags.Add(new OverrideTag.Unknown(OverrideTags.Clip, args.ToArray()));
+                switch (args.Count)
+                {
+                    case 4:
+                        tags.Add(new OverrideTag.Clip(args[0], args[1], args[2], args[3]));
+                        break;
+                    case 2:
+                        tags.Add(new OverrideTag.Clip(args[0], args[1]));
+                        break;
+                    case 1:
+                        tags.Add(new OverrideTag.Clip(args[0]));
+                        break;
+                    default:
+                        tags.Add(new OverrideTag.Unknown(OverrideTags.Clip, args.ToArray()));
+                        break;
+                }
             }
             else if (IsTag(OverrideTags.C))
             {

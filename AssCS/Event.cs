@@ -553,17 +553,17 @@ public partial class Event(int id) : BindableBase, IEntry
         switch (tag)
         {
             case "b":
-                state = (parsed.FindTag(blockN, tag, "") as OverrideTag.B)?.Value ?? state;
-                startTag = new OverrideTag.B(!state);
-                endTag = new OverrideTag.B(state);
+                state = (parsed.FindTag(blockN, tag) as OverrideTag.B)?.Value?.Equals(1) ?? state;
+                startTag = new OverrideTag.B(state ? 0 : 1);
+                endTag = new OverrideTag.B(state ? 1 : 0);
                 break;
             case "i":
-                state = (parsed.FindTag(blockN, tag, "") as OverrideTag.I)?.Value ?? state;
+                state = (parsed.FindTag(blockN, tag) as OverrideTag.I)?.Value ?? state;
                 startTag = new OverrideTag.I(!state);
                 endTag = new OverrideTag.I(state);
                 break;
             case "u":
-                state = (parsed.FindTag(blockN, tag, "") as OverrideTag.U)?.Value ?? state;
+                state = (parsed.FindTag(blockN, tag) as OverrideTag.U)?.Value ?? state;
                 startTag = new OverrideTag.U(!state);
                 endTag = new OverrideTag.U(state);
                 break;
@@ -706,7 +706,7 @@ public partial class Event(int id) : BindableBase, IEntry
         /// <param name="tagName">Name of the tag</param>
         /// <param name="alt">Alternate name for the tag</param>
         /// <returns>The tag, or <see langword="null"/> if not found</returns>
-        public OverrideTag? FindTag(int blockN, string tagName, string alt)
+        public OverrideTag? FindTag(int blockN, string tagName, string alt = "")
         {
             return _blocks
                 .GetRange(0, blockN + 1)
