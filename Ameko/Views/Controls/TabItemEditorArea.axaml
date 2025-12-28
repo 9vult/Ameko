@@ -169,20 +169,20 @@
                                  FontFamily="{StaticResource MartianMono}"
                                  ValueChanged="AnyControl_EventMetaChanged" />
                 <Button Name="ToggleBoldBtn"
-                            Margin="1"
-                            Padding="2 0"
-                            Classes="Small"
-                            ToolTip.Tip="{x:Static i18n:Resources.Editor_ToggleBold_ToolTip}"
-                            Command="{Binding ToggleTagCommand}"
-                            CommandParameter="\b"
-                            Content="{icons:MaterialIconExt Kind=FormatBold}" />
+                        Margin="1"
+                        Padding="2 0"
+                        Classes="Small"
+                        ToolTip.Tip="{x:Static i18n:Resources.Editor_ToggleBold_ToolTip}"
+                        Command="{Binding ToggleTagCommand}"
+                        CommandParameter="b"
+                        Content="{icons:MaterialIconExt Kind=FormatBold}" />
                 <Button Name="ToggleItalicsBtn"
                         Margin="1"
                         Padding="2 0"
                         Classes="Small"
                         ToolTip.Tip="{x:Static i18n:Resources.Editor_ToggleItalics_ToolTip}"
                         Command="{Binding ToggleTagCommand}"
-                        CommandParameter="\i"
+                        CommandParameter="i"
                         Content="{icons:MaterialIconExt Kind=FormatItalic}" />
                 <Button Name="ToggleUnderlineBtn"
                         Margin="1"
@@ -190,7 +190,7 @@
                         Classes="Small"
                         ToolTip.Tip="{x:Static i18n:Resources.Editor_ToggleUnderline_ToolTip}"
                         Command="{Binding ToggleTagCommand}"
-                        CommandParameter="\u"
+                        CommandParameter="u"
                         Content="{icons:MaterialIconExt Kind=FormatUnderline}" />
                 <Button Name="ToggleStrikethroughBtn"
                         Margin="1"
@@ -198,7 +198,7 @@
                         Classes="Small"
                         ToolTip.Tip="{x:Static i18n:Resources.Editor_ToggleStrikethrough_ToolTip}"
                         Command="{Binding ToggleTagCommand}"
-                        CommandParameter="\s"
+                        CommandParameter="s"
                         Content="{icons:MaterialIconExt Kind=FormatStrikethrough}" />
                 <Button Name="SetFontBtn"
                         Margin="1"
