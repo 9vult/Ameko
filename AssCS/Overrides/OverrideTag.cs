@@ -801,6 +801,26 @@ public abstract class OverrideTag
         }
 
         /// <summary>
+        /// Duration of fade-in when <see cref="IsShortVariant"/> is <see langword="true"/>
+        /// </summary>
+        /// <seealso cref="T2"/>
+        public int FadeInDuration
+        {
+            get => T2;
+            set => T2 = value;
+        }
+
+        /// <summary>
+        /// Duration of fade-out when <see cref="IsShortVariant"/> is <see langword="true"/>
+        /// </summary>
+        /// <seealso cref="T3"/>
+        public int FadeOutDuration
+        {
+            get => T3;
+            set => T3 = value;
+        }
+
+        /// <summary>
         /// Alpha before <see cref="T1"/>
         /// </summary>
         public string? RawAlpha1 { get; set; }
@@ -834,6 +854,26 @@ public abstract class OverrideTag
         /// Timestamp 4
         /// </summary>
         public string? RawT4 { get; set; }
+
+        /// <summary>
+        /// Duration of fade-in when <see cref="IsShortVariant"/> is <see langword="true"/>
+        /// </summary>
+        /// <seealso cref="T2"/>
+        public string? RawFadeInDuration
+        {
+            get => RawT2;
+            set => RawT2 = value;
+        }
+
+        /// <summary>
+        /// Duration of fade-out when <see cref="IsShortVariant"/> is <see langword="true"/>
+        /// </summary>
+        /// <seealso cref="RawT3"/>
+        public string? RawFadeOutDuration
+        {
+            get => RawT3;
+            set => RawT3 = value;
+        }
 
         /// <summary>
         /// Create a <c>\fade</c> tag
