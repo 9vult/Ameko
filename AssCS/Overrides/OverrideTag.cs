@@ -259,6 +259,21 @@ public abstract class OverrideTag
         public string? RawValue { get; set; }
 
         /// <summary>
+        /// Helper for treating boldness as a boolean
+        /// </summary>
+        /// <remarks><see langword="true"/> only if <see cref="Value"/> == 1</remarks>
+        public bool? BoolValue
+        {
+            get => Value?.Equals(1);
+            set =>
+                Value = value is not null
+                    ? value is true
+                        ? 1
+                        : 0
+                    : null;
+        }
+
+        /// <summary>
         /// Create a <c>\b</c> tag
         /// </summary>
         /// <param name="value">Boldness value</param>
@@ -274,6 +289,19 @@ public abstract class OverrideTag
         public B(string? value)
         {
             RawValue = value;
+        }
+
+        /// <summary>
+        /// Create a <c>\b</c> tag
+        /// </summary>
+        /// <param name="value">If bold should be enabled</param>
+        public B(bool? value)
+        {
+            Value = value is not null
+                ? value is true
+                    ? 1
+                    : 0
+                : null;
         }
 
         /// <inheritdoc />
