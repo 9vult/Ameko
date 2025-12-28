@@ -336,6 +336,84 @@ public class OverrideBlockTests
 
     #endregion Clip
 
+    #region Fade
+
+    [Test]
+    public async Task Fad_Short()
+    {
+        const string body = @"\fad(100,200)";
+        var block = new OverrideBlock(body);
+        await Assert.That(block.Tags.Count).IsEqualTo(1);
+
+        var fad = await Assert.That(block.Tags[0]).IsTypeOf<OverrideTag.Fad>();
+        await Assert.That(fad).IsNotNull();
+        await Assert.That(fad.Name).IsEqualTo(OverrideTags.Fad);
+
+        await Assert.That(fad.IsShortVariant).IsTrue();
+        await Assert.That(fad.FadeInDuration).IsEqualTo(100);
+        await Assert.That(fad.FadeOutDuration).IsEqualTo(200);
+    }
+
+    [Test]
+    public async Task Fad_Long()
+    {
+        const string body = @"\fad(255,32,224,0,500,2000,2200)";
+        var block = new OverrideBlock(body);
+        await Assert.That(block.Tags.Count).IsEqualTo(1);
+
+        var fad = await Assert.That(block.Tags[0]).IsTypeOf<OverrideTag.Fad>();
+        await Assert.That(fad).IsNotNull();
+        await Assert.That(fad.Name).IsEqualTo(OverrideTags.Fad);
+
+        await Assert.That(fad.IsShortVariant).IsFalse();
+        await Assert.That(fad.Alpha1).IsEqualTo(255);
+        await Assert.That(fad.Alpha2).IsEqualTo(32);
+        await Assert.That(fad.Alpha3).IsEqualTo(224);
+        await Assert.That(fad.T1).IsEqualTo(0);
+        await Assert.That(fad.T2).IsEqualTo(500);
+        await Assert.That(fad.T3).IsEqualTo(2000);
+        await Assert.That(fad.T4).IsEqualTo(2200);
+    }
+
+    [Test]
+    public async Task Fade_Short()
+    {
+        const string body = @"\fade(100,200)";
+        var block = new OverrideBlock(body);
+        await Assert.That(block.Tags.Count).IsEqualTo(1);
+
+        var fade = await Assert.That(block.Tags[0]).IsTypeOf<OverrideTag.Fade>();
+        await Assert.That(fade).IsNotNull();
+        await Assert.That(fade.Name).IsEqualTo(OverrideTags.Fade);
+
+        await Assert.That(fade.IsShortVariant).IsTrue();
+        await Assert.That(fade.FadeInDuration).IsEqualTo(100);
+        await Assert.That(fade.FadeOutDuration).IsEqualTo(200);
+    }
+
+    [Test]
+    public async Task Fade_Long()
+    {
+        const string body = @"\fade(255,32,224,0,500,2000,2200)";
+        var block = new OverrideBlock(body);
+        await Assert.That(block.Tags.Count).IsEqualTo(1);
+
+        var fade = await Assert.That(block.Tags[0]).IsTypeOf<OverrideTag.Fade>();
+        await Assert.That(fade).IsNotNull();
+        await Assert.That(fade.Name).IsEqualTo(OverrideTags.Fade);
+
+        await Assert.That(fade.IsShortVariant).IsFalse();
+        await Assert.That(fade.Alpha1).IsEqualTo(255);
+        await Assert.That(fade.Alpha2).IsEqualTo(32);
+        await Assert.That(fade.Alpha3).IsEqualTo(224);
+        await Assert.That(fade.T1).IsEqualTo(0);
+        await Assert.That(fade.T2).IsEqualTo(500);
+        await Assert.That(fade.T3).IsEqualTo(2000);
+        await Assert.That(fade.T4).IsEqualTo(2200);
+    }
+
+    #endregion Fade
+
     [Test]
     public async Task InlineCodeAndVariables()
     {

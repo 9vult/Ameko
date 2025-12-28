@@ -257,12 +257,26 @@ public class OverrideBlock(ReadOnlySpan<char> data) : Block(data.ToString(), Blo
                             args[6]
                         )
                     );
+                else if (args.Count == 2)
+                    tags.Add(new OverrideTag.Fade(args[0], args[1]));
                 else
                     tags.Add(new OverrideTag.Unknown(OverrideTags.Fade, args.ToArray()));
             }
             else if (IsComplexTag(OverrideTags.Fad))
             {
-                if (args.Count == 2)
+                if (args.Count == 7)
+                    tags.Add(
+                        new OverrideTag.Fad(
+                            args[0],
+                            args[1],
+                            args[2],
+                            args[3],
+                            args[4],
+                            args[5],
+                            args[6]
+                        )
+                    );
+                else if (args.Count == 2)
                     tags.Add(new OverrideTag.Fad(args[0], args[1]));
                 else
                     tags.Add(new OverrideTag.Unknown(OverrideTags.Fad, args.ToArray()));
