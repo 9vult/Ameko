@@ -528,9 +528,9 @@ public partial class Event(int id) : BindableBase, IEntry
         if (selStart > selEnd)
             (selStart, selEnd) = (selEnd, selStart);
 
-        var parsed = new ParsedEvent(this);
-        var normSelStart = parsed.NormalizeIndex(selStart);
-        var normSelEnd = parsed.NormalizeIndex(selEnd);
+        var blocks = ParseBlocks();
+        var normSelStart = blocks.NormalizeIndex(selStart);
+        var normSelEnd = blocks.NormalizeIndex(selEnd);
 
         // Get style state
         var state =
@@ -545,7 +545,7 @@ public partial class Event(int id) : BindableBase, IEntry
             };
 
         // Update to use local state
-        var blockN = parsed.BlockAt(normSelStart);
+        var blockN = blocks.NormalizedBlockAt(normSelStart);
 
         OverrideTag? startTag = null;
         OverrideTag? endTag = null;
@@ -553,22 +553,22 @@ public partial class Event(int id) : BindableBase, IEntry
         switch (tag)
         {
             case "b":
-                state = (parsed.FindTag(blockN, tag) as OverrideTag.B)?.Value?.Equals(1) ?? state;
+                state = (blocks.FindTag(blockN, tag) as OverrideTag.B)?.Value?.Equals(1) ?? state;
                 startTag = new OverrideTag.B(state ? 0 : 1);
                 endTag = new OverrideTag.B(state ? 1 : 0);
                 break;
             case "i":
-                state = (parsed.FindTag(blockN, tag) as OverrideTag.I)?.Value ?? state;
+                state = (blocks.FindTag(blockN, tag) as OverrideTag.I)?.Value ?? state;
                 startTag = new OverrideTag.I(!state);
                 endTag = new OverrideTag.I(state);
                 break;
             case "u":
-                state = (parsed.FindTag(blockN, tag) as OverrideTag.U)?.Value ?? state;
+                state = (blocks.FindTag(blockN, tag) as OverrideTag.U)?.Value ?? state;
                 startTag = new OverrideTag.U(!state);
                 endTag = new OverrideTag.U(state);
                 break;
             case "s":
-                state = (parsed.FindTag(blockN, tag, "") as OverrideTag.S)?.Value ?? state;
+                state = (blocks.FindTag(blockN, tag, "") as OverrideTag.S)?.Value ?? state;
                 startTag = new OverrideTag.S(!state);
                 endTag = new OverrideTag.S(state);
                 break;
@@ -577,9 +577,11 @@ public partial class Event(int id) : BindableBase, IEntry
         if (startTag is null || endTag is null)
             return 0;
 
-        var shift = parsed.SetTag(startTag, normSelStart, selStart);
+        var shift = blocks.SetTag(startTag, normSelStart, selStart);
         if (selStart != selEnd)
-            parsed.SetTag(endTag, normSelEnd, selEnd + shift);
+            blocks.SetTag(endTag, normSelEnd, selEnd + shift);
+
+        UpdateText(blocks);
         return shift;
     }
 
@@ -587,6 +589,9 @@ public partial class Event(int id) : BindableBase, IEntry
     /// Replace the text in this line.
     /// Operation is skipped if the input is empty.
     /// </summary>
+    /// <remarks>
+    /// This should be called after making modifications directly to blocks and/or tags.
+    /// </remarks>
     /// <param name="blocks">Blocks to set</param>
     public void UpdateText(List<Block> blocks)
     {
@@ -664,261 +669,6 @@ public partial class Event(int id) : BindableBase, IEntry
         }
         return result;
     }
-
-    #region Private tag stuff
-
-    private class ParsedEvent
-    {
-        readonly Event _line;
-        List<Block> _blocks;
-
-        public ParsedEvent(Event line)
-        {
-            _line = line;
-            _blocks = _line.ParseBlocks();
-        }
-
-        /// <summary>
-        /// Normalize indexes inside the text,
-        /// removing overrides and comments from the equation.
-        /// </summary>
-        /// <remarks>
-        /// Given <c>Hello {\b1}World{\b0}!</c>, origin index 13 ("r"),
-        /// normalized index 8 will be returned.
-        /// </remarks>
-        /// <param name="originIndex">Original index</param>
-        /// <returns>Normalized index</returns>
-        public int NormalizeIndex(int originIndex)
-        {
-            var remaining = originIndex;
-            var plainLength = 0;
-
-            for (var i = 0; i < _blocks.Count && remaining > 0; i++)
-            {
-                var block = _blocks[i];
-                var blockLength = block.Text.Length;
-
-                if (block is OverrideBlock or CommentBlock)
-                {
-                    remaining -= blockLength;
-                    continue;
-                }
-
-                var consumed = Math.Min(blockLength, remaining);
-                plainLength += consumed;
-                remaining -= consumed;
-            }
-
-            return plainLength;
-        }
-
-        /// <summary>
-        /// Normalize indexes within the given block's text
-        /// </summary>
-        /// <remarks>
-        /// Given <c>Hello {\b1}World{\b0}!</c>, origin index 13 ("r"),
-        /// normalized index 2 will be returned.
-        /// </remarks>
-        /// <param name="blockIdx">Block to normalize to</param>
-        /// <param name="originIndex">Original index</param>
-        /// <returns>Normalized index</returns>
-        public int NormalizeIndex(int blockIdx, int originIndex)
-        {
-            var remaining = originIndex;
-
-            for (var i = 0; i < _blocks.Count && remaining > 0; i++)
-            {
-                var block = _blocks[i];
-                var blockLength = block.Text.Length;
-
-                if (block is OverrideBlock or CommentBlock)
-                {
-                    remaining -= blockLength;
-                    continue;
-                }
-
-                var consumed = Math.Min(blockLength, remaining);
-
-                // If this is the block we're targeting, return index within it
-                if (i == blockIdx)
-                    return consumed;
-
-                remaining -= consumed;
-            }
-
-            return remaining;
-        }
-
-        /// <summary>
-        /// Find the tag with the given name
-        /// </summary>
-        /// <param name="blockN">Block index to check</param>
-        /// <param name="tagName">Name of the tag</param>
-        /// <param name="alt">Alternate name for the tag</param>
-        /// <returns>The tag, or <see langword="null"/> if not found</returns>
-        public OverrideTag? FindTag(int blockN, string tagName, string alt = "")
-        {
-            return _blocks
-                .GetRange(0, blockN + 1)
-                .AsEnumerable()
-                .Reverse()
-                .OfType<OverrideBlock>()
-                .SelectMany(ovr => ovr.Tags.AsEnumerable().Reverse())
-                .FirstOrDefault(tag => tag.Name == tagName || tag.Name == alt);
-        }
-
-        /// <summary>
-        /// Get the block number for the text at the index
-        /// </summary>
-        /// <param name="normalizedIndex">Index in the text to look up</param>
-        /// <returns>Block number</returns>
-        public int BlockAt(int normalizedIndex)
-        {
-            var remaining = normalizedIndex;
-            var blockIdx = 0;
-            var blockCount = _blocks.Count;
-
-            for (var i = 0; i < blockCount; i++)
-            {
-                var block = _blocks[i];
-                var hasNext = i + 1 < blockCount;
-
-                // Braced blocks don't contribute to the normalized text index
-                if (IsBraced(block))
-                {
-                    if (i > 0 && remaining >= 0)
-                        blockIdx++;
-
-                    if (remaining > 0 && (!hasNext || !IsBraced(_blocks[i + 1])))
-                        blockIdx++;
-                    continue;
-                }
-
-                remaining -= block.Text.Length;
-                switch (remaining)
-                {
-                    case < 0:
-                        return blockIdx;
-                    case 0:
-                        return blockIdx + (hasNext && IsBraced(_blocks[i + 1]) ? 1 : 0);
-                }
-            }
-            return blockIdx;
-
-            bool IsBraced(Block block) => block is OverrideBlock or CommentBlock;
-        }
-
-        /// <summary>
-        /// Get the block
-        /// </summary>
-        /// <param name="index">Block index</param>
-        /// <returns>The block</returns>
-        /// <exception cref="ArgumentOutOfRangeException">If <paramref name="index"/> is out of range</exception>
-        public Block GetBlock(int index)
-        {
-            if (index < 0 || index >= _blocks.Count)
-                throw new ArgumentOutOfRangeException(nameof(index), index, null);
-            return _blocks[index];
-        }
-
-        /// <summary>
-        /// Set the value of a tag
-        /// </summary>
-        /// <param name="tag">Tag to set</param>
-        /// <param name="normPos">Normalized position</param>
-        /// <param name="originPos">Original position</param>
-        /// <exception cref="ArgumentOutOfRangeException">If the <see cref="BlockType"/> is invalid</exception>
-        /// <returns>Number of characters to shift the caret</returns>
-        public int SetTag(OverrideTag tag, int normPos, int originPos)
-        {
-            var start = BlockAt(normPos);
-            OverrideBlock? ovr = null;
-            PlainBlock? plainBlock = null;
-            var insertIdx = -1;
-
-            for (var i = start; i >= 0; i--)
-            {
-                switch (_blocks[i].Type)
-                {
-                    case BlockType.Comment:
-                    case BlockType.Drawing:
-                        continue;
-                    case BlockType.Override:
-                        ovr = _blocks[i] as OverrideBlock;
-                        goto found;
-                    case BlockType.Plain:
-                        plainBlock = _blocks[i] as PlainBlock;
-                        insertIdx = originPos;
-                        start = i;
-                        goto found;
-                    default:
-                        throw new ArgumentOutOfRangeException(nameof(tag), tag, null);
-                }
-            }
-
-            found:
-            if (insertIdx < 0 && ovr is null)
-                insertIdx = 0;
-
-            var shift = tag.ToString().Length;
-
-            // Modify existing OverrideBlock
-            if (ovr is not null)
-            {
-                var alt = tag.Name switch
-                {
-                    OverrideTags.C => OverrideTags.C1,
-                    OverrideTags.C1 => OverrideTags.C,
-                    OverrideTags.Fr => OverrideTags.FrZ,
-                    OverrideTags.FrZ => OverrideTags.Fr,
-                    _ => string.Empty,
-                };
-                var foundTag = false;
-
-                for (var i = ovr.Tags.Count - 1; i >= 0; i--)
-                {
-                    var name = ovr.Tags[i].Name;
-                    if (name != tag.Name && name != alt)
-                        continue;
-
-                    shift -= ovr.Tags[i].ToString().Length;
-
-                    if (!foundTag)
-                    {
-                        ovr.Tags[i] = tag;
-                        foundTag = true;
-                    }
-                    else
-                    {
-                        ovr.Tags.RemoveAt(i);
-                    }
-                }
-
-                if (!foundTag)
-                    ovr.Tags.Add(tag);
-            }
-            // Add a new OverrideBlock
-            else if (plainBlock is not null)
-            {
-                ovr = new OverrideBlock(Span<char>.Empty);
-                ovr.Tags.Add(tag);
-
-                // Split the plain block
-                var normBlockIdx = NormalizeIndex(start, insertIdx);
-                var left = new PlainBlock(plainBlock.Text[..normBlockIdx]);
-                var right = new PlainBlock(plainBlock.Text[normBlockIdx..]);
-
-                _blocks.RemoveAt(start);
-                _blocks.InsertRange(start, [left, ovr, right]);
-                shift += 2; // Account for {}
-            }
-
-            _line.UpdateText(_blocks);
-            return shift;
-        }
-    }
-
-    #endregion
 
     [GeneratedRegex(
         @"^(Comment|Dialogue):\ (\d+),\s*(\d+:\d+:\d+.\d+),\s*(\d+:\d+:\d+.\d+),\s*([^,]*),\s*([^,]*),\s*([^,]*),\s*([^,]*),\s*([^,]*),\s*([^,]*),(.*)"
