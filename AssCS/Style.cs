@@ -1,6 +1,5 @@
 ﻿// SPDX-License-Identifier: MPL-2.0
 
-using System.Text.RegularExpressions;
 using AssCS.Utilities;
 
 namespace AssCS;
@@ -11,6 +10,7 @@ namespace AssCS;
 /// <param name="id">ID of the style</param>
 public partial class Style(int id) : BindableBase
 {
+    private const string StyleHeader = "Style:";
     private const double Tolerance = 0.001;
 
     private string _name = "Default";
@@ -342,39 +342,42 @@ public partial class Style(int id) : BindableBase
     /// <param name="data">Ass-formatted string</param>
     /// <returns>Style object represented by the string</returns>
     /// <exception cref="ArgumentException">If the data is malformed</exception>
-    public static Style FromAss(int id, string data)
+    public static Style FromAss(int id, ReadOnlySpan<char> data)
     {
-        var match = StyleRegex().Match(data);
-        if (!match.Success)
+        // TODO: Parse format string
+        data = data.TrimStart();
+        if (!data.StartsWith(StyleHeader))
             throw new ArgumentException($"Style {data} is invalid or malformed.");
+
+        data = data[StyleHeader.Length..];
 
         return new Style(id)
         {
-            _name = match.Groups[1].Value,
-            _fontFamily = match.Groups[2].Value,
-            _fontSize = match.Groups[3].Value.ParseAssDouble(),
-            _primaryColor = Color.FromAss(match.Groups[4].Value),
-            _secondaryColor = Color.FromAss(match.Groups[5].Value),
-            _outlineColor = Color.FromAss(match.Groups[6].Value),
-            _shadowColor = Color.FromAss(match.Groups[7].Value),
-            _isBold = Convert.ToInt32(match.Groups[8].Value) != 0,
-            _isItalic = Convert.ToInt32(match.Groups[9].Value) != 0,
-            _isUnderline = Convert.ToInt32(match.Groups[10].Value) != 0,
-            _isStrikethrough = Convert.ToInt32(match.Groups[11].Value) != 0,
-            _scaleX = match.Groups[12].Value.ParseAssDouble(),
-            _scaleY = match.Groups[13].Value.ParseAssDouble(),
-            _spacing = match.Groups[14].Value.ParseAssDouble(),
-            _angle = match.Groups[15].Value.ParseAssDouble(),
-            _borderStyle = Convert.ToInt32(match.Groups[16].Value),
-            _borderThickness = match.Groups[17].Value.ParseAssDouble(),
-            _shadowDistance = match.Groups[18].Value.ParseAssDouble(),
-            _alignment = match.Groups[19].Value.ParseAssInt(),
+            _name = ParseString(ref data),
+            _fontFamily = ParseString(ref data),
+            _fontSize = ParseDouble(ref data),
+            _primaryColor = Color.FromAss(ParseString(ref data)),
+            _secondaryColor = Color.FromAss(ParseString(ref data)),
+            _outlineColor = Color.FromAss(ParseString(ref data)),
+            _shadowColor = Color.FromAss(ParseString(ref data)),
+            _isBold = ParseInt(ref data) != 0,
+            _isItalic = ParseInt(ref data) != 0,
+            _isUnderline = ParseInt(ref data) != 0,
+            _isStrikethrough = ParseInt(ref data) != 0,
+            _scaleX = ParseDouble(ref data),
+            _scaleY = ParseDouble(ref data),
+            _spacing = ParseDouble(ref data),
+            _angle = ParseDouble(ref data),
+            _borderStyle = ParseInt(ref data),
+            _borderThickness = ParseDouble(ref data),
+            _shadowDistance = ParseDouble(ref data),
+            _alignment = ParseInt(ref data),
             _margins = new Margins(
-                match.Groups[20].Value.ParseAssInt(),
-                match.Groups[21].Value.ParseAssInt(),
-                match.Groups[22].Value.ParseAssInt()
+                left: ParseInt(ref data),
+                right: ParseInt(ref data),
+                vertical: ParseInt(ref data)
             ),
-            _encoding = Convert.ToInt32(match.Groups[23].Value),
+            _encoding = ParseInt(ref data),
         };
     }
 
@@ -496,8 +499,55 @@ public partial class Style(int id) : BindableBase
         return !(left == right);
     }
 
-    [GeneratedRegex(
-        @"Style:\ ([^,]*),\s*([^,]*),\s*([^,]*),\s*(&H[\da-fA-F]{8}&?),\s*(&H[\da-fA-F]{8}&?),\s*(&H[\da-fA-F]{8}&?),\s*(&H[\da-fA-F]{8}&?),\s*([^,]*),\s*([^,]*),\s*([^,]*),\s*([^,]*),\s*([^,]*),\s*([^,]*),\s*([^,]*),\s*([^,]*),\s*([^,]*),\s*([^,]*),\s*([^,]*),\s*([^,]*),\s*([^,]*),\s*([^,]*),\s*([^,]*),\s*([^,]*)"
-    )]
-    private static partial Regex StyleRegex();
+    #region Parsing Helpers
+
+    /// <summary>
+    /// Parse an integer
+    /// </summary>
+    /// <param name="data">Incoming data</param>
+    /// <returns>Resulting integer</returns>
+    private static int ParseInt(ref ReadOnlySpan<char> data)
+    {
+        data = data.TrimStart();
+        var q = data.IndexOf(',');
+        if (q < 0)
+            q = data.Length;
+        var result = data[..q].ToString().ParseAssInt();
+        data = data[(q < data.Length ? q + 1 : q)..];
+        return result;
+    }
+
+    /// <summary>
+    /// Parse a double
+    /// </summary>
+    /// <param name="data">Incoming data</param>
+    /// <returns>Resulting integer</returns>
+    private static double ParseDouble(ref ReadOnlySpan<char> data)
+    {
+        data = data.TrimStart();
+        var q = data.IndexOf(',');
+        if (q < 0)
+            q = data.Length;
+        var result = data[..q].ToString().ParseAssDouble();
+        data = data[(q < data.Length ? q + 1 : q)..];
+        return result;
+    }
+
+    /// <summary>
+    /// Parse a string
+    /// </summary>
+    /// <param name="data">incoming data</param>
+    /// <returns>Resulting string</returns>
+    private static string ParseString(ref ReadOnlySpan<char> data)
+    {
+        data = data.TrimStart();
+        var q = data.IndexOf(',');
+        if (q < 0)
+            q = data.Length;
+        var result = data[..q].ToString();
+        data = data[(q < data.Length ? q + 1 : q)..];
+        return result;
+    }
+
+    #endregion Parsing Helpers
 }

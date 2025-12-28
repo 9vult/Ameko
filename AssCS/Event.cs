@@ -2,7 +2,6 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
-using System.Text;
 using System.Text.RegularExpressions;
 using AssCS.Overrides;
 using AssCS.Overrides.Blocks;
@@ -16,6 +15,9 @@ namespace AssCS;
 /// <param name="id">ID of the event</param>
 public partial class Event(int id) : BindableBase, IEntry
 {
+    private const string Dialogue = "Dialogue:";
+    private const string Comment = "Comment:";
+
     private bool _isComment;
     private int _layer = Options.DefaultLayer;
     private Time _start = Time.FromSeconds(0);
@@ -310,7 +312,7 @@ public partial class Event(int id) : BindableBase, IEntry
             LinkedExtradatas.Count > 0 ? $"{{{string.Join("=", LinkedExtradatas)}}}" : "";
         var textContent = Effect.Contains("code") ? TransformCodeToAss() : Text;
 
-        return $"{(IsComment ? "Comment" : "Dialogue")}: {Layer},{Start.AsAss()},{End.AsAss()},{Style},{Actor},"
+        return $"{(IsComment ? Comment : Dialogue)} {Layer},{Start.AsAss()},{End.AsAss()},{Style},{Actor},"
             + $"{Margins.Left},{Margins.Right},{Margins.Vertical},{Effect},{extradatas}"
             + $"{textContent}";
     }
@@ -322,29 +324,40 @@ public partial class Event(int id) : BindableBase, IEntry
     /// <param name="data">Ass-formatted string</param>
     /// <returns>Event object represented by the string</returns>
     /// <exception cref="ArgumentException">If the data is malformed</exception>
-    public static Event FromAss(int id, string data)
+    public static Event FromAss(int id, ReadOnlySpan<char> data)
     {
-        var match = EventRegex().Match(data);
-        if (!match.Success)
+        // TODO: Parse format string
+        data = data.TrimStart();
+        var isComment = false;
+        if (data.StartsWith(Comment))
+        {
+            isComment = true;
+            data = data[Comment.Length..].TrimStart();
+        }
+        else if (data.StartsWith(Dialogue))
+        {
+            data = data[Dialogue.Length..].TrimStart();
+        }
+        else
+        {
             throw new ArgumentException($"Event {data} is invalid or malformed.");
+        }
 
         return new Event(id)
         {
-            _isComment = match.Groups[1].Value == "Comment",
-            _layer = Convert.ToInt32(match.Groups[2].Value),
-            _start = Time.FromAss(match.Groups[3].Value),
-            _end = Time.FromAss(match.Groups[4].Value),
-            _style = match.Groups[5].Value,
-            _actor = match.Groups[6].Value,
-            _margins =
-            {
-                Left = match.Groups[7].Value.ParseAssInt(),
-                Right = match.Groups[8].Value.ParseAssInt(),
-                Vertical = match.Groups[9].Value.ParseAssInt(),
-            },
-            _effect = match.Groups[10].Value,
-            _text = match.Groups[11].Value,
-            LinkedExtradatas = ParseExtradata(data),
+            _isComment = isComment,
+            Layer = ParseInt(ref data),
+            Start = Time.FromAss(ParseString(ref data)),
+            End = Time.FromAss(ParseString(ref data)),
+            Style = ParseString(ref data),
+            Actor = ParseString(ref data),
+            Margins = new Margins(
+                left: ParseInt(ref data),
+                right: ParseInt(ref data),
+                vertical: ParseInt(ref data)
+            ),
+            Effect = ParseString(ref data),
+            Text = data.ToString(),
         };
     }
 
@@ -425,7 +438,9 @@ public partial class Event(int id) : BindableBase, IEntry
     /// <returns><see langword="true"/> if the <paramref name="data"/> is valid</returns>
     public static bool ValidateAssString(string data)
     {
-        return EventRegex().Match(data).Success;
+        var span = data.AsSpan();
+        span = span.TrimStart();
+        return span.StartsWith(Comment) || span.StartsWith(Dialogue);
     }
 
     #region Tags n stuff
@@ -644,6 +659,8 @@ public partial class Event(int id) : BindableBase, IEntry
         return !(left == right);
     }
 
+    #region Parsing Helpers
+
     /// <summary>
     /// Parse the event's extradata
     /// </summary>
@@ -670,10 +687,39 @@ public partial class Event(int id) : BindableBase, IEntry
         return result;
     }
 
-    [GeneratedRegex(
-        @"^(Comment|Dialogue):\ (\d+),\s*(\d+:\d+:\d+.\d+),\s*(\d+:\d+:\d+.\d+),\s*([^,]*),\s*([^,]*),\s*([^,]*),\s*([^,]*),\s*([^,]*),\s*([^,]*),(.*)"
-    )]
-    private static partial Regex EventRegex();
+    /// <summary>
+    /// Parse an integer
+    /// </summary>
+    /// <param name="data">Incoming data</param>
+    /// <returns>Resulting integer</returns>
+    private static int ParseInt(ref ReadOnlySpan<char> data)
+    {
+        data = data.TrimStart();
+        var q = data.IndexOf(',');
+        if (q < 0)
+            q = data.Length;
+        var result = data[..q].ToString().ParseAssInt();
+        data = data[(q < data.Length ? q + 1 : q)..];
+        return result;
+    }
+
+    /// <summary>
+    /// Parse a string
+    /// </summary>
+    /// <param name="data">incoming data</param>
+    /// <returns>Resulting string</returns>
+    private static string ParseString(ref ReadOnlySpan<char> data)
+    {
+        data = data.TrimStart();
+        var q = data.IndexOf(',');
+        if (q < 0)
+            q = data.Length;
+        var result = data[..q].ToString();
+        data = data[(q < data.Length ? q + 1 : q)..];
+        return result;
+    }
+
+    #endregion Parsing Helpers
 
     [GeneratedRegex(@"^\{(=\d+)+\}")]
     private static partial Regex ExtradataRegex();
