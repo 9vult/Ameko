@@ -528,8 +528,9 @@ public partial class Event(int id) : BindableBase, IEntry
         if (selStart > selEnd)
             (selStart, selEnd) = (selEnd, selStart);
 
-        var normSelStart = NormalizePos(selStart);
-        var normSelEnd = NormalizePos(selEnd);
+        var parsed = new ParsedEvent(this);
+        var normSelStart = parsed.NormalizeIndex(selStart);
+        var normSelEnd = parsed.NormalizeIndex(selEnd);
 
         // Get style state
         var state =
@@ -544,7 +545,6 @@ public partial class Event(int id) : BindableBase, IEntry
             };
 
         // Update to use local state
-        var parsed = new ParsedEvent(this);
         var blockN = parsed.BlockAt(normSelStart);
 
         OverrideTag? startTag = null;
@@ -667,27 +667,6 @@ public partial class Event(int id) : BindableBase, IEntry
 
     #region Private tag stuff
 
-    /// <summary>
-    /// Normalize positions inside the text
-    /// </summary>
-    /// <param name="pos">Original position</param>
-    /// <returns>Normalized position</returns>
-    private int NormalizePos(int pos)
-    {
-        var plainLength = 0;
-        var inside = false;
-        for (int i = 0, max = Text.Length - 1; i < pos && i <= max; i++)
-        {
-            if (Text[i] == '{')
-                inside = true;
-            if (!inside)
-                plainLength++;
-            if (Text[i] == '}' && inside)
-                inside = false;
-        }
-        return plainLength;
-    }
-
     private class ParsedEvent
     {
         readonly Event _line;
@@ -697,6 +676,77 @@ public partial class Event(int id) : BindableBase, IEntry
         {
             _line = line;
             _blocks = _line.ParseBlocks();
+        }
+
+        /// <summary>
+        /// Normalize indexes inside the text,
+        /// removing overrides and comments from the equation.
+        /// </summary>
+        /// <remarks>
+        /// Given <c>Hello {\b1}World{\b0}!</c>, origin index 13 ("r"),
+        /// normalized index 8 will be returned.
+        /// </remarks>
+        /// <param name="originIndex">Original index</param>
+        /// <returns>Normalized index</returns>
+        public int NormalizeIndex(int originIndex)
+        {
+            var remaining = originIndex;
+            var plainLength = 0;
+
+            for (var i = 0; i < _blocks.Count && remaining > 0; i++)
+            {
+                var block = _blocks[i];
+                var blockLength = block.Text.Length;
+
+                if (block is OverrideBlock or CommentBlock)
+                {
+                    remaining -= blockLength;
+                    continue;
+                }
+
+                var consumed = Math.Min(blockLength, remaining);
+                plainLength += consumed;
+                remaining -= consumed;
+            }
+
+            return plainLength;
+        }
+
+        /// <summary>
+        /// Normalize indexes within the given block's text
+        /// </summary>
+        /// <remarks>
+        /// Given <c>Hello {\b1}World{\b0}!</c>, origin index 13 ("r"),
+        /// normalized index 2 will be returned.
+        /// </remarks>
+        /// <param name="blockIdx">Block to normalize to</param>
+        /// <param name="originIndex">Original index</param>
+        /// <returns>Normalized index</returns>
+        public int NormalizeIndex(int blockIdx, int originIndex)
+        {
+            var remaining = originIndex;
+
+            for (var i = 0; i < _blocks.Count && remaining > 0; i++)
+            {
+                var block = _blocks[i];
+                var blockLength = block.Text.Length;
+
+                if (block is OverrideBlock or CommentBlock)
+                {
+                    remaining -= blockLength;
+                    continue;
+                }
+
+                var consumed = Math.Min(blockLength, remaining);
+
+                // If this is the block we're targeting, return index within it
+                if (i == blockIdx)
+                    return consumed;
+
+                remaining -= consumed;
+            }
+
+            return remaining;
         }
 
         /// <summary>
@@ -720,47 +770,42 @@ public partial class Event(int id) : BindableBase, IEntry
         /// <summary>
         /// Get the block number for the text at the index
         /// </summary>
-        /// <param name="index">Index in the text to look up</param>
+        /// <param name="normalizedIndex">Index in the text to look up</param>
         /// <returns>Block number</returns>
-        public int BlockAt(int index)
+        public int BlockAt(int normalizedIndex)
         {
-            // TODO: Use block text lengths instead?
-            var n = 0;
-            var inside = false;
-            for (var i = 0; i <= _line.Text.Length - 1; i++)
+            var remaining = normalizedIndex;
+            var blockIdx = 0;
+            var blockCount = _blocks.Count;
+
+            for (var i = 0; i < blockCount; i++)
             {
-                switch (_line.Text[i])
+                var block = _blocks[i];
+                var hasNext = i + 1 < blockCount;
+
+                // Braced blocks don't contribute to the normalized text index
+                if (IsBraced(block))
                 {
-                    case '{':
-                        if (!inside && i > 0 && index >= 0)
-                            n++;
-                        inside = true;
-                        break;
+                    if (i > 0 && remaining >= 0)
+                        blockIdx++;
 
-                    case '}' when inside:
-                        inside = false;
-                        if (
-                            index > 0
-                            && (i + 1 == _line.Text.Length - 1 || _line.Text[i + 1] != '{')
-                        )
-                            n++;
-                        break;
+                    if (remaining > 0 && (!hasNext || !IsBraced(_blocks[i + 1])))
+                        blockIdx++;
+                    continue;
+                }
 
-                    default:
-                        if (!inside)
-                        {
-                            if (--index == 0)
-                                return n
-                                    + (
-                                        i < _line.Text.Length - 1 && _line.Text[i + 1] == '{'
-                                            ? 1
-                                            : 0
-                                    );
-                        }
-                        break;
+                remaining -= block.Text.Length;
+                switch (remaining)
+                {
+                    case < 0:
+                        return blockIdx;
+                    case 0:
+                        return blockIdx + (hasNext && IsBraced(_blocks[i + 1]) ? 1 : 0);
                 }
             }
-            return n - (inside ? 1 : 0);
+            return blockIdx;
+
+            bool IsBraced(Block block) => block is OverrideBlock or CommentBlock;
         }
 
         /// <summary>
@@ -786,78 +831,89 @@ public partial class Event(int id) : BindableBase, IEntry
         /// <returns>Number of characters to shift the caret</returns>
         public int SetTag(OverrideTag tag, int normPos, int originPos)
         {
-            var blockN = BlockAt(normPos);
-            PlainBlock? plain = null;
+            var start = BlockAt(normPos);
             OverrideBlock? ovr = null;
-            while (blockN >= 0 && plain is null && ovr is null)
+            PlainBlock? plainBlock = null;
+            var insertIdx = -1;
+
+            for (var i = start; i >= 0; i--)
             {
-                var block = _blocks[blockN];
-                switch (block.Type)
+                switch (_blocks[i].Type)
                 {
-                    case BlockType.Plain:
-                        plain = (PlainBlock)block;
-                        break;
-                    case BlockType.Drawing:
-                        --blockN;
-                        break;
                     case BlockType.Comment:
-                        --blockN;
-                        originPos = _line.Text.IndexOf('{', originPos);
-                        break;
+                    case BlockType.Drawing:
+                        continue;
                     case BlockType.Override:
-                        ovr = (OverrideBlock)block;
-                        break;
+                        ovr = _blocks[i] as OverrideBlock;
+                        goto found;
+                    case BlockType.Plain:
+                        plainBlock = _blocks[i] as PlainBlock;
+                        insertIdx = originPos;
+                        start = i;
+                        goto found;
                     default:
-                        throw new ArgumentOutOfRangeException($"Invalid block type: {block.Type}");
+                        throw new ArgumentOutOfRangeException(nameof(tag), tag, null);
                 }
             }
 
-            // If there is no suitable block, place it at the beginning of the line
-            if (blockN < 0)
-                originPos = 0;
+            found:
+            if (insertIdx < 0 && ovr is null)
+                insertIdx = 0;
 
-            var insert = tag.ToString() ?? string.Empty;
-            var shift = insert.Length;
+            var shift = tag.ToString().Length;
 
-            if (plain is not null || blockN < 0)
+            // Modify existing OverrideBlock
+            if (ovr is not null)
             {
-                _line.Text = string.Concat(
-                    _line.Text.AsSpan(0, originPos),
-                    $"{{{insert}}}",
-                    _line.Text.AsSpan(originPos)
-                );
-                shift += 2;
-                _blocks = _line.ParseBlocks();
-            }
-            else if (ovr is not null)
-            {
-                var alt = string.Empty;
-                if (tag.Name == OverrideTags.C)
-                    alt = OverrideTags.C1;
-                var found = false;
-                for (var i = 0; i < ovr.Tags.Count; i++)
+                var alt = tag.Name switch
+                {
+                    OverrideTags.C => OverrideTags.C1,
+                    OverrideTags.C1 => OverrideTags.C,
+                    OverrideTags.Fr => OverrideTags.FrZ,
+                    OverrideTags.FrZ => OverrideTags.Fr,
+                    _ => string.Empty,
+                };
+                var foundTag = false;
+
+                for (var i = ovr.Tags.Count - 1; i >= 0; i--)
                 {
                     var name = ovr.Tags[i].Name;
-                    if (tag.Name != name && alt != name)
+                    if (name != tag.Name && name != alt)
                         continue;
 
-                    shift -= ovr.Tags[i].ToString()?.Length ?? 0;
-                    if (found)
+                    shift -= ovr.Tags[i].ToString().Length;
+
+                    if (!foundTag)
                     {
-                        ovr.Tags.RemoveAt(i);
-                        i--;
+                        ovr.Tags[i] = tag;
+                        foundTag = true;
                     }
                     else
                     {
-                        ovr.Tags[i] = tag;
-                        found = true;
+                        ovr.Tags.RemoveAt(i);
                     }
                 }
-                if (!found)
-                    ovr.Tags.Add(tag);
 
-                _line.UpdateText(_blocks);
+                if (!foundTag)
+                    ovr.Tags.Add(tag);
             }
+            // Add a new OverrideBlock
+            else if (plainBlock is not null)
+            {
+                ovr = new OverrideBlock(Span<char>.Empty);
+                ovr.Tags.Add(tag);
+
+                // Split the plain block
+                var normBlockIdx = NormalizeIndex(start, insertIdx);
+                var left = new PlainBlock(plainBlock.Text[..normBlockIdx]);
+                var right = new PlainBlock(plainBlock.Text[normBlockIdx..]);
+
+                _blocks.RemoveAt(start);
+                _blocks.InsertRange(start, [left, ovr, right]);
+                shift += 2; // Account for {}
+            }
+
+            _line.UpdateText(_blocks);
             return shift;
         }
     }
