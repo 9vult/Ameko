@@ -100,6 +100,71 @@ public class OverrideBlockTests
     }
 
     [Test]
+    public async Task Block_WithUnneededParentheses_HasTag()
+    {
+        const string body = @"\i(1)";
+        const string sanitized = @"\i1";
+        var block = new OverrideBlock(body);
+
+        await Assert.That(block.Tags.Count).IsEqualTo(1);
+        var i = await Assert.That(block.Tags[0]).IsTypeOf<OverrideTag.I>();
+
+        await Assert.That(i).IsNotNull();
+        await Assert.That(i.Value).IsTrue();
+        await Assert.That(i.ToString()).IsEqualTo(sanitized);
+    }
+
+    [Test]
+    public async Task Block_WithInlineFxTag_HasTag()
+    {
+        const string body = @"\-flag";
+        var block = new OverrideBlock(body);
+        await Assert.That(block.Tags.Count).IsEqualTo(1);
+        var fx = await Assert.That(block.Tags[0]).IsTypeOf<OverrideTag.Unknown>();
+
+        await Assert.That(fx).IsNotNull();
+        await Assert.That(fx.Name).IsEqualTo("-flag");
+        await Assert.That(fx.ToString()).IsEqualTo(body);
+    }
+
+    [Test]
+    public async Task Block_WithMixedInlineFxTag_HasTags()
+    {
+        const string body = @"\kf12\-flag";
+        var block = new OverrideBlock(body);
+        await Assert.That(block.Tags.Count).IsEqualTo(2);
+        var kf = await Assert.That(block.Tags[0]).IsTypeOf<OverrideTag.Kf>();
+        var fx = await Assert.That(block.Tags[1]).IsTypeOf<OverrideTag.Unknown>();
+
+        await Assert.That(kf).IsNotNull();
+        await Assert.That(fx).IsNotNull();
+
+        await Assert.That(kf.Duration).IsEqualTo(12);
+        await Assert.That(fx.Name).IsEqualTo("-flag");
+    }
+
+    [Test]
+    public async Task Block_WithProposedInlineExtradataTag_HasTag()
+    {
+        const string body = @"\~aegi~ambientquad(1,2,3,4)";
+        var block = new OverrideBlock(body);
+
+        await Assert.That(block.Tags.Count).IsEqualTo(1);
+        var tag = await Assert.That(block.Tags[0]).IsTypeOf<OverrideTag.Unknown>();
+
+        await Assert.That(tag).IsNotNull();
+        await Assert.That(tag.Name).IsEqualTo("~aegi~ambientquad");
+
+        await Assert.That(tag.Args.Length).IsEqualTo(4);
+        await Assert.That(tag.Args[0]).IsEqualTo("1");
+        await Assert.That(tag.Args[1]).IsEqualTo("2");
+        await Assert.That(tag.Args[2]).IsEqualTo("3");
+        await Assert.That(tag.Args[3]).IsEqualTo("4");
+
+        await Assert.That(tag.ToString()).IsEqualTo(body);
+    }
+
+    [Test]
     public async Task Block_WithInlineCodeAndVariables_KeepsVariables()
     {
         const string body = @"\t($sstart,!$sstart+$sdur*0.3!,\c!gc(2)!)";
@@ -126,68 +191,187 @@ public class OverrideBlockTests
     #region Boolean Tags
 
     [Test]
-    public async Task ItalicEnabled()
+    public async Task Italic_Enabled()
     {
         const string body = @"\i1";
         var block = new OverrideBlock(body);
 
         await Assert.That(block.Tags.Count).IsEqualTo(1);
-        var tag = block.Tags[0];
+        var i = await Assert.That(block.Tags[0]).IsTypeOf<OverrideTag.I>();
 
-        var i = await Assert.That(tag).IsTypeOf<OverrideTag.I>();
         await Assert.That(i).IsNotNull();
-
         await Assert.That(i.Value).IsTrue();
         await Assert.That(i.ToString()).IsEqualTo(body);
     }
 
     [Test]
-    public async Task ItalicDisabled()
+    public async Task Italic_Disabled()
     {
         const string body = @"\i0";
         var block = new OverrideBlock(body);
 
         await Assert.That(block.Tags.Count).IsEqualTo(1);
-        var tag = block.Tags[0];
+        var i = await Assert.That(block.Tags[0]).IsTypeOf<OverrideTag.I>();
 
-        var i = await Assert.That(tag).IsTypeOf<OverrideTag.I>();
         await Assert.That(i).IsNotNull();
-
         await Assert.That(i.Value).IsFalse();
         await Assert.That(i.ToString()).IsEqualTo(body);
     }
 
     [Test]
-    public async Task ItalicEmpty()
+    public async Task Italic_Empty()
     {
         const string body = @"\i";
         var block = new OverrideBlock(body);
 
         await Assert.That(block.Tags.Count).IsEqualTo(1);
-        var tag = block.Tags[0];
+        var i = await Assert.That(block.Tags[0]).IsTypeOf<OverrideTag.I>();
 
-        var i = await Assert.That(tag).IsTypeOf<OverrideTag.I>();
         await Assert.That(i).IsNotNull();
-
         await Assert.That(i.Value).IsNull();
         await Assert.That(i.ToString()).IsEqualTo(body);
     }
 
     [Test]
-    public async Task ItalicWithParentheses()
+    public async Task Bold_Enabled()
     {
-        const string body = @"\i(1)";
-        const string sanitized = @"\i1";
+        const string body = @"\b1";
         var block = new OverrideBlock(body);
 
         await Assert.That(block.Tags.Count).IsEqualTo(1);
-        var tag = block.Tags[0];
+        var b = await Assert.That(block.Tags[0]).IsTypeOf<OverrideTag.B>();
 
-        var i = await Assert.That(tag).IsTypeOf<OverrideTag.I>();
+        await Assert.That(b).IsNotNull();
+        await Assert.That(b.Value).IsEqualTo(1);
+        await Assert.That(b.BoolValue).IsTrue();
+        await Assert.That(b.ToString()).IsEqualTo(body);
+    }
+
+    [Test]
+    public async Task Bold_Disabled()
+    {
+        const string body = @"\b0";
+        var block = new OverrideBlock(body);
+
+        await Assert.That(block.Tags.Count).IsEqualTo(1);
+        var b = await Assert.That(block.Tags[0]).IsTypeOf<OverrideTag.B>();
+
+        await Assert.That(b).IsNotNull();
+        await Assert.That(b.Value).IsEqualTo(0);
+        await Assert.That(b.BoolValue).IsFalse();
+        await Assert.That(b.ToString()).IsEqualTo(body);
+    }
+
+    [Test]
+    public async Task Bold_Weighted()
+    {
+        const string body = @"\b100";
+        var block = new OverrideBlock(body);
+
+        await Assert.That(block.Tags.Count).IsEqualTo(1);
+        var b = await Assert.That(block.Tags[0]).IsTypeOf<OverrideTag.B>();
+
+        await Assert.That(b).IsNotNull();
+        await Assert.That(b.Value).IsEqualTo(100);
+        await Assert.That(b.ToString()).IsEqualTo(body);
+    }
+
+    [Test]
+    public async Task Bold_Empty()
+    {
+        const string body = @"\b";
+        var block = new OverrideBlock(body);
+
+        await Assert.That(block.Tags.Count).IsEqualTo(1);
+        var b = await Assert.That(block.Tags[0]).IsTypeOf<OverrideTag.B>();
+
+        await Assert.That(b).IsNotNull();
+        await Assert.That(b.Value).IsNull();
+        await Assert.That(b.ToString()).IsEqualTo(body);
+    }
+
+    [Test]
+    public async Task Underline_Enabled()
+    {
+        const string body = @"\u1";
+        var block = new OverrideBlock(body);
+
+        await Assert.That(block.Tags.Count).IsEqualTo(1);
+        var i = await Assert.That(block.Tags[0]).IsTypeOf<OverrideTag.U>();
+
         await Assert.That(i).IsNotNull();
-
         await Assert.That(i.Value).IsTrue();
-        await Assert.That(i.ToString()).IsEqualTo(sanitized);
+        await Assert.That(i.ToString()).IsEqualTo(body);
+    }
+
+    [Test]
+    public async Task Underline_Disabled()
+    {
+        const string body = @"\u0";
+        var block = new OverrideBlock(body);
+
+        await Assert.That(block.Tags.Count).IsEqualTo(1);
+        var i = await Assert.That(block.Tags[0]).IsTypeOf<OverrideTag.U>();
+
+        await Assert.That(i).IsNotNull();
+        await Assert.That(i.Value).IsFalse();
+        await Assert.That(i.ToString()).IsEqualTo(body);
+    }
+
+    [Test]
+    public async Task Underline_Empty()
+    {
+        const string body = @"\u";
+        var block = new OverrideBlock(body);
+
+        await Assert.That(block.Tags.Count).IsEqualTo(1);
+        var i = await Assert.That(block.Tags[0]).IsTypeOf<OverrideTag.U>();
+
+        await Assert.That(i).IsNotNull();
+        await Assert.That(i.Value).IsNull();
+        await Assert.That(i.ToString()).IsEqualTo(body);
+    }
+
+    [Test]
+    public async Task Strikethrough_Enabled()
+    {
+        const string body = @"\s1";
+        var block = new OverrideBlock(body);
+
+        await Assert.That(block.Tags.Count).IsEqualTo(1);
+        var i = await Assert.That(block.Tags[0]).IsTypeOf<OverrideTag.S>();
+
+        await Assert.That(i).IsNotNull();
+        await Assert.That(i.Value).IsTrue();
+        await Assert.That(i.ToString()).IsEqualTo(body);
+    }
+
+    [Test]
+    public async Task Strikethrough_Disabled()
+    {
+        const string body = @"\s0";
+        var block = new OverrideBlock(body);
+
+        await Assert.That(block.Tags.Count).IsEqualTo(1);
+        var i = await Assert.That(block.Tags[0]).IsTypeOf<OverrideTag.S>();
+
+        await Assert.That(i).IsNotNull();
+        await Assert.That(i.Value).IsFalse();
+        await Assert.That(i.ToString()).IsEqualTo(body);
+    }
+
+    [Test]
+    public async Task Strikethrough_Empty()
+    {
+        const string body = @"\s";
+        var block = new OverrideBlock(body);
+
+        await Assert.That(block.Tags.Count).IsEqualTo(1);
+        var i = await Assert.That(block.Tags[0]).IsTypeOf<OverrideTag.S>();
+
+        await Assert.That(i).IsNotNull();
+        await Assert.That(i.Value).IsNull();
+        await Assert.That(i.ToString()).IsEqualTo(body);
     }
 
     #endregion Boolean Tags
