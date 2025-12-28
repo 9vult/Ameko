@@ -7,6 +7,122 @@ namespace AssCS.Tests;
 
 public class OverrideBlockTests
 {
+    #region General
+
+    [Test]
+    public async Task EmptyBlock_HasNoTags()
+    {
+        const string body = @"";
+        var block = new OverrideBlock(body);
+        await Assert.That(block.Tags.Count).IsEqualTo(0);
+    }
+
+    [Test]
+    public async Task Block_WithNoTags_HasNoTags()
+    {
+        const string body = @"Johnny Rockets Hamburgers";
+        var block = new OverrideBlock(body);
+        await Assert.That(block.Tags.Count).IsEqualTo(0);
+    }
+
+    [Test]
+    public async Task Block_WithSimpleTag_HasTag()
+    {
+        const string body = @"\fscx100";
+        var block = new OverrideBlock(body);
+
+        await Assert.That(block.Tags.Count).IsEqualTo(1);
+        var fscx = await Assert.That(block.Tags[0]).IsTypeOf<OverrideTag.FscX>();
+
+        await Assert.That(fscx).IsNotNull();
+        await Assert.That(fscx.Value).IsEqualTo(100);
+    }
+
+    [Test]
+    public async Task Block_WithComplexTag_HasTag()
+    {
+        const string body = @"\pos(100,200)";
+        var block = new OverrideBlock(body);
+
+        await Assert.That(block.Tags.Count).IsEqualTo(1);
+        var pos = await Assert.That(block.Tags[0]).IsTypeOf<OverrideTag.Pos>();
+
+        await Assert.That(pos).IsNotNull();
+        await Assert.That(pos.X).IsEqualTo(100);
+        await Assert.That(pos.Y).IsEqualTo(200);
+    }
+
+    [Test]
+    public async Task Block_WithMultipleTags_HasTags()
+    {
+        const string body = @"\fscx100\pos(100,200)";
+        var block = new OverrideBlock(body);
+
+        await Assert.That(block.Tags.Count).IsEqualTo(2);
+        var fscx = await Assert.That(block.Tags[0]).IsTypeOf<OverrideTag.FscX>();
+        var pos = await Assert.That(block.Tags[1]).IsTypeOf<OverrideTag.Pos>();
+
+        await Assert.That(fscx).IsNotNull();
+        await Assert.That(pos).IsNotNull();
+        await Assert.That(fscx.Value).IsEqualTo(100);
+        await Assert.That(pos.X).IsEqualTo(100);
+        await Assert.That(pos.Y).IsEqualTo(200);
+    }
+
+    [Test]
+    public async Task Block_WithTagAndWhitespace_HasTag()
+    {
+        const string body = @"   \   fscx   100";
+        var block = new OverrideBlock(body);
+
+        await Assert.That(block.Tags.Count).IsEqualTo(1);
+        var fscx = await Assert.That(block.Tags[0]).IsTypeOf<OverrideTag.FscX>();
+
+        await Assert.That(fscx).IsNotNull();
+        await Assert.That(fscx.Value).IsEqualTo(100);
+    }
+
+    [Test]
+    public async Task Block_WithMultipleTagsAndWhitespace_HasTags()
+    {
+        const string body = @"   \   fscx   100   \   pos   (   100   ,   200   )";
+        var block = new OverrideBlock(body);
+
+        await Assert.That(block.Tags.Count).IsEqualTo(2);
+        var fscx = await Assert.That(block.Tags[0]).IsTypeOf<OverrideTag.FscX>();
+        var pos = await Assert.That(block.Tags[1]).IsTypeOf<OverrideTag.Pos>();
+
+        await Assert.That(fscx).IsNotNull();
+        await Assert.That(pos).IsNotNull();
+        await Assert.That(fscx.Value).IsEqualTo(100);
+        await Assert.That(pos.X).IsEqualTo(100);
+        await Assert.That(pos.Y).IsEqualTo(200);
+    }
+
+    [Test]
+    public async Task Block_WithInlineCodeAndVariables_KeepsVariables()
+    {
+        const string body = @"\t($sstart,!$sstart+$sdur*0.3!,\c!gc(2)!)";
+        var block = new OverrideBlock(body);
+
+        await Assert.That(block.Tags.Count).IsEqualTo(1);
+        var t = await Assert.That(block.Tags[0]).IsTypeOf<OverrideTag.T>();
+
+        await Assert.That(t).IsNotNull();
+        await Assert.That(t.RawT1).IsEqualTo("$sstart");
+        await Assert.That(t.RawT2).IsEqualTo("!$sstart+$sdur*0.3!");
+
+        await Assert.That(t.Tags.Count).IsEqualTo(1);
+        var c = await Assert.That(t.Tags[0]).IsTypeOf<OverrideTag.C>();
+
+        await Assert.That(c).IsNotNull();
+        await Assert.That(c.Value).IsEqualTo("!gc(2)!");
+
+        await Assert.That(t.ToString()).IsEqualTo(body);
+    }
+
+    #endregion General
+
     #region Boolean Tags
 
     [Test]
@@ -413,26 +529,4 @@ public class OverrideBlockTests
     }
 
     #endregion Fade
-
-    [Test]
-    public async Task InlineCodeAndVariables()
-    {
-        const string body = @"\t($sstart,!$sstart+$sdur*0.3!,\c!gc(2)!)";
-        var block = new OverrideBlock(body);
-
-        await Assert.That(block.Tags.Count).IsEqualTo(1);
-        var t = await Assert.That(block.Tags[0]).IsTypeOf<OverrideTag.T>();
-
-        await Assert.That(t).IsNotNull();
-        await Assert.That(t.RawT1).IsEqualTo("$sstart");
-        await Assert.That(t.RawT2).IsEqualTo("!$sstart+$sdur*0.3!");
-
-        await Assert.That(t.Tags.Count).IsEqualTo(1);
-        var c = await Assert.That(t.Tags[0]).IsTypeOf<OverrideTag.C>();
-
-        await Assert.That(c).IsNotNull();
-        await Assert.That(c.Value).IsEqualTo("!gc(2)!");
-
-        await Assert.That(t.ToString()).IsEqualTo(body);
-    }
 }
