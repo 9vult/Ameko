@@ -452,6 +452,62 @@ public class EventTests
         await Assert.That(e.GetStrippedText()).IsEqualTo("A");
     }
 
+    [Test]
+    public async Task GetStrippedText_RandomBraces()
+    {
+        var e = new Event(1) { Text = "a{b}c}d{{e" };
+
+        await Assert.That(e.GetStrippedText()).IsEqualTo("ac}d{{e");
+    }
+
+    [Test]
+    public async Task GetStrippedText_OpeningBrace()
+    {
+        var e = new Event(1) { Text = "a{b}cd{e" };
+
+        await Assert.That(e.GetStrippedText()).IsEqualTo("acd{e");
+    }
+
+    [Test]
+    public async Task GetStrippedText_ExtraOpeningBrace()
+    {
+        var e = new Event(1) { Text = "a{{b}cde" };
+
+        await Assert.That(e.GetStrippedText()).IsEqualTo("acde");
+    }
+
+    [Test]
+    public async Task GetStrippedText_TrailingOpeningBrace()
+    {
+        var e = new Event(1) { Text = "a{b}cde{" };
+
+        await Assert.That(e.GetStrippedText()).IsEqualTo("acde{");
+    }
+
+    [Test]
+    public async Task GetStrippedText_ClosingBrace()
+    {
+        var e = new Event(1) { Text = "a{b}cd}e" };
+
+        await Assert.That(e.GetStrippedText()).IsEqualTo("acd}e");
+    }
+
+    [Test]
+    public async Task GetStrippedText_ExtraClosingBrace()
+    {
+        var e = new Event(1) { Text = "a{b}}cde" };
+
+        await Assert.That(e.GetStrippedText()).IsEqualTo("a}cde");
+    }
+
+    [Test]
+    public async Task GetStrippedText_TrailingClosingBrace()
+    {
+        var e = new Event(1) { Text = "a{b}cde}" };
+
+        await Assert.That(e.GetStrippedText()).IsEqualTo("acde}");
+    }
+
     #endregion GetStrippedText
 
     #region ToggleTag
