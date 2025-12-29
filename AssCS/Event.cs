@@ -499,8 +499,10 @@ public partial class Event(int id) : BindableBase, IEntry
             else
             {
                 q = data.IndexOf('{');
-                if (q < 0)
+                if (q < 0 || data[q..].IndexOf('}') < 0)
+                {
                     q = data.Length;
+                }
 
                 blocks.Add(new PlainBlock(data[..q].ToString()));
                 data = data[q..];

@@ -23,6 +23,7 @@ namespace AssCS.Overrides.Blocks;
 /// </remarks>
 public abstract class Block
 {
+    // ReSharper disable once InconsistentNaming
     protected string _text;
 
     /// <summary>
@@ -44,5 +45,10 @@ public abstract class Block
     {
         Type = type;
         _text = data;
+    }
+
+    public override string ToString()
+    {
+        return Text;
     }
 }
