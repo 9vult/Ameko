@@ -546,8 +546,6 @@ public partial class Event(int id) : BindableBase, IEntry
             (selStart, selEnd) = (selEnd, selStart);
 
         var blocks = ParseBlocks();
-        var normSelStart = blocks.NormalizeIndex(selStart);
-        var normSelEnd = blocks.NormalizeIndex(selEnd);
 
         // Get style state
         var state =
@@ -562,7 +560,7 @@ public partial class Event(int id) : BindableBase, IEntry
             };
 
         // Update to use local state
-        var blockN = blocks.NormalizedBlockAt(normSelStart);
+        var blockN = blocks.BlockIndexAt(selStart);
 
         OverrideTag? startTag = null;
         OverrideTag? endTag = null;
@@ -594,9 +592,9 @@ public partial class Event(int id) : BindableBase, IEntry
         if (startTag is null || endTag is null)
             return 0;
 
-        var shift = blocks.SetTag(startTag, normSelStart, selStart);
+        var shift = blocks.SetTag(startTag, selStart);
         if (selStart != selEnd)
-            blocks.SetTag(endTag, normSelEnd, selEnd + shift);
+            blocks.SetTag(endTag, selEnd + shift);
 
         UpdateText(blocks);
         return shift;

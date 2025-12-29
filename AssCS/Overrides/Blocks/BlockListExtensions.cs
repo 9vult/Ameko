@@ -78,44 +78,43 @@ public static class BlockListExtensions
         }
 
         /// <summary>
-        /// Get the block index for the text at the index
+        /// Get the index of the block at the given index in the text
         /// </summary>
-        /// <param name="normalizedIndex">Normalized index in the text to look up</param>
-        /// <returns>Block index</returns>
-        public int NormalizedBlockAt(int normalizedIndex)
+        /// <param name="originIndex">Origin index in the text</param>
+        /// <returns>Index of the block at the given <paramref name="originIndex"/></returns>
+        public int BlockIndexAt(int originIndex)
         {
-            var remaining = normalizedIndex;
-            var blockIdx = 0;
+            var remaining = originIndex;
             var blockCount = blocks.Count;
 
-            for (var i = 0; i < blockCount; i++)
+            var i = 0;
+            for (; i < blockCount; i++)
             {
                 var block = blocks[i];
                 var hasNext = i + 1 < blockCount;
-
-                // Braced blocks don't contribute to the normalized text index
-                if (IsBraced(block))
-                {
-                    if (i > 0 && remaining >= 0)
-                        blockIdx++;
-
-                    if (remaining > 0 && (!hasNext || !IsBraced(blocks[i + 1])))
-                        blockIdx++;
-                    continue;
-                }
 
                 remaining -= block.Text.Length;
                 switch (remaining)
                 {
                     case < 0:
-                        return blockIdx;
+                        return i;
                     case 0:
-                        return blockIdx + (hasNext && IsBraced(blocks[i + 1]) ? 1 : 0);
+                        return i + (hasNext && IsBraced(blocks[i + 1]) ? 1 : 0);
                 }
             }
-            return blockIdx;
+            return i;
 
             bool IsBraced(Block block) => block is OverrideBlock or CommentBlock;
+        }
+
+        /// <summary>
+        /// Get the block at the given index
+        /// </summary>
+        /// <param name="originIndex">Origin index in the text</param>
+        /// <returns>The block at the given <paramref name="originIndex"/></returns>
+        public Block GetBlockAt(int originIndex)
+        {
+            return blocks[BlockIndexAt(blocks, originIndex)];
         }
 
         /// <summary>
@@ -148,13 +147,12 @@ public static class BlockListExtensions
         /// Set the value of a tag
         /// </summary>
         /// <param name="tag">Tag to set</param>
-        /// <param name="normPos">Normalized position</param>
         /// <param name="originPos">Original position</param>
         /// <exception cref="ArgumentOutOfRangeException">If the <see cref="BlockType"/> is invalid</exception>
         /// <returns>Number of characters to shift the caret</returns>
-        public int SetTag(OverrideTag tag, int normPos, int originPos)
+        public int SetTag(OverrideTag tag, int originPos)
         {
-            var start = NormalizedBlockAt(blocks, normPos);
+            var start = BlockIndexAt(blocks, originPos);
             OverrideBlock? ovr = null;
             PlainBlock? plainBlock = null;
             var insertIdx = -1;
