@@ -595,19 +595,20 @@ public partial class Event(int id) : BindableBase, IEntry
         if (selStart != selEnd)
             blocks.SetTag(endTag, selEnd + shift);
 
-        UpdateText(blocks);
+        SetBlocks(blocks);
         return shift;
     }
 
     /// <summary>
-    /// Replace the text in this line.
+    /// Update the text in the line to use the new <paramref name="blocks"/>
     /// Operation is skipped if the input is empty.
     /// </summary>
     /// <remarks>
     /// This should be called after making modifications directly to blocks and/or tags.
+    /// Also note that the blocks are not persisted!
     /// </remarks>
     /// <param name="blocks">Blocks to set</param>
-    public void UpdateText(List<Block> blocks)
+    public void SetBlocks(List<Block> blocks)
     {
         if (blocks.Count == 0)
             return;
