@@ -94,9 +94,8 @@ public abstract class OverrideTag
     /// <summary>
     /// Primary fill alpha transparency
     /// </summary>
-    /// <param name="value">Hexadecimal alpha</param>
     /// <example>\1a&amp;HFF&amp;</example>
-    public class A1(string? value) : OverrideTag
+    public class A1 : OverrideTag
     {
         /// <inheritdoc />
         public override string Name => OverrideTags.A1;
@@ -104,18 +103,45 @@ public abstract class OverrideTag
         /// <summary>
         /// Primary fill alpha
         /// </summary>
-        public string? Value { get; set; } = value;
+        public Color? Value
+        {
+            get => RawValue is not null ? Color.FromAss(RawValue) : null;
+            set => RawValue = value?.AsOverrideAlpha();
+        }
+
+        /// <summary>
+        /// Hexadecimal color
+        /// </summary>
+        public string? RawValue { get; set; }
+
+        /// <summary>
+        /// Create a <c>\1a</c> tag
+        /// </summary>
+        /// <param name="value">Primary fill alpha</param>
+        public A1(Color? value)
+        {
+            Value = value;
+        }
+
+        /// <summary>
+        /// Create a <c>\1a</c> tag
+        /// </summary>
+        /// <param name="value">Primary fill alpha</param>
+        public A1(string? value)
+        {
+            RawValue = value;
+        }
 
         /// <inheritdoc />
-        public override string ToString() => Value is not null ? $@"\{Name}{Value}" : $@"\{Name}";
+        public override string ToString() =>
+            RawValue is not null ? $@"\{Name}{RawValue}" : $@"\{Name}";
     }
 
     /// <summary>
     /// Secondary fill alpha transparency
     /// </summary>
-    /// <param name="value">Hexadecimal alpha</param>
     /// <example>\2a&amp;HFF&amp;</example>
-    public class A2(string? value) : OverrideTag
+    public class A2 : OverrideTag
     {
         /// <inheritdoc />
         public override string Name => OverrideTags.A2;
@@ -123,18 +149,45 @@ public abstract class OverrideTag
         /// <summary>
         /// Secondary fill alpha
         /// </summary>
-        public string? Value { get; set; } = value;
+        public Color? Value
+        {
+            get => RawValue is not null ? Color.FromAss(RawValue) : null;
+            set => RawValue = value?.AsOverrideAlpha();
+        }
+
+        /// <summary>
+        /// Hexadecimal color
+        /// </summary>
+        public string? RawValue { get; set; }
+
+        /// <summary>
+        /// Create a <c>\2a</c> tag
+        /// </summary>
+        /// <param name="value">Secondary fill alpha</param>
+        public A2(Color? value)
+        {
+            Value = value;
+        }
+
+        /// <summary>
+        /// Create a <c>\2a</c> tag
+        /// </summary>
+        /// <param name="value">Secondary fill alpha</param>
+        public A2(string? value)
+        {
+            RawValue = value;
+        }
 
         /// <inheritdoc />
-        public override string ToString() => Value is not null ? $@"\{Name}{Value}" : $@"\{Name}";
+        public override string ToString() =>
+            RawValue is not null ? $@"\{Name}{RawValue}" : $@"\{Name}";
     }
 
     /// <summary>
     /// Outline alpha transparency
     /// </summary>
-    /// <param name="value">Hexadecimal alpha</param>
     /// <example>\3a&amp;HFF&amp;</example>
-    public class A3(string? value) : OverrideTag
+    public class A3 : OverrideTag
     {
         /// <inheritdoc />
         public override string Name => OverrideTags.A3;
@@ -142,18 +195,45 @@ public abstract class OverrideTag
         /// <summary>
         /// Outline alpha
         /// </summary>
-        public string? Value { get; set; } = value;
+        public Color? Value
+        {
+            get => RawValue is not null ? Color.FromAss(RawValue) : null;
+            set => RawValue = value?.AsOverrideAlpha();
+        }
+
+        /// <summary>
+        /// Hexadecimal color
+        /// </summary>
+        public string? RawValue { get; set; }
+
+        /// <summary>
+        /// Create a <c>\3a</c> tag
+        /// </summary>
+        /// <param name="value">Outline alpha</param>
+        public A3(Color? value)
+        {
+            Value = value;
+        }
+
+        /// <summary>
+        /// Create a <c>\3a</c> tag
+        /// </summary>
+        /// <param name="value">Outline alpha</param>
+        public A3(string? value)
+        {
+            RawValue = value;
+        }
 
         /// <inheritdoc />
-        public override string ToString() => Value is not null ? $@"\{Name}{Value}" : $@"\{Name}";
+        public override string ToString() =>
+            RawValue is not null ? $@"\{Name}{RawValue}" : $@"\{Name}";
     }
 
     /// <summary>
     /// Shadow alpha transparency
     /// </summary>
-    /// <param name="value">Hexadecimal alpha</param>
     /// <example>\4a&amp;HFF&amp;</example>
-    public class A4(string? value) : OverrideTag
+    public class A4 : OverrideTag
     {
         /// <inheritdoc />
         public override string Name => OverrideTags.A4;
@@ -161,29 +241,84 @@ public abstract class OverrideTag
         /// <summary>
         /// Shadow alpha
         /// </summary>
-        public string? Value { get; set; } = value;
+        public Color? Value
+        {
+            get => RawValue is not null ? Color.FromAss(RawValue) : null;
+            set => RawValue = value?.AsOverrideAlpha();
+        }
+
+        /// <summary>
+        /// Hexadecimal color
+        /// </summary>
+        public string? RawValue { get; set; }
+
+        /// <summary>
+        /// Create a <c>\4a</c> tag
+        /// </summary>
+        /// <param name="value">Shadow alpha</param>
+        public A4(Color? value)
+        {
+            Value = value;
+        }
+
+        /// <summary>
+        /// Create a <c>\4a</c> tag
+        /// </summary>
+        /// <param name="value">Shadow alpha</param>
+        public A4(string? value)
+        {
+            RawValue = value;
+        }
 
         /// <inheritdoc />
-        public override string ToString() => Value is not null ? $@"\{Name}{Value}" : $@"\{Name}";
+        public override string ToString() =>
+            RawValue is not null ? $@"\{Name}{RawValue}" : $@"\{Name}";
     }
 
     /// <summary>
     /// Primary, secondary, outline, and shadow alpha
     /// </summary>
-    /// <param name="alpha">Hexadecimal alpha</param>
     /// <example>\alpha&amp;HFF&amp;</example>
-    public class Alpha(string? alpha) : OverrideTag
+    public class Alpha : OverrideTag
     {
         /// <inheritdoc />
         public override string Name => OverrideTags.Alpha;
 
         /// <summary>
-        /// Alpha
+        /// Overall alpha
         /// </summary>
-        public string? Value { get; set; } = alpha;
+        public Color? Value
+        {
+            get => RawValue is not null ? Color.FromAss(RawValue) : null;
+            set => RawValue = value?.AsOverrideAlpha();
+        }
+
+        /// <summary>
+        /// Hexadecimal color
+        /// </summary>
+        public string? RawValue { get; set; }
+
+        /// <summary>
+        /// Create a <c>\alpha</c> tag
+        /// </summary>
+        /// <param name="value">Overall alpha</param>
+        public Alpha(Color? value)
+        {
+            Value = value;
+        }
+
+        /// <summary>
+        /// Create a <c>\alpha</c> tag
+        /// </summary>
+        /// <param name="value">Overall alpha</param>
+        public Alpha(string? value)
+        {
+            RawValue = value;
+        }
 
         /// <inheritdoc />
-        public override string ToString() => Value is not null ? $@"\{Name}{Value}" : $@"\{Name}";
+        public override string ToString() =>
+            RawValue is not null ? $@"\{Name}{RawValue}" : $@"\{Name}";
     }
 
     /// <summary>
@@ -455,98 +590,233 @@ public abstract class OverrideTag
     /// <summary>
     /// Primary fill color
     /// </summary>
-    /// <param name="value">Hexadecimal color value</param>
     /// <example>\c&amp;HFF5398&amp;</example>
     /// <seealso cref="OverrideTag.C1"/>
-    public class C(string? value) : OverrideTag
+    public class C : OverrideTag
     {
         /// <inheritdoc />
         public override string Name => OverrideTags.C;
 
         /// <summary>
+        /// Primary fill color
+        /// </summary>
+        public Color? Value
+        {
+            get => RawValue is not null ? Color.FromAss(RawValue) : null;
+            set => RawValue = value?.AsOverrideColor();
+        }
+
+        /// <summary>
         /// Hexadecimal color
         /// </summary>
-        public string? Value { get; set; } = value;
+        public string? RawValue { get; set; }
+
+        /// <summary>
+        /// Create a <c>\c</c> tag
+        /// </summary>
+        /// <param name="value">Primary fill color</param>
+        public C(Color? value)
+        {
+            Value = value;
+        }
+
+        /// <summary>
+        /// Create a <c>\c</c> tag
+        /// </summary>
+        /// <param name="value">Primary fill color</param>
+        public C(string? value)
+        {
+            RawValue = value;
+        }
 
         /// <inheritdoc />
-        public override string ToString() => Value is not null ? $@"\{Name}{Value}" : $@"\{Name}";
+        public override string ToString() =>
+            RawValue is not null ? $@"\{Name}{RawValue}" : $@"\{Name}";
     }
 
     /// <summary>
     /// Primary fill color
     /// </summary>
-    /// <param name="value">Hexadecimal color value</param>
     /// <example>\1c&amp;HFF5398&amp;</example>
     /// <seealso cref="OverrideTag.C"/>
-    public class C1(string? value) : OverrideTag
+    public class C1 : OverrideTag
     {
         /// <inheritdoc />
         public override string Name => OverrideTags.C1;
 
         /// <summary>
+        /// Primary fill color
+        /// </summary>
+        public Color? Value
+        {
+            get => RawValue is not null ? Color.FromAss(RawValue) : null;
+            set => RawValue = value?.AsOverrideColor();
+        }
+
+        /// <summary>
         /// Hexadecimal color
         /// </summary>
-        public string? Value { get; set; } = value;
+        public string? RawValue { get; set; }
+
+        /// <summary>
+        /// Create a <c>\1c</c> tag
+        /// </summary>
+        /// <param name="value">Primary fill color</param>
+        public C1(Color? value)
+        {
+            Value = value;
+        }
+
+        /// <summary>
+        /// Create a <c>\1c</c> tag
+        /// </summary>
+        /// <param name="value">Primary fill color</param>
+        public C1(string? value)
+        {
+            RawValue = value;
+        }
 
         /// <inheritdoc />
-        public override string ToString() => Value is not null ? $@"\{Name}{Value}" : $@"\{Name}";
+        public override string ToString() =>
+            RawValue is not null ? $@"\{Name}{RawValue}" : $@"\{Name}";
     }
 
     /// <summary>
     /// Secondary fill color
     /// </summary>
-    /// <param name="value">Hexadecimal color value</param>
     /// <example>\2c&amp;HFF5398&amp;</example>
-    public class C2(string? value) : OverrideTag
+    public class C2 : OverrideTag
     {
         /// <inheritdoc />
         public override string Name => OverrideTags.C2;
 
         /// <summary>
+        /// Primary fill color
+        /// </summary>
+        public Color? Value
+        {
+            get => RawValue is not null ? Color.FromAss(RawValue) : null;
+            set => RawValue = value?.AsOverrideColor();
+        }
+
+        /// <summary>
         /// Hexadecimal color
         /// </summary>
-        public string? Value { get; set; } = value;
+        public string? RawValue { get; set; }
+
+        /// <summary>
+        /// Create a <c>\2c</c> tag
+        /// </summary>
+        /// <param name="value">Secondary fill color</param>
+        public C2(Color? value)
+        {
+            Value = value;
+        }
+
+        /// <summary>
+        /// Create a <c>\2c</c> tag
+        /// </summary>
+        /// <param name="value">Secondary fill color</param>
+        public C2(string? value)
+        {
+            RawValue = value;
+        }
 
         /// <inheritdoc />
-        public override string ToString() => Value is not null ? $@"\{Name}{Value}" : $@"\{Name}";
+        public override string ToString() =>
+            RawValue is not null ? $@"\{Name}{RawValue}" : $@"\{Name}";
     }
 
     /// <summary>
     /// Outline color
     /// </summary>
-    /// <param name="value">Hexadecimal color value</param>
     /// <example>\3c&amp;HFF5398&amp;</example>
-    public class C3(string? value) : OverrideTag
+    public class C3 : OverrideTag
     {
         /// <inheritdoc />
         public override string Name => OverrideTags.C3;
 
         /// <summary>
+        /// Primary fill color
+        /// </summary>
+        public Color? Value
+        {
+            get => RawValue is not null ? Color.FromAss(RawValue) : null;
+            set => RawValue = value?.AsOverrideColor();
+        }
+
+        /// <summary>
         /// Hexadecimal color
         /// </summary>
-        public string? Value { get; set; } = value;
+        public string? RawValue { get; set; }
+
+        /// <summary>
+        /// Create a <c>\3c</c> tag
+        /// </summary>
+        /// <param name="value">Outline color</param>
+        public C3(Color? value)
+        {
+            Value = value;
+        }
+
+        /// <summary>
+        /// Create a <c>\3c</c> tag
+        /// </summary>
+        /// <param name="value">Outline color</param>
+        public C3(string? value)
+        {
+            RawValue = value;
+        }
 
         /// <inheritdoc />
-        public override string ToString() => Value is not null ? $@"\{Name}{Value}" : $@"\{Name}";
+        public override string ToString() =>
+            RawValue is not null ? $@"\{Name}{RawValue}" : $@"\{Name}";
     }
 
     /// <summary>
     /// Shadow color
     /// </summary>
-    /// <param name="value">Hexadecimal color value</param>
     /// <example>\4c&amp;HFF5398&amp;</example>
-    public class C4(string? value) : OverrideTag
+    public class C4 : OverrideTag
     {
         /// <inheritdoc />
         public override string Name => OverrideTags.C4;
 
         /// <summary>
+        /// Primary fill color
+        /// </summary>
+        public Color? Value
+        {
+            get => RawValue is not null ? Color.FromAss(RawValue) : null;
+            set => RawValue = value?.AsOverrideColor();
+        }
+
+        /// <summary>
         /// Hexadecimal color
         /// </summary>
-        public string? Value { get; set; } = value;
+        public string? RawValue { get; set; }
+
+        /// <summary>
+        /// Create a <c>\4c</c> tag
+        /// </summary>
+        /// <param name="value">Shadow color</param>
+        public C4(Color? value)
+        {
+            Value = value;
+        }
+
+        /// <summary>
+        /// Create a <c>\4c</c> tag
+        /// </summary>
+        /// <param name="value">Shadow color</param>
+        public C4(string? value)
+        {
+            RawValue = value;
+        }
 
         /// <inheritdoc />
-        public override string ToString() => Value is not null ? $@"\{Name}{Value}" : $@"\{Name}";
+        public override string ToString() =>
+            RawValue is not null ? $@"\{Name}{RawValue}" : $@"\{Name}";
     }
 
     /// <summary>

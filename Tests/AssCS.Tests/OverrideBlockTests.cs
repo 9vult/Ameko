@@ -181,7 +181,7 @@ public class OverrideBlockTests
         var c = await Assert.That(t.Tags[0]).IsTypeOf<OverrideTag.C>();
 
         await Assert.That(c).IsNotNull();
-        await Assert.That(c.Value).IsEqualTo("!gc(2)!");
+        await Assert.That(c.RawValue).IsEqualTo("!gc(2)!");
 
         await Assert.That(t.ToString()).IsEqualTo(body);
     }
@@ -713,4 +713,38 @@ public class OverrideBlockTests
     }
 
     #endregion Fade
+
+    #region Color
+
+    [Test]
+    public async Task Color_BGR()
+    {
+        const string body = @"\1c&HFF00BB&";
+        var block = new OverrideBlock(body);
+        await Assert.That(block.Tags.Count).IsEqualTo(1);
+
+        var c1 = await Assert.That(block.Tags[0]).IsTypeOf<OverrideTag.C1>();
+        await Assert.That(c1).IsNotNull();
+        await Assert.That(c1.Value.Blue).IsEqualTo((byte)0xFF);
+        await Assert.That(c1.Value.Green).IsEqualTo((byte)0x00);
+        await Assert.That(c1.Value.Red).IsEqualTo((byte)0xBB);
+
+        await Assert.That(c1.ToString()).IsEqualTo(body);
+    }
+
+    [Test]
+    public async Task Alpha()
+    {
+        const string body = @"\1a&H11&";
+        var block = new OverrideBlock(body);
+        await Assert.That(block.Tags.Count).IsEqualTo(1);
+
+        var a1 = await Assert.That(block.Tags[0]).IsTypeOf<OverrideTag.A1>();
+        await Assert.That(a1).IsNotNull();
+        await Assert.That(a1.Value.Alpha).IsEqualTo((byte)0x11);
+
+        await Assert.That(a1.ToString()).IsEqualTo(body);
+    }
+
+    #endregion Color
 }
