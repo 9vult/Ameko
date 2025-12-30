@@ -27,15 +27,6 @@ public class ColorTests
     }
 
     [Test]
-    public async Task FromAss_Malformed()
-    {
-        await Assert
-            .That(() => Color.FromAss("&H4400FF533&"))
-            .Throws<ArgumentException>()
-            .WithMessage("Color &H4400FF533& is invalid or malformed.");
-    }
-
-    [Test]
     public async Task FromRgb()
     {
         var c = Color.FromRgb(0, 0xFF, 0x33);

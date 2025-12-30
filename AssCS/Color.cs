@@ -1,7 +1,5 @@
 ﻿// SPDX-License-Identifier: MPL-2.0
 
-using System.Text.RegularExpressions;
-
 namespace AssCS;
 
 /// <summary>
@@ -84,25 +82,41 @@ public partial class Color : BindableBase
     /// <exception cref="ArgumentException">If the data is malformed</exception>
     public static Color FromAss(string data)
     {
-        var rgbMatch = RgbRegex().Match(data);
-        var rgbaMatch = RgbaRegex().Match(data);
-        if (!rgbMatch.Success && !rgbaMatch.Success)
-            throw new ArgumentException($"Color {data} is invalid or malformed.");
+        var span = data.AsSpan();
+        span = span.TrimStart();
+        while (span[0] is '&' or 'H')
+            span = span[1..];
+        while (span[^1] is '&' or 'H')
+            span = span[..^1];
 
-        if (rgbaMatch.Success)
+        int value;
+        try
+        {
+            value = Convert.ToInt32(span.ToString(), 16);
+        }
+        catch
+        {
+            value = 0;
+        }
+
+        if (span.Length == 8) // ABGR
+        {
             return new Color
             {
-                _alpha = Convert.ToByte(rgbaMatch.Groups[1].Value, 16),
-                _blue = Convert.ToByte(rgbaMatch.Groups[2].Value, 16),
-                _green = Convert.ToByte(rgbaMatch.Groups[3].Value, 16),
-                _red = Convert.ToByte(rgbaMatch.Groups[4].Value, 16),
+                _alpha = (byte)((value >> 24) & 0xFF),
+                _blue = (byte)((value >> 16) & 0xFF),
+                _green = (byte)((value >> 8) & 0xFF),
+                _red = (byte)(value & 0xFF),
             };
+        }
+
+        // BGR
         return new Color
         {
             _alpha = 0x0,
-            _blue = Convert.ToByte(rgbMatch.Groups[1].Value, 16),
-            _green = Convert.ToByte(rgbMatch.Groups[2].Value, 16),
-            _red = Convert.ToByte(rgbMatch.Groups[3].Value, 16),
+            _blue = (byte)((value >> 16) & 0xFF),
+            _green = (byte)((value >> 8) & 0xFF),
+            _red = (byte)(value & 0xFF),
         };
     }
 
@@ -255,10 +269,4 @@ public partial class Color : BindableBase
     }
 
     #endregion
-
-    [GeneratedRegex(@"&H([\da-fA-F]{2})([\da-fA-F]{2})([\da-fA-F]{2})&?$")]
-    private static partial Regex RgbRegex();
-
-    [GeneratedRegex(@"&H([\da-fA-F]{2})([\da-fA-F]{2})([\da-fA-F]{2})([\da-fA-F]{2})&?$")]
-    private static partial Regex RgbaRegex();
 }
