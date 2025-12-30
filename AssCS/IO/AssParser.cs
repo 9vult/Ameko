@@ -21,13 +21,14 @@ public partial class AssParser : FileParser
 
         while (reader.ReadLine() is { } line)
         {
-            if (string.IsNullOrEmpty(line))
+            var data = line.AsSpan();
+            if (data.IsEmpty)
                 continue;
 
-            var match = HEADER_REGEX().Match(line);
-            if (match.Success)
+            if (data[0] is '[' && data[^1] is ']')
             {
-                var upper = match.Groups[1].Value.ToUpperInvariant();
+                var upper = data[1..^1].ToString().ToUpperInvariant();
+
                 parseState = upper switch
                 {
                     "V4 STYLES" => ParseStyle,
@@ -44,7 +45,7 @@ public partial class AssParser : FileParser
                 // Skip further processing of the header line
                 continue;
             }
-            parseState(line, doc);
+            parseState(data, doc);
         }
 
         if (doc.StyleManager.Count == 0)
@@ -62,22 +63,22 @@ public partial class AssParser : FileParser
     /// </summary>
     /// <param name="line">Line to parse</param>
     /// <param name="doc">Document to add the parsed line to</param>
-    private delegate void ParseFunc(string line, Document doc);
+    private delegate void ParseFunc(ReadOnlySpan<char> line, Document doc);
 
     /// <summary>
     /// Parse style lines
     /// </summary>
     /// <param name="line">Line to parse</param>
     /// <param name="doc">Document to add the parsed line to</param>
-    private void ParseStyle(string line, Document doc)
+    private static void ParseStyle(ReadOnlySpan<char> line, Document doc)
     {
         // TODO: Style versioning
         if (doc.Version != AssVersion.V400P)
             return;
 
-        if (!line.StartsWith("Style:"))
-            return;
-        doc.StyleManager.Add(Style.FromAss(doc.StyleManager.NextId, line));
+        var style = Style.FromAss(doc.StyleManager.NextId, line);
+        if (style is not null)
+            doc.StyleManager.Add(style);
     }
 
     /// <summary>
@@ -85,15 +86,15 @@ public partial class AssParser : FileParser
     /// </summary>
     /// <param name="line">Line to parse</param>
     /// <param name="doc">Document to add the parsed line to</param>
-    private void ParseEvent(string line, Document doc)
+    private static void ParseEvent(ReadOnlySpan<char> line, Document doc)
     {
         // TODO: Event versioning
         if (doc.Version != AssVersion.V400P)
             return;
 
-        if (!line.StartsWith("Dialogue:") && !line.StartsWith("Comment:"))
-            return;
-        doc.EventManager.AddLast(Event.FromAss(doc.EventManager.NextId, line));
+        var @event = Event.FromAss(doc.EventManager.NextId, line);
+        if (@event is not null)
+            doc.EventManager.AddLast(@event);
     }
 
     /// <summary>
@@ -101,24 +102,24 @@ public partial class AssParser : FileParser
     /// </summary>
     /// <param name="line">Line to parse</param>
     /// <param name="doc">Document to add the parsed line to</param>
-    private void ParseScriptInfo(string line, Document doc)
+    private static void ParseScriptInfo(ReadOnlySpan<char> line, Document doc)
     {
         // This block can have comments
-        if (line.StartsWith(';'))
+        if (line.IsEmpty || line[0] is ';')
             return;
 
-        var pair = line.Split(":");
-        if (pair.Length < 2)
+        var separator = line.IndexOf(':');
+        if (separator <= 0)
             return; // Not a key:value pair
 
-        doc.ScriptInfoManager.Set(
-            pair[0].Trim(),
-            string.Join(":", pair, 1, pair.Length - 1).Trim()
-        );
+        var key = line[..separator].Trim().ToString();
+        var value = line[(separator + 1)..].Trim().ToString();
 
-        if (pair[0].Trim().ToUpperInvariant().Equals("SCRIPTTYPE"))
+        doc.ScriptInfoManager.Set(key, value);
+
+        if (key.ToUpperInvariant().Equals("SCRIPTTYPE"))
         {
-            doc.Version = pair[1].Trim() switch
+            doc.Version = value switch
             {
                 "v4.00" => AssVersion.V400,
                 "v4.00+" => AssVersion.V400P,
@@ -133,13 +134,16 @@ public partial class AssParser : FileParser
     /// </summary>
     /// <param name="line">Line to parse</param>
     /// <param name="doc">Document to add the parsed line to</param>
-    private void ParseGarbage(string line, Document doc)
+    private static void ParseGarbage(ReadOnlySpan<char> line, Document doc)
     {
-        var pair = line.Split(":");
-        if (pair.Length < 2)
+        var separator = line.IndexOf(':');
+        if (separator <= 0)
             return; // Not a key:value pair
 
-        doc.GarbageManager.Set(pair[0].Trim(), string.Join(":", pair, 1, pair.Length - 1).Trim());
+        var key = line[..separator].Trim().ToString();
+        var value = line[(separator + 1)..].Trim().ToString();
+
+        doc.GarbageManager.Set(key, value);
     }
 
     /// <summary>
@@ -160,12 +164,13 @@ public partial class AssParser : FileParser
     /// arises.
     /// </para>
     /// </remarks>
-    private void ParseExtradata(string line, Document doc)
+    private static void ParseExtradata(ReadOnlySpan<char> line, Document doc)
     {
         if (!line.StartsWith("Data:"))
             return;
+        var data = line.ToString();
 
-        var match = EXTRADATA_REGEX().Match(line);
+        var match = ExtradataRegex().Match(data);
         if (!match.Success)
             return;
 
@@ -194,18 +199,12 @@ public partial class AssParser : FileParser
     /// </summary>
     /// <param name="_1">Unused</param>
     /// <param name="_2">Unused</param>
-    private void ParseUnknown(string _1, Document _2)
+    private static void ParseUnknown(ReadOnlySpan<char> _1, Document _2)
     {
         // Do nothing
         return;
     }
 
-    private const string HeaderTemplate = @"^\[(.+)\]";
-    private const string ExtradataTemplate = @"^Data:\ *(\d+),([^,]+),(.)(.*)";
-
-    [GeneratedRegex(HeaderTemplate)]
-    private static partial Regex HEADER_REGEX();
-
-    [GeneratedRegex(ExtradataTemplate)]
-    private static partial Regex EXTRADATA_REGEX();
+    [GeneratedRegex(@"^Data:\ *(\d+),([^,]+),(.)(.*)")]
+    private static partial Regex ExtradataRegex();
 }
