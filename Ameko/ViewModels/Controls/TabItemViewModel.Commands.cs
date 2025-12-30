@@ -59,7 +59,7 @@ public partial class TabItemViewModel : ViewModelBase
                 if (string.IsNullOrWhiteSpace(line))
                     continue;
 
-                Event @event;
+                Event? @event;
                 if (Event.ValidateAssString(line))
                 {
                     @event = Event.FromAss(Workspace.Document.EventManager.NextId, line.Trim());
@@ -71,7 +71,8 @@ public partial class TabItemViewModel : ViewModelBase
                         Text = line.Trim(),
                     };
                 }
-                events.Add(@event);
+                if (@event is not null)
+                    events.Add(@event);
             }
 
             Workspace.Document.EventManager.AddAfter(
@@ -120,7 +121,8 @@ public partial class TabItemViewModel : ViewModelBase
                     if (Event.ValidateAssString(line))
                     {
                         var @event = Event.FromAss(-1, line.Trim());
-                        target.SetFields(fields, @event);
+                        if (@event is not null)
+                            target.SetFields(fields, @event);
                     }
                     else
                     {
@@ -142,6 +144,9 @@ public partial class TabItemViewModel : ViewModelBase
                             Text = line.Trim(),
                         };
                     }
+
+                    if (target is null)
+                        continue;
                     Workspace.Document.EventManager.AddLast(target);
                     newEvents.Add(target);
                 }

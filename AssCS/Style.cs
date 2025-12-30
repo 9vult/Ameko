@@ -342,12 +342,12 @@ public partial class Style(int id) : BindableBase
     /// <param name="data">Ass-formatted string</param>
     /// <returns>Style object represented by the string</returns>
     /// <exception cref="ArgumentException">If the data is malformed</exception>
-    public static Style FromAss(int id, ReadOnlySpan<char> data)
+    public static Style? FromAss(int id, ReadOnlySpan<char> data)
     {
         // TODO: Parse format string
         data = data.TrimStart();
         if (!data.StartsWith(StyleHeader))
-            throw new ArgumentException($"Style {data} is invalid or malformed.");
+            return null;
 
         data = data[StyleHeader.Length..];
 

@@ -20,6 +20,7 @@ public class EventTests
     {
         var e = Event.FromAss(1, BasicEvent);
 
+        await Assert.That(e).IsNotNull();
         await Assert.That(e.IsComment).IsFalse();
         await Assert.That(e.Layer).IsEqualTo(0);
         await Assert.That(e.Start).IsEqualTo(Time.FromMillis(130570)); // 2:10.57
@@ -35,15 +36,17 @@ public class EventTests
     public async Task FromAss_Ccs()
     {
         var e = Event.FromAss(1, CcsEvent);
+
+        await Assert.That(e).IsNotNull();
         await Assert.That(e.Margins).IsEqualTo(new Margins(0, 0, 25));
     }
 
     [Test]
-    public async Task FromAss_Malformed()
+    public async Task FromAss_Malformed_ReturnsNull()
     {
-        await Assert
-            .That(() => Event.FromAss(1, BasicEvent.Replace(',', 'Q')))
-            .Throws<ArgumentException>();
+        var e = Event.FromAss(1, "This portion of today's video is sponsored by Overstock.com");
+
+        await Assert.That(e).IsNull();
     }
 
     [Test]
@@ -51,13 +54,14 @@ public class EventTests
     {
         var e = Event.FromAss(1, BasicEvent);
 
+        await Assert.That(e).IsNotNull();
         await Assert.That(e.AsAss()).IsEqualTo(BasicEvent);
     }
 
     [Test]
     public async Task StripText()
     {
-        var e = Event.FromAss(1, TagEvent);
+        var e = Event.FromAss(1, TagEvent)!;
         e.StripTags();
 
         await Assert.That(e.Text).IsEqualTo("You're bald, there's no point in fussing.");
@@ -66,7 +70,7 @@ public class EventTests
     [Test]
     public async Task Clone()
     {
-        var e1 = Event.FromAss(1, BasicEvent);
+        var e1 = Event.FromAss(1, BasicEvent)!;
         var e2 = e1.Clone();
 
         await Assert.That(e2).IsEqualTo(e1);
@@ -103,9 +107,9 @@ public class EventTests
     [Test]
     public async Task SetFields_NoFlags()
     {
-        var baseline = Event.FromAss(1, BasicEvent);
-        var evt1 = Event.FromAss(1, BasicEvent);
-        var evt2 = Event.FromAss(2, TagEvent);
+        var baseline = Event.FromAss(1, BasicEvent)!;
+        var evt1 = Event.FromAss(1, BasicEvent)!;
+        var evt2 = Event.FromAss(2, TagEvent)!;
         const EventField fields = EventField.None;
 
         evt1.SetFields(fields, evt2);
@@ -116,9 +120,9 @@ public class EventTests
     [Test]
     public async Task SetFields_AllFlags()
     {
-        var baseline = Event.FromAss(1, BasicEvent);
-        var evt1 = Event.FromAss(1, BasicEvent);
-        var evt2 = Event.FromAss(2, TagEvent);
+        var baseline = Event.FromAss(1, BasicEvent)!;
+        var evt1 = Event.FromAss(1, BasicEvent)!;
+        var evt2 = Event.FromAss(2, TagEvent)!;
         const EventField fields =
             EventField.Comment
             | EventField.Layer
@@ -415,6 +419,7 @@ public class EventTests
     {
         var e = Event.FromAss(1, TagEvent);
 
+        await Assert.That(e).IsNotNull();
         await Assert
             .That(e.GetStrippedText())
             .IsEqualTo("You're bald, there's no point in fussing.");
@@ -515,7 +520,7 @@ public class EventTests
     [Test]
     public async Task ToggleTag_ToggleTagPair()
     {
-        var e = Event.FromAss(1, TagEvent);
+        var e = Event.FromAss(1, TagEvent)!;
         var s = new Style(1); // Default style
 
         e.ToggleTag("i", s, 12, 16); // Inside the tag
@@ -526,7 +531,7 @@ public class EventTests
     [Test]
     public async Task ToggleTag_AddToExistingPair()
     {
-        var e = Event.FromAss(1, TagEvent);
+        var e = Event.FromAss(1, TagEvent)!;
         var s = new Style(1); // Default style
 
         e.ToggleTag("b", s, 12, 16); // Inside the tag
@@ -539,7 +544,7 @@ public class EventTests
     [Test]
     public async Task ToggleTag_AddTag()
     {
-        var e = Event.FromAss(1, BasicEvent);
+        var e = Event.FromAss(1, BasicEvent)!;
         var s = new Style(1); // Default style
 
         e.ToggleTag("i", s, 0, 0);

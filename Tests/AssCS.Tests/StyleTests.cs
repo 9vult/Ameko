@@ -18,6 +18,7 @@ public class StyleTests
     {
         var s = Style.FromAss(1, BasicStyle);
 
+        await Assert.That(s).IsNotNull();
         await Assert.That(s.Name).IsEqualTo("Default");
         await Assert.That(s.FontFamily).IsEqualTo("Noto Serif");
         await Assert.That(s.FontSize).IsEqualTo(69);
@@ -46,6 +47,7 @@ public class StyleTests
     {
         var s = Style.FromAss(1, CcsStyle);
 
+        await Assert.That(s).IsNotNull();
         await Assert.That(s.Name).IsEqualTo("Default");
         await Assert.That(s.FontFamily).IsEqualTo("Arial");
         await Assert.That(s.FontSize).IsEqualTo(24);
@@ -61,11 +63,11 @@ public class StyleTests
     }
 
     [Test]
-    public async Task FromAss_Malformed()
+    public async Task FromAss_Malformed_ReturnsNull()
     {
-        await Assert
-            .That(() => Style.FromAss(1, BasicStyle.Replace(',', 'A')))
-            .Throws<ArgumentException>();
+        var style = Style.FromAss(1, "Mark's Pizzeria! Did you know kaakaadhiweijqojfofw");
+
+        await Assert.That(style).IsNull();
     }
 
     [Test]
@@ -73,13 +75,14 @@ public class StyleTests
     {
         var s = Style.FromAss(1, BasicStyle);
 
+        await Assert.That(s).IsNotNull();
         await Assert.That(s.AsAss()).IsEqualTo(BasicStyle);
     }
 
     [Test]
     public async Task Clone()
     {
-        var s1 = Style.FromAss(1, BasicStyle);
+        var s1 = Style.FromAss(1, BasicStyle)!;
         var s2 = s1.Clone();
 
         await Assert.That(s2).IsEqualTo(s1);

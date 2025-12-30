@@ -145,7 +145,8 @@ public class Globals : BindableBase, IGlobals
 
             var g = new Globals(fileSystem, logger);
             foreach (var style in model.Styles.Select(s => Style.FromAss(g.StyleManager.NextId, s)))
-                g.StyleManager.Add(style);
+                if (style is not null)
+                    g.StyleManager.Add(style);
 
             foreach (var color in model.Colors.Select(Color.FromAss))
                 g._colors.Add(color);

@@ -323,8 +323,7 @@ public partial class Event(int id) : BindableBase, IEntry
     /// <param name="id">ID of the event to create</param>
     /// <param name="data">Ass-formatted string</param>
     /// <returns>Event object represented by the string</returns>
-    /// <exception cref="ArgumentException">If the data is malformed</exception>
-    public static Event FromAss(int id, ReadOnlySpan<char> data)
+    public static Event? FromAss(int id, ReadOnlySpan<char> data)
     {
         // TODO: Parse format string
         data = data.TrimStart();
@@ -340,7 +339,7 @@ public partial class Event(int id) : BindableBase, IEntry
         }
         else
         {
-            throw new ArgumentException($"Event {data} is invalid or malformed.");
+            return null;
         }
 
         return new Event(id)

@@ -859,8 +859,9 @@ public class Project : BindableBase
 
                 model
                     .Styles.Select(s => Style.FromAss(StyleManager.NextId, s))
+                    .Where(s => s is not null)
                     .ToList()
-                    .ForEach(StyleManager.Add);
+                    .ForEach(StyleManager.Add!);
 
                 IsSaved = true;
             }
