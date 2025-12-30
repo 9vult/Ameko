@@ -1,6 +1,5 @@
 ﻿// SPDX-License-Identifier: MPL-2.0
 
-using System.Text.RegularExpressions;
 using AssCS.History;
 
 namespace AssCS.IO;
@@ -20,31 +19,31 @@ public class TxtParser(char commentDelim = '#', char actorDelim = ':') : FilePar
 
         while (reader.ReadLine() is { } line)
         {
-            if (string.IsNullOrEmpty(line))
+            var data = line.AsSpan().TrimStart();
+            if (data.IsEmpty)
                 continue;
 
             var isComment = false;
             var actor = string.Empty;
 
-            if (line.StartsWith(commentDelim))
+            if (data[0] == commentDelim)
             {
-                line = line[1..].Trim();
+                data = data[1..].Trim();
                 isComment = true;
             }
             else
             {
-                var actorRegex = $@"^(.*){actorDelim} (.+)";
-                var match = Regex.Match(line, actorRegex);
-                if (match.Success)
+                var separator = data.IndexOf(actorDelim);
+                if (separator >= 0)
                 {
-                    actor = match.Groups[1].Value;
-                    line = match.Groups[2].Value;
+                    actor = data[..separator].TrimEnd().ToString();
+                    data = data[(separator + 1)..].TrimStart();
                 }
             }
 
             var e = new Event(doc.EventManager.NextId)
             {
-                Text = line,
+                Text = data.ToString(),
                 IsComment = isComment,
                 Actor = actor,
                 Start = Time.FromSeconds(0),
