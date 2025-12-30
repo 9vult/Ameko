@@ -75,6 +75,15 @@ public partial class Color : BindableBase
     }
 
     /// <summary>
+    /// Ass-formatted override alpha string (<c>A</c>)
+    /// </summary>
+    /// <returns>Ass-formatted string</returns>
+    public string AsOverrideAlpha()
+    {
+        return $"&H{_alpha:X2}&";
+    }
+
+    /// <summary>
     /// Initialize a color from an ass-formatted string
     /// </summary>
     /// <param name="data">Ass-formatted string</param>
@@ -99,24 +108,23 @@ public partial class Color : BindableBase
             value = 0;
         }
 
-        if (span.Length == 8) // ABGR
+        return span.Length switch
         {
-            return new Color
+            2 => new Color { _alpha = (byte)value }, // Alpha only
+            8 => new Color // ABGR
             {
                 _alpha = (byte)((value >> 24) & 0xFF),
                 _blue = (byte)((value >> 16) & 0xFF),
                 _green = (byte)((value >> 8) & 0xFF),
                 _red = (byte)(value & 0xFF),
-            };
-        }
-
-        // BGR
-        return new Color
-        {
-            _alpha = 0x0,
-            _blue = (byte)((value >> 16) & 0xFF),
-            _green = (byte)((value >> 8) & 0xFF),
-            _red = (byte)(value & 0xFF),
+            },
+            _ => new Color // BGR
+            {
+                _alpha = 0x0,
+                _blue = (byte)((value >> 16) & 0xFF),
+                _green = (byte)((value >> 8) & 0xFF),
+                _red = (byte)(value & 0xFF),
+            },
         };
     }
 
@@ -156,6 +164,16 @@ public partial class Color : BindableBase
             _green = green,
             _red = red,
         };
+    }
+
+    /// <summary>
+    /// Initialize a color with an alpha value
+    /// </summary>
+    /// <param name="alpha">Alpha value</param>
+    /// <returns>Color object set to the values provided<</returns>
+    public static Color FromA(byte alpha)
+    {
+        return new Color { _alpha = alpha };
     }
 
     /// <summary>

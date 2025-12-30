@@ -16,7 +16,7 @@ public class ColorTests
     }
 
     [Test]
-    public async Task FromAss_Alpha()
+    public async Task FromAss_WithAlpha()
     {
         var c = Color.FromAss("&H4400FF33&");
 
@@ -24,6 +24,17 @@ public class ColorTests
         await Assert.That(c.Blue).IsEqualTo<byte>(0x00);
         await Assert.That(c.Green).IsEqualTo<byte>(0xFF);
         await Assert.That(c.Red).IsEqualTo<byte>(0x33);
+    }
+
+    [Test]
+    public async Task FromAss_AlphaOnly()
+    {
+        var c = Color.FromAss("&H44&");
+
+        await Assert.That(c.Alpha).IsEqualTo<byte>(0x44);
+        await Assert.That(c.Blue).IsEqualTo<byte>(0x00);
+        await Assert.That(c.Green).IsEqualTo<byte>(0x00);
+        await Assert.That(c.Red).IsEqualTo<byte>(0x00);
     }
 
     [Test]
@@ -111,6 +122,14 @@ public class ColorTests
         var c = Color.FromRgba(0x44, 0xFF, 0x25, 0x50);
 
         await Assert.That(c.AsOverrideColor()).IsEqualTo("&H25FF44&");
+    }
+
+    [Test]
+    public async Task AsOverrideAlpha()
+    {
+        var c = Color.FromA(0x44);
+
+        await Assert.That(c.AsOverrideAlpha()).IsEqualTo("&H44&");
     }
 
     [Test]
