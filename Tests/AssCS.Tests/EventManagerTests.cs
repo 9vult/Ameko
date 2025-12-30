@@ -214,7 +214,7 @@ public class EventManagerTests
         em.AddFirst(
             [
                 new Event(1) { Style = "A" },
-                new Event(2) { Style = "B" },
+                new Event(2) { Style = "B", Text = @"{\fad(100,100)Hey besties{girls}{\rA}!!}" },
                 new Event(3) { Style = "A" },
             ],
             false
@@ -225,6 +225,9 @@ public class EventManagerTests
         await Assert.That(em.Get(1).Style).IsEqualTo("C");
         await Assert.That(em.Get(2).Style).IsEqualTo("B");
         await Assert.That(em.Get(3).Style).IsEqualTo("C");
+
+        await Assert.That(em.Get(2).Text).DoesNotContain(@"\rA");
+        await Assert.That(em.Get(2).Text).Contains(@"\rC");
     }
 
     [Test]

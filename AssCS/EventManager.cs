@@ -4,6 +4,8 @@ using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using AssCS.History;
+using AssCS.Overrides;
+using AssCS.Overrides.Blocks;
 using AssCS.Utilities;
 
 namespace AssCS;
@@ -706,8 +708,9 @@ public class EventManager : BindableBase
     #region Advanced Actions
 
     /// <summary>
-    /// Change the style name of all events with
-    /// the given<paramref name="oldName"/>
+    /// Change the style name of all events and
+    /// <see cref="OverrideTag.R"/> tags with
+    /// the style <paramref name="oldName"/>
     /// </summary>
     /// <param name="oldName">Name to replace</param>
     /// <param name="newName">New style name</param>
@@ -716,9 +719,32 @@ public class EventManager : BindableBase
     /// </remarks>
     public void ChangeStyle(string oldName, string newName)
     {
-        foreach (var e in _events.Values.Where(l => l.Event.Style == oldName))
+        foreach (var link in _events.Values)
         {
-            e.Event.Style = newName;
+            var @event = link.Event;
+            if (@event.Style == oldName)
+                @event.Style = newName;
+
+            var blocks = @event.ParseBlocks();
+            var updated = false;
+            foreach (var block in blocks)
+            {
+                if (block.Type != BlockType.Override)
+                    continue;
+                foreach (var tag in (block as OverrideBlock)?.Tags ?? [])
+                {
+                    if (tag.Name != OverrideTags.R)
+                        continue;
+
+                    if (tag is OverrideTag.R r && r.Style == oldName)
+                    {
+                        r.Style = newName;
+                        updated = true;
+                    }
+                }
+            }
+            if (updated)
+                @event.SetBlocks(blocks);
         }
     }
 
