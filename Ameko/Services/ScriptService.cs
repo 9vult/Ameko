@@ -67,6 +67,7 @@ public class ScriptService : IScriptService
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error executing script");
+                _logger.LogError("{Error}", ex.Message);
                 return new ExecutionResult
                 {
                     Status = ExecutionStatus.Failure,
@@ -90,6 +91,7 @@ public class ScriptService : IScriptService
                 catch (Exception ex)
                 {
                     _logger.LogError(ex, "Error executing script");
+                    _logger.LogError("{Error}", ex.Message);
                     return new ExecutionResult
                     {
                         Status = ExecutionStatus.Failure,
@@ -175,6 +177,7 @@ public class ScriptService : IScriptService
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Failed to load script");
+                _logger.LogError("{Error}", ex.Message);
             }
         }
 

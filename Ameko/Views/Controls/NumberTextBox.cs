@@ -329,6 +329,7 @@ public class NumberTextBox : TextBox
     /// <param name="input">Text to insert</param>
     private void InsertText(string input)
     {
+        var inserting = string.Empty;
         foreach (var c in input)
         {
             // Discard input if invalid character
@@ -351,9 +352,28 @@ public class NumberTextBox : TextBox
                 continue;
 
             // Good input
-            Text = Text?.Insert(CaretIndex, c.ToString());
+            inserting += c;
+        }
 
-            CaretIndex += 1;
+        // Insert the text, minding selection
+        if (SelectionStart == SelectionEnd)
+        {
+            Text = Text?.Insert(CaretIndex, inserting);
+        }
+        else
+        {
+            if (Text is null)
+            {
+                Text = inserting;
+                CaretIndex += 1;
+            }
+            else
+            {
+                var start = SelectionStart;
+                var end = SelectionEnd;
+                Text = Text[..start] + inserting + Text[end..];
+                CaretIndex = start + inserting.Length;
+            }
         }
 
         if (!decimal.TryParse(Text, out var dec))
