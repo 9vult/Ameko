@@ -11,32 +11,38 @@
 
 Ameko is a subtitle editing suite for Advanced Substation Alpha (ASS) subtitles.
 
-<h2 align="center">Roadmap</h2>
+<h2 align="center">Features</h2>
 
-### Milestone 1 - MVP
-
-The primary goal for Milestone 1 is to deliver a Minimum Viable Product (MVP).
-
-- **Core Subtitle Editing:** Creating, manipulating, and style subtitles.
-- **Audio and Video Playback:** Initially [FFMS2](https://github.com/FFMS/ffms2)
-  and [libass](https://github.com/libass/libass/), rendered using OpenGL and OpenALSoft. A plugin architecture will
-  allow for this to be extended in the future.
-- **Tabs and Projects:** Ameko features tabs, allowing users to easily switch between multiple open subtitle files.
-  Additionally, Ameko is introducing *Project Files*. Projects enable logical grouping and organization of
-  subtitle files
-  independent of the physical filesystem structure and provide a centralized place for common
-  project configuration, styles, colors, and more.
+- **Core Subtitle Editing:** Create, manipulate, and style subtitles.
+- **Audio and Video Playback:** Preview your work with the integrated video player powered
+  by [FFMS2](https://github.com/FFMS/ffms2) and [libass](https://github.com/libass/libass/).
+- **Reference Files:** Load an additional subtitle file (e.g. closed captions) to use as a reference. When editing a
+  line, any lines from the reference file that overlap in time are automatically shown in a panel below the editor.
+- **Tabs:** Ameko is a tabbed editor, allowing you to easily switch between multiple open workspaces, each with their
+  own subtitle, audio, and video files.
+- **Projects:** Ameko is introducing *Project Files*, which enable logical grouping and organization of subtitle files
+  independent of the physical filesystem structure. They also provide a centralized place for team-shared configuration,
+  spellchecking, styles, colors, and more.
 - **Integrated Git Support:** Ameko features basic Git features, like commiting, pulling, pushing, and blaming.
-- **Scripting:** Ameko includes robust support for C# scripts and libraries. Ameko also features a scripting playground
-  and support for simple JavaScript scriptlets.
+- **Scripting:** Ameko includes robust support for C# scripts and libraries. The integrated package manager and the vast
+  NuGet ecosystem are at your fingertips! In addition, Ameko features a scripting playground for quick-and-dirty
+  automation and testing, and limited support for simple JavaScript-based scriptlets.
+- **Powerful API**: Scripts and libraries get direct access to AssCS, allowing them to manipulate the document, its
+  events, their components (override tags, etc.), and more with ease.
+- **Integrated Script Help:** Script authors can attach a markdown help/documentation file with their script that will
+  automatically be added to the Help window for easy reference.
 
-### Future Milestones
+<h2 align="center">Future Prospects</h2>
 
-Ameko is envisioned as a comprehensive editing suite, and while the exact path is still unclear, future development will
-focus on significantly expanding its capabilities. Potential upcoming milestones include:
+Potential features on Ameko's roadmap include:
 
-- **Audio Integration:** Implementing audio waveform and spectrum visualizations, related audio tooling.
+- **Audio Spectrum View:** Add a spectrum visualization option to complement the existing waveform one.
+- **Audio Text Rendering:** View timestamps and more on the audio visualization.
+- **Interactive Audio Tools:** Click and drag on the audio view to re-time lines.
 - **Graphical Tools:** Tools for visually manipulating subtitles on the video.
+
+The inclusion of these features will likely rely on support from viewers like you! If you're interested in contributing
+to the project, please reach out!
 
 <h2 align="center">Development</h2>
 
@@ -71,9 +77,9 @@ components working in tandem.
   AssCS will likely be split into its own project so anyone can use it for their C# projects.
 - **Holo:** The middleware layer, primarily linking the GUI to AssCS and Mizuki. It also manages the Package Manager,
   projects, configuration, and pretty much everything that's not immediately GUI-related.
-- **Mizuki:** A high-performance interop library and Holo's first A/V plugin. Mizuki facilitates communication between
-  Holo and A/V libraries like FFMS and libass. By doing most of the work in a low-level language like Zig, Mizuki is
-  able to reduce the amount of calls across the managed-unmanaged border.
+- **Mizuki:** A high-performance interop library. Mizuki facilitates communication between Holo and A/V libraries like
+  FFMS and libass. By doing most of the work in a low-level language like Zig, Mizuki is able to reduce the amount of
+  calls across the managed-unmanaged border.
 - **Ameko:** Despite being the namesake of the project, effort has been made to make Ameko a thin GUI. Theoretically,
   one should be able to build their own GUI and plug it right into Holo. Ameko's primary purpose is to facilitate data
   transfer between the user and Holo.
