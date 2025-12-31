@@ -8,6 +8,7 @@ using AssCS;
 using AssCS.IO;
 using AssCS.Utilities;
 using Holo.Configuration;
+using Holo.Configuration.Migration;
 using Holo.Models;
 using Holo.Providers;
 using Microsoft.Extensions.Logging;
@@ -58,6 +59,7 @@ public class Project : BindableBase
     private int? _defaultLayer;
     private string? _spellcheckCulture;
     private readonly ObservableCollection<string> _customWords;
+    private readonly RangeObservableCollection<Color> _colors;
 
     /// <summary>
     /// Denotes if the selection is currently changing
@@ -212,6 +214,11 @@ public class Project : BindableBase
     /// Custom spellcheck words for the project
     /// </summary>
     public AssCS.Utilities.ReadOnlyObservableCollection<string> CustomWords => new(_customWords);
+
+    /// <summary>
+    /// Custom colors for the project
+    /// </summary>
+    public AssCS.Utilities.ReadOnlyObservableCollection<Color> Colors => new(_colors);
 
     public TimingConfiguration Timing { get; } = new();
 
@@ -454,6 +461,28 @@ public class Project : BindableBase
     }
 
     /// <summary>
+    /// Add a color to the project
+    /// </summary>
+    /// <param name="color">Color to add</param>
+    public void AddColor(Color color)
+    {
+        _colors.Add(color);
+        IsSaved = false;
+        RaisePropertyChanged(nameof(Colors));
+    }
+
+    /// <summary>
+    /// Remove a color from the project
+    /// </summary>
+    /// <param name="color">Color to remove</param>
+    public void RemoveColor(Color color)
+    {
+        _colors.Remove(color);
+        IsSaved = false;
+        RaisePropertyChanged(nameof(Colors));
+    }
+
+    /// <summary>
     /// Close an open document
     /// </summary>
     /// <param name="id">ID of the document to close</param>
@@ -526,9 +555,10 @@ public class Project : BindableBase
 
             var model = new ProjectModel
             {
-                Version = ProjectModel.CurrentApiVersion,
+                Version = ProjectModelBase.CurrentApiVersion,
                 ReferencedDocuments = ConvertToModels(_referencedItems, dir),
                 Styles = StyleManager.Styles.Select(s => s.AsAss()).ToArray(),
+                Colors = Colors.Select(c => c.AsStyleColor()).ToArray(),
                 Cps = _cps,
                 CpsIncludesWhitespace = _cpsIncludesWhitespace,
                 CpsIncludesPunctuation = _cpsIncludesPunctuation,
@@ -765,6 +795,7 @@ public class Project : BindableBase
         _referencedItems = [];
         _loadedWorkspaces = [];
         _customWords = [];
+        _colors = [];
         StyleManager = new StyleManager();
 
         ReferencedItems =
@@ -829,14 +860,17 @@ public class Project : BindableBase
                 );
                 using var reader = new StreamReader(fs);
 
-                var model =
-                    JsonSerializer.Deserialize<ProjectModel>(reader.ReadToEnd(), JsonOptions)
-                    ?? throw new InvalidDataException("Project model deserialization failed");
+                var content = reader.ReadToEnd();
+                var model = ProjectMigrator.MigrateToCurrent(content);
+
+                if (model is null)
+                    throw new InvalidDataException("Project model migration failed");
 
                 // De-relative the file paths in the project
                 _referencedItems.AddRange(
                     ConvertFromModels(model.ReferencedDocuments, dir, ref _docId)
                 );
+                _colors.AddRange(model.Colors.Select(Color.FromAss));
                 _cps = model.Cps;
                 _cpsIncludesWhitespace = model.CpsIncludesWhitespace;
                 _cpsIncludesPunctuation = model.CpsIncludesPunctuation;
