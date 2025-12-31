@@ -858,8 +858,8 @@ public class Project : BindableBase
                     FileAccess.Read,
                     FileShare.ReadWrite
                 );
-                using var reader = new StreamReader(fs);
 
+                using var reader = new StreamReader(fs);
                 var content = reader.ReadToEnd();
                 var model = ProjectMigrator.MigrateToCurrent(content);
 

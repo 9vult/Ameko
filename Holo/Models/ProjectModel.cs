@@ -6,7 +6,7 @@ using Holo.Configuration;
 
 namespace Holo.Models;
 
-internal abstract record ProjectModelBase
+internal record ProjectModelBase
 {
     [JsonIgnore]
     internal const int CurrentApiVersion = 1;

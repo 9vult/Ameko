@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.IO.Abstractions;
 using System.Text.Json;
 using AssCS;
+using Holo.Configuration.Migration;
 using Holo.IO;
 using Microsoft.Extensions.Logging;
 
@@ -92,7 +93,7 @@ public class Globals : BindableBase, IGlobals
 
             var model = new GlobalsModel
             {
-                Version = GlobalsModel.CurrentApiVersion,
+                Version = GlobalsModelBase.CurrentApiVersion,
                 Styles = StyleManager.Styles.Select(s => s.AsAss()).ToArray(),
                 Colors = Colors.Select(s => s.AsStyleColor()).ToArray(),
                 CustomWords = CustomWords.ToArray(),
@@ -137,11 +138,16 @@ public class Globals : BindableBase, IGlobals
                 FileAccess.Read,
                 FileShare.ReadWrite
             );
-            using var reader = new StreamReader(fs);
 
-            var model =
-                JsonSerializer.Deserialize<GlobalsModel>(reader.ReadToEnd(), JsonOptions)
-                ?? throw new InvalidDataException("Globals model deserialization failed");
+            using var reader = new StreamReader(fs);
+            var content = reader.ReadToEnd();
+            var model = GlobalsMigrator.MigrateToCurrent(content);
+
+            if (model is null)
+            {
+                logger.LogError("Globals migration failed");
+                return new Globals(fileSystem, logger);
+            }
 
             var g = new Globals(fileSystem, logger);
             foreach (var style in model.Styles.Select(s => Style.FromAss(g.StyleManager.NextId, s)))

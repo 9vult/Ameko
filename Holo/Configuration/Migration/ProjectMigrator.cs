@@ -94,7 +94,7 @@ internal class ProjectMigratorCurrent : IProjectMigrator<ProjectModelV2, Project
     {
         return new ProjectModel
         {
-            Version = 2,
+            Version = ProjectModelBase.CurrentApiVersion,
             ReferencedDocuments = project.ReferencedDocuments,
             Styles = project.Styles,
             Colors = project.Colors,
