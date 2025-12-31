@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using AssCS;
+using Holo.Configuration.Migration;
 using Holo.IO;
 using Holo.Models;
 using Microsoft.Extensions.Logging;
@@ -331,11 +332,16 @@ public partial class Configuration : BindableBase, IConfiguration
                 FileAccess.Read,
                 FileShare.ReadWrite
             );
-            using var reader = new StreamReader(fs);
 
-            var model =
-                JsonSerializer.Deserialize<ConfigurationModel>(reader.ReadToEnd(), JsonOptions)
-                ?? throw new InvalidDataException("Configuration model deserialization failed!");
+            using var reader = new StreamReader(fs);
+            var content = reader.ReadToEnd();
+            var model = ConfigurationMigrator.MigrateToCurrent(content);
+
+            if (model is null)
+            {
+                logger.LogError("Configuration migration failed");
+                return new Configuration(fileSystem, logger);
+            }
 
             var result = new Configuration(fileSystem, logger)
             {
