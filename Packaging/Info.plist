@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+
+<plist version="1.0">
+    <dict>
+        <key>CFBundleName</key>
+        <string>Ameko</string>
+        <key>CFBundleIdentifier</key>
+        <string>moe.ninevolt.ameko</string>
+        <key>CFBundleExecutable</key>
+        <string>Ameko</string>
+        <key>CFBundleIconFile</key>
+        <string>Ameko.icns</string>
+        <key>LSApplicationCategoryType</key>
+        <string>public.app-category.productivity</string>
+        <key>LSMinimumSystemVersion</key>
+        <string>12.0</string>
+        <key>NSHighResolutionCapable</key>
+        <true />
+        <key>NSQuitAlwaysKeepsWindows</key>
+        <false />
+        <key>CFBundleSupportedPlatforms</key>
+        <array>
+            <string>MacOSX</string>
+        </array>
+        <key>CFBundleDocumentTypes</key>
+        <array>
+            <!-- .ass -->
+            <dict>
+                <key>CFBundleTypeExtensions</key>
+                <array>
+                    <string>ass</string>
+                </array>
+                <key>CFBundleTypeIconFile</key>
+                <string>assIcon.icns</string>
+                <key>CFBundleTypeName</key>
+                <string>Advanced Substation Alpha</string>
+                <key>CFBundleTypeRole</key>
+                <string>Editor</string>
+                <key>LSTypeIsPackage</key>
+                <false />
+                <key>NSPersistentStoreTypeKey</key>
+                <string>Binary</string>
+                <key>LSHandlerRank</key>
+                <string>Owner</string>
+            </dict>
+            <!-- .srt -->
+            <dict>
+                <key>CFBundleTypeExtensions</key>
+                <array>
+                    <string>srt</string>
+                </array>
+                <key>CFBundleTypeIconFile</key>
+                <string>srtIcon.icns</string>
+                <key>CFBundleTypeName</key>
+                <string>SubRip</string>
+                <key>CFBundleTypeRole</key>
+                <string>Editor</string>
+                <key>LSTypeIsPackage</key>
+                <false />
+                <key>NSPersistentStoreTypeKey</key>
+                <string>Binary</string>
+                <key>LSHandlerRank</key>
+                <string>Alternate</string>
+            </dict>
+            <!-- .aproj -->
+            <dict>
+                <key>CFBundleTypeExtensions</key>
+                <array>
+                    <string>aproj</string>
+                </array>
+                <key>CFBundleTypeIconFile</key>
+                <string>aprojIcon.icns</string>
+                <key>CFBundleTypeName</key>
+                <string>Ameko Project</string>
+                <key>CFBundleTypeRole</key>
+                <string>Editor</string>
+                <key>LSTypeIsPackage</key>
+                <false />
+                <key>NSPersistentStoreTypeKey</key>
+                <string>Binary</string>
+                <key>LSHandlerRank</key>
+                <string>Alternate</string>
+            </dict>
+        </array>
+    </dict>
+</plist>

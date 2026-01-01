@@ -132,42 +132,14 @@ jobs:
           mkdir -p publish/Ameko.app/Contents/MacOS
           mkdir -p publish/Ameko.app/Contents/Resources
           cp -a Ameko/bin/Release/net${{ env.DOTNET_VERSION }}/osx-arm64/publish/* publish/Ameko.app/Contents/MacOS
-          cp Ameko/Assets/Ameko.icns publish/Ameko.app/Contents/Resources/Ameko.icns
+          cp Ameko/Assets/Icons/*.icns publish/Ameko.app/Contents/Resources
 
-          cat << EOF > "publish/Ameko.app/Contents/Info.plist"
-          <?xml version="1.0" encoding="UTF-8"?>
-          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
-          "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-
-          <plist version="1.0">
-              <dict>
-                  <key>CFBundleName</key>
-                  <string>Ameko</string>
-                  <key>CFBundleIdentifier</key>
-                  <string>moe.ninevolt.ameko</string>
-                  <key>CFBundleVersion</key>
-                  <string>${{ needs.calculate-version.outputs.version }}</string>
-                  <key>CFBundleShortVersionString</key>
-                  <string>${{ needs.calculate-version.outputs.patch }}</string>
-                  <key>CFBundleExecutable</key>
-                  <string>Ameko</string>
-                  <key>CFBundleIconFile</key>
-                  <string>Ameko.icns</string>
-                  <key>LSApplicationCategoryType</key>
-                  <string>public.app-category.productivity</string>
-                  <key>LSMinimumSystemVersion</key>
-                  <string>12.0</string>
-                  <key>NSHighResolutionCapable</key>
-                  <true/>
-                  <key>NSQuitAlwaysKeepsWindows</key>
-                  <false/>
-                  <key>CFBundleSupportedPlatforms</key>
-                  <array>
-                      <string>MacOSX</string>
-                  </array>
-              </dict>
-          </plist>
-          EOF
+          PLIST=publish/Ameko.app/Contents/Info.plist
+          cp Packaging/Info.plist $PLIST
+          
+          # Inject version into plist
+          /usr/libexec/PlistBuddy -c "Set :CFBundleVersion ${{ needs.calculate-version.outputs.version }}" "$PLIST"
+          /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString ${{ needs.calculate-version.outputs.patch }}" "$PLIST"
 
           echo "You will need to install libass and ffms2 to run Ameko. Example: brew install libass ffms2" > "publish/DEPENDENCIES.txt"
           echo "Because Ameko is unsigned, you will need to run the following in a terminal to open Ameko: xattr -cr ./Ameko.app" > "publish/OPENING.txt"
