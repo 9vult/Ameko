@@ -213,8 +213,8 @@ public class Workspace : BindableBase
 
         // Change selection to the committed state
         var selection = selectionIds
-            .Where(id => applied.Events.TryGetValue(id, out _)) // use applied commit's events
-            .Select(id => applied.Events[id])
+            .Where(id => Document.EventManager.TryGet(id, out _)) // use applied commit's events
+            .Select(id => Document.EventManager.Get(id))
             .ToList();
 
         if (selection.Count > 0)
@@ -240,8 +240,8 @@ public class Workspace : BindableBase
 
         // Change selection to the committed state
         var selection = selectionIds
-            .Where(id => commit.Events.TryGetValue(id, out _))
-            .Select(id => commit.Events[id])
+            .Where(id => Document.EventManager.TryGet(id, out _)) // use applied commit's events
+            .Select(id => Document.EventManager.Get(id))
             .ToList();
 
         if (selection.Count > 0)
