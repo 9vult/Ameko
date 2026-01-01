@@ -138,8 +138,8 @@ jobs:
           cp Packaging/Info.plist $PLIST
           
           # Inject version into plist
-          /usr/libexec/PlistBuddy -c "Set :CFBundleVersion ${{ needs.calculate-version.outputs.version }}" "$PLIST"
-          /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString ${{ needs.calculate-version.outputs.patch }}" "$PLIST"
+          /usr/libexec/PlistBuddy -c "Add :CFBundleVersion ${{ needs.calculate-version.outputs.version }}" "$PLIST"
+          /usr/libexec/PlistBuddy -c "Add :CFBundleShortVersionString ${{ needs.calculate-version.outputs.patch }}" "$PLIST"
 
           echo "You will need to install libass and ffms2 to run Ameko. Example: brew install libass ffms2" > "publish/DEPENDENCIES.txt"
           echo "Because Ameko is unsigned, you will need to run the following in a terminal to open Ameko: xattr -cr ./Ameko.app" > "publish/OPENING.txt"
