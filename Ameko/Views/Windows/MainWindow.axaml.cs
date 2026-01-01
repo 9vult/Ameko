@@ -17,6 +17,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Input;
+using Avalonia.Platform;
 using Avalonia.Platform.Storage;
 using DynamicData;
 using Holo.Models;
@@ -396,6 +397,31 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
 
         Closing += async (sender, args) => await OnWindowClosing(sender, args);
         Closed += OnWindowClosed;
+
+        // Hook into macOS activations
+        if (Application.Current?.TryGetFeature<IActivatableLifetime>() is { } activatableLifetime)
+        {
+            activatableLifetime.Activated += (_, a) =>
+            {
+                if (a is not FileActivatedEventArgs { Kind: ActivationKind.File } args)
+                    return;
+
+                foreach (var file in args.Files)
+                {
+                    var path = file.Path.LocalPath;
+                    switch (Path.GetExtension(path).ToLower())
+                    {
+                        case ".ass":
+                        case ".srt":
+                            ViewModel?.OpenSubtitleNoGuiCommand.Execute(file.Path);
+                            break;
+                        case ".aproj":
+                            ViewModel?.OpenProjectNoGuiCommand.Execute(file.Path);
+                            break;
+                    }
+                }
+            };
+        }
 
         this.WhenActivated(disposables =>
         {
