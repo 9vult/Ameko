@@ -192,6 +192,11 @@
                                                         FallbackValue=false}"
                                     Command="{Binding CloseVideoCommand}" />
                     <NativeMenuItemSeparator />
+                    <NativeMenuItem Header="{x:Static i18n:Resources.Menu_OpenKeyframes}"
+                                    IsEnabled="{Binding ProjectProvider.Current.WorkingSpace.MediaController.IsVideoLoaded,
+                                          FallbackValue=false}"
+                                    Command="{Binding OpenKeyframesCommand}" />
+                    <NativeMenuItemSeparator />
                     <NativeMenuItem Header="{x:Static i18n:Resources.Menu_JumpTo}"
                                     Command="{Binding ShowJumpDialogCommand}" />
                 </NativeMenu>

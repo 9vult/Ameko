@@ -341,6 +341,30 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         interaction.SetOutput(null);
     }
 
+    private async Task DoShowOpenKeyframesDialogAsync(IInteractionContext<Unit, Uri?> interaction)
+    {
+        var files = await StorageProvider.OpenFilePickerAsync(
+            new FilePickerOpenOptions
+            {
+                Title = I18N.Other.FileDialog_OpenKeyframes_Title,
+                AllowMultiple = false,
+                FileTypeFilter =
+                [
+                    new FilePickerFileType(I18N.Other.FileDialog_FileType_Kf)
+                    {
+                        Patterns = ["*.txt", "*.log"],
+                    },
+                ],
+            }
+        );
+        if (files.Count > 0)
+        {
+            interaction.SetOutput(files[0].Path);
+            return;
+        }
+        interaction.SetOutput(null);
+    }
+
     private async Task DoShowJumpDialogAsync(
         IInteractionContext<JumpDialogViewModel, JumpDialogClosedMessage?> interaction
     )
@@ -446,6 +470,7 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
                 ViewModel.ShowShiftTimesDialog.RegisterHandler(DoShowDialogAsync<ShiftTimesDialog, ShiftTimesDialogViewModel>);
                 // Video
                 ViewModel.OpenVideo.RegisterHandler(DoShowOpenVideoDialogAsync);
+                ViewModel.OpenKeyframes.RegisterHandler(DoShowOpenKeyframesDialogAsync);
                 ViewModel.ShowJumpDialog.RegisterHandler(DoShowJumpDialogAsync);
                 // Audio
                 ViewModel.OpenAudio.RegisterHandler(DoShowOpenAudioDialogAsync);

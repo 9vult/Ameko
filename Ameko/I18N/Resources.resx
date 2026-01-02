@@ -393,4 +393,7 @@
     <data name="Menu_SnapKf_End" xml:space="preserve">
         <value>Snap _End to Nearest Keyframe</value>
     </data>
+    <data name="Menu_OpenKeyframes" xml:space="preserve">
+        <value>Open _Keyframes...</value>
+    </data>
 </root>

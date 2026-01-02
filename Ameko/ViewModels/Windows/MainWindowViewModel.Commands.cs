@@ -738,6 +738,21 @@ public partial class MainWindowViewModel : ViewModelBase
     }
 
     /// <summary>
+    /// Display the Open Keyframes dialog
+    /// </summary>
+    private ReactiveCommand<Unit, Unit> CreateOpenKeyframesCommand()
+    {
+        return ReactiveCommand.CreateFromTask(async () =>
+        {
+            var wsp = ProjectProvider.Current.WorkingSpace;
+            if (wsp is null)
+                return;
+
+            await IoService.OpenKeyframesAsync(OpenKeyframes, wsp);
+        });
+    }
+
+    /// <summary>
     /// Display the Jump dialog
     /// </summary>
     private ReactiveCommand<Unit, Unit> CreateShowJumpDialogCommand()

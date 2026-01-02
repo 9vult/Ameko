@@ -67,6 +67,7 @@ public partial class MainWindowViewModel : ViewModelBase
 
     // Video
     public Interaction<Unit, Uri?> OpenVideo { get; }
+    public Interaction<Unit, Uri?> OpenKeyframes { get; }
     public Interaction<JumpDialogViewModel, JumpDialogClosedMessage?> ShowJumpDialog { get; }
 
     // Audio
@@ -172,6 +173,9 @@ public partial class MainWindowViewModel : ViewModelBase
 
     [KeybindTarget("ameko.video.close", KeybindContext.Global)]
     public ICommand CloseVideoCommand { get; }
+
+    [KeybindTarget("ameko.video.openKeyframes", KeybindContext.Global)]
+    public ICommand OpenKeyframesCommand { get; }
 
     [KeybindTarget("ameko.video.jump", "Ctrl+G", KeybindContext.Global)]
     public ICommand ShowJumpDialogCommand { get; }
@@ -406,6 +410,7 @@ public partial class MainWindowViewModel : ViewModelBase
         ShowProjectConfigDialog = new Interaction<ProjectConfigDialogViewModel, Unit>();
         // Video
         OpenVideo = new Interaction<Unit, Uri?>();
+        OpenKeyframes = new Interaction<Unit, Uri>();
         ShowJumpDialog = new Interaction<JumpDialogViewModel, JumpDialogClosedMessage?>();
         // Audio
         OpenAudio = new Interaction<Unit, Uri?>();
@@ -462,6 +467,7 @@ public partial class MainWindowViewModel : ViewModelBase
         OpenVideoCommand = CreateOpenVideoCommand();
         OpenVideoNoGuiCommand = CreateOpenVideoNoGuiCommand();
         CloseVideoCommand = CreateCloseVideoCommand();
+        OpenKeyframesCommand = CreateOpenKeyframesCommand();
         ShowJumpDialogCommand = CreateShowJumpDialogCommand();
         // Audio
         OpenAudioCommand = CreateOpenAudioCommand();

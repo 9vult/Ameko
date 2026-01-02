@@ -129,6 +129,12 @@
                                           FallbackValue=false}"
                       Command="{Binding CloseVideoCommand}" />
             <Separator />
+            <MenuItem Header="{x:Static i18n:Resources.Menu_OpenKeyframes}"
+                      Icon="{icons:MaterialIconExt Kind=FileKeyOutline}"
+                      IsEnabled="{Binding ProjectProvider.Current.WorkingSpace.MediaController.IsVideoLoaded,
+                                          FallbackValue=false}"
+                      Command="{Binding OpenKeyframesCommand}" />
+            <Separator />
             <MenuItem Header="{x:Static i18n:Resources.Menu_JumpTo}"
                       Icon="{icons:MaterialIconExt Kind=BullseyeArrow}"
                       Command="{Binding ShowJumpDialogCommand}" />

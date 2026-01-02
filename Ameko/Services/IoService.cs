@@ -639,6 +639,20 @@ public class IoService(
     }
 
     /// <inheritdoc />
+    public async Task<bool> OpenKeyframesAsync(
+        Interaction<Unit, Uri?> interaction,
+        Workspace workspace
+    )
+    {
+        var uri = await interaction.Handle(Unit.Default);
+        if (uri is null)
+            return false;
+
+        var kfPath = uri.LocalPath;
+        return fileSystem.File.Exists(kfPath) && workspace.MediaController.OpenKeyframes(kfPath);
+    }
+
+    /// <inheritdoc />
     public async Task<bool> SaveFrameToFile(
         Interaction<Unit, Uri?> interaction,
         Workspace workspace,

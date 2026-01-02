@@ -187,6 +187,14 @@ public interface IIoService
     );
 
     /// <summary>
+    /// Open a keyframes file and attach it to the <paramref name="workspace"/>
+    /// </summary>
+    /// <param name="interaction">Open File Dialog interaction</param>
+    /// <param name="workspace">Workspace to open the keyframes in</param>
+    /// <returns><see langword="true"/> if successful</returns>
+    Task<bool> OpenKeyframesAsync(Interaction<Unit, Uri?> interaction, Workspace workspace);
+
+    /// <summary>
     /// Save a frame to file
     /// </summary>
     /// <param name="interaction">Save File Dialog, if needed</param>

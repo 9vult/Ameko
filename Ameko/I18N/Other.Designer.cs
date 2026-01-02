@@ -392,5 +392,17 @@ namespace Ameko.I18N {
                 return ResourceManager.GetString("Message_KeyframesNotFound", resourceCulture);
             }
         }
+        
+        public static string FileDialog_OpenKeyframes_Title {
+            get {
+                return ResourceManager.GetString("FileDialog_OpenKeyframes_Title", resourceCulture);
+            }
+        }
+        
+        public static string FileDialog_FileType_Kf {
+            get {
+                return ResourceManager.GetString("FileDialog_FileType_Kf", resourceCulture);
+            }
+        }
     }
 }
