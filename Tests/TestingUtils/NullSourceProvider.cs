@@ -38,6 +38,12 @@ public unsafe class NullSourceProvider : ISourceProvider
     }
 
     /// <inheritdoc />
+    public int LoadKeyframes(string filename)
+    {
+        return 0;
+    }
+
+    /// <inheritdoc />
     public TrackInfo[] GetAudioTrackInfo(string filename)
     {
         return [];

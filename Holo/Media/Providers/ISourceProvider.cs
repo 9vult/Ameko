@@ -44,6 +44,13 @@ public interface ISourceProvider
     int LoadAudio(string filename, int? trackNumber);
 
     /// <summary>
+    /// Load a keyframes file
+    /// </summary>
+    /// <param name="filename">Path to the keyframes file to load</param>
+    /// <returns>0 on success</returns>
+    int LoadKeyframes(string filename);
+
+    /// <summary>
     /// Get information about the audio tracks in a file
     /// </summary>
     /// <param name="filename">Path to the audio file to load</param>

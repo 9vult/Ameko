@@ -97,6 +97,12 @@ public unsafe class MizukiSourceProvider : ISourceProvider
     }
 
     /// <inheritdoc />
+    public int LoadKeyframes(string filename)
+    {
+        return External.LoadKeyframes(_context, filename);
+    }
+
+    /// <inheritdoc />
     public TrackInfo[] GetAudioTrackInfo(string filename)
     {
         var ptr = External.GetAudioTrackInfo(_context, filename);
@@ -311,6 +317,9 @@ internal static unsafe partial class External
         string colorMatrix,
         IndexingProgressCallback? progressCallback
     );
+
+    [LibraryImport("mizuki", StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial int LoadKeyframes(GlobalContext* context, string fileName);
 
     [LibraryImport("mizuki", StringMarshalling = StringMarshalling.Utf8)]
     internal static partial int LoadAudio(
