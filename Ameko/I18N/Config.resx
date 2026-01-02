@@ -150,4 +150,7 @@
     <data name="Config_Label_AutoloadAudioTracks_ToolTip" xml:space="preserve">
         <value>Automatically load the last-loaded track when there are multiple audio tracks available</value>
     </data>
+    <data name="Config_Label_IndexCacheExpiration" xml:space="preserve">
+        <value>Index cache expiration (days)</value>
+    </data>
 </root>

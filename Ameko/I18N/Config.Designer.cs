@@ -308,5 +308,11 @@ namespace Ameko.I18N {
                 return ResourceManager.GetString("Config_Label_AutoloadAudioTracks_ToolTip", resourceCulture);
             }
         }
+        
+        public static string Config_Label_IndexCacheExpiration {
+            get {
+                return ResourceManager.GetString("Config_Label_IndexCacheExpiration", resourceCulture);
+            }
+        }
     }
 }
