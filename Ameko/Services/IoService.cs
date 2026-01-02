@@ -65,6 +65,14 @@ public class IoService(
             wsp.Document.GarbageManager.Set("Video File", relPath);
             wsp.Document.GarbageManager.Set("Audio File", relPath);
             wsp.Document.GarbageManager.Set("Video Position", wsp.MediaController.CurrentFrame);
+            if (!string.IsNullOrEmpty(wsp.MediaController.VideoInfo.KeyframesFile))
+            {
+                var relKfPath = PathExtensions.GetRelativePath(
+                    dir,
+                    wsp.MediaController.VideoInfo.KeyframesFile
+                );
+                wsp.Document.GarbageManager.Set("Keyframes File", relKfPath);
+            }
         }
 
         wsp.Document.GarbageManager.Set("Active Line", wsp.SelectionManager.ActiveEvent.Index - 1);
@@ -99,6 +107,14 @@ public class IoService(
             wsp.Document.GarbageManager.Set("Video File", relPath);
             wsp.Document.GarbageManager.Set("Audio File", relPath);
             wsp.Document.GarbageManager.Set("Video Position", wsp.MediaController.CurrentFrame);
+            if (!string.IsNullOrEmpty(wsp.MediaController.VideoInfo.KeyframesFile))
+            {
+                var relKfPath = PathExtensions.GetRelativePath(
+                    dir,
+                    wsp.MediaController.VideoInfo.KeyframesFile
+                );
+                wsp.Document.GarbageManager.Set("Keyframes File", relKfPath);
+            }
         }
 
         wsp.Document.GarbageManager.Set("Active Line", wsp.SelectionManager.ActiveEvent.Index - 1);
@@ -463,6 +479,31 @@ public class IoService(
 
             if (doc.GarbageManager.TryGetInt("Video Position", out var frame))
                 workspace.MediaController.SeekTo(frame.Value); // Seek for clamp safety
+
+            // Keyframes
+            if (doc.GarbageManager.TryGetString("Keyframes File", out var relKfPath))
+            {
+                var kfPath = Path.GetFullPath(
+                    Path.Combine(
+                        Path.GetDirectoryName(workspace.SavePath?.LocalPath) ?? "/",
+                        relKfPath
+                    )
+                );
+                if (fileSystem.File.Exists(kfPath))
+                {
+                    workspace.MediaController.OpenKeyframes(kfPath);
+                }
+                else
+                {
+                    messageService.Enqueue(
+                        string.Format(
+                            I18N.Other.Message_KeyframesNotFound,
+                            Path.GetFileName(kfPath)
+                        ),
+                        TimeSpan.FromSeconds(7)
+                    );
+                }
+            }
             return true;
         }
 

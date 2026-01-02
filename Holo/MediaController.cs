@@ -683,6 +683,28 @@ public class MediaController : BindableBase
     }
 
     /// <summary>
+    /// Open a keyframes file
+    /// </summary>
+    /// <param name="filePath">Path to the keyframes file</param>
+    /// <returns><see langword="true"/> if successful</returns>
+    /// <exception cref="InvalidOperationException">If the provider isn't initialized</exception>
+    public bool OpenKeyframes(string filePath)
+    {
+        if (!_provider.IsInitialized)
+            throw new InvalidOperationException("Provider is not initialized");
+        if (!IsVideoLoaded)
+            return false;
+
+        var result = _provider.LoadKeyframes(filePath);
+        if (result != 0)
+            return false;
+
+        VideoInfo.Keyframes = _provider.GetKeyframes();
+        RequestFrame(CurrentFrame);
+        return true;
+    }
+
+    /// <summary>
     /// Get information about the audio tracks in a file
     /// </summary>
     /// <param name="filePath">Path to the file potentially containing audio tracks</param>

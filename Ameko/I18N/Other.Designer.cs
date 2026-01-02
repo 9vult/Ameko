@@ -386,5 +386,11 @@ namespace Ameko.I18N {
                 return ResourceManager.GetString("Message_AudioAutoloaded", resourceCulture);
             }
         }
+        
+        public static string Message_KeyframesNotFound {
+            get {
+                return ResourceManager.GetString("Message_KeyframesNotFound", resourceCulture);
+            }
+        }
     }
 }
