@@ -11,6 +11,7 @@ const errors = @import("errors.zig");
 const logger = @import("logger.zig");
 const buffers = @import("buffers.zig");
 const context = @import("context.zig");
+const keyframes = @import("keyframes.zig");
 
 var is_initialized = false;
 
@@ -88,6 +89,14 @@ pub export fn LoadAudio(
 ) c_int {
     ffms.LoadAudio(g_ctx, file_name, cache_file_name, audio_track_number) catch |err| {
         return errors.IntFromFfmsError(err);
+    };
+    return 0;
+}
+
+/// Open a keyframes file
+pub export fn LoadKeyframes(g_ctx: *context.GlobalContext, file_name: [*c]u8) c_int {
+    keyframes.Load(file_name, g_ctx) catch |err| {
+        return errors.IntFromKeyframeError(err);
     };
     return 0;
 }

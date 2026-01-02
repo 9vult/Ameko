@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 
 const FfmsError = @import("ffms.zig").FfmsError;
+const KeyframeError = @import("keyframes.zig").KeyframesError;
 
 pub fn IntFromFfmsError(err: FfmsError) c_int {
     return switch (err) {
@@ -20,5 +21,16 @@ pub fn IntFromFfmsError(err: FfmsError) c_int {
         FfmsError.AudioDataNotFound => 14,
         FfmsError.DecodingAudioFailed => 15,
         FfmsError.IndexingFailed => 16,
+    };
+}
+
+pub fn IntFromKeyframeError(err: KeyframeError) c_int {
+    return switch (err) {
+        KeyframeError.InvalidKeyframeType => 1,
+        KeyframeError.EmptyFile => 2,
+        KeyframeError.IoFailure => 3,
+        KeyframeError.OutOfMemory => 4,
+        KeyframeError.Overflow => 5,
+        KeyframeError.InvalidCharacter => 6,
     };
 }
