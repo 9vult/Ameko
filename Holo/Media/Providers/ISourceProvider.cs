@@ -184,7 +184,8 @@ public interface ISourceProvider
     /// <summary>
     /// Clear the cache
     /// </summary>
-    void CleanCache();
+    /// <param name="days">Expiration time</param>
+    void CleanCache(uint days);
 
     /// <summary>
     /// Indexing progress

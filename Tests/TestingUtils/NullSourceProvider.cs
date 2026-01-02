@@ -158,5 +158,5 @@ public unsafe class NullSourceProvider : ISourceProvider
     }
 
     /// <inheritdoc />
-    public void CleanCache() { }
+    public void CleanCache(uint days) { }
 }

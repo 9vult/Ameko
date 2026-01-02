@@ -45,6 +45,7 @@ public partial class Configuration : BindableBase, IConfiguration
     private bool _autosaveEnabled;
     private uint _autosaveInterval;
     private bool _autoloadAudioTracks;
+    private uint _indexCacheExpiration;
     private bool _lineWidthIncludesWhitespace;
     private bool _lineWidthIncludesPunctuation;
     private RichPresenceLevel _richPresenceLevel;
@@ -108,6 +109,13 @@ public partial class Configuration : BindableBase, IConfiguration
     {
         get => _autosaveInterval;
         set => SetProperty(ref _autosaveInterval, value);
+    }
+
+    /// <inheritdoc />
+    public uint IndexCacheExpiration
+    {
+        get => _indexCacheExpiration;
+        set => SetProperty(ref _indexCacheExpiration, value);
     }
 
     /// <inheritdoc />
@@ -259,13 +267,14 @@ public partial class Configuration : BindableBase, IConfiguration
 
             var model = new ConfigurationModel
             {
-                Version = ConfigurationModel.CurrentApiVersion,
+                Version = ConfigurationModelBase.CurrentApiVersion,
                 Cps = _cps,
                 CpsIncludesWhitespace = _cpsIncludesWhitespace,
                 CpsIncludesPunctuation = _cpsIncludesPunctuation,
                 UseSoftLinebreaks = _useSoftLinebreaks,
                 AutosaveEnabled = _autosaveEnabled,
                 AutosaveInterval = _autosaveInterval,
+                IndexCacheExpiration = _indexCacheExpiration,
                 AutoloadAudioTracks = _autoloadAudioTracks,
                 LineWidthIncludesWhitespace = _lineWidthIncludesWhitespace,
                 LineWidthIncludesPunctuation = _lineWidthIncludesPunctuation,
@@ -351,6 +360,7 @@ public partial class Configuration : BindableBase, IConfiguration
                 _useSoftLinebreaks = model.UseSoftLinebreaks,
                 _autosaveEnabled = model.AutosaveEnabled,
                 _autosaveInterval = model.AutosaveInterval,
+                _indexCacheExpiration = model.IndexCacheExpiration,
                 _autoloadAudioTracks = model.AutoloadAudioTracks,
                 _lineWidthIncludesWhitespace = model.LineWidthIncludesWhitespace,
                 _lineWidthIncludesPunctuation = model.LineWidthIncludesPunctuation,
@@ -402,6 +412,7 @@ public partial class Configuration : BindableBase, IConfiguration
         _saveFrames = SaveFrames.WithSubtitles;
         _autosaveEnabled = true;
         _autosaveInterval = 60;
+        _indexCacheExpiration = 8;
         _autoloadAudioTracks = true;
         _culture = "en-US";
         _spellcheckCulture = "en_US";

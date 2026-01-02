@@ -50,6 +50,11 @@ public interface IConfiguration
     uint AutosaveInterval { get; set; }
 
     /// <summary>
+    /// How long to keep cached indexes
+    /// </summary>
+    uint IndexCacheExpiration { get; set; }
+
+    /// <summary>
     /// If the last-used audio track should be loaded automatically when there are multiple audio tracks
     /// </summary>
     bool AutoloadAudioTracks { get; set; }

@@ -20,6 +20,7 @@ using Avalonia.Input;
 using Avalonia.Platform;
 using Avalonia.Platform.Storage;
 using DynamicData;
+using Holo.Configuration;
 using Holo.Media.Providers;
 using Holo.Models;
 using Microsoft.Extensions.Logging;
@@ -44,6 +45,7 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
     private const string ProjectExtension = ".aproj";
 
     private readonly ILogger _logger;
+    private readonly IConfiguration _config;
     private readonly ISourceProvider _sourceProvider;
     private readonly SearchDialog _searchDialog;
     private bool _isSearching;
@@ -402,9 +404,14 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         interaction.SetOutput(Unit.Default);
     }
 
-    public MainWindow(ILogger<MainWindow> logger, ISourceProvider sourceProvider)
+    public MainWindow(
+        ILogger<MainWindow> logger,
+        IConfiguration config,
+        ISourceProvider sourceProvider
+    )
     {
         _logger = logger;
+        _config = config;
         _sourceProvider = sourceProvider;
         _logger.LogInformation("Initializing Main Window...");
         InitializeComponent();
@@ -748,7 +755,7 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         ViewModel?.Persistence.Save();
 
         // Clean provider cache
-        _sourceProvider.CleanCache();
+        _sourceProvider.CleanCache(_config.IndexCacheExpiration);
 
         // Goodbye!
         _logger.LogInformation("See you next time...");

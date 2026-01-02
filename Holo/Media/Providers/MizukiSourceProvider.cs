@@ -251,7 +251,7 @@ public unsafe class MizukiSourceProvider(
     }
 
     /// <inheritdoc />
-    public void CleanCache()
+    public void CleanCache(uint days)
     {
         // Delete all indexes that haven't been accessed in 8 days
         logger.LogInformation("Cleaning index cache...");
@@ -264,7 +264,10 @@ public unsafe class MizukiSourceProvider(
         {
             try
             {
-                if (fileSystem.File.GetLastAccessTime(file) >= DateTime.Now - TimeSpan.FromDays(8))
+                if (
+                    fileSystem.File.GetLastAccessTime(file)
+                    >= DateTime.Now - TimeSpan.FromDays(days)
+                )
                     continue;
 
                 sizeBytes += fileSystem.FileInfo.New(file).Length;
