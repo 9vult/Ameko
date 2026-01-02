@@ -10,7 +10,7 @@ pub const KeyframesError = error{ InvalidKeyframeType, EmptyFile, IoFailure, Out
 const delimiter: u8 = '\n';
 const KeyframeType = enum {
     None,
-    Agi,
+    Aegisub,
     XviD,
     DivX, // Not implemented
     X264, // Not implemented
@@ -37,7 +37,7 @@ pub fn Load(file_name: [*c]u8, g_ctx: *context.GlobalContext) KeyframesError!voi
 
     var kf_type: KeyframeType = .None;
     if (std.mem.startsWith(u8, line.written(), "# keyframe format v1")) {
-        kf_type = .Agi;
+        kf_type = .Aegisub;
     } else if (std.mem.startsWith(u8, line.written(), "# XviD 2pass stat file") or std.mem.startsWith(u8, line.written(), "# ffmpeg 2-pass log file, using xvid codec") or std.mem.startsWith(u8, line.written(), "# avconv 2-pass log file, using xvid codec")) {
         kf_type = .XviD;
     } else if (std.mem.startsWith(u8, line.written(), "# WWXD log file, using qpfile format")) {
@@ -47,8 +47,8 @@ pub fn Load(file_name: [*c]u8, g_ctx: *context.GlobalContext) KeyframesError!voi
     if (kf_type == .None) return;
 
     switch (kf_type) {
-        .Agi => {
-            try ProcessAgiKeyframes(&f_reader, g_ctx);
+        .Aegisub => {
+            try ProcessAegisubKeyframes(&f_reader, g_ctx);
         },
         .XviD => {
             try ProcessXvidKeyframes(&f_reader, g_ctx);
@@ -68,8 +68,8 @@ pub fn Load(file_name: [*c]u8, g_ctx: *context.GlobalContext) KeyframesError!voi
     if (ctx.timecodes) |timecodes| {
         if (ctx.keyframes) |keyframes| {
             for (keyframes) |kf| {
+                if (kf >= timecodes.len or kf < 0) continue;
                 const idx: usize = @intCast(kf);
-                if (idx >= timecodes.len) continue;
                 try kf_timecodes_list.append(common.allocator, timecodes[idx]);
             }
 
@@ -82,7 +82,7 @@ pub fn Load(file_name: [*c]u8, g_ctx: *context.GlobalContext) KeyframesError!voi
     }
 }
 
-fn ProcessAgiKeyframes(f_reader: *std.fs.File.Reader, g_ctx: *context.GlobalContext) !void {
+fn ProcessAegisubKeyframes(f_reader: *std.fs.File.Reader, g_ctx: *context.GlobalContext) !void {
     var ctx = &g_ctx.*.ffms;
 
     var keyframes_list: std.ArrayList(c_int) = .empty;
@@ -98,12 +98,15 @@ fn ProcessAgiKeyframes(f_reader: *std.fs.File.Reader, g_ctx: *context.GlobalCont
     _ = f_reader.interface.toss(1);
 
     // Read in keyframes
-    while (true) {
+    var has_more = true;
+    while (has_more) {
         line.clearRetainingCapacity();
         _ = f_reader.interface.streamDelimiter(&line.writer, delimiter) catch |err| {
-            if (err == error.EndOfStream) break else return KeyframesError.IoFailure; // Stop
+            if (err == error.EndOfStream) has_more = false else return KeyframesError.IoFailure; // Stop
         };
-        _ = f_reader.interface.toss(1); // skip the delimiter byte.
+
+        if (has_more)
+            _ = f_reader.interface.toss(1); // skip the delimiter byte.
 
         if (line.written().len == 0) {
             continue;
@@ -131,12 +134,15 @@ fn ProcessXvidKeyframes(f_reader: *std.fs.File.Reader, g_ctx: *context.GlobalCon
     defer line.deinit();
 
     // Read in keyframes
-    while (true) {
+    var has_more = true;
+    while (has_more) {
         line.clearRetainingCapacity();
         _ = f_reader.interface.streamDelimiter(&line.writer, delimiter) catch |err| {
-            if (err == error.EndOfStream) break else return KeyframesError.IoFailure; // Stop
+            if (err == error.EndOfStream) has_more = false else return KeyframesError.IoFailure; // Stop
         };
-        _ = f_reader.interface.toss(1); // skip the delimiter byte.
+
+        if (has_more)
+            _ = f_reader.interface.toss(1); // skip the delimiter byte.
 
         // Empty or comment line
         if (line.written().len == 0 or std.mem.startsWith(u8, line.written(), "#")) {
@@ -169,12 +175,15 @@ fn ProcessWwxdKeyframes(f_reader: *std.fs.File.Reader, g_ctx: *context.GlobalCon
     defer line.deinit();
 
     // Read in keyframes
-    while (true) {
+    var has_more = true;
+    while (has_more) {
         line.clearRetainingCapacity();
         _ = f_reader.interface.streamDelimiter(&line.writer, delimiter) catch |err| {
-            if (err == error.EndOfStream) break else return KeyframesError.IoFailure; // Stop
+            if (err == error.EndOfStream) has_more = false else return KeyframesError.IoFailure; // Stop
         };
-        _ = f_reader.interface.toss(1); // skip the delimiter byte.
+
+        if (has_more)
+            _ = f_reader.interface.toss(1); // skip the delimiter byte.
 
         // Empty or comment line
         if (line.written().len == 0 or std.mem.startsWith(u8, line.written(), "#")) {
@@ -183,7 +192,8 @@ fn ProcessWwxdKeyframes(f_reader: *std.fs.File.Reader, g_ctx: *context.GlobalCon
 
         if (std.mem.count(u8, line.written(), "I") > 0) {
             if (std.mem.indexOfScalar(u8, line.written(), ' ')) |space_idx| {
-                const kf = try std.fmt.parseInt(c_int, line.written()[0..space_idx], 10);
+                // wwxd keyframes are apparently 1-indexed, so shift down 1
+                const kf = try std.fmt.parseInt(c_int, line.written()[0..space_idx], 10) - 1;
                 try keyframes_list.append(common.allocator, kf);
             }
         }
