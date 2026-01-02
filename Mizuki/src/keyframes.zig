@@ -145,8 +145,8 @@ fn ProcessXvidKeyframes(f_reader: *std.fs.File.Reader, g_ctx: *context.GlobalCon
 
         const key = line.written()[0];
         if (key == 'i' or key == 'I') {
-            count += 1;
             try keyframes_list.append(common.allocator, count);
+            count += 1;
         } else if (key == 'p' or key == 'P' or key == 'b' or key == 'B') {
             count += 1;
         }
