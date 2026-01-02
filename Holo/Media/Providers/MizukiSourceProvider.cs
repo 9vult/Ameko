@@ -2,6 +2,7 @@
 
 using System.Buffers.Text;
 using System.Globalization;
+using System.IO.Abstractions;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
@@ -14,7 +15,10 @@ namespace Holo.Media.Providers;
 /// <summary>
 /// Interop with the Mizuki source provider
 /// </summary>
-public unsafe class MizukiSourceProvider : ISourceProvider
+public unsafe class MizukiSourceProvider(
+    IFileSystem fileSystem,
+    ILogger<MizukiSourceProvider> logger
+) : ISourceProvider
 {
     private static readonly External.LogCallback LogDelegate = Log;
 
@@ -246,6 +250,34 @@ public unsafe class MizukiSourceProvider : ISourceProvider
         return External.GetSampleCount(_context);
     }
 
+    /// <inheritdoc />
+    public void CleanCache()
+    {
+        // Delete all indexes that haven't been accessed in 8 days
+        logger.LogInformation("Cleaning index cache...");
+        long sizeBytes = 0;
+        foreach (
+            var file in fileSystem
+                .Directory.GetFiles(Directories.CacheHome)
+                .Where(f => Path.GetExtension(f) == ".ffindex")
+        )
+        {
+            try
+            {
+                if (fileSystem.File.GetLastAccessTime(file) >= DateTime.Now - TimeSpan.FromDays(8))
+                    continue;
+
+                sizeBytes += fileSystem.FileInfo.New(file).Length;
+                fileSystem.File.Delete(file);
+            }
+            catch (Exception e)
+            {
+                logger.LogError(e, "Error while cleaning index");
+            }
+        }
+        logger.LogInformation("Cleaned {SizeKb}kb of cached indexes", sizeBytes / 1024);
+    }
+
     /// <summary>
     /// Callback for handling logs emitted by Mizuki
     /// </summary>
@@ -281,7 +313,7 @@ public unsafe class MizukiSourceProvider : ISourceProvider
     /// </summary>
     /// <param name="filePath">File being loaded</param>
     /// <returns>Filepath</returns>
-    private string GetCachePath(string filePath)
+    private static string GetCachePath(string filePath)
     {
         // Try to get the last-modified time
         var modified = File.Exists(filePath)

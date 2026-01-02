@@ -182,6 +182,11 @@ public interface ISourceProvider
     long GetSampleCount();
 
     /// <summary>
+    /// Clear the cache
+    /// </summary>
+    void CleanCache();
+
+    /// <summary>
     /// Indexing progress
     /// </summary>
     /// <param name="current">Current progress</param>
