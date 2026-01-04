@@ -555,4 +555,44 @@ public class EventTests
     }
 
     #endregion ToggleTag
+
+    #region Diff
+
+    [Test]
+    public async Task Diff_Identical()
+    {
+        var evt1 = Event.FromAss(1, BasicEvent);
+        var evt2 = Event.FromAss(2, BasicEvent);
+
+        var result = evt1.Diff(evt2);
+
+        await Assert.That(result).IsEqualTo(EventField.None);
+    }
+
+    [Test]
+    public async Task Diff_OneChange()
+    {
+        var evt1 = Event.FromAss(1, BasicEvent);
+        var evt2 = Event.FromAss(2, BasicEvent);
+        evt2.Text = "Seven apples on a witch's tree, with seven seeds to plant inside of me";
+
+        var result = evt1.Diff(evt2);
+
+        await Assert.That(result).IsEqualTo(EventField.Text);
+    }
+
+    [Test]
+    public async Task Diff_MultipleChanges()
+    {
+        var evt1 = Event.FromAss(1, BasicEvent);
+        var evt2 = Event.FromAss(2, BasicEvent);
+        evt2.Text = "Seven apples on a witch's tree, with seven seeds to plant inside of me";
+        evt2.Actor = "Lawrence";
+
+        var result = evt1.Diff(evt2);
+
+        await Assert.That(result).IsEqualTo(EventField.Text | EventField.Actor);
+    }
+
+    #endregion Diff
 }

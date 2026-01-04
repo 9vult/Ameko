@@ -303,6 +303,40 @@ public partial class Event(int id) : BindableBase, IEntry
     }
 
     /// <summary>
+    /// Compare two events' fields
+    /// </summary>
+    /// <param name="other">Event to compare with</param>
+    /// <returns>Differing fields</returns>
+    public EventField Diff(Event other)
+    {
+        var result = EventField.None;
+
+        if (IsComment != other.IsComment)
+            result |= EventField.Comment;
+        if (Layer != other.Layer)
+            result |= EventField.Layer;
+        if (Start != other.Start)
+            result |= EventField.StartTime;
+        if (End != other.End)
+            result |= EventField.EndTime;
+        if (Style != other.Style)
+            result |= EventField.Style;
+        if (Actor != other.Actor)
+            result |= EventField.Actor;
+        if (Margins.Left != other.Margins.Left)
+            result |= EventField.MarginLeft;
+        if (Margins.Right != other.Margins.Right)
+            result |= EventField.MarginRight;
+        if (Margins.Vertical != other.Margins.Vertical)
+            result |= EventField.MarginVertical;
+        if (Effect != other.Effect)
+            result |= EventField.Effect;
+        if (Text != other.Text)
+            result |= EventField.Text;
+        return result;
+    }
+
+    /// <summary>
     /// Get the ass representation of this event
     /// </summary>
     /// <returns>Ass-formatted string</returns>
