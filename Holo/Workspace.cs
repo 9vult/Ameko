@@ -18,6 +18,7 @@ namespace Holo;
 public class Workspace : BindableBase
 {
     private readonly ILogger _logger;
+    private readonly IConfiguration _configuration;
     private FileSystemWatcher? _fileSystemWatcher;
     private DateTimeOffset? _lastWriteTime;
     private DateTimeOffset? _lastExternalModificationAlertTime;
@@ -326,12 +327,14 @@ public class Workspace : BindableBase
     /// <param name="id">Unique ID</param>
     /// <param name="savePath"><paramref name="document"/>'s save path, if applicable</param>
     /// <param name="logger">Logger</param>
+    /// <param name="configuration">Configuration</param>
     /// <param name="mediaController">MediaController to use</param>
     internal Workspace(
         Document document,
         int id,
         Uri? savePath,
         ILogger<Workspace> logger,
+        IConfiguration configuration,
         MediaController mediaController
     )
     {
@@ -342,6 +345,7 @@ public class Workspace : BindableBase
 
         _savePath = savePath;
         _logger = logger;
+        _configuration = configuration;
 
         if (_savePath is not null)
         {

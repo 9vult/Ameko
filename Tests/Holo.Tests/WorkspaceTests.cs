@@ -14,11 +14,17 @@ public class WorkspaceTests
     private static Workspace CreateWorkspace(Document document, int id)
     {
         var persist = new Persistence(new MockFileSystem(), NullLogger<Persistence>.Instance);
+        var config = new Configuration.Configuration(
+            new MockFileSystem(),
+            NullLogger<Configuration.Configuration>.Instance
+        );
+
         return new Workspace(
             document,
             id,
             null,
             NullLogger<Workspace>.Instance,
+            config,
             new MediaController(
                 new NullSourceProvider(),
                 NullLogger<MediaController>.Instance,

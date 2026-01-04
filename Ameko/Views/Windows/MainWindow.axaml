@@ -110,29 +110,29 @@
                                     Command="{Binding NewCommand}" />
                     <NativeMenuItemSeparator />
                     <NativeMenuItem Header="{x:Static i18n:Resources.Menu_OpenSubtitle}"
-                                    Command="{Binding OpenSubtitleCommand} "/>
+                                    Command="{Binding OpenSubtitleCommand}" />
                     <NativeMenuItem Header="{x:Static i18n:Resources.Menu_SaveSubtitle}"
-                                    Command="{Binding SaveSubtitleCommand} "/>
+                                    Command="{Binding SaveSubtitleCommand}" />
                     <NativeMenuItem Header="{x:Static i18n:Resources.Menu_SaveSubtitleAs}"
-                                    Command="{Binding SaveSubtitleAsCommand} "/>
+                                    Command="{Binding SaveSubtitleAsCommand}" />
                     <NativeMenuItem Header="{x:Static i18n:Resources.Menu_ExportSubtitles}"
-                                    Command="{Binding ExportSubtitleCommand} "/>
+                                    Command="{Binding ExportSubtitleCommand}" />
                     <NativeMenuItem Header="{x:Static i18n:Resources.Menu_RecentSubtitles}">
                         <NativeMenu />
                     </NativeMenuItem>
                     <NativeMenuItemSeparator />
                     <NativeMenuItem Header="{x:Static i18n:Resources.Menu_OpenProject}"
-                                    Command="{Binding OpenProjectCommand} "/>
+                                    Command="{Binding OpenProjectCommand}" />
                     <NativeMenuItem Header="{x:Static i18n:Resources.Menu_OpenProjectFolder}"
-                                    Command="{Binding OpenFolderAsProjectCommand} "/>
+                                    Command="{Binding OpenFolderAsProjectCommand}" />
                     <NativeMenuItem Header="{x:Static i18n:Resources.Menu_SaveProject}"
-                                    Command="{Binding SaveProjectCommand} "/>
+                                    Command="{Binding SaveProjectCommand}" />
                     <NativeMenuItem Header="{x:Static i18n:Resources.Menu_RecentProjects}">
                         
                     </NativeMenuItem>
                     <NativeMenuItemSeparator />
                     <NativeMenuItem Header="{x:Static i18n:Resources.Menu_CloseTab}"
-                                    Command="{Binding CloseTabCommand} "/>
+                                    Command="{Binding CloseTabCommand}" />
                     <NativeMenuItem Header="{x:Static i18n:Resources.Menu_CloseProject}"
                                     Command="{Binding CloseProjectCommand}" />
                 </NativeMenu>
@@ -140,12 +140,12 @@
             <NativeMenuItem Header="{x:Static i18n:Resources.Menu_Edit}">
                 <NativeMenu>
                     <NativeMenuItem Header="{x:Static i18n:Resources.Menu_Undo}"
-                                    Command="{Binding UndoCommand} "/>
+                                    Command="{Binding UndoCommand}" />
                     <NativeMenuItem Header="{x:Static i18n:Resources.Menu_Redo}"
-                                    Command="{Binding RedoCommand} "/>
+                                    Command="{Binding RedoCommand}" />
                     <NativeMenuItemSeparator />
                     <NativeMenuItem Header="{x:Static i18n:Resources.Menu_Search}"
-                                    Command="{Binding ShowSearchDialogCommand} "/>
+                                    Command="{Binding ShowSearchDialogCommand}" />
                     <NativeMenuItem Header="{x:Static i18n:Resources.Menu_Spellcheck}"
                                     Command="{Binding ShowSpellcheckDialogCommand}" />
                 </NativeMenu>
@@ -153,15 +153,15 @@
             <NativeMenuItem Header="{x:Static i18n:Resources.Menu_Subtitle}">
                 <NativeMenu>
                     <NativeMenuItem Header="{x:Static i18n:Resources.Menu_StylesManager}"
-                                    Command="{Binding ShowStylesManagerCommand} "/>
+                                    Command="{Binding ShowStylesManagerCommand}" />
                     <NativeMenuItemSeparator />
                     <NativeMenuItem Header="{x:Static i18n:Resources.Menu_ReferenceFile_Attach}"
                                     IsVisible="{Binding !ProjectProvider.Current.WorkingSpace.ReferenceFileManager.IsReferenceLoaded}"
-                                    Command="{Binding AttachReferenceFileCommand} "/>
+                                    Command="{Binding AttachReferenceFileCommand}" />
                     <NativeMenuItem Header="{x:Static i18n:Resources.Menu_ReferenceFile_Detach}"
                                     IsVisible="{Binding ProjectProvider.Current.WorkingSpace.ReferenceFileManager.IsReferenceLoaded,
                                                         FallbackValue=false}"
-                                    Command="{Binding DetachReferenceFileCommand} "/>
+                                    Command="{Binding DetachReferenceFileCommand}" />
                     <NativeMenuItemSeparator />
                     <NativeMenuItem Header="{x:Static i18n:Resources.Menu_ScriptProperties}" />
                 </NativeMenu>

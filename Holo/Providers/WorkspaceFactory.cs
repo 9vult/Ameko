@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 
 using AssCS;
+using Holo.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -17,6 +18,7 @@ public class WorkspaceFactory(IServiceProvider provider, ILoggerFactory loggerFa
             id,
             savePath,
             loggerFactory.CreateLogger<Workspace>(),
+            provider.GetRequiredService<IConfiguration>(),
             provider.GetRequiredService<MediaController>()
         );
     }

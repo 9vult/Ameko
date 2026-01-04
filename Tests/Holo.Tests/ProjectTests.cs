@@ -20,6 +20,10 @@ public class ProjectTests
     public ProjectTests()
     {
         var persist = new Persistence(new MockFileSystem(), NullLogger<Persistence>.Instance);
+        var config = new Configuration.Configuration(
+            new MockFileSystem(),
+            NullLogger<Configuration.Configuration>.Instance
+        );
 
         _workspaceFactory
             .Create(Arg.Any<Document>(), Arg.Any<int>())
@@ -28,6 +32,7 @@ public class ProjectTests
                 args.Arg<int>(),
                 null,
                 NullLogger<Workspace>.Instance,
+                config,
                 new MediaController(
                     new NullSourceProvider(),
                     NullLogger<MediaController>.Instance,
@@ -42,6 +47,7 @@ public class ProjectTests
                 args.Arg<int>(),
                 args.Arg<Uri?>(),
                 NullLogger<Workspace>.Instance,
+                config,
                 new MediaController(
                     new NullSourceProvider(),
                     NullLogger<MediaController>.Instance,
@@ -68,11 +74,16 @@ public class ProjectTests
     private static Workspace CreateWorkspace(Document document, int id)
     {
         var persist = new Persistence(new MockFileSystem(), NullLogger<Persistence>.Instance);
+        var config = new Configuration.Configuration(
+            new MockFileSystem(),
+            NullLogger<Configuration.Configuration>.Instance
+        );
         return new Workspace(
             document,
             id,
             null,
             NullLogger<Workspace>.Instance,
+            config,
             new MediaController(
                 new NullSourceProvider(),
                 NullLogger<MediaController>.Instance,
