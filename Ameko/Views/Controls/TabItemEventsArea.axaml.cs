@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables.Fluent;
@@ -25,6 +26,19 @@ public partial class TabItemEventsArea : ReactiveUserControl<TabItemViewModel>
         interaction.SetOutput(Unit.Default);
     }
 
+    private void DoSelectEvents(IInteractionContext<IList<Event>, Unit> interaction)
+    {
+        interaction.SetOutput(Unit.Default);
+        if (interaction.Input.Count < 2)
+            return;
+
+        EventsGrid.SelectedItems.Clear();
+
+        // No AddRange :pensive:
+        foreach (var @event in interaction.Input)
+            EventsGrid.SelectedItems.Add(@event);
+    }
+
     public TabItemEventsArea()
     {
         InitializeComponent();
@@ -36,6 +50,7 @@ public partial class TabItemEventsArea : ReactiveUserControl<TabItemViewModel>
                 .Subscribe(vm =>
                 {
                     vm.ScrollToAndSelectEvent.RegisterHandler(DoScrollToAndSelectEvent);
+                    vm.SelectEvents.RegisterHandler(DoSelectEvents);
 
                     EventsGrid.AddHandler(
                         DataGrid.SelectionChangedEvent,

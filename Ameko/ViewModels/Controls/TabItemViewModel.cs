@@ -1,6 +1,7 @@
 ﻿// SPDX-License-Identifier: GPL-3.0-only
 
 using System;
+using System.Collections.Generic;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Windows.Input;
@@ -36,6 +37,7 @@ public partial class TabItemViewModel : ViewModelBase
     > ShowFileModifiedDialog { get; }
     public Interaction<SpellcheckDialogViewModel, Unit> ShowSpellcheckDialog { get; }
     public Interaction<Event, Unit> ScrollToAndSelectEvent { get; }
+    public Interaction<IList<Event>, Unit> SelectEvents { get; }
     public Interaction<Unit, Uri?> SaveFrameAs { get; }
     public Interaction<string, Unit> CopyFrame { get; }
 
@@ -259,6 +261,7 @@ public partial class TabItemViewModel : ViewModelBase
             new Interaction<FileModifiedDialogViewModel, FileModifiedDialogClosedMessage?>();
         ShowSpellcheckDialog = new Interaction<SpellcheckDialogViewModel, Unit>();
         ScrollToAndSelectEvent = new Interaction<Event, Unit>();
+        SelectEvents = new Interaction<IList<Event>, Unit>();
         SaveFrameAs = new Interaction<Unit, Uri?>();
         CopyFrame = new Interaction<string, Unit>();
         #endregion
@@ -338,6 +341,11 @@ public partial class TabItemViewModel : ViewModelBase
         KeybindService = keybindService;
         LayoutProvider = layoutProvider;
         _vmFactory = vmFactory;
+
+        Workspace.SelectionManager.SelectionChanged += async (_, _) =>
+        {
+            await SelectEvents.Handle(Workspace.SelectionManager.SelectedEventCollection);
+        };
 
         Workspace.OnFileModifiedExternally += async (_, _) =>
         {

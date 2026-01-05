@@ -192,7 +192,7 @@ public partial class TabItemViewModel : ViewModelBase
             var clones = Workspace.Document.EventManager.Duplicate(selection);
 
             Workspace.Commit(clones, ChangeType.AddEvent);
-            Workspace.SelectionManager.Select(clones.Last());
+            Workspace.SelectionManager.Select(clones.Last(), clones);
         });
     }
 

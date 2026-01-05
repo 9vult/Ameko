@@ -77,7 +77,7 @@ public class SelectionManager : BindableBase
     /// <param name="selection">Collection of all selected events</param>
     public void Select(Event active, IList<Event> selection)
     {
-        if (active == ActiveEvent && selection.Count == SelectedEventCollection.Count)
+        if (IsSelectionChanging)
             return;
 
         if (active == ActiveEvent && selection.Count == SelectedEventCollection.Count)
@@ -88,6 +88,7 @@ public class SelectionManager : BindableBase
         _activeEvent = active;
         _selectedEventCollection.ReplaceRange(selection);
         RaisePropertyChanged(nameof(ActiveEvent));
+        RaisePropertyChanged(nameof(SelectedEventCollection));
         SelectionChanged?.Invoke(this, EventArgs.Empty);
     }
 
@@ -102,8 +103,9 @@ public class SelectionManager : BindableBase
         BeginSelectionChange();
         _activeEvent = active;
         _selectedEventCollection.ReplaceRange(selection);
-        SelectionChanged?.Invoke(this, EventArgs.Empty);
         RaisePropertyChanged(nameof(ActiveEvent));
+        RaisePropertyChanged(nameof(SelectedEventCollection));
+        SelectionChanged?.Invoke(this, EventArgs.Empty);
     }
 
     public SelectionManager(Event initialSelection)
