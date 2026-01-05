@@ -92,5 +92,11 @@ namespace Ameko.I18N {
                 return ResourceManager.GetString("Search_RB_Effect", resourceCulture);
             }
         }
+        
+        public static string Search_RB_TextStripped {
+            get {
+                return ResourceManager.GetString("Search_RB_TextStripped", resourceCulture);
+            }
+        }
     }
 }

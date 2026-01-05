@@ -42,4 +42,7 @@
     <data name="Search_RB_Effect" xml:space="preserve">
         <value>Effect</value>
     </data>
+    <data name="Search_RB_TextStripped" xml:space="preserve">
+        <value>Text (stripped)</value>
+    </data>
 </root>

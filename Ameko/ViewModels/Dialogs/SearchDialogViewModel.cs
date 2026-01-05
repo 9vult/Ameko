@@ -73,6 +73,8 @@ public partial class SearchDialogViewModel : ViewModelBase
                             Query,
                             StringComparison.CurrentCultureIgnoreCase
                         ),
+                        SearchFilter.StrippedText => e.GetStrippedText()
+                            .Contains(Query, StringComparison.CurrentCultureIgnoreCase),
                         SearchFilter.Style => e.Style.Contains(
                             Query,
                             StringComparison.InvariantCultureIgnoreCase

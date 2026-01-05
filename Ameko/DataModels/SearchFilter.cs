@@ -5,6 +5,7 @@ namespace Ameko.DataModels;
 public enum SearchFilter
 {
     Text,
+    StrippedText,
     Style,
     Actor,
     Effect,

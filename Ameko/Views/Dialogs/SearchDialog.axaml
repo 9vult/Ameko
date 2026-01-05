@@ -54,6 +54,11 @@
                                              Converter={StaticResource EnumConverter},
                                              ConverterParameter={x:Static dm:SearchFilter.Text}}" />
             <RadioButton GroupName="Filter"
+                         Content="{x:Static i18n:Search.Search_RB_TextStripped}"
+                         IsChecked="{Binding Filter,
+                                             Converter={StaticResource EnumConverter},
+                                             ConverterParameter={x:Static dm:SearchFilter.StrippedText}}" />
+            <RadioButton GroupName="Filter"
                          Content="{x:Static i18n:Search.Search_RB_Style}"
                          IsChecked="{Binding Filter,
                                              Converter={StaticResource EnumConverter},
