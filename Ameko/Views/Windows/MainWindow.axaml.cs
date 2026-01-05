@@ -475,7 +475,9 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
                 // Subtitle
                 ViewModel.ShowStylesManager.RegisterHandler(DoShowWindow<StylesManagerWindow, StylesManagerWindowViewModel>);
                 ViewModel.AttachReferenceFile.RegisterHandler(DoShowAttachReferenceFileDialogAsync);
+                ViewModel.ShowSelectDialog.RegisterHandler(DoShowDialogAsync<SelectDialog, SelectDialogViewModel>);
                 // Project
+                ViewModel.ShowProjectConfigDialog.RegisterHandler(DoShowDialogAsync<ProjectConfigDialog, ProjectConfigDialogViewModel>);
                 // Timing
                 ViewModel.ShowShiftTimesDialog.RegisterHandler(DoShowDialogAsync<ShiftTimesDialog, ShiftTimesDialogViewModel>);
                 // Video
@@ -492,7 +494,6 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
                 ViewModel.ShowLogWindow.RegisterHandler(DoShowWindow<LogWindow, LogWindowViewModel>);
                 ViewModel.ShowAboutWindow.RegisterHandler(DoShowDialogAsync<AboutWindow, AboutWindowViewModel>);
                 ViewModel.ShowConfigDialog.RegisterHandler(DoShowDialogAsync<ConfigDialog, ConfigDialogViewModel>);
-                ViewModel.ShowProjectConfigDialog.RegisterHandler(DoShowDialogAsync<ProjectConfigDialog, ProjectConfigDialogViewModel>);
                 ViewModel.ShowKeybindsDialog.RegisterHandler(DoShowDialogAsync<KeybindsDialog, KeybindsDialogViewModel>);
                 ViewModel.OpenIssueTracker.RegisterHandler(DoOpenIssueTrackerAsync);
                 // Other

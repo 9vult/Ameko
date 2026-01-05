@@ -101,6 +101,10 @@
             <Separator />
             <MenuItem Header="{x:Static i18n:Resources.Menu_ScriptProperties}"
                       Icon="{icons:MaterialIconExt Kind=ListBoxOutline}" />
+            <Separator />
+            <MenuItem Header="{x:Static i18n:Resources.Menu_SelectLines}"
+                      Icon="{icons:MaterialIconExt Kind=SelectionSearch}"
+                      Command="{Binding ShowSelectDialogCommand}" />
         </MenuItem>
         <MenuItem Header="{x:Static i18n:Resources.Menu_Project}">
             <MenuItem Header="{x:Static i18n:Resources.Menu_ProjectConfig}"

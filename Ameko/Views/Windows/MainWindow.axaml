@@ -164,6 +164,9 @@
                                     Command="{Binding DetachReferenceFileCommand}" />
                     <NativeMenuItemSeparator />
                     <NativeMenuItem Header="{x:Static i18n:Resources.Menu_ScriptProperties}" />
+                    <NativeMenuItemSeparator />
+                    <NativeMenuItem Header="{x:Static i18n:Resources.Menu_SelectLines}"
+                                    Command="{Binding ShowSelectDialogCommand}" />
                 </NativeMenu>
             </NativeMenuItem>
             <NativeMenuItem Header="{x:Static i18n:Resources.Menu_Project}">

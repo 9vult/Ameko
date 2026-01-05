@@ -538,6 +538,18 @@ public partial class MainWindowViewModel : ViewModelBase
     }
 
     /// <summary>
+    /// Show select dialog
+    /// </summary>
+    private ReactiveCommand<Unit, Unit> CreateShowSelectDialogCommand()
+    {
+        return ReactiveCommand.CreateFromTask(async () =>
+        {
+            var vm = _vmFactory.Create<SelectDialogViewModel>();
+            await ShowSelectDialog.Handle(vm);
+        });
+    }
+
+    /// <summary>
     ///Attach a reference file without a open file dialog
     /// </summary>
     private ReactiveCommand<Uri, Unit> CreateAttachReferenceFileNoGuiCommand()

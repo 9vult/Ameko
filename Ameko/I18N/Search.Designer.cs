@@ -98,5 +98,17 @@ namespace Ameko.I18N {
                 return ResourceManager.GetString("Search_RB_TextStripped", resourceCulture);
             }
         }
+        
+        public static string SelectWindow_Title {
+            get {
+                return ResourceManager.GetString("SelectWindow_Title", resourceCulture);
+            }
+        }
+        
+        public static string Select_Button_Select {
+            get {
+                return ResourceManager.GetString("Select_Button_Select", resourceCulture);
+            }
+        }
     }
 }

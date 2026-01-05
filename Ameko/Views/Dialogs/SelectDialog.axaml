@@ -11,15 +11,15 @@
         xmlns:i18n="clr-namespace:Ameko.I18N"
         xmlns:vm="clr-namespace:Ameko.ViewModels.Dialogs"
 
-        x:Class="Ameko.Views.Dialogs.SearchDialog"
-        x:DataType="vm:SearchDialogViewModel"
+        x:Class="Ameko.Views.Dialogs.SelectDialog"
+        x:DataType="vm:SelectDialogViewModel"
         
         Topmost="True"
         CanResize="False"
         SizeToContent="WidthAndHeight"
         WindowStartupLocation="CenterOwner"
         Icon="/Assets/Ameko-Simplified-BG-64.ico"
-        Title="{x:Static i18n:Search.SearchWindow_Title}">
+        Title="{x:Static i18n:Search.SelectWindow_Title}">
     <Window.Resources>
         <converters:EnumConverter x:Key="EnumConverter" />
     </Window.Resources>
@@ -41,8 +41,8 @@
             <Button Grid.Column="2"
                     IsDefault="True"
                     Classes="Primary"
-                    Content="{x:Static i18n:Search.Search_Button_Find}"
-                    Command="{Binding FindNextCommand}" />
+                    Content="{x:Static i18n:Search.Select_Button_Select}"
+                    Command="{Binding SelectCommand}" />
         </Grid>
         <StackPanel Orientation="Horizontal"
                     Margin="2"

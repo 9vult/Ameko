@@ -800,5 +800,11 @@ namespace Ameko.I18N {
                 return ResourceManager.GetString("Menu_OpenKeyframes", resourceCulture);
             }
         }
+        
+        public static string Menu_SelectLines {
+            get {
+                return ResourceManager.GetString("Menu_SelectLines", resourceCulture);
+            }
+        }
     }
 }

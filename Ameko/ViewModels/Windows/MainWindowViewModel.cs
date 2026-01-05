@@ -50,7 +50,6 @@ public partial class MainWindowViewModel : ViewModelBase
     public Interaction<Unit, Uri?> OpenProject { get; }
     public Interaction<Unit, Uri?> OpenFolderAsProject { get; }
     public Interaction<string, Uri?> SaveProjectAs { get; }
-    public Interaction<Unit, Uri?> AttachReferenceFile { get; }
 
     // Edit
     public Interaction<SearchDialogViewModel, Unit> ShowSearchDialog { get; }
@@ -58,6 +57,8 @@ public partial class MainWindowViewModel : ViewModelBase
 
     // Subtitle
     public Interaction<StylesManagerWindowViewModel, Unit> ShowStylesManager { get; }
+    public Interaction<Unit, Uri?> AttachReferenceFile { get; }
+    public Interaction<SelectDialogViewModel, Unit> ShowSelectDialog { get; }
 
     // Project
     public Interaction<ProjectConfigDialogViewModel, Unit> ShowProjectConfigDialog { get; }
@@ -151,6 +152,9 @@ public partial class MainWindowViewModel : ViewModelBase
 
     [KeybindTarget("ameko.reference.detach", KeybindContext.Global)]
     public ICommand DetachReferenceFileCommand { get; }
+
+    [KeybindTarget("ameko.document.select", KeybindContext.Global)]
+    public ICommand ShowSelectDialogCommand { get; }
 
     // Project
     [KeybindTarget("ameko.project.config.show", KeybindContext.Global)]
@@ -406,11 +410,12 @@ public partial class MainWindowViewModel : ViewModelBase
         // Subtitle
         ShowStylesManager = new Interaction<StylesManagerWindowViewModel, Unit>();
         AttachReferenceFile = new Interaction<Unit, Uri?>();
+        ShowSelectDialog = new Interaction<SelectDialogViewModel, Unit>();
         // Project
         ShowProjectConfigDialog = new Interaction<ProjectConfigDialogViewModel, Unit>();
         // Video
         OpenVideo = new Interaction<Unit, Uri?>();
-        OpenKeyframes = new Interaction<Unit, Uri>();
+        OpenKeyframes = new Interaction<Unit, Uri?>();
         ShowJumpDialog = new Interaction<JumpDialogViewModel, JumpDialogClosedMessage?>();
         // Audio
         OpenAudio = new Interaction<Unit, Uri?>();
@@ -457,6 +462,7 @@ public partial class MainWindowViewModel : ViewModelBase
         ShowStylesManagerCommand = CreateShowStylesManagerCommand();
         AttachReferenceFileCommand = CreateAttachReferenceFileCommand();
         DetachReferenceFileCommand = CreateDetachReferenceFileCommand();
+        ShowSelectDialogCommand = CreateShowSelectDialogCommand();
         // Project
         ShowProjectConfigDialogCommand = CreateShowProjectConfigDialogCommand();
         // Timing
