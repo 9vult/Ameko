@@ -806,5 +806,11 @@ namespace Ameko.I18N {
                 return ResourceManager.GetString("Menu_SelectLines", resourceCulture);
             }
         }
+        
+        public static string Menu_Sort_Lines {
+            get {
+                return ResourceManager.GetString("Menu_Sort_Lines", resourceCulture);
+            }
+        }
     }
 }

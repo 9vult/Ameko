@@ -14,13 +14,12 @@ using ReactiveUI;
 
 namespace Ameko.ViewModels.Dialogs;
 
-public partial class SortDialogViewModel : ViewModelBase
+public class SortDialogViewModel : ViewModelBase
 {
-    public string Query { get; set; } = string.Empty;
-    public SearchFilter SortBy { get; set; } = SearchFilter.Text;
+    public SearchFilter SortBy { get; set; } = SearchFilter.Start;
     public SearchFilter ThenBy { get; set; } = SearchFilter.None;
-    public bool SortByDescending { get; set; } = false;
-    public bool ThenByDescending { get; set; } = false;
+    public bool SortByDescending { get; set; }
+    public bool ThenByDescending { get; set; }
 
     public ReactiveCommand<Unit, EmptyMessage> SortCommand { get; }
 
@@ -31,7 +30,7 @@ public partial class SortDialogViewModel : ViewModelBase
         SortCommand = ReactiveCommand.Create(() =>
         {
             var wsp = projectProvider1.Current.WorkingSpace;
-            if (wsp is null || string.IsNullOrEmpty(Query))
+            if (wsp is null)
                 return new EmptyMessage();
 
             var results = GenerateResults(wsp);

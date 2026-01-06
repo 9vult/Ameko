@@ -4,7 +4,6 @@ using System;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
-using Ameko.Utilities;
 using Ameko.ViewModels.Dialogs;
 using Ameko.Views.Dialogs;
 using Ameko.Views.Windows;
@@ -13,18 +12,16 @@ using AssCS.History;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Threading;
-using Holo;
 using Holo.Media;
 using Holo.Media.Providers;
 using Holo.Models;
 using Material.Icons;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using ReactiveUI;
 
 namespace Ameko.ViewModels.Windows;
 
-public partial class MainWindowViewModel : ViewModelBase
+public partial class MainWindowViewModel
 {
     /// <summary>
     /// Create a new file
@@ -538,7 +535,19 @@ public partial class MainWindowViewModel : ViewModelBase
     }
 
     /// <summary>
-    /// Show select dialog
+    /// Show sort lines dialog
+    /// </summary>
+    private ReactiveCommand<Unit, Unit> CreateShowSortDialogCommand()
+    {
+        return ReactiveCommand.CreateFromTask(async () =>
+        {
+            var vm = _vmFactory.Create<SortDialogViewModel>();
+            await ShowSortDialog.Handle(vm);
+        });
+    }
+
+    /// <summary>
+    /// Show select lines dialog
     /// </summary>
     private ReactiveCommand<Unit, Unit> CreateShowSelectDialogCommand()
     {
@@ -634,7 +643,7 @@ public partial class MainWindowViewModel : ViewModelBase
             }
 
             @event.Start = kfTime;
-            wsp.Commit(@event, ChangeType.ModifyEventMeta, false);
+            wsp.Commit(@event, ChangeType.ModifyEventMeta);
         });
     }
 
@@ -678,7 +687,7 @@ public partial class MainWindowViewModel : ViewModelBase
             }
 
             @event.End = kfTime;
-            wsp.Commit(@event, ChangeType.ModifyEventMeta, false);
+            wsp.Commit(@event, ChangeType.ModifyEventMeta);
         });
     }
 
@@ -947,7 +956,7 @@ public partial class MainWindowViewModel : ViewModelBase
         });
     }
 
-    public ReactiveCommand<string, Unit> CreateSelectLayoutCommand()
+    private ReactiveCommand<string, Unit> CreateSelectLayoutCommand()
     {
         return ReactiveCommand.Create(
             (string name) =>
@@ -961,7 +970,7 @@ public partial class MainWindowViewModel : ViewModelBase
         );
     }
 
-    public ReactiveCommand<Unit, Unit> CreateRefreshLayoutsCommand()
+    private ReactiveCommand<Unit, Unit> CreateRefreshLayoutsCommand()
     {
         return ReactiveCommand.Create(() =>
         {

@@ -399,4 +399,7 @@
     <data name="Menu_SelectLines" xml:space="preserve">
         <value>Select _Lines...</value>
     </data>
+    <data name="Menu_Sort_Lines" xml:space="preserve">
+        <value>Sor_t Lines...</value>
+    </data>
 </root>

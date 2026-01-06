@@ -102,6 +102,9 @@
             <MenuItem Header="{x:Static i18n:Resources.Menu_ScriptProperties}"
                       Icon="{icons:MaterialIconExt Kind=ListBoxOutline}" />
             <Separator />
+            <MenuItem Header="{x:Static i18n:Resources.Menu_Sort_Lines}"
+                      Icon="{icons:MaterialIconExt Kind=Sort}"
+                      Command="{Binding ShowSortDialogCommand}" />
             <MenuItem Header="{x:Static i18n:Resources.Menu_SelectLines}"
                       Icon="{icons:MaterialIconExt Kind=SelectionSearch}"
                       Command="{Binding ShowSelectDialogCommand}" />

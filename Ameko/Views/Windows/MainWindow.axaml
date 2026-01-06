@@ -165,6 +165,8 @@
                     <NativeMenuItemSeparator />
                     <NativeMenuItem Header="{x:Static i18n:Resources.Menu_ScriptProperties}" />
                     <NativeMenuItemSeparator />
+                    <NativeMenuItem Header="{x:Static i18n:Resources.Menu_Sort_Lines}"
+                                    Command="{Binding ShowSortDialogCommand}" />
                     <NativeMenuItem Header="{x:Static i18n:Resources.Menu_SelectLines}"
                                     Command="{Binding ShowSelectDialogCommand}" />
                 </NativeMenu>
