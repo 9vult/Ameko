@@ -4,9 +4,13 @@ namespace Ameko.DataModels;
 
 public enum SearchFilter
 {
+    None,
     Text,
     StrippedText,
     Style,
     Actor,
     Effect,
+    Comment,
+    Start,
+    End,
 }

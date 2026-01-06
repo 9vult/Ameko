@@ -205,6 +205,10 @@
       <DependentUpon>SelectDialog.axaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Views\Dialogs\SortDialog.axaml.cs">
+      <DependentUpon>SortDialog.axaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Update="I18N\Resources.resx">

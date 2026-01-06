@@ -110,5 +110,59 @@ namespace Ameko.I18N {
                 return ResourceManager.GetString("Select_Button_Select", resourceCulture);
             }
         }
+        
+        public static string SortWindow_Title {
+            get {
+                return ResourceManager.GetString("SortWindow_Title", resourceCulture);
+            }
+        }
+        
+        public static string Sort_Button_Sort {
+            get {
+                return ResourceManager.GetString("Sort_Button_Sort", resourceCulture);
+            }
+        }
+        
+        public static string Search_RB_Comment {
+            get {
+                return ResourceManager.GetString("Search_RB_Comment", resourceCulture);
+            }
+        }
+        
+        public static string Search_RB_Start {
+            get {
+                return ResourceManager.GetString("Search_RB_Start", resourceCulture);
+            }
+        }
+        
+        public static string Search_RB_End {
+            get {
+                return ResourceManager.GetString("Search_RB_End", resourceCulture);
+            }
+        }
+        
+        public static string Search_RB_None {
+            get {
+                return ResourceManager.GetString("Search_RB_None", resourceCulture);
+            }
+        }
+        
+        public static string Sort_Label_Descending {
+            get {
+                return ResourceManager.GetString("Sort_Label_Descending", resourceCulture);
+            }
+        }
+        
+        public static string Sort_Label_SortBy {
+            get {
+                return ResourceManager.GetString("Sort_Label_SortBy", resourceCulture);
+            }
+        }
+        
+        public static string Sort_Label_ThenBy {
+            get {
+                return ResourceManager.GetString("Sort_Label_ThenBy", resourceCulture);
+            }
+        }
     }
 }

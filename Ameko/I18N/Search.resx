@@ -51,4 +51,31 @@
     <data name="Select_Button_Select" xml:space="preserve">
         <value>Select</value>
     </data>
+    <data name="SortWindow_Title" xml:space="preserve">
+        <value>Sort</value>
+    </data>
+    <data name="Sort_Button_Sort" xml:space="preserve">
+        <value>Sort</value>
+    </data>
+    <data name="Search_RB_Comment" xml:space="preserve">
+        <value>Is Comment</value>
+    </data>
+    <data name="Search_RB_Start" xml:space="preserve">
+        <value>Start Time</value>
+    </data>
+    <data name="Search_RB_End" xml:space="preserve">
+        <value>End Time</value>
+    </data>
+    <data name="Search_RB_None" xml:space="preserve">
+        <value>None</value>
+    </data>
+    <data name="Sort_Label_Descending" xml:space="preserve">
+        <value>Descending?</value>
+    </data>
+    <data name="Sort_Label_SortBy" xml:space="preserve">
+        <value>Sort By:</value>
+    </data>
+    <data name="Sort_Label_ThenBy" xml:space="preserve">
+        <value>Then By:</value>
+    </data>
 </root>

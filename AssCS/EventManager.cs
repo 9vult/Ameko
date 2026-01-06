@@ -536,6 +536,14 @@ public class EventManager : BindableBase
         return result;
     }
 
+    public void Clear()
+    {
+        _events.Clear();
+        _currentIds.Clear();
+        _chain.Clear();
+        Notify();
+    }
+
     #endregion Basic Actions
     #region Getters
 
