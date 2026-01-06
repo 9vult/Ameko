@@ -55,6 +55,23 @@ public class KeybindTextbox : TextBox
         if (char.IsDigit(input[0]))
             input = $"D{input[0]}";
 
+        // Next, we need to test for a bunch of options that are under an "OEM"
+        // block for some reason. Includes brackets, space, etc.
+        input = input[0] switch
+        {
+            ';' => "OemSemicolon",
+            '=' => "OemPlus",
+            '-' => "OemMinus",
+            '/' => "OemQuestion",
+            '`' => "OemTilde",
+            '[' => "OemOpenBrackets",
+            '\\' => "OemPipe",
+            ']' => "OemCloseBrackets",
+            '\'' => "OemQuotes",
+            ' ' => "Space",
+            _ => input,
+        };
+
         var key = KeyGesture.Parse(input);
         if (key.Key == Key.None)
             return;
