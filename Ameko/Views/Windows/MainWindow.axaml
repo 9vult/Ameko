@@ -128,7 +128,7 @@
                     <NativeMenuItem Header="{x:Static i18n:Resources.Menu_SaveProject}"
                                     Command="{Binding SaveProjectCommand}" />
                     <NativeMenuItem Header="{x:Static i18n:Resources.Menu_RecentProjects}">
-                        
+                        <NativeMenu />
                     </NativeMenuItem>
                     <NativeMenuItemSeparator />
                     <NativeMenuItem Header="{x:Static i18n:Resources.Menu_CloseTab}"
