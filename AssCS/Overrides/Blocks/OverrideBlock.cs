@@ -305,9 +305,6 @@ public class OverrideBlock(ReadOnlySpan<char> data) : Block(data.ToString(), Blo
                 var block = args[blockIdx].AsSpan();
                 var blockTags = ParseTags(block);
 
-                // Move past the inner section we just parsed
-                // data = data[block.Length..];
-
                 switch (blockIdx)
                 {
                     case 0: // \t(\xyz)
