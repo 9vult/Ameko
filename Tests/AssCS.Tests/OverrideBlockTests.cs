@@ -536,6 +536,27 @@ public class OverrideBlockTests
         await Assert.That(fscy!.Value).IsEqualTo(400);
     }
 
+    [Test]
+    public async Task Transform_RectClip()
+    {
+        const string body = @"\t(10,40,1.5,\clip(0,20,100,120))";
+        var block = new OverrideBlock(body);
+
+        await Assert.That(block.Tags.Count).IsEqualTo(1);
+        var t = await Assert.That(block.Tags[0]).IsTypeOf<OverrideTag.T>();
+
+        await Assert.That(t).IsNotNull();
+        await Assert.That(t.Tags.Count).IsEqualTo(1);
+
+        var clip = await Assert.That(t.Tags[0]).IsTypeOf<OverrideTag.Clip>();
+
+        await Assert.That(clip).IsNotNull();
+        await Assert.That(clip.X0).IsEqualTo(0);
+        await Assert.That(clip.Y0).IsEqualTo(20);
+        await Assert.That(clip.X1).IsEqualTo(100);
+        await Assert.That(clip.Y1).IsEqualTo(120);
+    }
+
     #endregion Transform
 
     #region Clip

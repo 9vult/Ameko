@@ -81,6 +81,14 @@ public class OverrideBlock(ReadOnlySpan<char> data) : Block(data.ToString(), Blo
                             break;
                     }
 
+                    // Stop here if the end of the string was reached
+                    if (q == data.Length)
+                    {
+                        args.Add(data.ToString());
+                        break;
+                    }
+
+                    // Continue parsing args
                     var r = data[q];
                     if (r is ',')
                     {
