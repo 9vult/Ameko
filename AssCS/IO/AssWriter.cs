@@ -41,7 +41,11 @@ public class AssWriter(Document document, ConsumerInfo consumer) : FileWriter
 
     private void WriteScriptInfo(TextWriter writer)
     {
-        foreach (var info in document.ScriptInfoManager.GetAll())
+        foreach (
+            var info in document
+                .ScriptInfoManager.GetAll()
+                .Where(kvp => !string.IsNullOrEmpty(kvp.Value))
+        )
         {
             writer.WriteLine($"{info.Key}: {info.Value}");
         }
