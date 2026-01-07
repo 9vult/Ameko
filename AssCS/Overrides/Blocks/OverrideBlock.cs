@@ -1,7 +1,6 @@
 ﻿// SPDX-License-Identifier: MPL-2.0
 
 using System.Runtime.CompilerServices;
-using AssCS.Utilities;
 
 namespace AssCS.Overrides.Blocks;
 
@@ -112,10 +111,7 @@ public class OverrideBlock(ReadOnlySpan<char> data) : Block(data.ToString(), Blo
                             }
                         }
                         args.Add(data[..q].ToString());
-
-                        // Closing parenthesis could be missing
-                        if (q != data.Length)
-                            data = data[q..];
+                        data = data[q..]; // Consoom
                         break;
                     }
                 }
@@ -308,6 +304,9 @@ public class OverrideBlock(ReadOnlySpan<char> data) : Block(data.ToString(), Blo
                 // Parse inner tags
                 var block = args[blockIdx].AsSpan();
                 var blockTags = ParseTags(block);
+
+                // Move past the inner section we just parsed
+                // data = data[block.Length..];
 
                 switch (blockIdx)
                 {

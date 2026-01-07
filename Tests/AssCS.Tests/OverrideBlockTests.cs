@@ -557,6 +557,91 @@ public class OverrideBlockTests
         await Assert.That(clip.Y1).IsEqualTo(120);
     }
 
+    [Test]
+    public async Task Transform_Nested()
+    {
+        const string body = @"\t(\alpha1\t(\alpha2))";
+        var block = new OverrideBlock(body);
+
+        await Assert.That(block.Tags.Count).IsEqualTo(1);
+        var t = await Assert.That(block.Tags[0]).IsTypeOf<OverrideTag.T>();
+
+        await Assert.That(t).IsNotNull();
+        await Assert.That(t.Tags.Count).IsEqualTo(2);
+
+        var alpha1 = await Assert.That(t.Tags[0]).IsTypeOf<OverrideTag.Alpha>();
+        var inner = await Assert.That(t.Tags[1]).IsTypeOf<OverrideTag.T>();
+
+        await Assert.That(alpha1).IsNotNull();
+        await Assert.That(alpha1.RawValue).IsEqualTo("1");
+
+        await Assert.That(inner).IsNotNull();
+        await Assert.That(inner.Tags.Count).IsEqualTo(1);
+        var alpha2 = await Assert.That(inner.Tags[0]).IsTypeOf<OverrideTag.Alpha>();
+        await Assert.That(alpha2).IsNotNull();
+        await Assert.That(alpha2.RawValue).IsEqualTo("2");
+    }
+
+    [Test]
+    public async Task Transform_Nested_RectClip()
+    {
+        const string body = @"\t(\t(\clip(0,20,100,120)))";
+        var block = new OverrideBlock(body);
+
+        await Assert.That(block.Tags.Count).IsEqualTo(1);
+        var t = await Assert.That(block.Tags[0]).IsTypeOf<OverrideTag.T>();
+
+        await Assert.That(t).IsNotNull();
+        await Assert.That(t.Tags.Count).IsEqualTo(1);
+
+        var inner = await Assert.That(t.Tags[0]).IsTypeOf<OverrideTag.T>();
+
+        await Assert.That(inner).IsNotNull();
+        await Assert.That(inner.Tags.Count).IsEqualTo(1);
+
+        var clip = await Assert.That(inner.Tags[0]).IsTypeOf<OverrideTag.Clip>();
+
+        await Assert.That(clip).IsNotNull();
+        await Assert.That(clip.X0).IsEqualTo(0);
+        await Assert.That(clip.Y0).IsEqualTo(20);
+        await Assert.That(clip.X1).IsEqualTo(100);
+        await Assert.That(clip.Y1).IsEqualTo(120);
+    }
+
+    [Test]
+    public async Task Transform_DoesNotConsumeTrailingTags()
+    {
+        const string body = @"\t(\fscx120\fscy400)\bord3";
+        var block = new OverrideBlock(body);
+
+        await Assert.That(block.Tags.Count).IsEqualTo(2);
+        var t = await Assert.That(block.Tags[0]).IsTypeOf<OverrideTag.T>();
+        var bord = await Assert.That(block.Tags[1]).IsTypeOf<OverrideTag.Bord>();
+
+        await Assert.That(t).IsNotNull();
+        await Assert.That(bord).IsNotNull();
+
+        await Assert.That(t.Tags.Count).IsEqualTo(2);
+        await Assert.That(bord.Thickness).IsEqualTo(3);
+    }
+
+    [Test]
+    public async Task Transform_Nested_DoesNotConsumeTrailingTags()
+    {
+        const string body = @"\t(\alpha1\t(\alpha2))\bord3";
+        var block = new OverrideBlock(body);
+
+        await Assert.That(block.Tags.Count).IsEqualTo(2);
+        var t = await Assert.That(block.Tags[0]).IsTypeOf<OverrideTag.T>();
+        var bord = await Assert.That(block.Tags[1]).IsTypeOf<OverrideTag.Bord>();
+
+        await Assert.That(t).IsNotNull();
+        await Assert.That(bord).IsNotNull();
+
+        await Assert.That(t.Tags.Count).IsEqualTo(2);
+        await Assert.That(bord.Thickness).IsEqualTo(3);
+    }
+
     #endregion Transform
 
     #region Clip
