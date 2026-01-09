@@ -10,13 +10,13 @@ license=('GPL-3.0-only' 'MPL-2.0')
 depends=(
   'libass'
   'ffms2'
-  'dotnet-runtime-10.0-bin'
+  'dotnet-runtime'
 )
 makedepends=(
   'git'
   'zig'
-  'dotnet-sdk-10.0-bin'
-  'aspnet-runtime-10.0-bin'
+  'dotnet-sdk'
+  'aspnet-runtime'
 )
 provides=('ameko=${pkgver}')
 conflicts=('ameko')
@@ -38,8 +38,8 @@ build() {
 package() {
   install -d "${pkgdir}/usr/bin" "${pkgdir}/usr/lib/ameko"
 
-  cp -a "Ameko/Ameko/bin/Release/net9.0/publish/." "${pkgdir}/usr/lib/ameko/"
-  install -Dm 755 "Ameko/Ameko/bin/Release/net9.0/publish/Ameko" "${pkgdir}/usr/lib/ameko/ameko"
+  cp -a "Ameko/Ameko/bin/Release/net10.0/publish/." "${pkgdir}/usr/lib/ameko/"
+  install -Dm 755 "Ameko/Ameko/bin/Release/net10.0/publish/Ameko" "${pkgdir}/usr/lib/ameko/ameko"
   ln -s "/usr/lib/ameko/ameko" "${pkgdir}/usr/bin/ameko"
 
   install -Dm 755 "Ameko/Mizuki/zig-out/lib/libmizuki.so" "${pkgdir}/usr/lib/ameko/libmizuki.so"
