@@ -1,3 +1,5 @@
 files:
   - source: /Ameko/I18N/*.resx
     translation: /Ameko/I18N/%file_name%.%locale%.resx
+  - source: /Ameko/Assets/Help/en-US/*.md
+    translation: /Ameko/Assets/Help/%locale%/%original_file_name%
