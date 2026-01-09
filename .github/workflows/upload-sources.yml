@@ -2,7 +2,7 @@ name: Upload Sources
 
 on:
   push:
-    paths: [ 'Ameko/I18N/**' ]
+    paths: [ 'Ameko/I18N/**', 'Ameko/Assets/Help/**' ]
     branches: [ master ]
 
 jobs:
