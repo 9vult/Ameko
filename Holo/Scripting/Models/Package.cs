@@ -133,16 +133,16 @@ public record Package : IComparable<Package>
             return string.Empty;
 
         StringBuilder sb = new();
-        sb.AppendLine($"# {DisplayName}");
+        sb.AppendLine($"## {DisplayName}");
 
         foreach (var entry in Changelog.OrderByDescending(e => e.Version))
         {
-            sb.AppendLine($"## {entry.Version}");
+            sb.AppendLine($"### {entry.Version}");
             sb.AppendLine();
 
             if (entry.Added?.Length > 0)
             {
-                sb.AppendLine("### Additions");
+                sb.AppendLine("#### Additions");
                 foreach (var addition in entry.Added)
                 {
                     sb.AppendLine($"* {addition}");
@@ -151,7 +151,7 @@ public record Package : IComparable<Package>
 
             if (entry.Fixed?.Length > 0)
             {
-                sb.AppendLine("### Fixes");
+                sb.AppendLine("#### Fixes");
                 foreach (var fix in entry.Fixed)
                 {
                     sb.AppendLine($"* {fix}");
@@ -160,7 +160,7 @@ public record Package : IComparable<Package>
 
             if (entry.Changed?.Length > 0)
             {
-                sb.AppendLine("### Changes");
+                sb.AppendLine("#### Changes");
                 foreach (var change in entry.Changed)
                 {
                     sb.AppendLine($"* {change}");
@@ -169,7 +169,7 @@ public record Package : IComparable<Package>
 
             if (entry.Removed?.Length > 0)
             {
-                sb.AppendLine("### Removals");
+                sb.AppendLine("#### Removals");
                 foreach (var removal in entry.Removed)
                 {
                     sb.AppendLine($"* {removal}");
@@ -178,7 +178,7 @@ public record Package : IComparable<Package>
 
             if (entry.Deprecated?.Length > 0)
             {
-                sb.AppendLine("### Deprecations");
+                sb.AppendLine("#### Deprecations");
                 foreach (var change in entry.Deprecated)
                 {
                     sb.AppendLine($"* {change}");

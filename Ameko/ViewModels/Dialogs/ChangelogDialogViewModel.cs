@@ -15,12 +15,12 @@ public partial class ChangelogDialogViewModel(string changelog) : ViewModelBase
         .UseColorCode()
         .Build();
 
-    private static readonly string DarkCss = new StreamReader(
-        AssetLoader.Open(new Uri("avares://Ameko/Assets/Css/md.dark.css"))
+    private static readonly string LightCss = new StreamReader(
+        AssetLoader.Open(new Uri("avares://Ameko/Assets/Css/md.light.css"))
     ).ReadToEnd();
 
     public string ChangelogContent { get; } =
-        $"<style>\n{DarkCss}\n</style>\n<body>\n"
+        $"<style>\n{LightCss}\n</style>\n<body class=\"markdown-body\">\n"
         + Markdig.Markdown.ToHtml(changelog, Pipeline)
         + "\n</body>";
 }

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
+using System.Text;
 using Ameko.DataModels;
 using Avalonia.Platform;
 using Holo.Configuration;
@@ -26,8 +27,12 @@ public partial class HelpWindowViewModel(
         .UseColorCode()
         .Build();
 
-    private static readonly string DarkCss = new StreamReader(
-        AssetLoader.Open(new Uri("avares://Ameko/Assets/Css/md.dark.css"))
+    // private static readonly string DarkCss = new StreamReader(
+    //     AssetLoader.Open(new Uri("avares://Ameko/Assets/Css/md.dark.css"))
+    // ).ReadToEnd();
+
+    private static readonly string LightCss = new StreamReader(
+        AssetLoader.Open(new Uri("avares://Ameko/Assets/Css/md.light.css"))
     ).ReadToEnd();
 
     private static readonly HelpArticle[] HelpArticles =
@@ -53,12 +58,17 @@ public partial class HelpWindowViewModel(
                 var uri = AssetLoader.Exists(culturePath) ? culturePath : fallbackPath;
 
                 var md = new StreamReader(AssetLoader.Open(uri)).ReadToEnd();
-                var content =
-                    $"<style>\n{DarkCss}\n</style>\n<body>\n"
-                    + Markdig.Markdown.ToHtml(md, Pipeline)
-                    + "\n</body>";
 
-                result.Add(new AmekoHelp { DisplayName = article.Name, Content = content });
+                var sb = new StringBuilder();
+                sb.AppendLine("<!doctype html>");
+                sb.AppendLine("<html><style>");
+                sb.AppendLine(LightCss);
+                sb.AppendLine("</style>");
+                sb.AppendLine("<body><article class=\"markdown-body\">");
+                sb.AppendLine(Markdig.Markdown.ToHtml(md, Pipeline));
+                sb.AppendLine("</article></body></html>");
+
+                result.Add(new AmekoHelp { DisplayName = article.Name, Content = sb.ToString() });
             }
             return result;
         }
@@ -102,9 +112,16 @@ public partial class HelpWindowViewModel(
         using var reader = new StreamReader(fs);
         var raw = reader.ReadToEnd();
 
-        return $"<style>\n{DarkCss}\n</style>\n<body>\n"
-            + Markdig.Markdown.ToHtml(raw, Pipeline)
-            + "\n</body>";
+        var sb = new StringBuilder();
+        sb.AppendLine("<!doctype html>");
+        sb.AppendLine("<html><style>");
+        sb.AppendLine(LightCss);
+        sb.AppendLine("</style>");
+        sb.AppendLine("<body><article class=\"markdown-body\">");
+        sb.AppendLine(Markdig.Markdown.ToHtml(raw, Pipeline));
+        sb.AppendLine("</article></body></html>");
+
+        return sb.ToString();
     }
 
     private record HelpArticle(string Name, string FileName);
