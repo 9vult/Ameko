@@ -18,7 +18,12 @@ public class CultureService : ICultureService
     // Some fun stuff because this needs to be both statically-accessible (for startup)
     // and accessible via DI (for everything else)
 
-    private static readonly List<DisplayLanguage> StaticLanguages = [new("English (US)", "en-US")];
+    private static readonly List<DisplayLanguage> StaticLanguages =
+    [
+        new("English (US)", "en-US"),
+        new("English (UK)", "en-GB"),
+        new("Spanish (LATM)", "es-419"),
+    ];
 
     private static readonly List<CultureInfo> StaticCultures = StaticLanguages
         .Select(l => new CultureInfo(l.Locale))
@@ -77,7 +82,7 @@ public class CultureService : ICultureService
             );
             using var reader = new StreamReader(fs);
             using var doc = JsonDocument.Parse(reader.ReadToEnd());
-            if (doc.RootElement.TryGetProperty("culture", out var cultureElement))
+            if (doc.RootElement.TryGetProperty("Culture", out var cultureElement))
             {
                 return cultureElement.GetString() ?? defaultCulture;
             }
