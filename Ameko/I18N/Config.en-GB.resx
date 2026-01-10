@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" id="root">
+    <xsd:element name="root" msdata:IsDataSet="true">
+            
+        </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>1.3</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="ConfigDialog_Title" xml:space="preserve">
+        <value>Configuration</value>
+    </data>
+  <data name="Config_RpcLevel_Disabled" xml:space="preserve">
+        <value>Disabled</value>
+    </data>
+  <data name="Config_RpcLevel_Enabled" xml:space="preserve">
+        <value>Enabled</value>
+    </data>
+  <data name="Config_RpcLevel_TimeOnly" xml:space="preserve">
+        <value>Time Only</value>
+    </data>
+  <data name="Config_PropFields_All" xml:space="preserve">
+        <value>All fields</value>
+    </data>
+  <data name="Config_PropFields_None" xml:space="preserve">
+        <value>No fields</value>
+    </data>
+  <data name="Config_PropFields_NonText" xml:space="preserve">
+        <value>Non-Text fields only</value>
+    </data>
+  <data name="Config_Theme_Default" xml:space="preserve">
+        <value>Default</value>
+    </data>
+  <data name="Config_Theme_Light" xml:space="preserve">
+        <value>Light</value>
+    </data>
+  <data name="Config_Theme_Dark" xml:space="preserve">
+        <value>Dark</value>
+    </data>
+  <data name="Config_SaveFrames_WithVideo" xml:space="preserve">
+        <value>With Subtitles</value>
+    </data>
+  <data name="Config_SaveFrames_WithSubtitles" xml:space="preserve">
+        <value>With Video</value>
+    </data>
+  <data name="Config_Label_CpsWarnThreshold" xml:space="preserve">
+        <value>CPS warn threshold</value>
+    </data>
+  <data name="Config_Label_CpsWhitespace" xml:space="preserve">
+        <value>CPS includes whitespace?</value>
+    </data>
+  <data name="Config_Label_CpsPunctuation" xml:space="preserve">
+        <value>CPS includes punctuation?</value>
+    </data>
+  <data name="Config_Label_SoftLinebreaks" xml:space="preserve">
+        <value>Use soft linebreaks?</value>
+    </data>
+  <data name="Config_Label_SoftLinebreaks_ToolTip" xml:space="preserve">
+        <value>Use \n for linebreaks instead of \N</value>
+    </data>
+  <data name="Config_Label_DefaultLayer" xml:space="preserve">
+        <value>Default layer</value>
+    </data>
+  <data name="Config_Label_DisplayLanguage" xml:space="preserve">
+        <value>Display language</value>
+    </data>
+  <data name="Config_Label_SpellcheckLanguage" xml:space="preserve">
+        <value>Spellcheck language</value>
+    </data>
+  <data name="Config_Label_RichPresence" xml:space="preserve">
+        <value>Rich Presence</value>
+    </data>
+  <data name="Config_Label_PropagateChanges" xml:space="preserve">
+        <value>Propagate changes for</value>
+    </data>
+  <data name="Config_Label_PropagateChanges_ToolTip" xml:space="preserve">
+        <value>Propagate changes from the active event to other selected events</value>
+    </data>
+  <data name="Config_Label_AutosaveEnabled" xml:space="preserve">
+        <value>Autosave enabled?</value>
+    </data>
+  <data name="Config_Label_SaveFrames" xml:space="preserve">
+        <value>Save frames</value>
+    </data>
+  <data name="Config_Label_AutosaveInterval" xml:space="preserve">
+        <value>Autosave interval (sec)</value>
+    </data>
+  <data name="Config_Label_Theme" xml:space="preserve">
+        <value>Theme</value>
+    </data>
+  <data name="Config_Label_EditorFs" xml:space="preserve">
+        <value>Editor font size</value>
+    </data>
+  <data name="Config_Label_GridFs" xml:space="preserve">
+        <value>Grid font size</value>
+    </data>
+  <data name="Config_Label_ReferenceFs" xml:space="preserve">
+        <value>Reference file font size</value>
+    </data>
+  <data name="Config_Label_GridPadding" xml:space="preserve">
+        <value>Grid padding</value>
+    </data>
+  <data name="Config_Header_Ssa" xml:space="preserve">
+        <value>SubStation Alpha</value>
+    </data>
+  <data name="Config_Header_Behavior" xml:space="preserve">
+        <value>Behaviour</value>
+    </data>
+  <data name="Config_Header_Appearance" xml:space="preserve">
+        <value>Appearance</value>
+    </data>
+  <data name="Config_Label_LineWidthPunctuation" xml:space="preserve">
+        <value>Line Width includes punctuation?</value>
+    </data>
+  <data name="Config_Label_LineWidthWhitespace" xml:space="preserve">
+        <value>Line Width includes whitespace?</value>
+    </data>
+  <data name="Config_Label_RestartRequired" xml:space="preserve">
+        <value>Restart required</value>
+    </data>
+  <data name="ProjectConfigDialog_Title" xml:space="preserve">
+        <value>Project Configuration</value>
+    </data>
+  <data name="Config_Header_Spellchecking" xml:space="preserve">
+        <value>Spellchecking</value>
+    </data>
+  <data name="Config_Button_Add" xml:space="preserve">
+        <value>Add</value>
+    </data>
+  <data name="Config_Button_Remove" xml:space="preserve">
+        <value>Remove</value>
+    </data>
+  <data name="Config_CustomWordBox_Watermark" xml:space="preserve">
+        <value>Add a word to the dictionary</value>
+    </data>
+  <data name="Config_Label_AutoloadAudioTracks" xml:space="preserve">
+        <value>Autoload audio tracks?</value>
+    </data>
+  <data name="Config_Label_AutoloadAudioTracks_ToolTip" xml:space="preserve">
+        <value>Automatically load the last-loaded track when there are multiple audio tracks available</value>
+    </data>
+  <data name="Config_Label_IndexCacheExpiration" xml:space="preserve">
+        <value>Index cache expiration (days)</value>
+    </data>
+</root>
