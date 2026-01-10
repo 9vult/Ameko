@@ -16,4 +16,9 @@ public interface ICultureService
     /// List of culture instances
     /// </summary>
     public IReadOnlyCollection<CultureInfo> AvailableCultures { get; }
+
+    /// <summary>
+    /// Currently-applied language
+    /// </summary>
+    public DisplayLanguage CurrentLanguage { get; }
 }

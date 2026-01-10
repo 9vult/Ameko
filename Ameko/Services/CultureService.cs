@@ -24,17 +24,26 @@ public class CultureService : ICultureService
         .Select(l => new CultureInfo(l.Locale))
         .ToList();
 
+    private static DisplayLanguage _currentLanguage = StaticLanguages[0];
+
     /// <inheritdoc />
     public IReadOnlyCollection<DisplayLanguage> AvailableLanguages => StaticLanguages;
 
     /// <inheritdoc />
     public IReadOnlyCollection<CultureInfo> AvailableCultures => StaticCultures;
 
+    /// <inheritdoc />
+    public DisplayLanguage CurrentLanguage => _currentLanguage;
+
     public static void SetCulture()
     {
         var cultureName = GetConfiguredCulture();
         var culture =
             StaticCultures.FirstOrDefault(c => c.Name == cultureName) ?? StaticCultures[0];
+
+        _currentLanguage = StaticLanguages.Any(l => l.Locale == cultureName)
+            ? StaticLanguages.First(l => l.Locale == cultureName)
+            : StaticLanguages.First();
 
         Thread.CurrentThread.CurrentUICulture = culture;
         Thread.CurrentThread.CurrentCulture = culture;
