@@ -1,0 +1,404 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" id="root">
+    <xsd:element name="root" msdata:IsDataSet="true">
+            
+        </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>1.3</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Menu_File" xml:space="preserve">
+        <value>Archivo</value>
+    </data>
+  <data name="Menu_Edit" xml:space="preserve">
+        <value>Editar</value>
+    </data>
+  <data name="Menu_Subtitle" xml:space="preserve">
+        <value>Subtítulo</value>
+    </data>
+  <data name="Menu_Timing" xml:space="preserve">
+        <value>Tiempos</value>
+    </data>
+  <data name="Menu_Video" xml:space="preserve">
+        <value>Video</value>
+    </data>
+  <data name="Menu_Scripts" xml:space="preserve">
+        <value>Complementos</value>
+    </data>
+  <data name="Menu_Layouts" xml:space="preserve">
+        <value>Entornos</value>
+    </data>
+  <data name="Menu_Help" xml:space="preserve">
+        <value>Ayuda</value>
+    </data>
+  <data name="Menu_ShowLogs" xml:space="preserve">
+        <value>Mostrar registros...</value>
+    </data>
+  <data name="ProjectExplorer_Header" xml:space="preserve">
+        <value>Navegador de proyectos</value>
+    </data>
+  <data name="Toolbox_Header" xml:space="preserve">
+        <value>Herramientas</value>
+    </data>
+  <data name="EventsGrid_Header_Start" xml:space="preserve">
+        <value>Inicio</value>
+    </data>
+  <data name="EventsGrid_Header_End" xml:space="preserve">
+        <value>Final</value>
+    </data>
+  <data name="EventsGrid_Header_Cps" xml:space="preserve">
+        <value>CPS</value>
+    </data>
+  <data name="EventsGrid_Header_Style" xml:space="preserve">
+        <value>Estilo</value>
+    </data>
+  <data name="EventsGrid_Header_Actor" xml:space="preserve">
+        <value>Actor</value>
+    </data>
+  <data name="EventsGrid_Header_Effect" xml:space="preserve">
+        <value>Efecto</value>
+    </data>
+  <data name="EventsGrid_Header_Content" xml:space="preserve">
+        <value>Contenido</value>
+    </data>
+  <data name="EventsGrid_Menu_Duplicate" xml:space="preserve">
+        <value>Duplicar</value>
+    </data>
+  <data name="EventsGrid_Menu_MergeLines" xml:space="preserve">
+        <value>Unir líneas</value>
+    </data>
+  <data name="EventsGrid_Menu_SplitLine" xml:space="preserve">
+        <value>Dividir líneas por saltos de línea</value>
+    </data>
+  <data name="EventsGrid_Menu_InsertBefore" xml:space="preserve">
+        <value>Insertar antes</value>
+    </data>
+  <data name="EventsGrid_Menu_InsertAfter" xml:space="preserve">
+        <value>Insertar después</value>
+    </data>
+  <data name="EventsGrid_Menu_Copy" xml:space="preserve">
+        <value>Copiar</value>
+    </data>
+  <data name="EventsGrid_Menu_Paste" xml:space="preserve">
+        <value>Pegar</value>
+    </data>
+  <data name="EventsGrid_Menu_PasteOver" xml:space="preserve">
+        <value>Pegar solamente...</value>
+    </data>
+  <data name="EventsGrid_Menu_Delete" xml:space="preserve">
+        <value>Eliminar</value>
+    </data>
+  <data name="EventsGrid_Menu_Cut" xml:space="preserve">
+        <value>Cortar</value>
+    </data>
+  <data name="Editor_IsComment_Label" xml:space="preserve">
+        <value>Comentar</value>
+    </data>
+  <data name="Editor_IsComment_ToolTip" xml:space="preserve">
+        <value>Marcar línea como comentario</value>
+    </data>
+  <data name="Editor_StyleBox_ToolTip" xml:space="preserve">
+        <value>Estilo de la línea</value>
+    </data>
+  <data name="Editor_EditStyle_ToolTip" xml:space="preserve">
+        <value>Editar el estilo actual</value>
+    </data>
+  <data name="Editor_ActorAcBox_Watermark" xml:space="preserve">
+        <value>Actor</value>
+    </data>
+  <data name="Editor_ActorAcBox_ToolTip" xml:space="preserve">
+        <value>Actor de la línea</value>
+    </data>
+  <data name="Editor_EffectAcBox_Watermark" xml:space="preserve">
+        <value>Efecto</value>
+    </data>
+  <data name="Editor_EffectAcBox_ToolTip" xml:space="preserve">
+        <value>Efecto de la línea</value>
+    </data>
+  <data name="Editor_MaxLineWidth_ToolTip" xml:space="preserve">
+        <value>Ancho máximo de la línea</value>
+    </data>
+  <data name="Editor_LayerUpDown_ToolTip" xml:space="preserve">
+        <value>Capa</value>
+    </data>
+  <data name="Editor_StartBox_ToolTip" xml:space="preserve">
+        <value>Tiempo de inicio</value>
+    </data>
+  <data name="Editor_EndBox_ToolTip" xml:space="preserve">
+        <value>Tiempo final</value>
+    </data>
+  <data name="Editor_MarginLeft_ToolTip" xml:space="preserve">
+        <value>Margen izquierdo (0 en el estilo Default)</value>
+    </data>
+  <data name="Editor_MarginRight_ToolTip" xml:space="preserve">
+        <value>Margen derecho (0 en el estilo Default)</value>
+    </data>
+  <data name="Editor_MarginVertical_ToolTip" xml:space="preserve">
+        <value>Margen vertical (0 en el estilo Default)</value>
+    </data>
+  <data name="Editor_ToggleBold_ToolTip" xml:space="preserve">
+        <value>Aplicar negritas \b en la posición del cursor</value>
+    </data>
+  <data name="Editor_ToggleItalics_ToolTip" xml:space="preserve">
+        <value>Aplicar itálicas \i en la posición del cursor</value>
+    </data>
+  <data name="Editor_ToggleUnderline_ToolTip" xml:space="preserve">
+        <value>Aplicar subrayado \u en la posición del cursor</value>
+    </data>
+  <data name="Editor_ToggleStrikethrough_ToolTip" xml:space="preserve">
+        <value>Aplicar tachado \s en la posición del cursor</value>
+    </data>
+  <data name="Editor_SetFont_ToolTip" xml:space="preserve">
+        <value>Establecer fuente \fn en la posición del cursor</value>
+    </data>
+  <data name="Editor_NextOrCreate_ToolTip" xml:space="preserve">
+        <value>Mover a la siguiente línea, creando una nueva si es necesaria</value>
+    </data>
+  <data name="Menu_New" xml:space="preserve">
+        <value>_Nuevo</value>
+    </data>
+  <data name="Menu_OpenSubtitle" xml:space="preserve">
+        <value>_Abrir subtítulos...</value>
+    </data>
+  <data name="Menu_SaveSubtitle" xml:space="preserve">
+        <value>_Guardar subtítulos...</value>
+    </data>
+  <data name="Menu_SaveSubtitleAs" xml:space="preserve">
+        <value>Guardar subtítulos _como...</value>
+    </data>
+  <data name="Menu_ExportSubtitles" xml:space="preserve">
+        <value>_Exportar subtítulos como texto...</value>
+    </data>
+  <data name="Menu_OpenProject" xml:space="preserve">
+        <value>Abrir _proyecto...</value>
+    </data>
+  <data name="Menu_SaveProject" xml:space="preserve">
+        <value>Guardar pro_yecto...</value>
+    </data>
+  <data name="Menu_Quit" xml:space="preserve">
+        <value>_Salir</value>
+    </data>
+  <data name="Menu_Undo" xml:space="preserve">
+        <value>_Deshacer</value>
+    </data>
+  <data name="Menu_Redo" xml:space="preserve">
+        <value>_Rehacer</value>
+    </data>
+  <data name="Menu_Search" xml:space="preserve">
+        <value>_Buscar...</value>
+    </data>
+  <data name="Menu_StylesManager" xml:space="preserve">
+        <value>Administrador de est_ilos...</value>
+    </data>
+  <data name="Menu_ScriptProperties" xml:space="preserve">
+        <value>Propiedades del proye_cto...</value>
+    </data>
+  <data name="Menu_Project" xml:space="preserve">
+        <value>Pr_oyecto</value>
+    </data>
+  <data name="Menu_ProjectConfig" xml:space="preserve">
+        <value>_Configuración...</value>
+    </data>
+  <data name="Menu_ShiftTimes" xml:space="preserve">
+        <value>Despla_zador de tiempos...</value>
+    </data>
+  <data name="Menu_OpenVideo" xml:space="preserve">
+        <value>_Abrir video...</value>
+    </data>
+  <data name="Menu_JumpTo" xml:space="preserve">
+        <value>_Saltar a...</value>
+    </data>
+  <data name="Menu_Configuration" xml:space="preserve">
+        <value>_Configuraciones...</value>
+    </data>
+  <data name="Menu_Keybinds" xml:space="preserve">
+        <value>Ata_jos de teclado...</value>
+    </data>
+  <data name="Menu_About" xml:space="preserve">
+        <value>_Acerca de Ameko...</value>
+    </data>
+  <data name="ProjectExplorer_ContextMenu_Remove" xml:space="preserve">
+        <value>Quitar del proyecto</value>
+    </data>
+  <data name="ProjectExplorer_ContextMenu_Open" xml:space="preserve">
+        <value>Abrir</value>
+    </data>
+  <data name="Menu_CloseTab" xml:space="preserve">
+        <value>_Cerrar pestaña</value>
+    </data>
+  <data name="Menu_CloseProject" xml:space="preserve">
+        <value>Cerrar _proyecto</value>
+    </data>
+  <data name="Tab_CloseButton_ToolTip" xml:space="preserve">
+        <value>Cerrar pestaña</value>
+    </data>
+  <data name="ProjectExplorer_ContextMenu_ChangeDisplayName" xml:space="preserve">
+        <value>Cambiar nombre...</value>
+    </data>
+  <data name="Menu_ReloadScripts" xml:space="preserve">
+        <value>_Recargar complementos</value>
+    </data>
+  <data name="Menu_PackageManager" xml:space="preserve">
+        <value>_Abrir administrador de paquetes...</value>
+    </data>
+  <data name="Menu_OpenProjectFolder" xml:space="preserve">
+        <value>Abrir _carpeta como un proyecto...</value>
+    </data>
+  <data name="Menu_ReloadLayouts" xml:space="preserve">
+        <value>Recargar _entornos</value>
+    </data>
+  <data name="Video_Button_PlayPause_ToolTip" xml:space="preserve">
+        <value>Play/Pausa</value>
+    </data>
+  <data name="Video_Button_PlaySelection_ToolTip" xml:space="preserve">
+        <value>Reproducir selección</value>
+    </data>
+  <data name="Video_Button_EnableAutoSeek_ToolTip" xml:space="preserve">
+        <value>Activar búsqueda automática para el inicio de los eventos seleccionados</value>
+    </data>
+  <data name="Video_Button_DisableAutoSeek_ToolTip" xml:space="preserve">
+        <value>Desactivar búsqueda automática para el inicio de los eventos seleccionados</value>
+    </data>
+  <data name="Video_Time_ToolTip" xml:space="preserve">
+        <value>Tiempo actual</value>
+    </data>
+  <data name="Video_Frame_ToolTip" xml:space="preserve">
+        <value>Fotograma actual</value>
+    </data>
+  <data name="Video_LockAR" xml:space="preserve">
+        <value>Fijar</value>
+    </data>
+  <data name="Video_LockAR_ToolTip" xml:space="preserve">
+        <value>Fijar la relación de aspecto</value>
+    </data>
+  <data name="Menu_ReferenceFile_Attach" xml:space="preserve">
+        <value>_Adjuntar un archivo de referencia...</value>
+    </data>
+  <data name="Menu_ReferenceFile_Detach" xml:space="preserve">
+        <value>_Detach Reference File</value>
+    </data>
+  <data name="Menu_Spellcheck" xml:space="preserve">
+        <value>Comprobar _ortografía...</value>
+    </data>
+  <data name="Menu_Playground" xml:space="preserve">
+        <value>Abrir el área de _ejecución...</value>
+    </data>
+  <data name="Message_Welcome" xml:space="preserve">
+        <value>¡Bienvenido a Ameko!</value>
+    </data>
+  <data name="EventsGrid_Menu_SplitLineKeepTimes" xml:space="preserve">
+        <value>Dividir líneas por saltos de línea (manteniendo tiempos)</value>
+    </data>
+  <data name="Tab_NothingLoaded" xml:space="preserve">
+        <value>Abre un archivo de subtítulos o crea uno nuevo para comenzar.</value>
+    </data>
+  <data name="EventsGrid_Menu_CopyPlaintext" xml:space="preserve">
+        <value>Copiar (texto plano)</value>
+    </data>
+  <data name="ProjectExplorer_ContextMenu_AttachAsReference" xml:space="preserve">
+        <value>Adjuntar como referencia</value>
+    </data>
+  <data name="Video_Angle" xml:space="preserve">
+        <value>Ángulo:</value>
+    </data>
+  <data name="Error" xml:space="preserve">
+        <value>Error</value>
+    </data>
+  <data name="Error_FailedToParse" xml:space="preserve">
+        <value>Error al analizar el archivo:</value>
+    </data>
+  <data name="Video_ContextMenu_Copy_Frame" xml:space="preserve">
+        <value>Copiar fotograma al portapapeles</value>
+    </data>
+  <data name="Video_ContextMenu_Copy_VideoOnly" xml:space="preserve">
+        <value>Copiar fotograma al portapapeles (solo el video)</value>
+    </data>
+  <data name="Video_ContextMenu_Copy_SubsOnly" xml:space="preserve">
+        <value>Copiar fotograma al portapapeles (solo subtítulos)</value>
+    </data>
+  <data name="Video_ContextMenu_Save_Frame" xml:space="preserve">
+        <value>Guardar fotograma</value>
+    </data>
+  <data name="Video_ContextMenu_Save_VideoOnly" xml:space="preserve">
+        <value>Guardar fotograma (solo el video)</value>
+    </data>
+  <data name="Video_ContextMenu_Save_SubsOnly" xml:space="preserve">
+        <value>Guardar fotograma (solo subtítulos)</value>
+    </data>
+  <data name="Video_Indexing" xml:space="preserve">
+        <value>Indexing...</value>
+    </data>
+  <data name="Menu_CloseVideo" xml:space="preserve">
+        <value>_Close Video</value>
+    </data>
+  <data name="Menu_IssueTracker" xml:space="preserve">
+        <value>_Issue Tracker</value>
+    </data>
+  <data name="Editor_Menu_SplitLineAtCursor" xml:space="preserve">
+        <value>Split Line at Cursor</value>
+    </data>
+  <data name="Editor_Menu_SplitLineAtCursorKeepTimes" xml:space="preserve">
+        <value>Split Line at Cursor (Keep Times)</value>
+    </data>
+  <data name="Editor_Menu_SpellcheckLine" xml:space="preserve">
+        <value>Spellcheck This Line</value>
+    </data>
+  <data name="EventsGrid_Menu_InsertBeforeAtVideoTime" xml:space="preserve">
+        <value>Insert Before at Video Time</value>
+    </data>
+  <data name="EventsGrid_Menu_InsertAfterAtVideoTime" xml:space="preserve">
+        <value>Insert After at Video Time</value>
+    </data>
+  <data name="Audio_HorizontalScale_ToolTip" xml:space="preserve">
+        <value>Horizontal Scale</value>
+    </data>
+  <data name="Audio_VerticalScale_ToolTip" xml:space="preserve">
+        <value>Vertical Scale</value>
+    </data>
+  <data name="Menu_Audio" xml:space="preserve">
+        <value>_Audio</value>
+    </data>
+  <data name="Menu_OpenAudio" xml:space="preserve">
+        <value>_Open Audio...</value>
+    </data>
+  <data name="Menu_CloseAudio" xml:space="preserve">
+        <value>_Close Audio</value>
+    </data>
+  <data name="Menu_ChangeTracks" xml:space="preserve">
+        <value>Change _Tracks...</value>
+    </data>
+  <data name="Menu_RecentSubtitles" xml:space="preserve">
+        <value>Recent Subtitl_es</value>
+    </data>
+  <data name="Menu_RecentProjects" xml:space="preserve">
+        <value>Recent Proje_cts</value>
+    </data>
+  <data name="Menu_RecentClear" xml:space="preserve">
+        <value>Clear</value>
+    </data>
+  <data name="Menu_SnapKf_Start" xml:space="preserve">
+        <value>Snap _Start to Nearest Keyframe</value>
+    </data>
+  <data name="Menu_SnapKf_End" xml:space="preserve">
+        <value>Snap _End to Nearest Keyframe</value>
+    </data>
+  <data name="Menu_OpenKeyframes" xml:space="preserve">
+        <value>Open _Keyframes...</value>
+    </data>
+  <data name="Menu_SelectLines" xml:space="preserve">
+        <value>Select _Lines...</value>
+    </data>
+  <data name="Menu_Sort_Lines" xml:space="preserve">
+        <value>Sor_t Lines...</value>
+    </data>
+</root>
