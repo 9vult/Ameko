@@ -3,9 +3,25 @@ name: Build and Test
 on:
   workflow_dispatch:
   pull_request:
+    paths:
+      - 'Ameko'
+      - 'AssCS'
+      - 'Holo'
+      - 'Mizuki'
+      - 'Tests/**'
+      - 'Directory.Build.props'
+      - 'Directory.Packages.props'
   push:
     branches:
       - master
+    paths:
+      - 'Ameko'
+      - 'AssCS'
+      - 'Holo'
+      - 'Mizuki'
+      - 'Tests/**'
+      - 'Directory.Build.props'
+      - 'Directory.Packages.props'
 
 env:
   DOTNET_VERSION: "10.0"
